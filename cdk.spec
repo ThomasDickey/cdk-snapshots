@@ -7,7 +7,7 @@ Summary: A Curses Development Library (ncurses-based widgets)
 Name: cdk
 Version: %ver
 Release: %rel
-Copyright: GPL
+Copyright: BSD
 Group: Applications/Libraries
 Source: ftp://dickey.his.com/cdk/cdk.tar.gz
 BuildRoot: /tmp/cdk-%{ver}-root

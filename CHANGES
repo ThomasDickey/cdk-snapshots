@@ -7,6 +7,29 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2000/9/15 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ add/use configure check for some curses functions/macros which use
+	  internals of the WINDOW struct, which is opaque on NetBSD (patch by
+	  Simon Burge <simonb@wasabisystems.com>).
+	+ update autoconf scripts (config.guess, config.sub, macros
+	  CF_CURSES_LIBS, CF_UPPER, CF_X_ATHENA) to my 20000819 patch.
+	+ revised man-pages:  reorder so that functions are listed
+	  alphabetically within the NAME, SYNOPSIS, DESCRIPTION sections, the
+	  prototypes shown only in the SYNOPSIS section (and formatted for
+	  readability), remove excess wording and convert as needed to use tbl.
+
+2000/8/28 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ add cdk_position.3
+	+ rename cdk_cdk.3 to cdk.3
+
+2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ remove obsolete comments from manpages telling users to define
+	  NCURSES for that library.  The configure script creates cdk_config.h,
+	  which has settings as needed.
+
 2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
 	+ fix some array-overruns in viewer.c if it happens to load a binary

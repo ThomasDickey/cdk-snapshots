@@ -155,12 +155,20 @@ dnl ---------------------------------------------------------------------------
 dnl Look for the curses libraries.  Older curses implementations may require
 dnl termcap/termlib to be linked as well.
 AC_DEFUN([CF_CURSES_LIBS],[
-AC_CHECK_FUNC(initscr,,[
+
+AC_MSG_CHECKING(if we have identified curses libraries)
+AC_TRY_LINK([#include <${cf_cv_ncurses_header-curses.h}>],
+	[initscr(); tgoto("?", 0,0)],
+	cf_result=yes,
+	cf_result=no)
+AC_MSG_RESULT($cf_result)
+
+if test "$cf_result" = no ; then
 case $host_os in #(vi
 freebsd*) #(vi
 	AC_CHECK_LIB(mytinfo,tgoto,[LIBS="-lmytinfo $LIBS"])
 	;;
-hpux10.*|hpux11.*)
+hpux10.*|hpux11.*) #(vi
 	AC_CHECK_LIB(cur_colr,initscr,[
 		LIBS="-lcur_colr $LIBS"
 		CFLAGS="-I/usr/include/curses_colr $CFLAGS"
@@ -191,10 +199,17 @@ if test ".$ac_cv_func_initscr" != .yes ; then
 	cf_term_lib=""
 	cf_curs_lib=""
 
+	if test ".$cf_cv_ncurses_version" != .no
+	then
+		cf_check_list="ncurses curses cursesX"
+	else
+		cf_check_list="cursesX curses ncurses"
+	fi
+
 	# Check for library containing tgoto.  Do this before curses library
 	# because it may be needed to link the test-case for initscr.
 	AC_CHECK_FUNC(tgoto,[cf_term_lib=predefined],[
-		for cf_term_lib in termcap termlib unknown
+		for cf_term_lib in $cf_check_list termcap termlib unknown
 		do
 			AC_CHECK_LIB($cf_term_lib,tgoto,[break])
 		done
@@ -202,7 +217,7 @@ if test ".$ac_cv_func_initscr" != .yes ; then
 
 	# Check for library containing initscr
 	test "$cf_term_lib" != predefined && test "$cf_term_lib" != unknown && LIBS="-l$cf_term_lib $cf_save_LIBS"
-	for cf_curs_lib in cursesX curses ncurses xcurses jcurses unknown
+	for cf_curs_lib in $cf_check_list xcurses jcurses unknown
 	do
 		AC_CHECK_LIB($cf_curs_lib,initscr,[break])
 	done
@@ -217,6 +232,8 @@ if test ".$ac_cv_func_initscr" != .yes ; then
 			[cf_result=no])
 		AC_MSG_RESULT($cf_result)
 		test $cf_result = no && AC_ERROR(Cannot link curses library)
+	elif test "$cf_curs_lib" = "$cf_term_lib" ; then
+		:
 	elif test "$cf_term_lib" != predefined ; then
 		AC_MSG_CHECKING(if we need both $cf_curs_lib and $cf_term_lib libraries)
 		AC_TRY_LINK([#include <${cf_cv_ncurses_header-curses.h}>],
@@ -232,8 +249,9 @@ if test ".$ac_cv_func_initscr" != .yes ; then
 		AC_MSG_RESULT($cf_result)
 	fi
 fi
+fi
 
-])])
+])
 dnl ---------------------------------------------------------------------------
 dnl You can always use "make -n" to see the actual options, but it's hard to
 dnl pick out/analyze warning messages when the compile-line is long.
@@ -953,7 +971,7 @@ dnl $1=uppercase($2)
 AC_DEFUN([CF_UPPER],
 [
 changequote(,)dnl
-$1=`echo $2 | tr '[a-z]' '[A-Z]'`
+$1=`echo "$2" | sed y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%`
 changequote([,])dnl
 ])dnl
 dnl ---------------------------------------------------------------------------
@@ -1014,7 +1032,8 @@ cf_x_athena_lib=""
 for cf_path in default \
 	/usr/contrib/X11R6 \
 	/usr/contrib/X11R5 \
-	/usr/lib/X11R5
+	/usr/lib/X11R5 \
+	/usr/local
 do
 
 	if test -z "$cf_x_athena_include" ; then

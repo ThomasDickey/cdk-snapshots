@@ -1,44 +1,53 @@
+'\" t
+.\" $Id: cdk_display.3,v 1.4 2000/09/15 01:20:49 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH cdk_display 3X "05 Dec 1995"
+.TH cdk_display 3
 .SH NAME
-   Cdk - \f2Curses Development Kit\f1 Display Capabilities.
+Cdk - \fBCurses Development Kit\fR Display Capabilities.
 .LP
 .SH SYNOPSIS
-Cdk has a number of pre-defined display types which need explaining. This
-manual page will explain all of the display types and how to use them. The
-following lists which display types will be outlined in this manual page.
+Cdk has a number of pre-defined display types.
+The following are outlined in this manual page:
 .It "\(bu How To Use Colors" 5
 .It "\(bu How To Use Different Character Attributes" 5
 .It "\(bu How To Justify Strings" 5
 .It "\(bu How To Use Special Drawing Characters" 5
+.It "\(bu Edit/Display Type Codes (EDisplayType)" 5
 .SH DESCRIPTION
 Cdk has special formatting commands which can be included in any string which
-add highlights, justification, or even colors to a basic string. This manual
-page outlines and demonstrates how they work. 
-.PP
-\f2How To Use Colors\f1
-.RS 3
+add highlights, justification, or even colors to a basic string.
+This manual
+page outlines and demonstrates how they work.
+.SS How To Use Colors
 Cdk has the capability to display colors in almost every string type displayed
-in a Cdk widget. To turn on colors, the function \f4initCDKColor\f1 has to be
-called. When this function is called 64 color pairs are created. Normally the
-color pairs are accessed via the COLOR_PAIR macro. You can still do this, but
-creating a string with multiple colors gets terribly difficult. That is why
-the color commands were created. The color setting are stored directly in the
+in a Cdk widget.
+To turn on colors, the function \fIinitCDKColor\fR has to be called.
+When this function is called 64 color pairs are created.
+Normally the
+color pairs are accessed via the COLOR_PAIR macro.
+You can still do this, but
+creating a string with multiple colors gets terribly difficult.
+That is why
+the color commands were created.
+The color setting are stored directly in the
 string and when the widget is created or activated, the string is converted
-to take advantage of any color commands in the string. To turn on a color pair
-insert </XX> into the string; where \f4XX\f1 is a numeric value from 0 to 64.
-Color pair 0 is the standard default color pair for the screen. To turn off a
-color pair use the format command <!XX> where \f4XX\f1 is a numeric value from
-0 to 64. The following code segment demonstrates the use of the color commands.
+to take advantage of any color commands in the string.
+To turn on a color pair
+insert </XX> into the string; where \fIXX\fR is a numeric value from 0 to 64.
+Color pair 0 is the standard default color pair for the screen.
+To turn off a
+color pair use the format command <!XX> where \fIXX\fR is a numeric value from
+0 to 64.
+The following code segment demonstrates the use of the color commands.
 .LP
 .nf
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 #include <cdk.h>
 
 void main()
@@ -73,36 +82,40 @@ void main()
 }
 .fi
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 This example uses the color pair 5 (which is white on blue) for the label to
 the entry widget.
-.RE
 .PP
-\f2How To Use Different Character Attributes\f1
-.RS 3
+.SS How To Use Different Character Attributes
 Cdk also provides attribute commands which allow different character attributes
-to be displayed in a Cdk widget. To use a character attribute the format command
-is </X> where \f4X\f1 is one of several command characters. To turn a attribute 
-off use the command <!X>. The following table outlines the command characters
+to be displayed in a Cdk widget.
+To use a character attribute the format command
+is </X> where \fIX\fR is one of several command characters.
+To turn a attribute
+off use the command <!X>.
+The following table outlines the command characters
 and what they mean.
 .LP
-.nf 
-.RS 3
-\f2Command_Character      Character_Attribute\f1
-B                      Bold 
-U                      Underline
-K                      Blink
-R                      Reverse
-S                      Standout
-D                      Dim
-N                      Normal
-.fi
-.RE
+.TS
+center tab(/) box;
+l l
+l l
+lw15 lw35 .
+\fBCommand_Character/Character_Attribute\fR
+=
+B/Bold
+U/Underline
+K/Blink
+R/Reverse
+S/Standout
+D/Dim
+N/Normal
+.TE
 
 The following code segment demonstrates the use of character display attributes.
 .nf
-.ce 
-\f4----------------------------------------\f1
+.ce
+\fI----------------------------------------\fR
 #include <cdk.h>
 
 void main()
@@ -136,38 +149,39 @@ void main()
    exit (0);
 }
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 .fi
 Notice that color commands and format commands can be mixed inside the same
-format marker. The above example underlines the label marker, which also sets
+format marker.
+The above example underlines the label marker, which also sets
 color pair number 5.
-.RE
-.PP
-\f2How To Justify Strings\f1
-.RS 3
-Justification commands can left justify, right justify, or center a string of 
-text. To use a justification format in a string the command <X> is used. The 
-following table lists all of the format commands available.
+.SS How To Justify Strings
+Justification commands can left justify, right justify, or center a string of text.
+To use a justification format in a string the command <X> is used.
+The following table lists all of the format commands available.
 .LP
-.nf
-.RS 3
-\f2Justification_Command    Action.\f1
-<L>                      Left Justified. Default if not stated.
-<C>                      Centered text.
-<R>                      Right justified.
-<I=X>                    Indent the line X characters.
-<B=X>                    Bullet. X is the bullet string to use.
-<F=X>                    Links in a file where X is the filename. 
-                         Currently only works with the viewer 
-                         widget.
-.fi
-.RE
-.fi
+.TS
+center tab(/) box;
+l l
+l l
+lw15 lw35 .
+\fBCommand/Action.\fR
+=
+<L>/Left Justified. Default if not stated.
+<C>/Centered text.
+<R>/Right justified.
+<I=X>/Indent the line X characters.
+<B=X>/Bullet. X is the bullet string to use.
+<F=X>/T{
+Links in a file where X is the filename.
+Currently only works with the viewer widget.
+T}
+.TE
 
 The following code segment demonstrates how to use the justification commands
 in a Cdk widget.
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 .nf
 #include <cdk.h>
 
@@ -204,62 +218,64 @@ void main()
 }
 .fi
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
+.PP
 The bullet format command can take either a single character or a string.
-The bullet in the the above example would look like
+The bullet in the above example would look like
 .RS 3
-\f4+\f1 This is a bullet.
+\fI+\fR This is a bullet.
 .RE
 but if we were to use the following command instead
-.ce
+.RS 3
 <B=***>This is a bullet.
+.RE
 it would look like
 .RS 3
-\f4***\f1 This is a bullet.
-.RE
-
-The only restriction that a format command has is that it must be at the
-beginning of the string.
+\fI***\fR This is a bullet.
 .RE
 .PP
-\f2How To Use Special Drawing Characters\f1
-.RS 3
+The only restriction that a format command has is that it must be at the
+beginning of the string.
+.SS How To Use Special Drawing Characters
 Cdk has a set of special drawing characters which can be inserted into any
-ASCII file. In order to use a special character the format command <#XXX>
-is used. The following table lists all of the special character commands
-available.
-.LP
-.RS 3
-.nf 
-\f2Special_Character   Character\f1
-<#UL>               Upper Left Corner
-<#UR>               Upper Right Corner
-<#LL>               Lower Left Corner
-<#LR>               Lower Right Corner
-<#LT>               Left Tee
-<#RT>               Right Tee
-<#TT>               Top Tee
-<#BT>               Bottom Tee
-<#HL>               Horizontal Line
-<#VL>               Vertical Line
-<#PL>               Plus Sign
-<#PM>               Plus/Minus Sign
-<#DG>               Degree Sign
-<#CB>               Checker Board
-<#DI>               Diamond
-<#BU>               Bullet
-.RE
-.fi
+ASCII file.
+In order to use a special character the format command <#XXX>
+is used.
+The following table lists all of the special character commands available.
+.TS
+center tab(/) box;
+l l
+l l
+lw15 lw35 .
+\fBSpecial_Character/Character\fR
+=
+<#UL>/Upper Left Corner
+<#UR>/Upper Right Corner
+<#LL>/Lower Left Corner
+<#LR>/Lower Right Corner
+<#LT>/Left Tee
+<#RT>/Right Tee
+<#TT>/Top Tee
+<#BT>/Bottom Tee
+<#HL>/Horizontal Line
+<#VL>/Vertical Line
+<#PL>/Plus Sign
+<#PM>/Plus or Minus Sign
+<#DG>/Degree Sign
+<#CB>/Checker Board
+<#DI>/Diamond
+<#BU>/Bullet
+.TE
 .LP
 The character formats can be repeated using an optional numeric repeat value.
-To repeat a character add (XXX) to the end of the character format. The 
-following example, draws 10 horizontal lines.
+To repeat a character add (XXX) to the end of the character format.
+The following example, draws 10 horizontal lines.
 .LP
 <#HL(10)>
 .LP
 The following code segment draws a box within a label window.
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 .nf
 #include "cdk.h"
 
@@ -271,7 +287,7 @@ void main()
    WINDOW 	*cursesWin;
    char		*mesg[4];
 
-   /* Set up CDK 		*/ 
+   /* Set up CDK 		*/
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -314,17 +330,85 @@ void main()
 }
 .fi
 .ce
-\f4----------------------------------------\f1
+\fI----------------------------------------\fR
 .LP
 Notice that drawn text can also be justified.
 .LP
+.SS Edit/Display Type Codes (EDisplayType)
+.TS
+center tab(/) box;
+l l
+l l
+lw15 lw35 .
+\fBDisplay_Type/Result\fR
+=
+vCHAR/Only accepts alphabetic characters.
+vLCHAR/T{
+Only accepts alphabetic characters.
+Maps the character to lower case
+when a character has been accepted.
+T}
+vUCHAR/T{
+Only accepts alphabetic characters.
+Maps the character to upper case
+when a character has been accepted.
+T}
+vHCHAR/T{
+Only accepts alphabetic characters.
+Displays a \fI.\fR when a character
+has been accepted.
+T}
+vUHCHAR/T{
+Only accepts alphabetic characters.
+Displays a \fI.\fR and maps the
+character to upper case when a
+character has been accepted.
+T}
+vLHCHAR/T{
+Only accepts alphabetic characters.
+Displays a \fI.\fR and maps the
+character to lower case when a
+character has been accepted.
+vINT/Only accepts numeric characters.
+T}
+vHINT/T{
+Only accepts numeric characters.
+Displays a \fI.\fR when a character
+has been accepted.
+vMIXED/Accepts any character types.
+T}
+vLMIXED/T{
+Accepts any character types.
+Maps the character to lower case
+when an alphabetic character has
+been accepted.
+T}
+vUMIXED/T{
+Accepts any character types.
+Maps the character to upper case
+when an alphabetic character has
+been accepted.
+T}
+vHMIXED/T{
+Accepts any character types.
+Displays a \fI.\fR when a character
+has been accepted.
+T}
+vLHMIXED/T{
+Accepts any character types.
+Displays a \fI.\fR and maps the
+charac}er to lower case when a
+character has been accepted.
+T}
+vUHMIXED/T{
+Accepts any character types.
+Displays a \fI.\fR and maps the
+character to upper case when a
+character has been accepted.
+vVIEWONLY/Uneditable field.
+T}
+.TE
 .SH SEE ALSO
 .BR cdk (3X),
 .BR cdk_binding (3X),
 .BR cdk_screen (3X)
-.SH NOTES
-The header file \f4<cdk.h>\f1 automatically includes the header files
-\f4<curses.h>\f1, \f4<stdlib.h>\f1, \f4<string.h>\f1, \f4<ctype.h>\f1,
-\f4<unistd.h>\f1, \f4<dirent.h>\f1, \f4<time.h>\f1, \f4<errno.h>\f1,
-\f4<pwd.h>\f1, \f4<grp.h>\f1, \f4<sys/stat.h>\f1, and \f4<sys/types.h>\f1.
-The \f4<curses.h>\f1 header file includes \f4<stdio.h>\f1 and \f4<unctrl.h>\f1.

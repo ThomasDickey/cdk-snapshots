@@ -1,13 +1,17 @@
+'\" t
+.\" $Id: cdk_binding.3,v 1.8 2000/09/15 00:31:49 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH cdk_display 3 "05 Dec 1995"
+.TH cdk_binding 3
 .SH NAME
-bindCDKObject, unbindCDKObject, checkCDKObjectBind, cleanCDKObjectBindings -
-\f2Curses Development Kit\f1 Character Binding Capabilities.
+bindCDKObject,
+checkCDKObjectBind,
+cleanCDKObjectBindings,
+unbindCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .LP
 .SH SYNOPSIS
 .LP
@@ -16,103 +20,104 @@ bindCDKObject, unbindCDKObject, checkCDKObjectBind, cleanCDKObjectBindings -
 .B \-lcdk
 .RI "[ " "library" " \|.\|.\|. ]"
 .LP
+.nf
 #include <cdk.h>
-.LP
-.BI "void bindCDKObject (EObjectType" "cdkType",
+.TP 15
+.B "void bindCDKObject ("
+.BI "EObjectType " "cdkType",
 .BI "void *" "object",
 .BI "chtype " "key",
 .BI "BINDFN " "function",
 .BI "void *" "data");
-.LP
-.BI "void unbindCDKObject (EObjectType " "cdkType",
+.TP 15
+.B "void checkCDKObjectBind ("
+.BI "EObjectType " "cdkType",
 .BI "void *" "object",
 .BI "chtype " "key");
-.LP
-.BI "void checkCDKObjectBind (EObjectType " "cdkType",
-.BI "void *" "object",
-.BI "chtype " "key");
-.LP
-.BI "void cleanCDKObjectBindings (EObjectType " "cdkType",
+.TP 15
+.B "void cleanCDKObjectBindings ("
+.BI "EObjectType " "cdkType",
 .BI "void *" "object");
-.LP
+.TP 15
+.B "void unbindCDKObject ("
+.BI "EObjectType " "cdkType",
+.BI "void *" "object",
+.BI "chtype " "key");
+.fi
 .SH DESCRIPTION
-Cdk has the ability to create user definable key bindings. This ability makes
-Cdk more dynamic and usable for a wide variety of tasks. The following section
+Cdk has the ability to create user definable key bindings.
+This ability makes
+Cdk more dynamic and usable for a wide variety of tasks.
+The following section
 outlines the binding functions, their use, and their purpose.
-
-void bindCDKObject (EObjectType \f2cdkType\f1, void *\f2object\f1, chtype \f2key\f1, BINDFN \f2function\f1, void *\f2data\f1);
-.RS 3
-This function creates a key binding between a specific Cdk widget (\f2object\f1)
-given key (\f2key\f1). The parameter \f2cdkType\f1 is of type \f4EObjectType\f1
+.TP 5
+.B bindCDKObject
+creates a key binding between a specific Cdk widget (\fBobject\fR)
+given key (\fBkey\fR).
+The parameter \fBcdkType\fR is of type \fIEObjectType\fR
 which is one of the following values.
 .LP
-.nf
-\f2EObjectType_Value   Corresponding_Widget         Widget_Manual_Page\f1
-vALPHALIST          Alphalist Widget             cdk_alphalist (3)
-vCALENDAR           Calendar Widget              cdk_calendar (3)
-vDIALOG             Dialog Widget                cdk_dialog (3)
-vENTRY              Entry Widget                 cdk_entry (3)
-vFSELECT            File Selector Widget         cdk_fselect (3)
-vGRAPH              Graph Widget                 cdk_graph (3)
-vHISTOGRAM          Histogram Widget             cdk_histogram (3)
-vITEMLIST           Item List Widget             cdk_itemlist (3)
-vLABEL              Label Widget                 cdk_label (3)
-vMARQUEE            Marquee Widget               cdk_marquee (3)
-vMATRIX             Matrix Widget                cdk_matrix (3)
-vMENTRY             Multiple Line Entry Widget   cdk_mentry (3)
-vMENU               Menu Widget                  cdk_menu (3)
-vRADIO              Radio List Widget            cdk_radio (3)
-vSCALE              Numeric Scale Widget         cdk_scale (3)
-vSCROLL             Scrolling List Widget        cdk_scroll (3)
-vSELECTION          Selection List Widget        cdk_selection (3)
-vSLIDER             Slider Widget                cdk_slider (3)
-vSWINDOW            Scrolling Window Widget      cdk_swindow (3)
-vTEMPLATE           Template Entry Widget        cdk_template (3)
-vVIEWER             Viewer Widget                cdk_viewer (3)
-.fi
+.TS
+center tab(/);
+l
+l l
+lw13 lw30 lw 30 .
+\fBEObjectType_Value/Corresponding_Widget/Widget_Manual_Page\fR
+=
+vALPHALIST/Alphalist Widget/cdk_alphalist (3)
+vCALENDAR/Calendar Widget/cdk_calendar (3)
+vDIALOG/Dialog Widget/cdk_dialog (3)
+vENTRY/Entry Widget/cdk_entry (3)
+vFSELECT/File Selector Widget/cdk_fselect (3)
+vGRAPH/Graph Widget/cdk_graph (3)
+vHISTOGRAM/Histogram Widget/cdk_histogram (3)
+vITEMLIST/Item List Widget/cdk_itemlist (3)
+vLABEL/Label Widget/cdk_label (3)
+vMARQUEE/Marquee Widget/cdk_marquee (3)
+vMATRIX/Matrix Widget/cdk_matrix (3)
+vMENTRY/Multiple Line Entry Widget/cdk_mentry (3)
+vMENU/Menu Widget/cdk_menu (3)
+vRADIO/Radio List Widget/cdk_radio (3)
+vSCALE/Numeric Scale Widget/cdk_scale (3)
+vSCROLL/Scrolling List Widget/cdk_scroll (3)
+vSELECTION/Selection List Widget/cdk_selection (3)
+vSLIDER/Slider Widget/cdk_slider (3)
+vSWINDOW/Scrolling Window Widget/cdk_swindow (3)
+vTEMPLATE/Template Entry Widget/cdk_template (3)
+vVIEWER/Viewer Widget/cdk_viewer (3)
+=
+.TE
 .RS 3
-The parameter \f2function\f1 is of type \f4BINDFN\f1 which has the following
-prototype:
+The parameter \fBfunction\fR is the callback function.
+The parameter \fBdata\fR points to data passed to the callback function.
+The parameter \fBkey\fR is the key hit which triggered this callback.
 .RE
-
-.ce
-\f4void function (EObjectType cdktype, void *object, void *clientData, chtype key);\f1
-
-.RS 3
-The parameter \f2data\f1 is a \f4void *\f1 pointer to whatever data the call-back
-function may need. The parameter \f2key\f1 is the key hit which triggered this 
-call-back.
-.RE 
-
-void unbindCDKObject (EObjectType \f2cdkType\f1, void *\f2object\f1, chtype \f2key\f1);
-.RS 3
-This function removes a specific binding to an object. The parameter names are
-the same as the description of the function \f4bindCDKObject\f1.
-.RE
-
-int checkCDKObjectBind (EObjectType \f2cdkType\f1, void *\f2object\f1, chtype \f2key\f1);
-.RS 3
-This function returns an integer value stating whether the key \f2key\f1 has
-been bound to the given widget, \f2object\f1.
-.RE
-
-void cleanCDKObjectBindings (EObjectType \f2cdkType\f1, void *\f2object\f1);
-.RS 3
-This function removes all user defined key bindings from the given widget.
-.RE
-
+.TP 5
+.B checkCDKObjectBind
+returns an integer stating whether the given \fBkey\fR has
+been bound to the given widget, \fBobject\fR.
+.TP 5
+.B cleanCDKObjectBindings
+removes all user defined key bindings from the given widget.
+.TP 5
+.B unbindCDKObject
+removes a specific binding to an object.
+The parameter are
+the same as for \fIbindCDKObject\fR.
 .SH EXAMPLE
 To help demonstrate how to use the key bindings I will demonstrate a simple
-dialog box widget with help for each button. The following code segment creates
-a dialog box and a call-back function named \f4dialogHelpCB\f1.
+dialog box widget with help for each button.
+The following code segment creates
+a dialog box and a callback function named \fIdialogHelpCB\fR.
 .LP
 .nf
 .ce
-\f4________________________________________\f1
+\fI________________________________________\fR
 .LP
+.ta 9 17 25 33 41
 #include "cdk.h"
 
-void dialogHelpCB (EObjectType cdktype, void *object, void *clientData)
+void dialogHelpCB (EObjectType cdktype, void *object, void *clientData, chtype input)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    char *mesg[5];
@@ -123,31 +128,31 @@ void dialogHelpCB (EObjectType cdktype, void *object, void *clientData)
       mesg[0] = "<C></U>Help for </U>Who<!U>.";
       mesg[1] = "<C>When this button is picked the name of the current";
       mesg[2] = "<C>user is displayed on the screen in a pop-up window.";
-      popupLabel (dialog->screen, mesg, 3);
+      popupLabel (ScreenOf(dialog), mesg, 3);
    }
    else if (dialog->currentButton == 1)
    {
       mesg[0] = "<C></U>Help for </U>Time<!U>.";
       mesg[1] = "<C>When this button is picked the current time is";
       mesg[2] = "<C>displayed on the screen in a pop-up window.";
-      popupLabel (dialog->screen, mesg, 3);
+      popupLabel (ScreenOf(dialog), mesg, 3);
    }
    else if (dialog->currentButton == 2)
    {
       mesg[0] = "<C></U>Help for </U>Date<!U>.";
       mesg[1] = "<C>When this button is picked the current date is";
       mesg[2] = "<C>displayed on the screen in a pop-up window.";
-      popupLabel (dialog->screen, mesg, 3);
+      popupLabel (ScreenOf(dialog), mesg, 3);
    }
    else if (dialog->currentButton == 3)
    {
       mesg[0] = "<C></U>Help for </U>Quit<!U>.";
       mesg[1] = "<C>When this button is picked the dialog box is exited.";
-      popupLabel (dialog->screen, mesg, 2);
+      popupLabel (ScreenOf(dialog), mesg, 2);
    }
 }
 
-void main()
+void main(void)
 {
    /* Declare variables.			*/
    CDKSCREEN	*cdkscreen;
@@ -161,7 +166,7 @@ void main()
    time_t	clck;
    struct tm	*currentTime;
 
-   /* Set up CDK 				*/ 
+   /* Set up CDK 				*/
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -191,7 +196,8 @@ void main()
       endCDK();
 
       /* Spit out a message.			*/
-      printf ("Oops. Can't seem to create the dialog box. Is the window too small?\n");
+      printf ("Oops. Can't seem to create the dialog box. ");
+      printf ("Is the window too small?\\n");
       exit (1);
    }
 
@@ -217,9 +223,10 @@ void main()
          }
          else
          {
-             sprintf (temp, "<C><%s>", loginName); info[1] = strdup (temp);
+             sprintf (temp, "<C><%s>", loginName);
+	     info[1] = strdup (temp);
          }
-         popupLabel (question->screen, info, 2);
+         popupLabel (ScreenOf(question), info, 2);
          free (info[1]);
       }
       else if (selection == 1)
@@ -232,7 +239,7 @@ void main()
 					currentTime->tm_sec);
          info[0] = "<C>   </U>Current Time<!U>   ";
          info[1] = strdup (temp);
-         popupLabel (question->screen, info, 2);
+         popupLabel (ScreenOf(question), info, 2);
          free (info[1]);
       }
       else if (selection == 2)
@@ -245,7 +252,7 @@ void main()
 					currentTime->tm_year);
          info[0] = "<C>   </U>Current Date<!U>   ";
          info[1] = strdup (temp);
-         popupLabel (question->screen, info, 2);
+         popupLabel (ScreenOf(question), info, 2);
          free (info[1]);
       }
    }
@@ -258,15 +265,9 @@ void main()
 }
 .fi
 .ce
-\f4________________________________________\f1
+\fI________________________________________\fR
 
 .SH SEE ALSO
 .BR cdk (3),
 .BR cdk_display (3),
 .BR cdk_screen (3)
-.SH NOTES
-The header file \f4<cdk.h>\f1 automatically includes the header files
-\f4<curses.h>\f1, \f4<stdlib.h>\f1, \f4<string.h>\f1, \f4<ctype.h>\f1,
-\f4<unistd.h>\f1, \f4<dirent.h>\f1, \f4<time.h>\f1, \f4<errno.h>\f1,
-\f4<pwd.h>\f1, \f4<grp.h>\f1, \f4<sys/stat.h>\f1, and \f4<sys/types.h>\f1.
-The \f4<curses.h>\f1 header file includes \f4<stdio.h>\f1 and \f4<unctrl.h>\f1.
