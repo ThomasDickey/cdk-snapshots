@@ -12,8 +12,8 @@
 #     documentation and/or other materials provided with the distribution.
 #  3. All advertising materials mentioning features or use of this software
 #     must display the following acknowledgment:
-# 	This product includes software developed by Mike Glover
-# 	and contributors.
+#       This product includes software developed by Mike Glover
+#       and contributors.
 #  4. Neither the name of Mike Glover, nor the names of contributors
 #     may be used to endorse or promote products derived from this software
 #     without specific prior written permission.
@@ -32,8 +32,12 @@
 #
 SHELL		= /bin/sh
 
+MAJORVER	= 4
+MINORVER	= 9.9
+VERSION		= $(MAJORVER).$(MINORVER)
 CDKLIB		= @LIB_PREFIX@cdk.a
-VERSION		= 4.9.9
+CDKSHLIB	= @LIB_PREFIX@cdk.so.$(VERSION)
+SONAME		= @LIB_PREFIX@cdk.so.$(MAJORVER)
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -63,6 +67,8 @@ RM		= rm -f
 INSTALL		= @INSTALL@
 INSTALL_PROGRAM	= @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
+
+.SUFFIXES: .c .o .os
 
 default:: cdklib
 
@@ -163,8 +169,10 @@ CDKMAN		= \
 CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
 
 CDKOBJS		= $(CDKSRC:.c=.o)
+CDKSHOBJS	= $(CDKSRC:.c=.os)
 
 $(CDKOBJS) :	include/cdk_config.h
+
 
 #
 # Standard library directive.
@@ -172,6 +180,9 @@ $(CDKOBJS) :	include/cdk_config.h
 cdklib $(CDKLIB): $(CDKOBJS)
 	$(AR) -cr $(CDKLIB) $(CDKOBJS)
 	$(RANLIB) $(CDKLIB)
+
+cdkshlib $(CDKSHLIB): $(CDKSHOBJS)
+	gcc -shared -Wl,-soname=$(SONAME) $(LDFLAGS) -o $(CDKSHLIB) $(CDKSHOBJS)
 
 #
 # Make the examples directory.
@@ -222,6 +233,16 @@ installCDKLibrary:: $(LIB_DIR) $(CDKLIB)
 	@$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)
 
 #
+# This installs the CDK shared library.
+#
+installCDKSHLibrary:: $(LIB_DIR) $(CDKSHLIB)
+	@echo "Installing CDK library"
+	@echo "	$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)"
+	@$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)
+	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so"
+	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so
+
+#
 # This installs the CDK man pages.
 #
 install \
@@ -236,7 +257,7 @@ installCDKManPages:: $(MAN_DIR)
 # Clean up after ourselves...
 #
 clean::
-	$(RM) *.o $(CDKLIB) core tags *~
+	$(RM) *.o *.os $(CDKLIB) $(CDKSHLIB) core tags *~
 
 realclean:: clean
 	cd examples	&& make clean
@@ -258,6 +279,10 @@ distclean:: realclean
 .c.o:
 @RULE_CC@
 	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
+
+.c.os:
+@RULE_CC@
+	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
 
 #
 # Set up our PHONY tags.

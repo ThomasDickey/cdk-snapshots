@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/19 01:39:31 $
- * $Revision: 1.105 $
+ * $Date: 2000/06/29 00:00:38 $
+ * $Revision: 1.106 $
  */
 
 /*
@@ -240,12 +240,12 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 	 if (checkForLink (info[x], filename) == 1)
 	 {
 	    /* We have a link, open the file. */
-	    char *fileContents[MAX_LINES], temp[256];
+	    char **fileContents = 0, temp[256];
 	    int fileLen		= 0;
 	    int fileLine	= 0;
 
 	    /* Open the file and put it into the viewer. */
-	    fileLen = readFile (filename, fileContents, MAX_LINES);
+	    fileLen = CDKreadFile (filename, &fileContents);
 	    if (fileLen == -1)
 	    {
 		int adj		= 0;
@@ -284,9 +284,9 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 		  viewer->infoPos[currentLine]	= 0;
 		  widestLine			= MAXIMUM(widestLine, len);
 		  viewer->characters		+= len;
-		  freeChar (fileContents[fileLine]);
 		  currentLine++;
 	       }
+	       CDKfreeStrings (fileContents);
 	    }
 	 }
 	 else

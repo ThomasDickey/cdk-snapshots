@@ -4,8 +4,6 @@
 char *XCursesProgramName="fselect_ex";
 #endif
 
-#define MAXINFOLINES	10000
-
 /*
  * This program demonstrates the file selector and the viewer widget.
  */
@@ -19,7 +17,7 @@ int main (int argc, char **argv)
    char *title		= "<C>Pick\n<C>A\n<C>File";
    char *label		= "File: ";
    char *directory	= ".";
-   char *info[MAXINFOLINES];
+   char **info		= 0;
    char *button[5], *filename, vTitle[256], *mesg[4], temp[256];
    int selected, lines, ret;
 
@@ -98,7 +96,7 @@ int main (int argc, char **argv)
    }
 
    /* Open the file and read the contents. */
-   lines = readFile (filename, info, MAXINFOLINES);
+   lines = CDKreadFile (filename, &info);
    if (lines == -1)
    {
       printf ("Could not open %s\n", filename);

@@ -128,7 +128,7 @@ do
 #include <xcurses.h>
 char * XCursesProgramName = "test";
 #else
-#include <curses.h>
+#include <${cf_cv_ncurses_header-curses.h}>
 #ifdef HAVE_TERM_H
 #include <term.h>
 #endif
@@ -270,47 +270,48 @@ dnl Look for a non-standard library, given parameters for AC_TRY_LINK.  We
 dnl prefer a standard location, and use -L options only if we do not find the
 dnl library in the standard library location(s).
 dnl	$1 = library name
-dnl	$2 = includes
-dnl	$3 = code fragment to compile/link
-dnl	$4 = corresponding function-name
+dnl	$2 = library class, usually the same as library name
+dnl	$3 = includes
+dnl	$4 = code fragment to compile/link
+dnl	$5 = corresponding function-name
+dnl	$6 = flag, nonnull if failure causes an error-exit
 dnl
 dnl Sets the variable "$cf_libdir" as a side-effect, so we can see if we had
 dnl to use a -L option.
 AC_DEFUN([CF_FIND_LIBRARY],
 [
-	cf_cv_have_lib_$1=no
+	eval 'cf_cv_have_lib_'$1'=no'
 	cf_libdir=""
-	AC_CHECK_FUNC($4,cf_cv_have_lib_$1=yes,[
+	AC_CHECK_FUNC($5,
+		eval 'cf_cv_have_lib_'$1'=yes',[
 		cf_save_LIBS="$LIBS"
-		AC_MSG_CHECKING(for $4 in -l$1)
+		AC_MSG_CHECKING(for $5 in -l$1)
 		LIBS="-l$1 $LIBS"
-		AC_TRY_LINK([$2],[$3],
+		AC_TRY_LINK([$3],[$4],
 			[AC_MSG_RESULT(yes)
-			 cf_cv_have_lib_$1=yes
+			 eval 'cf_cv_have_lib_'$1'=yes'
 			],
 			[AC_MSG_RESULT(no)
-			CF_LIBRARY_PATH(cf_search,$1)
+			CF_LIBRARY_PATH(cf_search,$2)
 			for cf_libdir in $cf_search
 			do
 				AC_MSG_CHECKING(for -l$1 in $cf_libdir)
 				LIBS="-L$cf_libdir -l$1 $cf_save_LIBS"
-				AC_TRY_LINK([$2],[$3],
+				AC_TRY_LINK([$3],[$4],
 					[AC_MSG_RESULT(yes)
-			 		 cf_cv_have_lib_$1=yes
+			 		 eval 'cf_cv_have_lib_'$1'=yes'
 					 break],
 					[AC_MSG_RESULT(no)
 					 LIBS="$cf_save_LIBS"])
 			done
 			])
 		])
-if test $cf_cv_have_lib_$1 = no ; then
+eval 'cf_found_library=[$]cf_cv_have_lib_'$1
+ifelse($6,,[
+if test $cf_found_library = no ; then
 	AC_ERROR(Cannot link $1 library)
 fi
-case $host_os in #(vi
-linux*) # Suse Linux does not follow /usr/lib convention
-	LIBS="$LIBS -L/lib"
-	;;
-esac
+])
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl A conventional existence-check for 'lstat' won't work with the Linux
@@ -491,18 +492,31 @@ dnl ---------------------------------------------------------------------------
 dnl Construct a search-list for a nonstandard header-file
 AC_DEFUN([CF_HEADER_PATH],
 [$1=""
-if test -d "$includedir"  ; then
-test "$includedir" != NONE       && $1="[$]$1 $includedir $includedir/$2"
-fi
-if test -d "$oldincludedir"  ; then
-test "$oldincludedir" != NONE    && $1="[$]$1 $oldincludedir $oldincludedir/$2"
-fi
-if test -d "$prefix"; then
-test "$prefix" != NONE           && $1="[$]$1 $prefix/include $prefix/include/$2"
-fi
-test "$prefix" != /usr/local     && $1="[$]$1 /usr/local/include /usr/local/include/$2"
-test "$prefix" != /usr           && $1="[$]$1 /usr/include /usr/include/$2"
-test "$prefix" != /opt           && $1="[$]$1 /opt/include /opt/include/$2"
+
+test "$includedir" != NONE && \
+test -d "$includedir" && \
+$1="[$]$1 $includedir $includedir/$2"
+
+test "$oldincludedir" != NONE && \
+test -d "$oldincludedir" && \
+$1="[$]$1 $oldincludedir $oldincludedir/$2"
+
+test "$prefix" != NONE && \
+test -d "$prefix" && \
+$1="[$]$1 $prefix/include $prefix/include/$2 $prefix/$2/include"
+
+test "$prefix" != /usr/local && \
+test -d /usr/local && \
+$1="[$]$1 /usr/local/include /usr/local/include/$2 /usr/local/$2/include"
+
+test "$prefix" != /usr && \
+$1="[$]$1 /usr/include /usr/include/$2 /usr/$2/include"
+
+test "$prefix" != /opt && \
+test -d /opt && \
+$1="[$]$1 /opt/include /opt/include/$2 /opt/$2/include"
+
+$1="[$]$1 [$]HOME/lib [$]HOME/lib/$2 [$]HOME/$2/lib"
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Insert text into the help-message, for readability, from AC_ARG_WITH.
@@ -574,19 +588,35 @@ dnl ---------------------------------------------------------------------------
 dnl Construct a search-list for a nonstandard library-file
 AC_DEFUN([CF_LIBRARY_PATH],
 [$1=""
-if test -d "$libdir"  ; then
-test "$libdir" != NONE           && $1="[$]$1 $libdir $libdir/$2"
-fi
-if test -d "$exec_prefix"; then
-test "$exec_prefix" != NONE      && $1="[$]$1 $exec_prefix/lib $exec_prefix/lib/$2"
-fi
-if test -d "$prefix"; then
-test "$prefix" != NONE           && \
-test "$prefix" != "$exec_prefix" && $1="[$]$1 $prefix/lib $prefix/lib/$2"
-fi
-test "$prefix" != /usr/local     && $1="[$]$1 /usr/local/lib /usr/local/lib/$2"
-test "$prefix" != /usr           && $1="[$]$1 /usr/lib /usr/lib/$2"
-test "$prefix" != /opt           && $1="[$]$1 /opt/lib /opt/lib/$2"
+
+test "$libdir" != NONE && \
+test -d $libdir && \
+$1="[$]$1 $libdir $libdir/$2"
+
+test "$exec_prefix" != NONE && \
+test -d $exec_prefix && \
+$1="[$]$1 $exec_prefix/lib $exec_prefix/lib/$2"
+
+test "$prefix" != NONE && \
+test "$prefix" != "$exec_prefix" && \
+test -d $prefix && \
+$1="[$]$1 $prefix/lib $prefix/lib/$2 $prefix/$2/lib"
+
+test "$prefix" != /usr/local && \
+test -d /usr/local && \
+$1="[$]$1 /usr/local/lib /usr/local/lib/$2 /usr/local/$2/lib"
+
+test "$prefix" != /usr && \
+$1="[$]$1 /usr/lib /usr/lib/$2 /usr/$2/lib"
+
+test "$prefix" != / && \
+$1="[$]$1 /lib /lib/$2 /$2/lib"
+
+test "$prefix" != /opt && \
+test -d /opt && \
+$1="[$]$1 /opt/lib /opt/lib/$2 /opt/$2/lib"
+
+$1="[$]$1 [$]HOME/lib [$]HOME/lib/$2 [$]HOME/$2/lib"
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Compute the library-prefix for the given host system
@@ -746,7 +776,7 @@ freebsd*)
 esac
 
 LIBS="$cf_ncurses_LIBS $LIBS"
-CF_FIND_LIBRARY(ncurses,
+CF_FIND_LIBRARY(ncurses,ncurses,
 	[#include <${cf_cv_ncurses_header-curses.h}>],
 	[initscr()],
 	initscr)
@@ -947,13 +977,13 @@ AC_DEFUN([CF_XOPEN_CURSES],
 AC_CACHE_CHECK(if we must define _XOPEN_SOURCE_EXTENDED,cf_cv_need_xopen_extension,[
 AC_TRY_LINK([
 #include <stdlib.h>
-#include <curses.h>],[
+#include <${cf_cv_ncurses_header-curses.h}>],[
 	long x = winnstr(stdscr, "", 0)],
 	[cf_cv_need_xopen_extension=no],
 	[AC_TRY_LINK([
 #define _XOPEN_SOURCE_EXTENDED
 #include <stdlib.h>
-#include <curses.h>],[
+#include <${cf_cv_ncurses_header-curses.h}>],[
 	long x = winnstr(stdscr, "", 0)],
 	[cf_cv_need_xopen_extension=yes],
 	[cf_cv_need_xopen_extension=no])])])

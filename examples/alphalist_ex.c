@@ -7,9 +7,22 @@ char *XCursesProgramName="alphalist_ex";
 /*
  * This program demonstrates the Cdk alphalist widget.
  */
-#define MAXINFOLINES	10000
 
-int getUserList (char **list, int maxItems);
+/*
+ * This reads the passwd file and retrieves user information.
+ */
+static int getUserList (char ***list)
+{
+   struct passwd *ent;
+   int x = 0;
+   unsigned used = 0;
+
+   while ( (ent = getpwent ()) != 0)
+   {
+      used = CDKallocStrings(list, ent->pw_name, x++, used);
+   }
+   return x;
+}
 
 int main(void)
 {
@@ -20,7 +33,8 @@ int main(void)
    char *title			= "<C></B/24>Alpha List\n<C>Title";
    char *label			= "</B>Account: ";
    char *word			= 0;
-   char *info[MAXINFOLINES], *mesg[5], temp[256];
+   char **info			= 0;
+   char *mesg[5], temp[256];
    int count;
 
    /* Set up CDK. */
@@ -31,7 +45,7 @@ int main(void)
    initCDKColor();
 
    /* Get the user list. */
-   count = getUserList (info, MAXINFOLINES);
+   count = getUserList (&info);
 
    /* Create the alpha list widget. */
    alphaList = newCDKAlphalist (cdkscreen, CENTER, CENTER,
@@ -65,21 +79,4 @@ int main(void)
    delwin (cursesWin);
    endCDK();
    exit (0);
-}
-
-/*
- * This reads the passwd file and retrieves user information.
- */
-int getUserList (char **list, int maxItems)
-{
-   struct passwd *ent;
-   int x = 0;
-
-   while ( (ent = getpwent ()) != 0)
-   {
-      if (x+1 >= maxItems)
-	 break;
-      list[x++] = copyChar (ent->pw_name);
-   }
-   return x;
 }

@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.53 $
+ * $Date: 2000/06/29 00:52:24 $
+ * $Revision: 1.55 $
  */
  
 /*
@@ -85,7 +85,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* We need to sort the list before we use it. */
-   quickSort (list, 0, listSize-1);
+   sortList (list, listSize);
 
    /* Copy the list information. */
    for (x=0; x < listSize; x++)
@@ -300,7 +300,7 @@ void setCDKAlphalistContents (CDKALPHALIST *alphalist, char *list[], int listSiz
    freeCharList (alphalist->list, alphalist->listSize);
 
    /* We need to sort the list before we use it. */
-   quickSort (list, 0, listSize-1);
+   sortList (list, listSize);
 
    /* Copy in the new information. */
    alphalist->listSize		= listSize;
@@ -605,7 +605,8 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
    int Index			= 0;
    int ret			= 0;
    int x			= 0;
-   char *altWords[MAX_LINES];
+   char **altWords		= 0;
+   unsigned used		= 0;
 
    if (entry->info == 0)
    {
@@ -653,9 +654,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
       while ((currentIndex < alphalist->listSize)
 	  && (strncmp (alphalist->list[currentIndex], entry->info, wordLength) == 0))
       {
-	 altWords[altCount] = copyChar (alphalist->list[currentIndex]);
-	 currentIndex++;
-	 altCount++;
+	 used = CDKallocStrings(&altWords, alphalist->list[currentIndex++], altCount++, used);
       }
       
       /* Determine the height of the scrolling list. */
@@ -678,7 +677,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
 	 destroyCDKScroll (scrollp);
 
 	 /* Clean up. */
-	 freeCharList (altWords, altCount);
+	 CDKfreeStrings (altWords);
 
 	 /* Beep at the user. */
 	 Beep();
@@ -701,7 +700,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
       }
 
       /* Clean up. */
-      freeCharList (altWords, altCount);
+      CDKfreeStrings (altWords);
 
       /* Redraw the alphalist. */
       drawCDKAlphalist (alphalist, ObjOf(alphalist)->box);

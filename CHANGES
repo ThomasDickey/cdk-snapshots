@@ -7,6 +7,24 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2000/6/28 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ add RPM spec-file (Wai-Sun Chia <waisun.chia@msa.dec.com>).
+	+ add Linux-specific makefile rule for generating a shared library
+	  (patch by Pawel Gajda <pawelg@obop.com.pl>).
+	+ eliminate fixed-length lists assumed in getDirectoryContents() using
+	  new function CDKgetDirectoryContents().
+	+ eliminate fixed-length lists assumed in readFile() using new function
+	  CDKreadFile().
+	+ remove unused substring().
+	+ use qsort-wrapper sortList() instead of quickSort().
+	+ change configure.in to avoid having configure script check for X
+	  libraries as a side-effect of adding tests for PDCurses.
+	+ updates to configure script macros:
+	  CF_CURSES_FUNCS, CF_FIND_LIBRARY, CF_HEADER_PATH, CF_LIBRARY_PATH,
+	  CF_NCURSES_LIBS and CF_XOPEN_CURSES
+	+ updated config.guess, config.sub
+
 2000/4/9 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ modify newwin() call in subwindow_ex.c to account for actual screen

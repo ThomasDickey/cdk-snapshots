@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/19 01:39:33 $
- * $Revision: 1.162 $
+ * $Date: 2000/06/29 01:05:19 $
+ * $Revision: 1.167 $
  */
 
 char *GPasteBuffer = 0;
@@ -132,52 +132,6 @@ int justifyString (int boxWidth, int mesgLength, int justify)
 }
 
 /*
- * This returns a substring of the given string.
- */
-char *substring (char *string, int start, int width)
-{
-   char *newstring	= 0;
-   int mesglen		= 0;
-   int y		= 0;
-   int x		= 0;
-   int lastchar		= 0;
-
-   /* Make sure the string isn't null. */
-   if (string == 0)
-   {
-      return 0;
-   }
-   mesglen = (int)strlen (string);
-
-   /* Make sure we start in the correct place. */
-   if (start > mesglen)
-   {
-      return (newstring);
-   }
-
-   /* Create the new string. */
-   newstring = (char *)malloc (sizeof (char) * (width + 3));
-   /*cleanChar (newstring, width + 3, '\0');*/
-
-   if ((start + width) > mesglen)
-   {
-      lastchar = mesglen;
-   }
-   else
-   {
-      lastchar = width + start;
-   }
-
-   for (x=start; x<=lastchar; x++)
-   {
-      newstring[y++] = string[x];
-   }
-   newstring[lastchar + 1] = '\0';
-   newstring[lastchar + 2] = '\0';
-   return (newstring);
-}
-
-/*
  * This frees a string if it is not null. This is a safety
  * measure. Some compilers let you free a null string. I
  * don't like that idea.
@@ -261,13 +215,14 @@ chtype *copyChtype (chtype *original)
 }
 
 /*
- * This reads a file and sticks it into the char ** provided.
+ * This reads a file and sticks it into the char *** provided.
  */
-int readFile (char *filename, char **array, int maxlines)
+int CDKreadFile (char *filename, char ***array)
 {
    FILE *fd;
    char temp[BUFSIZ];
-   int	lines	= 0;
+   unsigned lines = 0;
+   unsigned used = 0;
 
    /* Can we open the file?  */
    if ((fd = fopen (filename, "r")) == 0)
@@ -275,16 +230,12 @@ int readFile (char *filename, char **array, int maxlines)
       return (-1);
    }
 
-   /* Start reading the file in.  */
-   while ((fgets (temp, sizeof(temp), fd) != 0) && lines < maxlines)
+   while ((fgets (temp, sizeof(temp), fd) != 0))
    {
-      array[lines]	= copyChar (temp);
-      lines++;
+      used = CDKallocStrings(array, temp, lines++, used);
    }
    fclose (fd);
 
-   /* Clean up and return.  */
-   array[lines] = "";
    return (lines);
 }
 
@@ -712,47 +663,15 @@ EDisplayType char2DisplayType (char *string)
    return (EDisplayType)vINVALID;
 }
 
-/*
- * This swaps two elements in an array.
- */
-void swapIndex (char *list[], int i, int j)
+static int comparSort (const void *a, const void *b)
 {
-   char *temp;
-   temp = list[i];
-   list[i] = list[j];
-   list[j] = temp;
+   return strcmp(*(const char *const*)a, (* (const char *const*) b));
 }
 
-/*
- * This function is a quick sort alg which sort an array of
- * char *. I wanted to use to stdlib qsort, but couldn't get the
- * thing to work, so I wrote my own. I'll use qsort if I can get
- * it to work.
- */
-void quickSort (char *list[], int left, int right)
+void sortList (char *list[], int length)
 {
-   int i, last;
-
-   /* If there are fewer than 2 elements, return.  */
-   if (left >= right)
-   {
-      return;
-   }
-
-   swapIndex (list, left, (left + right)/2);
-   last = left;
-
-   for (i=left + 1; i <= right; i++)
-   {
-      if (strcmp (list[i], list[left]) < 0)
-      {
-	 swapIndex (list, ++last, i);
-      }
-   }
-
-   swapIndex (list, left, last);
-   quickSort (list, left, last-1);
-   quickSort (list, last + 1, right);
+   if (length > 1)
+      qsort(list, length, sizeof(list[0]), comparSort);
 }
 
 /*
@@ -869,6 +788,28 @@ char **CDKsplitString(char *string, int separator)
       }
    }
    return result;
+}
+
+/*
+ * Add a new string to a list.
+ */
+unsigned CDKallocStrings(char ***list, char *item, unsigned length, unsigned used)
+{
+   unsigned need = 1;
+
+   while (need < length + 2)
+      need *= 2;
+   if (need > used) {
+      used = need;
+      if (*list == 0) {
+	 *list = (char **)malloc(used * sizeof(list[0]));
+      } else {
+	 *list = (char **)realloc(*list, used * sizeof(list[0]));
+      }
+   }
+   (*list)[length++] = copyChar(item);
+   (*list)[length] = 0;
+   return used;
 }
 
 /*
@@ -1004,12 +945,13 @@ int intlen (int value)
 /*
  * This opens the current directory and reads the contents.
  */
-int getDirectoryContents (char *directory, char **list, int maxListSize)
+int CDKgetDirectoryContents (char *directory, char ***list)
 {
    /* Declare local variables.	*/
    struct dirent *dirStruct;
    int counter = 0;
    DIR *dp;
+   unsigned used = 0;
 
    /* Open the directory.  */
    dp = opendir (directory);
@@ -1023,17 +965,14 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
    /* Read the directory.  */
    while ((dirStruct = readdir (dp)) != 0)
    {
-      if (counter <= maxListSize)
-      {
-	 list[counter++] = copyChar (dirStruct->d_name);
-      }
+      used = CDKallocStrings(list, dirStruct->d_name, counter++, used);
    }
 
    /* Close the directory.  */
    closedir (dp);
 
    /* Sort the info.  */
-   quickSort (list, 0, counter-1);
+   sortList (*list, counter);
 
    /* Return the number of files in the directory.  */
    return counter;

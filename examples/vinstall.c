@@ -39,7 +39,7 @@ int main (int argc, char **argv)
    int		quiet		= FALSE;
    int		errors		= 0;
    int		sWindowHeight	= 0;
-   char		*titleMessage[10], *fileList[2000], *mesg[20];
+   char		*titleMessage[10], **fileList = 0, *mesg[20];
    char		oldPath[512], newPath[512], temp[2000];
    char		**files;
    int count, chunks, ret, x;
@@ -88,7 +88,7 @@ int main (int argc, char **argv)
    }
 
    /* Open the file list file and read it in. */
-   count = readFile (filename, fileList, 2000);
+   count = CDKreadFile (filename, &fileList);
    if (count == 0)
    {
       fprintf (stderr, "%s: Input filename <%s> is empty.\n", argv[0], filename);
@@ -185,12 +185,6 @@ int main (int argc, char **argv)
       destroyCDKLabel (titleWin);
       destroyCDKScreen (cdkScreen);
       endCDK();
-
-      /* Clean up the file list information. */
-      for (x=0; x < count; x++)
-      {
-	 freeChar (fileList[x]);
-      }
       exit (-1);
    }
 
@@ -205,12 +199,6 @@ int main (int argc, char **argv)
       destroyCDKLabel (titleWin);
       destroyCDKScreen (cdkScreen);
       endCDK();
-
-      /* Clean up the file list information */
-      for (x=0; x < count; x++)
-      {
-	 freeChar (fileList[x]);
-      }
       exit (-2);
    }
 
@@ -369,12 +357,6 @@ int main (int argc, char **argv)
    destroyCDKSwindow (installOutput);
    destroyCDKScreen (cdkScreen);
    endCDK();
-
-   /* Clean up the file list. */
-   for (x=0; x < count; x++)
-   {
-      freeChar (fileList[x]);
-   }
    exit (0);
 }
 

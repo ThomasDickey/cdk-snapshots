@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/19 01:39:37 $
- * $Revision: 1.38 $
+ * $Date: 2000/06/28 23:59:06 $
+ * $Revision: 1.39 $
  */
 
 /*
@@ -571,10 +571,10 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    CDKVIEWER *viewer	= 0;
    int selected		= -1;
    int lines		= 0;
-   char *info[MAX_LINES];
+   char **info		= 0;
 
    /* Open the file and read the contents. */
-   lines = readFile (filename, info, MAX_LINES);
+   lines = CDKreadFile (filename, &info);
 
    /* If we couldn't read the file, return an error. */
    if (lines == -1)
@@ -594,7 +594,7 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    selected = activateCDKViewer (viewer, 0);
 
    /* Clean up. */
-   freeCharList (info, lines);
+   CDKfreeStrings (info);
 
    /* Make sure they exited normally. */
    if (viewer->exitType != vNORMAL)

@@ -14,7 +14,8 @@ int main (void)
    CDKRADIO *radio	= 0;
    WINDOW *cursesWin	= 0;
    char *title		= "<C></5>Select a filename";
-   char *item[200], *mesg[5], temp[100];
+   char **item		= 0;
+   char *mesg[5], temp[100];
    int selection, count;
 
    /* Set up CDK. */
@@ -25,7 +26,7 @@ int main (void)
    initCDKColor();
 
    /* Use the current diretory list to fill the radio list. */
-   count = getDirectoryContents (".", item, 200);
+   count = CDKgetDirectoryContents (".", &item);
 
    /* Create the radio list. */
    radio = newCDKRadio (cdkscreen, CENTER, CENTER, RIGHT,
@@ -68,7 +69,7 @@ int main (void)
    }
 
    /* Clean up. */
-   freeCharList (item, count);
+   CDKfreeStrings (item);
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);

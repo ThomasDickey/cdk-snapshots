@@ -14,7 +14,8 @@ int main (void)
    CDKSCROLL *scrollList	= 0;
    WINDOW *cursesWin		= 0;
    char *title			= "<C></5>Pick a file";
-   char *item[200], *mesg[5], temp[256];
+   char **item			= 0;
+   char *mesg[5], temp[256];
    int selection, count;
 
    /* Set up CDK. */
@@ -25,7 +26,7 @@ int main (void)
    initCDKColor();
 
    /* Use the current diretory list to fill the radio list. */
-   count = getDirectoryContents (".", item, 200);
+   count = CDKgetDirectoryContents (".", &item);
 
    /* Create the scrolling list. */
    scrollList = newCDKScroll (cdkscreen, CENTER, CENTER, RIGHT,
