@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.60 $
+ * $Date: 2002/07/27 15:01:06 $
+ * $Revision: 1.66 $
  */
 
-DeclareCDKObjects(my_funcs,Histogram);
+DeclareCDKObjects(HISTOGRAM, Histogram, Unknown);
 
 /*
  * This creates a histogram widget.
@@ -19,6 +19,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
+   int borderSize               = 1;
    int xpos			= xplace;
    int ypos			= yplace;
    int oldWidth			= 0;
@@ -73,7 +74,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    boxHeight = (boxHeight > parentHeight ? oldHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Create the histogram pointer. */
    ScreenOf(histogram)		= cdkscreen;
@@ -123,6 +124,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->highString = 0;
    histogram->curString = 0;
    ObjOf(histogram)->box = Box;
+   ObjOf(histogram)->borderSize = borderSize;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -551,10 +553,19 @@ void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (histogram->win, holder[0]);
+   setCDKHistogramBackgroundAttrib (histogram, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
+}
+
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKHistogramBackgroundAttrib (CDKHISTOGRAM *histogram, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (histogram->win, attrib);
 }
 
 /*
@@ -582,7 +593,7 @@ static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(histogram), &xpos, &ypos, histogram->boxWidth, histogram->boxHeight);
+   alignxy (WindowOf(histogram), &xpos, &ypos, histogram->boxWidth, histogram->boxHeight, BorderOf(histogram));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -590,12 +601,7 @@ static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean 
 
    /* Move the window to the new location. */
    moveCursesWindow(histogram->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (histogram->shadowWin != 0)
-   {
-      moveCursesWindow(histogram->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(histogram->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(histogram));
@@ -740,12 +746,10 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 /*
  * This function destroys the histogram.
  */
-void destroyCDKHistogram (CDKHISTOGRAM *histogram)
+static void _destroyCDKHistogram (CDKOBJS *object)
 {
+   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
    int x;
-
-   /* Erase the object. */
-   eraseCDKHistogram (histogram);
 
    /* Clean up the char pointers. */
    freeChar (histogram->curString);
@@ -762,9 +766,6 @@ void destroyCDKHistogram (CDKHISTOGRAM *histogram)
 
    /* Unregister this object. */
    unregisterCDKObject (vHISTOGRAM, histogram);
-
-   /* Finish cleaning up. */
-   free (histogram);
 }
 
 /*
@@ -772,8 +773,36 @@ void destroyCDKHistogram (CDKHISTOGRAM *histogram)
  */
 static void _eraseCDKHistogram (CDKOBJS *object)
 {
-   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
+   if (validCDKObject (object))
+   {
+      CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
 
-   eraseCursesWindow (histogram->win);
-   eraseCursesWindow (histogram->shadowWin);
+      eraseCursesWindow (histogram->win);
+      eraseCursesWindow (histogram->shadowWin);
+   }
+}
+
+static int _injectCDKHistogram(CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
+{
+   return 0;
+}
+
+static void _focusCDKHistogram(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKHistogram(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKHistogram(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKHistogram(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

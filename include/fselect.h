@@ -1,5 +1,5 @@
 /*
- * $Id: fselect.h,v 1.14 2002/04/30 21:59:59 tom Exp $
+ * $Id: fselect.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -115,9 +115,7 @@ char *activateCDKFselect (
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKFselect (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* input */);
+#define injectCDKFselect(obj,input) injectCDKObject(obj,input,String)
 
 /*
  * This sets various attributes of the file selector.
@@ -261,6 +259,13 @@ void setCDKFselectBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKFselectBackgroundAttrib (
+		CDKFSELECT *	/* fselect */,
+		chtype		/* attribute */);
+
+/*
  * This draws the widget.
  */
 #define drawCDKFselect(obj,Box) drawCDKObject(obj,Box)
@@ -283,8 +288,7 @@ void setCDKFselectBackgroundColor (
 /*
  * This destroys the widget and all the associated memory.
  */
-void destroyCDKFselect (
-		CDKFSELECT *	/* fselect */);
+#define destroyCDKFselect(obj) destroyCDKObject(obj)
 
 /*
  * This is a callback which allows you to delete files from within the

@@ -7,6 +7,126 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2002/07/27 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
+	+ several changes to make destroyCDKScreenObjects() and
+	  destroyCDKScreen() actually work (needed for perlcdk):
+	  + record all objects and screens created/destroyed, in cdkscreen.c
+	  + reimplement destroyCDKObject() by a function _destroyCDKObject(),
+	    which first does an erase for the given object, then calls the
+	    destroy method, and finally frees the object.
+	  + add a check in each erase-method to ensure that the object is still
+	    valid.
+	+ add check in setCDKGraphValues() to ensure that X and Y scales are
+	  nonzero, since they are used as denominators.  This makes perlcdk's
+	  graph example work.
+	+ add configure check for curses feature which would allow one to move
+	  a subwindow, or (in the case of NetBSD curses) at least compile.
+	+ add configure check and fallback for addchnstr() to accommodate
+	  NetBSD's partial implementation of curses.
+	+ move version information to VERSION file.
+	+ add --with-libtool configure option
+	+ make most wgetch() calls use the object's inputWindow via the
+	  getcCDKObject() function.
+	+ improve type-checking and array-limits in cdkscreen.c
+	+ remove cdktype member from CDKSCREEN since it is redundant.
+	+ eliminate several fixed-buffers with new function writeBlanks().
+	+ interpret home/end keys in entry widget.
+	+ warn about special keys such as insert which are not recognized in
+	  alphalist, entry, matrix, mentry, template (it was using the low 8
+	  bits of those, inserting that).
+	+ rewrote/simplified dirName().
+	+ rewrote/simplified baseName().
+	+ eliminate fixed-size buffers in fselect.c
+	+ correct a couple of places where fselect.c freed constant memory.
+	+ correct an unterminated string in fselect.c tilde-expansion, and use
+	  $HOME if no account name is given.
+	+ simplified several functions using mvhline(), mvvline() and
+	  mvaddchnstr().
+	+ add vFSCALE as a valid object type in cdkscreen.c
+	+ modify moveCursesWindow(), which did not work with ncurses after
+	  2000/9/15 changes to use mvwin() in preference to directly modifying
+	  the _begx/_begy members of WINDOW.  That made position_ex not work.
+	  The change was originally for NetBSD's curses implementation which
+	  does not move derived windows properly anyway.
+	+ simplify calls to moveCursesWindow() by moving null-pointer check
+	  inside that function.
+	+ change tab-expansion in char2Chtype() to expand based on the current
+	  length of the string rather than always to 8 columns.
+	+ correct limit-checks in stripWhiteSpace()
+	+ interpret back-tab in buttonbox.c and dialog.c inject-methods for
+	  symmetry with tab.
+	+ corrected return-values of button, matrix, scale widgets to match
+	  documentation as well as to conform with other widgets.
+	+ reorganized inject methods (which may return data of different types)
+	  to return the actual data in an area of the widget, and defined macros
+	  to preserve source-compatibility.
+	+ rewrote initCDKColor() to check if color is available before trying
+	  to initialize it, and to use the terminal's actual number of colors
+	  in making color pairs.
+	+ use 2-digit fields in bind_ex.c for time, date.
+	+ modify matrix.c to add borderSize before the column titles, to
+	  match the change to box layout.
+	+ modify matrix_ex.c to consistently center row-titles.  Some were
+	  centered, some were right- and some left-justified.  The change to
+	  justifyString() produced an odd effect.
+	+ add functions
+		CDKVersion()
+		chtype2String().
+
+	> patches by Tim Moloney:
+	+ added a setCDKxxxBackgroundAttrib() function to all the widgets.
+	  This function takes a chtype.  The setCDKxxxBackgroundColor() still
+	  exists and converts from a character string to a chtype, but it now
+	  calls the new function to eliminate duplicate code.
+	+ fix minor bugs in marquee_ex and radio1_ex.
+	+ fix an off-by-one error in the dialog widget when it is not drawing
+	  its box.  The buttons were displayed one line too high.
+	+ add object type to each widget.
+	+ correct _drawCDKEntry(), which did not account for whether a box was
+	  used when computing layout.
+	+ change moveCDKButton() from a function to a macro using
+	  moveCDKObject().
+	+ add functions
+		popupLabelAttrib()
+		setCDKButtonboxButtonAttrib()
+		setCDKEntryHighlight()
+
+	> integrated/adapted changes by Grant Edwards:
+	+ make the destroy function in each widget a method in CDKOBJS.
+	+ make the inject function in each widget a method in CDKOBJS.
+	  (this was incomplete, and did not provide for different return-types)
+	+ add focus, unfocus, refreshData, saveData methods and supporting
+	  data to CDKOBJS (not all widgets implement these methods).  See
+	  entry.c, itemlist.c, selection.c for example.
+	+ store a borderSize value in CDKOBJS for each widget, which is used to
+	  reserve space for a box/border around each widget if the Box
+	  parameter is true when creating the widget.  Several related changes
+	  also made, including modifying the alignxy() interface to add
+	  a borderSize parameter.
+	+ modify justifyString() to not subtract 1 on each side, since that
+	  is generally assumed to be done to compensate for boxes drawn around
+	  the text.
+	+ change drawCDKItemlistField() to add a highlight parameter.
+	+ change the label window to a subwin() in entry.c
+	+ hide cursor while in popupLabel() function.
+	+ simplified scroll.c, a little.
+	+ add files
+		button.c
+		examples/radio1_ex.c
+		examples/traverse_ex.c
+	+ added functions:
+		destroyCDKScreenObjects()
+		getCDKSelectionCurrent()
+		setCDKSelectionCurrent()
+		getCDKScrollCurrent()
+		setCDKScrollCurrent()
+		destroyCDKScreenObjects()
+		cmpStrChstr()
+		chstrncpy()
+	+ removed these functions:
+		setCDKEntryBox()
+
 2002/04/30 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
 	+ correct parsing of <I=xx> in char2Chtype() where "xx" contains digits
@@ -101,6 +221,7 @@ were fixed from release to release.
 	+ modified cli programs to work with CDKreadFile(), CDKsplitString()
 	  and CDKcountStrings() since readFile() and splitString() are not
 	  provided in this version.
+
 	> reviewed/integrated changes from Mike Glover's 4.9.10 (August 2000):
 	+ add examples/raiseCDKObject_ex.c, examples/lowerCDKObject_ex.c
 	+ add cli subdirectory
@@ -309,7 +430,7 @@ were fixed from release to release.
 	  the corner characters of the widget as well as the vertical,
 	  horizontal, and attributes of the box.
 	* Added the function setCDKXXXBackgroundColor. This sets the
- 	  background color of the widget's window.
+	  background color of the widget's window.
 	* Added makefile for the SGI
 	* Created the buttonbox widget.
 	* Added in Ctrl-N and Ctrl-P to switch between buttons on the
@@ -410,7 +531,7 @@ were fixed from release to release.
 	* Fixed a bug with addCDKScrollItem.
 	* Fixed segmentation fault in the rolodex demo.
 	* Changed the macros MAX, MIN, and DIFF to MAXIMUM, MINIMUM,
- 	  and DIFFERENCE respectively to avoid conflicts.
+	  and DIFFERENCE respectively to avoid conflicts.
 	* Fixed errors with the alphalist and fselect widgets.
 	* Added the link format comand for the file viewer. This allows
 	  users to 'hyper-link' text files.
@@ -464,7 +585,7 @@ were fixed from release to release.
 
 If you want to get a hold of me mail me at one of the following:
         glover@credit.erin.utoronto.ca
-    	mike@vexus.ca
+	mike@vexus.ca
 
 The CDK Web page has several homes. They are:
         http://www.vexus.ca/CDK.html (official)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.42 $
+ * $Date: 2002/07/27 14:59:08 $
+ * $Revision: 1.49 $
  */
 
 /*
@@ -30,7 +30,7 @@ static void incrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void decrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void drawCDKCalendarField (CDKCALENDAR *calendar);
 
-DeclareCDKObjects(my_funcs,Calendar);
+DeclareCDKObjects(CALENDAR, Calendar, Int);
 
 /*
  * This creates a calendar widget.
@@ -94,7 +94,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, 1);
 
    /* Create the calendar window. */
    calendar->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -141,6 +141,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    calendar->BoxAttrib			= A_NORMAL;
    calendar->exitType			= vNEVER_ACTIVATED;
    ObjOf(calendar)->box			= Box;
+   ObjOf(calendar)->inputWindow  	= calendar->win;
    calendar->shadow			= shadow;
    calendar->preProcessFunction		= 0;
    calendar->preProcessData		= 0;
@@ -210,7 +211,7 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
       for (;;)
       {
 	 /* Get the input. */
-	 input = wgetch (calendar->win);
+	 input = getcCDKObject (ObjOf(calendar));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKCalendar (calendar, input);
@@ -241,10 +242,13 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
 /*
  * This injects a single character into the widget.
  */
-time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
+static int _injectCDKCalendar (CDKOBJS *object, chtype input)
 {
+   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    /* Declare local variables. */
    int ppReturn = 1;
+   int ret = unknownInt;
+   bool complete = FALSE;
 
    /* Set the exit type. */
    calendar->exitType = vEARLY_EXIT;
@@ -266,7 +270,7 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
       if (checkCDKObjectBind (vCALENDAR, calendar, input) != 0)
       {
 	 calendar->exitType = vESCAPE_HIT;
-	 return -1;
+	 complete = TRUE;
       }
       else
       {
@@ -318,11 +322,14 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
 
 	    case KEY_ESC :
 		 calendar->exitType = vESCAPE_HIT;
-		 return (time_t)-1;
+		 complete = TRUE;
+		 break;
 
 	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
 		 calendar->exitType = vNORMAL;
-		 return getCurrentTime (calendar);
+		 ret = getCurrentTime (calendar);
+		 complete = TRUE;
+		 break;
 
 	    case CDK_REFRESH :
 		 eraseCDKScreen (ScreenOf(calendar));
@@ -332,15 +339,17 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (calendar->postProcessFunction != 0)
+      if (!complete && (calendar->postProcessFunction != 0))
       {
 	 calendar->postProcessFunction (vCALENDAR, calendar, calendar->postProcessData, input);
       }
    }
 
-   /* Set the exit type then exit. */
-   calendar->exitType = vEARLY_EXIT;
-   return -1;
+   if (!complete) {
+      calendar->exitType = vEARLY_EXIT;
+   }
+   ResultOf(calendar).valueInt = ret;
+   return (ret != unknownInt);
 }
 
 /*
@@ -368,7 +377,7 @@ static void _moveCDKCalendar (CDKOBJS *object, int xplace, int yplace, boolean r
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(calendar), &xpos, &ypos, calendar->boxWidth, calendar->boxHeight);
+   alignxy (WindowOf(calendar), &xpos, &ypos, calendar->boxWidth, calendar->boxHeight, 1);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -377,16 +386,8 @@ static void _moveCDKCalendar (CDKOBJS *object, int xplace, int yplace, boolean r
    /* Move the window to the new location. */
    moveCursesWindow(calendar->win, -xdiff, -ydiff);
    moveCursesWindow(calendar->fieldWin, -xdiff, -ydiff);
-   if (calendar->labelWin != 0)
-   {
-      moveCursesWindow(calendar->labelWin, -xdiff, -ydiff);
-   }
-
-   /* If there is a shadow box we have to move it too. */
-   if (calendar->shadowWin != 0)
-   {
-      moveCursesWindow(calendar->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(calendar->labelWin, -xdiff, -ydiff);
+   moveCursesWindow(calendar->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(calendar));
@@ -713,15 +714,24 @@ void setCDKCalendarBackgroundColor (CDKCALENDAR *calendar, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (calendar->win, holder[0]);
-   wbkgd (calendar->fieldWin, holder[0]);
-   if (calendar->labelWin != 0)
-   {
-      wbkgd (calendar->labelWin, holder[0]);
-   }
+   setCDKCalendarBackgroundAttrib (calendar, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
+}
+
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKCalendarBackgroundAttrib (CDKCALENDAR *calendar, chtype attrib)
+{
+   /* Set the widgets background attrib. */
+   wbkgd (calendar->win, attrib);
+   wbkgd (calendar->fieldWin, attrib);
+   if (calendar->labelWin != 0)
+   {
+      wbkgd (calendar->labelWin, attrib);
+   }
 }
 
 /*
@@ -729,22 +739,24 @@ void setCDKCalendarBackgroundColor (CDKCALENDAR *calendar, char *color)
  */
 static void _eraseCDKCalendar (CDKOBJS *object)
 {
-   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
-   eraseCursesWindow (calendar->labelWin);
-   eraseCursesWindow (calendar->fieldWin);
-   eraseCursesWindow (calendar->win);
-   eraseCursesWindow (calendar->shadowWin);
+   if (validCDKObject (object))
+   {
+      CDKCALENDAR *calendar = (CDKCALENDAR *)object;
+
+      eraseCursesWindow (calendar->labelWin);
+      eraseCursesWindow (calendar->fieldWin);
+      eraseCursesWindow (calendar->win);
+      eraseCursesWindow (calendar->shadowWin);
+   }
 }
 
 /*
  * This destroys the calendar object pointer.
  */
-void destroyCDKCalendar (CDKCALENDAR *calendar)
+static void _destroyCDKCalendar (CDKOBJS *object)
 {
+   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    int x;
-
-   /* Erase the old calendar. */
-   eraseCDKCalendar (calendar);
 
    /* Free up the character pointers. */
    for (x=0; x < calendar->titleLines; x++)
@@ -760,9 +772,6 @@ void destroyCDKCalendar (CDKCALENDAR *calendar)
 
    /* Unregister the object. */
    unregisterCDKObject (vCALENDAR, calendar);
-
-   /* Free the object pointer. */
-   free (calendar);
 }
 
 /*
@@ -1120,4 +1129,24 @@ static time_t getCurrentTime (CDKCALENDAR *calendar)
 
    /* Call the mktime function to fill in the holes. */
    return mktime (&Date);
+}
+
+static void _focusCDKCalendar(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKCalendar(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKCalendar(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKCalendar(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

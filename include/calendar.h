@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.16 2002/04/30 22:02:21 tom Exp $
+ * $Id: calendar.h,v 1.19 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -136,9 +136,7 @@ time_t activateCDKCalendar (
 /*
  * This injects a single character into the widget.
  */
-time_t injectCDKCalendar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* input */);
+#define injectCDKCalendar(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets multiple attributes of the widget.
@@ -258,6 +256,13 @@ void setCDKCalendarBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKCalendarBackgroundAttrib (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* attribute */);
+
+/*
  * This sets a marker on the calendar.
  */
 void setCDKCalendarMarker (
@@ -299,8 +304,7 @@ void removeCDKCalendarMarker (
 /*
  * This destroys the calendar widget and all associated memory.
  */
-void destroyCDKCalendar (
-		CDKCALENDAR *	/* calendar */);
+#define destroyCDKCalendar(obj) destroyCDKObject(obj)
 
 /*
  * This sets the pre and post process functions.

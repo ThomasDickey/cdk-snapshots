@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.3 2000/09/23 15:07:32 tom Exp $ */
+/* $Id: cdklabel.c,v 1.4 2002/07/16 19:37:37 tom Exp $ */
 
 #include <cdk.h>
 
@@ -225,7 +225,8 @@ int main (int argc, char **argv)
    /* If they supplied a command, run it. */
    if (command != 0)
    {
-      sprintf (tempCommand, "(sh -c %s) >/dev/null 2>&1", command);
+      char *fmt = "(sh -c %.*s) >/dev/null 2>&1";
+      sprintf (tempCommand, fmt, (int)(sizeof(tempCommand) - strlen(fmt)), command);
       system (tempCommand);
    }
 

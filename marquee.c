@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.52 $
+ * $Date: 2002/07/27 15:33:41 $
+ * $Revision: 1.58 $
  */
 
-DeclareCDKObjects(my_funcs,Marquee);
+DeclareCDKObjects(MARQUEE, Marquee, Unknown);
 
 /*
  * This creates a marquee widget.
@@ -19,6 +19,7 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    int ypos		= yplace;
    int boxHeight	= 3;
    int boxWidth		= width;
+   int borderSize       = 1;
 
   /*
    * If the width is a negative value, the width will
@@ -28,11 +29,12 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Create the marquee pointer. */
    ScreenOf(marquee)	= cdkscreen;
    ObjOf(marquee)->box	= Box;
+   ObjOf(marquee)->borderSize = borderSize;
    marquee->parent	= cdkscreen->window;
    marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    marquee->boxHeight	= boxHeight;
@@ -234,7 +236,7 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight);
+   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight, BorderOf(marquee));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -242,12 +244,7 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
 
    /* Move the window to the new location. */
    moveCursesWindow(marquee->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (marquee->shadowWin != 0)
-   {
-      moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(marquee));
@@ -294,10 +291,9 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
 /*
  * This destroys the marquee.
  */
-void destroyCDKMarquee (CDKMARQUEE *marquee)
+static void _destroyCDKMarquee (CDKOBJS *object)
 {
-   /* Erase the object. */
-   eraseCDKMarquee (marquee);
+   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
 
    /* Clean up the windows. */
    deleteCursesWindow (marquee->shadowWin);
@@ -305,9 +301,6 @@ void destroyCDKMarquee (CDKMARQUEE *marquee)
 
    /* Unregister this object. */
    unregisterCDKObject (vMARQUEE, marquee);
-
-   /* Finish cleaning up. */
-   free (marquee);
 }
 
 /*
@@ -315,10 +308,13 @@ void destroyCDKMarquee (CDKMARQUEE *marquee)
  */
 static void _eraseCDKMarquee (CDKOBJS *object)
 {
-   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+   if (validCDKObject (object))
+   {
+      CDKMARQUEE *marquee = (CDKMARQUEE *)object;
 
-   eraseCursesWindow (marquee->win);
-   eraseCursesWindow (marquee->shadowWin);
+      eraseCursesWindow (marquee->win);
+      eraseCursesWindow (marquee->shadowWin);
+   }
 }
 
 /*
@@ -371,9 +367,42 @@ void setCDKMarqueeBackgroundColor (CDKMARQUEE *marquee, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (marquee->win, holder[0]);
+   setCDKMarqueeBackgroundAttrib (marquee, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
 }
 
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKMarqueeBackgroundAttrib (CDKMARQUEE *marquee, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (marquee->win, attrib);
+}
+
+static int _injectCDKMarquee(CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
+{
+   return 0;
+}
+
+static void _focusCDKMarquee(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKMarquee(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKMarquee(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKMarquee(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}

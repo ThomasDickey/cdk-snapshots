@@ -1,5 +1,5 @@
 /*
- * $Id: mentry.h,v 1.12 2002/04/30 22:02:21 tom Exp $
+ * $Id: mentry.h,v 1.16 2002/07/27 16:37:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -55,6 +55,9 @@ extern "C" {
 /*
  * Define the CDK multiple line entry field widget.
  */
+typedef struct SMentry CDKMENTRY;
+typedef void (*MENTRYCB) (CDKMENTRY *mentry, chtype character);
+
 struct SMentry {
    CDKOBJS	obj;
    WINDOW *	parent;
@@ -94,14 +97,12 @@ struct SMentry {
    chtype	BoxAttrib;
    chtype	filler;
    chtype	hidden;
-   void *	callbackfn;
+   MENTRYCB	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
    void *	postProcessData;
 };
-typedef struct SMentry CDKMENTRY;
-typedef void (*MENTRYCB) (CDKMENTRY *mentry, chtype character);
 
 /*
  * This creates a new CDK mentry field pointer.
@@ -132,9 +133,7 @@ char *activateCDKMentry (
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKMentry (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* input */);
+#define injectCDKMentry(obj,input) injectCDKObject(obj,input,String)
 
 /*
  * These set specific attributes of the widget.
@@ -234,6 +233,13 @@ void setCDKMentryBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKMentryBackgroundAttrib (
+		CDKMENTRY *	/* mentry */,
+		chtype		/* attribute */);
+
+/*
  * This draws the widget on the screen.
  */
 #define drawCDKMentry(obj,Box) drawCDKObject(obj,Box)
@@ -262,8 +268,7 @@ void cleanCDKMentry (
 /*
  * This destroys the widget pointer.
  */
-void destroyCDKMentry (
-		CDKMENTRY *	/* mentry */);
+#define destroyCDKMentry(obj) destroyCDKObject(obj)
 
 /*
  * This draws the field of the widget.

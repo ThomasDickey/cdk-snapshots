@@ -1,5 +1,5 @@
 /*
- * $Id: template.h,v 1.13 2002/04/30 21:58:50 tom Exp $
+ * $Id: template.h,v 1.17 2002/07/27 16:39:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -55,6 +55,9 @@ extern "C" {
 /*
  * Define the CDK cdktemplate widget structure.
  */
+typedef struct STemplate CDKTEMPLATE;
+typedef void (*TEMPLATECB) (CDKTEMPLATE *cdktemplate, chtype input);
+
 struct STemplate {
    CDKOBJS	obj;
    WINDOW *	parent;
@@ -94,14 +97,12 @@ struct STemplate {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   void *	callbackfn;
+   TEMPLATECB	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
    void *	postProcessData;
 };
-typedef struct STemplate CDKTEMPLATE;
-typedef void (*TEMPLATECB) (CDKTEMPLATE *cdktemplate, chtype input);
 
 /*
  * This creates a pointer to a new CDK cdktemplate widget.
@@ -127,9 +128,7 @@ char *activateCDKTemplate (
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKTemplate (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* input */);
+#define injectCDKTemplate(obj,input) injectCDKObject(obj,input,String)
 
 /*
  * This sets various attributes of the widget.
@@ -208,6 +207,13 @@ void setCDKTemplateBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKTemplateBackgroundAttrib (
+		CDKTEMPLATE *	/* template */,
+		chtype		/* attribute */);
+
+/*
  * This draws the cdktemplate on the screen.
  */
 #define drawCDKTemplate(obj,Box) drawCDKObject(obj,Box)
@@ -236,8 +242,7 @@ void cleanCDKTemplate (
 /*
  * This destroys the widget and all associated memory.
  */
-void destroyCDKTemplate (
-		CDKTEMPLATE *	/* cdktemplate */);
+#define destroyCDKTemplate(obj) destroyCDKObject(obj)
 
 /*
  * This sets the main callback function.

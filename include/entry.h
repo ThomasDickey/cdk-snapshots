@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.13 2002/04/30 21:46:25 tom Exp $
+ * $Id: entry.h,v 1.18 2002/07/27 16:34:02 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -55,6 +55,9 @@ extern "C" {
 /*
  * Define the CDK entry widget structure.
  */
+typedef struct SEntry CDKENTRY;
+typedef void (*ENTRYCB) (struct SEntry *entry, chtype character);
+
 struct SEntry {
    CDKOBJS	obj;
    WINDOW *	parent;
@@ -91,14 +94,12 @@ struct SEntry {
    chtype	VChar;
    chtype	HChar;
    chtype	BoxAttrib;
-   void *	callbackfn;
+   ENTRYCB	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
    void *	postProcessData;
 };
-typedef struct SEntry CDKENTRY;
-typedef void (*ENTRYCB) (CDKENTRY *entry, chtype character);
 
 /*
  * This creates a pointer to a new CDK entry widget.
@@ -128,9 +129,7 @@ char *activateCDKEntry (
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKEntry (
-		CDKENTRY *	/* entry */,
-		chtype		/* input */);
+#define injectCDKEntry(obj,input) injectCDKObject(obj,input,String)
 
 /*
  * This sets various attributes of the entry field.
@@ -231,6 +230,21 @@ void setCDKEntryBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKEntryBackgroundAttrib (
+		CDKENTRY *	/* entry */,
+		chtype		/* attribute */);
+
+/*
+ * This sets the attribute of the entry field.
+ */
+void setCDKEntryHighlight (
+		CDKENTRY *	/* entry */,
+		chtype		/* highlight */,
+		boolean		/* cursor */);
+
+/*
  * This draws the entry field.
  */
 #define drawCDKEntry(obj,box) drawCDKObject(obj,box)
@@ -259,8 +273,7 @@ void cleanCDKEntry (
 /*
  * This destroys the widget and all the memory associated with the widget.
  */
-void destroyCDKEntry (
-		CDKENTRY *	/* entry */);
+#define destroyCDKEntry(obj) destroyCDKObject(obj)
 
 /*
  * This sets the callback to the entry fields main handler

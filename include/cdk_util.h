@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.16 2002/04/30 21:43:48 tom Exp $
+ * $Id: cdk_util.h,v 1.20 2002/07/14 22:09:15 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,6 +19,7 @@ extern "C" {
 #endif
 
 /*
+ * Copyright 1999-2001,2002, Thomas Dickey
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -67,7 +68,8 @@ void alignxy (
 		int *		/* xpos */,
 		int *		/* ypos */,
 		int		/* boxWidth */,
-		int		/* boxHeight */);
+		int		/* boxHeight */,
+		int		/* borderSize */);
 
 /*
  * This takes a string, a field width and a justification type and returns the
@@ -85,6 +87,15 @@ void popupLabel (
 		CDKSCREEN *	/* win */,
 		char **		/* mesg */,
 		int		/* count */);
+
+/*
+ * This is a quick little popup label widget.
+ */
+void popupLabelAttrib (
+		CDKSCREEN *	/* win */,
+		char **		/* mesg */,
+		int		/* count */,
+		chtype		/* attribute */);
 
 /*
  * This is a quick little popup dialog box.
@@ -263,6 +274,13 @@ char *chtype2Char (
 		chtype *	/* string */);
 
 /*
+ * This takes a chtype pointer and returns a char pointer with embedded
+ * formatting information.
+ */
+char *chtype2String (
+		chtype *	/* string */);
+
+/*
  * This takes a char pointer and returns a chtype pointer.
  */
 chtype *char2Chtype (
@@ -270,6 +288,20 @@ chtype *char2Chtype (
 		int *		/* length */,
 		int *		/* align */);
 
+/*
+ * Compare a char string to a chtype string
+ */
+int cmpStrChstr(char *		/* str */,
+	        chtype *	/* chstr */);
+
+/* 
+ * Copy from a chtype string to a char string
+ */
+
+void chstrncpy(char *		/* dest */,
+		chtype *	/* src */,
+		int		/* maxcount */);
+  
 /*
  * This takes a character pointer and returns the equivalent
  * display type.

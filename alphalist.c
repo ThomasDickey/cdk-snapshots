@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:25:27 $
- * $Revision: 1.56 $
+ * $Date: 2002/07/27 12:27:22 $
+ * $Revision: 1.64 $
  */
  
 /*
@@ -13,7 +13,7 @@ static BINDFN_PROTO(adjustAlphalistCB);
 static BINDFN_PROTO(completeWordCB);
 static int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, chtype input);
 
-DeclareCDKObjects(my_funcs,Alphalist);
+DeclareCDKObjects(ALPHALIST, Alphalist, String);
 
 /*
  * This creates the alphalist widget.
@@ -27,9 +27,11 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
+   int borderSize               = Box ? 1 : 0;
    int xpos			= xplace;
    int ypos			= yplace;
    int entryWidth		= 0;
+   int entryHeight		= 0;
    int labelLen			= 0;
    int x, junk2;
 
@@ -55,7 +57,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Make the file selector window. */
    alphalist->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -75,6 +77,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->boxWidth		= boxWidth;
    alphalist->exitType		= vNEVER_ACTIVATED;
    ObjOf(alphalist)->box	= Box;
+   ObjOf(alphalist)->borderSize = borderSize;
    alphalist->shadow		= shadow;
    alphalist->shadowWin		= 0;
 
@@ -95,10 +98,10 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->listSize = listSize;
 
    /* Create the entry field. */
-   entryWidth = boxWidth - (labelLen + 4);
+   entryWidth = boxWidth - (labelLen + 2 + 2*borderSize);
    alphalist->entryField = newCDKEntry (cdkscreen,
-					getbegx(alphalist->win) + 1,
-					getbegy(alphalist->win) + 1,
+					getbegx(alphalist->win) + borderSize,
+					getbegy(alphalist->win) + borderSize,
 					title, label,
 					A_NORMAL, fillerChar, 
 					vMIXED, entryWidth, 0, 512,
@@ -119,12 +122,13 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    setCDKEntryPreProcess (alphalist->entryField, preProcessEntryField, alphalist);
 
    /* Create the scrolling list. */
+   entryHeight = getmaxy(alphalist->entryField->win);
    alphalist->scrollField = newCDKScroll (cdkscreen, 
-					  getbegx(alphalist->win) + 1,
-					  getbegy(alphalist->win) + (alphalist->entryField)->titleLines + 3,
+					  getbegx(alphalist->win) + borderSize,
+					  getbegy(alphalist->entryField->win) + entryHeight + borderSize,
 					  RIGHT,
-					  boxHeight-((alphalist->entryField)->titleLines + 3),
-					  boxWidth-3,
+					  boxHeight - entryHeight - (borderSize*2),
+					  boxWidth - (1+2*borderSize),
 					  0, list, listSize,
 					  NONUMBERS, A_REVERSE,
 					  Box, FALSE);
@@ -141,15 +145,18 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 /*
  * This erases the file selector from the screen.
  */
-static void _eraseCDKAlphalist (CDKOBJS *obj)
+static void _eraseCDKAlphalist (CDKOBJS *object)
 {
-   CDKALPHALIST *alphalist = (CDKALPHALIST *)obj;
+   if (validCDKObject (object))
+   {
+      CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
 
-   eraseCDKScroll (alphalist->scrollField);
-   eraseCDKEntry (alphalist->entryField);
+      eraseCDKScroll (alphalist->scrollField);
+      eraseCDKEntry (alphalist->entryField);
 
-   eraseCursesWindow (alphalist->shadowWin);
-   eraseCursesWindow (alphalist->win);
+      eraseCursesWindow (alphalist->shadowWin);
+      eraseCursesWindow (alphalist->win);
+   }
 }
 
 /*
@@ -178,7 +185,7 @@ static void _moveCDKAlphalist (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(alphalist), &xpos, &ypos, alphalist->boxWidth, alphalist->boxHeight);
+   alignxy (WindowOf(alphalist), &xpos, &ypos, alphalist->boxWidth, alphalist->boxHeight, BorderOf(alphalist));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -186,12 +193,7 @@ static void _moveCDKAlphalist (CDKOBJS *object, int xplace, int yplace, boolean 
 
    /* Move the window to the new location. */
    moveCursesWindow(alphalist->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (alphalist->shadowWin != 0)
-   {
-      moveCursesWindow(alphalist->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(alphalist->shadowWin, -xdiff, -ydiff);
 
    /* Move the sub-widgets. */
    moveCDKEntry (alphalist->entryField, xplace, yplace, relative, FALSE);
@@ -255,9 +257,10 @@ char *activateCDKAlphalist (CDKALPHALIST *alphalist, chtype *actions)
 /*
  * This injects a single character into the alphalist.
  */
-char *injectCDKAlphalist (CDKALPHALIST *alphalist, chtype input)
+static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
 {
-   char *ret = 0;
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+   char *ret = unknownString;
 
    /* Draw the widget. */
    drawCDKAlphalist (alphalist, ObjOf(alphalist)->box);
@@ -269,11 +272,31 @@ char *injectCDKAlphalist (CDKALPHALIST *alphalist, chtype input)
    alphalist->exitType = alphalist->entryField->exitType;
 
    /* Determine the exit status. */
-   if (alphalist->exitType != vEARLY_EXIT)
-   {
-      return ret;
-   }
-   return 0;
+   if (alphalist->exitType == vEARLY_EXIT)
+      ret = unknownString;
+
+   ResultOf(alphalist).valueString = ret;
+   return (ret != unknownString);
+}
+
+static void _focusCDKAlphalist(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }
 
 /*
@@ -418,12 +441,20 @@ void setCDKAlphalistBackgroundColor (CDKALPHALIST *alphalist, char *color)
 }
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKAlphalistBackgroundAttrib (CDKALPHALIST *alphalist, chtype attrib)
+{
+   setCDKEntryBackgroundAttrib (alphalist->entryField, attrib);
+   setCDKScrollBackgroundAttrib (alphalist->scrollField, attrib);
+}
+
+/*
  * This destroys the file selector.	
  */
-void destroyCDKAlphalist (CDKALPHALIST *alphalist)
+static void _destroyCDKAlphalist (CDKOBJS *object)
 {
-   /* Erase the file selector. */
-   eraseCDKAlphalist (alphalist);
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
 
    freeCharList (alphalist->list, alphalist->listSize);
 
@@ -437,9 +468,6 @@ void destroyCDKAlphalist (CDKALPHALIST *alphalist)
 
    /* Unregister the object. */
    unregisterCDKObject (vALPHALIST, alphalist);
-
-   /* Free up the object pointer. */
-   free (alphalist);
 }
 
 /*
@@ -504,8 +532,10 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GC
    }
 
    /* Check the input. */
-   if (isalnum (input) || ispunct (input) ||
-	input == DELETE || input == CONTROL('H') || input == KEY_DC)
+   if ((input < KEY_MIN && (isalnum (input) || ispunct (input)))
+    || input == DELETE
+    || input == CONTROL('H')
+    || input == KEY_DC)
    {
       /* Copy the information from the entry field. */
       strcpy (pattern, entry->info);

@@ -2,12 +2,17 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.3 $
+ * $Date: 2002/07/17 22:50:21 $
+ * $Revision: 1.4 $
  */
 
 #undef	ObjOf
 #define ObjOf(ptr)    (ptr)
+
+int getcCDKObject (CDKOBJS *obj)
+{
+   return wgetch(InputWindowOf(obj));
+}
 
 /*
  * This allows the user to use the cursor keys to adjust the
@@ -22,7 +27,7 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
    /* Let them move the widget around until they hit return. */
    while ((key != KEY_RETURN) && (key != KEY_ENTER))
    {
-      key = wgetch (win);
+      key = getcCDKObject(obj);
       if (key == KEY_UP || key == '8')
       {
 	 if (getbegy(win) > 0)

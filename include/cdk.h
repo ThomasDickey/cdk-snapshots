@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.17 2002/04/30 19:54:48 tom Exp $
+ * $Id: cdk.h,v 1.20 2002/07/20 00:20:56 tom Exp $
  */
 
 #ifndef CDK_H
@@ -43,6 +43,7 @@ extern "C" {
  */
 
 #include <cdk_config.h>
+#include <cdk_version.h>
 
 #ifdef	CDK_PERL_EXT
 #undef	instr
@@ -69,12 +70,12 @@ extern "C" {
 #include <pwd.h>
 #include <grp.h>
 
-#if HAVE_LIMITS_H
+#ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
 
-#if HAVE_GETOPT_HEADER
-#if HAVE_GETOPT_H
+#ifdef HAVE_GETOPT_HEADER
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif
 #else
@@ -112,14 +113,14 @@ extern char * optarg;
 #define GCC_UNUSED /*nothing*/
 #endif
 
-#if HAVE_LIBDMALLOC
+#ifdef HAVE_LIBDMALLOC
 #include <dmalloc.h>    /* Gray Watson's library */
 #else
 #undef  HAVE_LIBDMALLOC
 #define HAVE_LIBDMALLOC 0
 #endif
 
-#if HAVE_LIBDBMALLOC
+#ifdef HAVE_LIBDBMALLOC
 #include <dbmalloc.h>   /* Conor Cahill's library */
 #else
 #undef  HAVE_LIBDBMALLOC
@@ -131,6 +132,7 @@ extern char * optarg;
  */
 typedef enum {	vNULL = 0
 		,vALPHALIST
+		,vBUTTON
 		,vBUTTONBOX
 		,vCALENDAR
 		,vDIALOG
@@ -152,6 +154,7 @@ typedef enum {	vNULL = 0
 		,vSLIDER
 		,vSWINDOW
 		,vTEMPLATE
+		,vTRAVERSE
 		,vVIEWER
 		} EObjectType;
 
@@ -159,10 +162,22 @@ typedef enum {	vNULL = 0
  * This enumerated typedef lists all the valid display types for
  * the entry, mentry, and template widgets.
  */
-typedef enum {vINVALID,
-		vCHAR, vHCHAR, vINT, vHINT, vMIXED, vHMIXED,
-		vUCHAR, vLCHAR, vUHCHAR, vLHCHAR, vUMIXED,
-		vLMIXED, vUHMIXED, vLHMIXED, vVIEWONLY
+typedef enum {	vINVALID = 0
+		,vCHAR
+		,vHCHAR
+		,vINT
+		,vHINT
+		,vMIXED
+		,vHMIXED
+		,vUCHAR
+		,vLCHAR
+		,vUHCHAR
+		,vLHCHAR
+		,vUMIXED
+		,vLMIXED
+		,vUHMIXED
+		,vLHMIXED
+		,vVIEWONLY
 		} EDisplayType;
 
 /*
@@ -300,6 +315,8 @@ void stopCDKDebug (FILE *fd);
 #include <swindow.h>
 #include <template.h>
 #include <viewer.h>
+#include <traverse.h>
+#include <button.h>
 
 /*
  * Low-level object drawing

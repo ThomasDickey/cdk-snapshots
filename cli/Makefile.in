@@ -1,12 +1,8 @@
-# $Id: Makefile.in,v 1.1 2000/09/15 11:20:09 tom Exp $
+# $Id: Makefile.in,v 1.2 2002/07/17 23:53:38 tom Exp $
 #
 # Makefile for the cli directory.
 #
 SHELL		= /bin/sh
-
-CC		= @CC@
-
-x		= @PROG_EXT@
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -17,8 +13,13 @@ VPATH		= $(srcdir)
 LIBS		= -lcdk @LIBS@
 LIBDIR		= -L.. @LDFLAGS@
 
+LIBTOOL		= @LIBTOOL@
+CC		= @CC@
+LINK		= $(LIBTOOL) $(CC)
+x		= @PROG_EXT@
+
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
-CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I$(srcdir)/../include
+CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include @CPPFLAGS@
 
 BINS	= \
 	cdkalphalist$x \
@@ -38,7 +39,7 @@ BINS	= \
 	cdktemplate$x \
 	cdkviewer$x
 
-LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 all : $(BINS)
 

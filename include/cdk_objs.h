@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.12 2002/04/30 21:39:34 tom Exp $
+ * $Id: cdk_objs.h,v 1.20 2002/07/26 23:33:16 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999, Thomas Dickey
+ * Copyright 1999-2001,2002, Thomas Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@ extern "C" {
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgment:
- * 	This product includes software developed by Mike Glover
+ * 	This product includes software developed by Thomas Dickey
  * 	and contributors.
- * 4. Neither the name of Mike Glover, nor the names of contributors
+ * 4. Neither the name of Thomas Dickey, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
@@ -52,59 +52,145 @@ extern "C" {
  */
 
 typedef struct CDKBINDING {
-   BINDFN	bindFunction;
-   void *	bindData;
-   PROCESSFN	callbackfn;
+   BINDFN       bindFunction;
+   void *       bindData;
+   PROCESSFN    callbackfn;
 } CDKBINDING;
 
 struct CDKOBJS;
 
 /*
+ * Types for CDKFUNCS.returnType
+ */
+typedef enum {
+   DataTypeUnknown = 0
+   , DataTypeString
+   , DataTypeInt
+   , DataTypeFloat
+   , DataTypeDouble
+} CDKDataType;
+
+typedef union {
+   char * valueString;
+   int    valueInt;
+   float  valueFloat;
+   double valueDouble;
+} CDKDataUnion;
+
+#define unknownString  (char *)0
+#define unknownInt     (-1)
+#define unknownFloat   (0.0)
+#define unknownDouble  (0.0)
+
+/*
  * Methods common to all widgets.
  */
 typedef struct CDKFUNCS {
-   void		(*drawObj)(struct CDKOBJS *, boolean);
-   void		(*eraseObj)(struct CDKOBJS *);
-   void		(*moveObj)(struct CDKOBJS *, int, int, boolean, boolean);
+   EObjectType  objectType;
+   CDKDataType  returnType;
+   void         (*drawObj)         (struct CDKOBJS *, boolean);
+   void         (*eraseObj)        (struct CDKOBJS *);
+   void         (*moveObj)         (struct CDKOBJS *, int, int, boolean, boolean);
+   int          (*injectObj)       (struct CDKOBJS *, chtype);
+   void         (*focusObj)        (struct CDKOBJS *);
+   void         (*unfocusObj)      (struct CDKOBJS *);
+   void         (*saveDataObj)     (struct CDKOBJS *);
+   void         (*refreshDataObj)  (struct CDKOBJS *);
+   void         (*destroyObj)      (struct CDKOBJS *);
 } CDKFUNCS;
+
+/* The cast is needed because traverse.c wants to use CDKOBJS pointers */
+#define ObjPtr(p)           ((CDKOBJS*)(p))
+
+#define MethodPtr(p,m)      ((ObjPtr(p))->fn->m)
+
+/* Use these when we're certain it is a CDKOBJS pointer */
+#define ObjTypeOf(p)            MethodPtr(p,objectType)
+#define DataTypeOf(p)           MethodPtr(p,returnType)
+#define DrawObj(p)              MethodPtr(p,drawObj)         (p,p->box)
+#define EraseObj(p)             MethodPtr(p,eraseObj)        (p)
+#define DestroyObj(p)           MethodPtr(p,destroyObj)      (p)
+#define InjectObj(p,k)          MethodPtr(p,injectObj)       (p,(k))
+#define InputWindowObj(p)       MethodPtr(p,inputWindowObj)  (p)
+#define FocusObj(p)             MethodPtr(p,focusObj)        (p)
+#define UnfocusObj(p)           MethodPtr(p,unfocusObj)      (p)
+#define SaveDataObj(p)          MethodPtr(p,saveDataObj)     (p)
+#define RefreshDataObj(p)       MethodPtr(p,refreshDataObj)  (p)
+
+#define AcceptsFocusObj(p)      (ObjPtr(p)->acceptsFocus)
+#define HasFocusObj(p)          (ObjPtr(p)->hasFocus)
+#define InputWindowOf(p)        (ObjPtr(p)->inputWindow)
 
 /*
  * Data common to all objects (widget instances).  This appears first in
- * each widget's struct to allow us to use generic functions in binding.c
- * and cdkscreen.c
+ * each widget's struct to allow us to use generic functions in binding.c,
+ * cdkscreen.c, position.c, etc.
  */
 typedef struct CDKOBJS {
-   int		screenIndex;
-   CDKSCREEN *	screen;
-   CDKFUNCS	*fn;
-   boolean	box;
-   int		bindingCount;
-   CDKBINDING *	bindingList;
+   int          screenIndex;
+   CDKSCREEN *  screen;
+   const CDKFUNCS * fn;
+   boolean      box;
+   int          borderSize;
+   boolean      acceptsFocus;
+   boolean      hasFocus;
+   WINDOW *     inputWindow;
+   void *       dataPtr;
+   CDKDataUnion resultData;
+   int          bindingCount;
+   CDKBINDING * bindingList;
 } CDKOBJS;
 
 #define ObjOf(ptr)    (&(ptr)->obj)
 #define MethodOf(ptr) (ObjOf(ptr)->fn)
 #define ScreenOf(ptr) (ObjOf(ptr)->screen)
 #define WindowOf(ptr) (ScreenOf(ptr)->window)
+#define BorderOf(p)   (ObjOf(p)->borderSize)
+#define ResultOf(p)   (ObjOf(p)->resultData)
 
-void *	_newCDKObject(unsigned, CDKFUNCS *);
+/* FIXME - remove this */
+#define ReturnOf(p)   (ObjPtr(p)->dataPtr)
+
+bool validCDKObject (CDKOBJS *);
+
+void *  _newCDKObject(unsigned, const CDKFUNCS *);
 #define newCDKObject(type,funcs) (type *)_newCDKObject(sizeof(type),funcs)
 
-#define drawCDKObject(o,box)		MethodOf(o)->drawObj(ObjOf(o),box)
-#define eraseCDKObject(o)		MethodOf(o)->eraseObj(ObjOf(o))
-#define moveCDKObject(o,x,y,rel,ref)  	MethodOf(o)->moveObj(ObjOf(o),x,y,rel,ref)
+void _destroyCDKObject (CDKOBJS *);
+#define destroyCDKObject(o)            _destroyCDKObject(ObjOf(o))
 
-#define DeclareCDKObjects(table,module) \
-static void _drawCDK ## module (struct CDKOBJS *, boolean); \
-static void _eraseCDK ## module (struct CDKOBJS *); \
-static void _moveCDK ## module (struct CDKOBJS *, int, int, boolean, boolean); \
-static CDKFUNCS table = { \
-    _drawCDK ## module, \
-    _eraseCDK ## module, \
-    _moveCDK ## module, \
+/* Use these for widgets that have an obj member which is a CDKOBJS struct */
+#define drawCDKObject(o,box)           MethodOf(o)->drawObj       (ObjOf(o),box)
+#define eraseCDKObject(o)              MethodOf(o)->eraseObj      (ObjOf(o))
+#define moveCDKObject(o,x,y,rel,ref)   MethodOf(o)->moveObj       (ObjOf(o),x,y,rel,ref)
+#define injectCDKObject(o,c,type)      (MethodOf(o)->injectObj    (ObjOf(o),c) ? ResultOf(o).value ## type : unknown ## type)
+
+#define DeclareCDKObjects(upper, mixed, type) \
+static int  _injectCDK ## mixed        (struct CDKOBJS *, chtype); \
+static void _destroyCDK ## mixed       (struct CDKOBJS *); \
+static void _drawCDK ## mixed          (struct CDKOBJS *, boolean); \
+static void _eraseCDK ## mixed         (struct CDKOBJS *); \
+static void _focusCDK ## mixed         (struct CDKOBJS *); \
+static void _moveCDK ## mixed          (struct CDKOBJS *, int, int, boolean, boolean); \
+static void _refreshDataCDK ## mixed   (struct CDKOBJS *); \
+static void _saveDataCDK ## mixed      (struct CDKOBJS *); \
+static void _unfocusCDK ## mixed       (struct CDKOBJS *); \
+static const CDKFUNCS my_funcs = { \
+    v ## upper, \
+    DataType ## type, \
+    _drawCDK ## mixed, \
+    _eraseCDK ## mixed, \
+    _moveCDK ## mixed, \
+    _injectCDK ## mixed, \
+    _focusCDK ## mixed, \
+    _unfocusCDK ## mixed, \
+    _saveDataCDK ## mixed, \
+    _refreshDataCDK ## mixed, \
+    _destroyCDK ## mixed, \
 }
 
-void positionCDKObject (CDKOBJS *, WINDOW *);
+extern int getcCDKObject (CDKOBJS *);
+extern void positionCDKObject (CDKOBJS *, WINDOW *);
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 # Note that this is NOT a relocatable package
 %define ver      4.9.10
-%define subver   20020430
+%define subver   20020727
 %define rel      1
 %define prefix   /usr
 

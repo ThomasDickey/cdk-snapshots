@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.13 2002/04/30 21:57:57 tom Exp $
+ * $Id: buttonbox.h,v 1.17 2002/07/16 00:54:51 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -85,6 +85,7 @@ struct SButtonBox {
    chtype	VChar;
    chtype	HChar;
    chtype	BoxAttrib;
+   chtype	ButtonAttrib;
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
@@ -123,9 +124,7 @@ int activateCDKButtonbox (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKButtonbox (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* input */);
+#define injectCDKButtonbox(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets multiple attributes of the widget.
@@ -196,12 +195,23 @@ void setCDKButtonboxBoxAttribute (
 		CDKBUTTONBOX *	/* buttonbox */,
 		chtype		/* character */);
 
+void setCDKButtonboxButtonAttrib (
+		CDKBUTTONBOX *	/* buttonbox */,
+		chtype		/* character */);
+
 /*
  * This sets the background color of the widget.
  */
 void setCDKButtonboxBackgroundColor (
 		CDKBUTTONBOX *	/* buttonbox */,
 		char *		/* color */);
+
+/*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKButtonboxBackgroundAttrib (
+		CDKBUTTONBOX *	/* buttonbox */,
+		chtype		/* attribute */);
 
 /*
  * This draws a button in the buttonbox widget.
@@ -238,8 +248,7 @@ void drawCDKButtonboxButtons (
 /*
  * This destroys the widget and all the memory associated with it.
  */
-void destroyCDKButtonbox (
-		CDKBUTTONBOX *	/* buttonbox */);
+#define destroyCDKButtonbox(obj) destroyCDKObject(obj)
 
 /*
  * This redraws the buttonbox box buttonboxs.

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.12 2002/04/30 19:54:00 tom Exp $
+dnl $Id: aclocal.m4,v 1.15 2002/07/22 22:38:19 tom Exp $
 dnl macros used for CDK configure script
 dnl -- T.Dickey
 dnl ---------------------------------------------------------------------------
@@ -355,6 +355,25 @@ fi
 
 ])
 dnl ---------------------------------------------------------------------------
+dnl See if we can define a function to set a window's beginning y/x coordinates.
+AC_DEFUN([CF_CURSES_SETBEGYX],[
+AC_MSG_CHECKING(how to define setbegyx)
+cf_result=ERR
+for cf_check in \
+	'((win)->_begy = (y), (win)->_begx = (x), OK)'
+do
+	AC_TRY_COMPILE([
+#include <${cf_cv_ncurses_header-curses.h}>
+],[
+WINDOW *win = 0;
+#define setbegyx(win,y,x) $cf_check
+setbegyx(win, 2, 3);
+],[cf_result=$cf_check; break])
+done
+AC_MSG_RESULT("$cf_result")
+AC_DEFINE_UNQUOTED(setbegyx(win,y,x),$cf_result)
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl "dirname" is not portable, so we fake it with a shell script.
 AC_DEFUN([CF_DIRNAME],[$1=`echo $2 | sed -e 's:/[[^/]]*$::'`])dnl
 dnl ---------------------------------------------------------------------------
@@ -566,7 +585,8 @@ EOF
 		Wnested-externs \
 		Wpointer-arith \
 		Wshadow \
-		Wstrict-prototypes $cf_warn_CONST
+		Wstrict-prototypes \
+		Wundef $cf_warn_CONST
 	do
 		CFLAGS="$cf_save_CFLAGS $EXTRA_CFLAGS -$cf_opt"
 		if AC_TRY_EVAL(ac_compile); then
@@ -1111,6 +1131,81 @@ dnl ---------------------------------------------------------------------------
 dnl Use AC_VERBOSE w/o the warnings
 AC_DEFUN([CF_VERBOSE],
 [test -n "$verbose" && echo "	$1" 1>&AC_FD_MSG
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Provide a configure option to incorporate libtool.  Define several useful
+dnl symbols for the makefile, including ones derived from the VERSION file:
+dnl	libtool-version	release-version	patch-version
+AC_DEFUN([CF_VERSION_INFO],
+[
+if test -f $srcdir/VERSION ; then
+	AC_MSG_CHECKING(for package version)
+	cf_version=`cut -f2 $srcdir/VERSION`
+
+	VERSION_MAJOR=`echo "$cf_version" | sed -e 's/\..*//'`
+	test -z "$VERSION_MAJOR" && AC_MSG_ERROR(missing major-version)
+
+	VERSION_MINOR=`echo "$cf_version" | sed -e 's/^[[^.]]*\.//'`
+	test -z "$VERSION_MINOR" && AC_MSG_ERROR(missing minor-version)
+
+	AC_MSG_RESULT(${VERSION_MAJOR}.${VERSION_MINOR})
+
+	AC_MSG_CHECKING(for package patch date)
+	VERSION_PATCH=`cut -f3 $srcdir/VERSION`
+	test -z "$VERSION_PATCH" && AC_MSG_ERROR(missing patch-date)
+	AC_MSG_RESULT($VERSION_PATCH)
+else
+	AC_MSG_ERROR(did not find $srcdir/VERSION)
+fi
+
+AC_SUBST(VERSION_MAJOR)
+AC_SUBST(VERSION_MINOR)
+AC_SUBST(VERSION_PATCH)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Provide a configure option to incorporate libtool.  Define several useful
+dnl symbols for the makefile rules.
+AC_DEFUN([CF_WITH_LIBTOOL],
+[
+LIBTOOL=
+LIB_CREATE='$(AR) -cr'
+LIB_OBJECT='$(OBJECTS)'
+LIB_SUFFIX=.a
+INSTALL_LIB=
+UNINSTALL_LIB=
+
+AC_ARG_WITH(libtool,
+	[  --with-libtool          use libtool to build shared libraries],[
+	LIBTOOL='libtool --silent'
+	LIB_CREATE='$(LIBTOOL) --mode=link $(CC) -rpath $(DESTDIR)$(libdir) -version-info `cut -f1 $(srcdir)/VERSION` -o'
+	LIB_OBJECT='$(OBJECTS:.o=.lo)'
+	LIB_SUFFIX=.la
+	INSTALL_LIB='$(LIBTOOL) --mode=install'
+	UNINSTALL_LIB='$(LIBTOOL) --mode=uninstall'
+	RANLIB=:
+])
+
+AC_SUBST(LIBTOOL)
+AC_SUBST(LIB_CREATE)
+AC_SUBST(LIB_OBJECT)
+AC_SUBST(LIB_SUFFIX)
+AC_SUBST(INSTALL_LIB)
+AC_SUBST(UNINSTALL_LIB)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Combine the checks for gcc features into a configure-script option
+AC_DEFUN([CF_WITH_WARNINGS],
+[
+AC_MSG_CHECKING(if you want to check for gcc warnings)
+AC_ARG_WITH(warnings,
+	[  --with-warnings         turn on gcc warnings, for debugging],
+	[cf_opt_with_warnings=$withval]
+	[cf_opt_with_warnings=no])
+AC_MSG_RESULT($cf_opt_with_warnings)
+if test "$cf_opt_with_warnings" = yes ; then
+	CF_GCC_ATTRIBUTES
+	CF_GCC_WARNINGS
+fi
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Test if we should define X/Open source for curses, needed on Digital Unix

@@ -1,5 +1,5 @@
 /*
- * $Id: label.h,v 1.12 2002/04/30 21:47:27 tom Exp $
+ * $Id: label.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -177,6 +177,13 @@ void setCDKLabelBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKLabelBackgroundAttrib (
+		CDKLABEL *	/* label */,
+		chtype		/* attribute */);
+
+/*
  * This erases the label.
  */
 #define eraseCDKLabel(obj) eraseCDKObject(obj)
@@ -184,8 +191,7 @@ void setCDKLabelBackgroundColor (
 /*
  * This destroys the label and the memory used by it.
  */
-void destroyCDKLabel (
-		CDKLABEL *	/* label */);
+#define destroyCDKLabel(obj) destroyCDKObject(obj)
 
 /*
  * This draws the label then waits for the user to press

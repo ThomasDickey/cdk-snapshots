@@ -1,5 +1,5 @@
 /*
- * $Id: menu.h,v 1.11 2002/04/30 22:02:21 tom Exp $
+ * $Id: menu.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -111,9 +111,7 @@ int activateCDKMenu (
 /*
  * This injects a single character into the menu widget.
  */
-int injectCDKMenu (
-    		CDKMENU *	/* menu */,
-		chtype 		/* input */);
+#define injectCDKMenu(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * These set specific attributes of the menu.
@@ -185,10 +183,16 @@ void setCDKMenuBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKMenuBackgroundAttrib (
+		CDKMENU *	/* menu */,
+		chtype		/* attribute */);
+
+/*
  * This destroys the menu widget.
  */
-void destroyCDKMenu (
-    		CDKMENU *	/* menu */);
+#define destroyCDKMenu(obj) destroyCDKObject(obj)
 
 /*
  * These set the pre/post process callback functions.

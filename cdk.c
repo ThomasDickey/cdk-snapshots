@@ -1,10 +1,13 @@
 #include <cdk.h>
 
 /*
- * $Author: Robert.Landon $
- * $Date: 2002/04/30 22:53:44 $
- * $Revision: 1.172 $
+ * $Author: tom $
+ * $Date: 2002/07/23 19:26:51 $
+ * $Revision: 1.181 $
  */
+
+#define L_MARKER '<'
+#define R_MARKER '>'
 
 char *GPasteBuffer = 0;
 
@@ -44,13 +47,12 @@ void cleanChtype (chtype *s, int len, chtype character)
  * This takes an x and y position and realigns the values iff they sent in
  * values like CENTER, LEFT, RIGHT, ...
  */
-#define BORDER 1
-void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
+void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight, int borderSize)
 {
    int first, gap, last;
 
-   first = (getbegx(window) + BORDER);
-   last	 = (getmaxx(window) - 2*BORDER + 1);
+   first = (getbegx(window) + borderSize);
+   last	 = (getmaxx(window) - 2*borderSize);
    if ((gap = (last - boxWidth)) < 0) gap = 0;
    last	 = first + gap;
 
@@ -72,8 +74,8 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
    else if ((*xpos) < first)
       (*xpos) = first;
 
-   first = (getbegy(window) + BORDER);
-   last	 = (getmaxy(window) - 2*BORDER + 1);
+   first = (getbegy(window) + borderSize);
+   last	 = (getmaxy(window) - 2*borderSize);
    if ((gap = (last - boxHeight)) < 0) gap = 0;
    last	 = first + gap;
 
@@ -97,38 +99,30 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 }
 
 /*
- * This takes a string, a field width and a justifycation type
- * and returns the justifcation adjustment to make, to fill
+ * This takes a string, a field width and a justification type
+ * and returns the adjustment to make, to fill
  * the justification requirement.
  */
 int justifyString (int boxWidth, int mesgLength, int justify)
 {
-  /*
-   * Make sure the message isn't longer than the width.
-   * If it is, return 1.
+   /*
+    * Make sure the message isn't longer than the width.
+    * If it is, return 0.
     */
    if (mesgLength >= boxWidth)
-   {
-      return (1);
-   }
+      return (0);
 
    /* Try to justify the message.  */
    if (justify == LEFT)
-   {
-      return (1);
-   }
-   else if (justify == RIGHT)
-   {
-      return ((boxWidth - mesgLength - 1));
-   }
-   else if (justify == CENTER)
-   {
+      return (0);
+
+   if (justify == RIGHT)
+      return boxWidth - mesgLength;
+
+   if (justify == CENTER)
       return ((int)((boxWidth - mesgLength) / 2));
-   }
-   else
-   {
-      return (justify);
-   }
+
+   return (justify);
 }
 
 /*
@@ -165,52 +159,40 @@ void freeCharList (char **list, unsigned size)
  */
 char *copyChar (char *original)
 {
-   /* Declare local variables.	*/
-   char *newstring;
+   char *newstring = 0;
 
-   /* Make sure the string is not null.	 */
-   if (original == 0)
+   if (original != 0)
    {
-      return 0;
+      if ((newstring = (char *)malloc (strlen(original) + 1)) != 0)
+	 strcpy (newstring, original);
    }
-   newstring = (char *)malloc (strlen(original) + 1);
-
-   /* Copy from one to the other.  */
-   strcpy (newstring, original);
-
-   /* Return the new string.  */
    return (newstring);
 }
 
 chtype *copyChtype (chtype *original)
 {
-   /* Declare local variables.	*/
-   chtype *newstring;
-   int len, x;
+   chtype *newstring = 0;
 
-   /* Make sure the string is not null.	 */
-   if (original == 0)
+   if (original != 0)
    {
-      return 0;
-   }
+      int len = chlen (original);
+      int x;
 
-   /* Create the new string.  */
-   len		= chlen (original);
-   newstring	= (chtype *)malloc (sizeof(chtype) * (len + 4));
-   if (newstring == 0)
-   {
-      return (original);
-   }
+      if ((newstring = (chtype *)malloc (sizeof(chtype) * (len + 4))) != 0)
+      {
+	 for (x=0; x < len; x++)
+	 {
+	    newstring[x] = original[x];
+	 }
+	 newstring[len] = '\0';
+	 newstring[len + 1] = '\0';
+      }
+      else
+      {
+	 newstring = original;
+      }
 
-   /* Copy from one to the other.  */
-   for (x=0; x < len; x++)
-   {
-      newstring[x] = original[x];
    }
-   newstring[len] = '\0';
-   newstring[len + 1] = '\0';
-
-   /* Return the new string.  */
    return (newstring);
 }
 
@@ -244,7 +226,7 @@ int CDKreadFile (char *filename, char ***array)
 
 #define DigitOf(c) ((c)-'0')
 
-static int parseAttribute(char *string, int from, chtype *mask)
+static int encodeAttribute(char *string, int from, chtype *mask)
 {
    int pair = 0;
 
@@ -284,6 +266,94 @@ static int parseAttribute(char *string, int from, chtype *mask)
       from++;
    }
    return from;
+}
+
+/*
+ * The reverse of encodeAttribute()
+ * Well almost.  If attributes such as bold and underline are combined in
+ * the same string, we do not necessarily reconstruct them in the same order.
+ * Also, alignment markers and tabs are lost.
+ */
+static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, chtype newattr)
+{
+   static const struct {
+      int	code;
+      chtype	mask;
+   } table[] = {
+      { 'B', A_BOLD },
+      { 'D', A_DIM },
+      { 'K', A_BLINK },
+      { 'R', A_REVERSE },
+      { 'S', A_STANDOUT },
+      { 'U', A_UNDERLINE },
+   };
+
+   char temp[80];
+   char *result = (string != 0) ? string : temp;
+   char *base = result;
+   chtype tmpattr = oldattr & A_ATTRIBUTES;
+
+   newattr &= A_ATTRIBUTES;
+   if (tmpattr != newattr)
+   {
+      while (tmpattr != newattr)
+      {
+	 unsigned n;
+	 bool found = FALSE;
+
+	 for (n = 0; n < sizeof(table)/sizeof(table[0]); ++n)
+	 {
+	    if ((table[n].mask & tmpattr) != (table[n].mask & newattr))
+	    {
+	       found = TRUE;
+	       *result++ = L_MARKER;
+	       if (table[n].mask & tmpattr)
+	       {
+		  *result++ = '!';
+		  tmpattr &= ~(table[n].mask);
+	       }
+	       else
+	       {
+		  *result++ = '/';
+		  tmpattr |= (table[n].mask);
+	       }
+	       *result++ = table[n].code;
+	       break;
+	    }
+	 }
+#ifdef HAVE_START_COLOR
+	 if ((tmpattr & A_COLOR) != (newattr & A_COLOR))
+	 {
+	    int oldpair = PAIR_NUMBER(tmpattr);
+	    int newpair = PAIR_NUMBER(newattr);
+	    if (!found)
+	    {
+	       found = TRUE;
+	       *result++ = L_MARKER;
+	    }
+	    if (newpair == 0)
+	    {
+	       *result++ = '!';
+	       sprintf(result, "%d", oldpair);
+	    }
+	    else
+	    {
+	       *result++ = '/';
+	       sprintf(result, "%d", newpair);
+	    }
+	    result += strlen(result);
+	    tmpattr &= ~A_COLOR;
+	    newattr &= ~A_COLOR;
+	 }
+#endif
+	 if (found)
+	    *result++ = R_MARKER;
+	 else
+	    break;
+      }
+   }
+
+   return from + (result - base);
 }
 
 /*
@@ -335,58 +405,61 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	 x = 3;
 
 	 /* Look for an alignment marker.  */
-	 if (!strncmp(string, "<C>", 3))
+	 if (*string == L_MARKER)
 	 {
-	    (*align) = CENTER;
-	    start = 3;
-	 }
-	 else if (!strncmp(string, "<R>", 3))
-	 {
-	    (*align) = RIGHT;
-	    start = 3;
-	 }
-	 else if (!strncmp(string, "<L>", 3))
-	 {
-	    start = 3;
-	 }
-	 else if (!strncmp(string, "<B=", 3))
-	 {
-	    /* Set the item index value in the string.	*/
-	    if (result != 0)
+	    if (string[1] == 'C' && string[2] == R_MARKER)
 	    {
-	       result[0] = ' ';
-	       result[1] = ' ';
-	       result[2] = ' ';
+	       (*align) = CENTER;
+	       start = 3;
 	    }
-
-	    /* Pull out the bullet marker.  */
-	    while (string[x] != '>' && string[x] != 0)
+	    else if (string[1] == 'R' && string[2] == R_MARKER)
 	    {
+	       (*align) = RIGHT;
+	       start = 3;
+	    }
+	    else if (string[1] == 'L' && string[2] == R_MARKER)
+	    {
+	       start = 3;
+	    }
+	    else if (string[1] == 'B' && string[2] == '=')
+	    {
+	       /* Set the item index value in the string.	*/
 	       if (result != 0)
-		  result[x] = string[x] | A_BOLD;
-	       x++;
-	    }
-	    adjust = 1;
-
-	    /* Set the alignment variables.  */
-	    start = x;
-	    used = x;
-	 }
-	 else if (!strncmp(string, "<I=", 3))
-	 {
-	    from = 2;
-	    x = 0;
-
-	    while (string[++from] != '>' && string[from] != 0)
-	    {
-	       if (isdigit((int)string[from]))
 	       {
-		  adjust = (adjust * 10) + DigitOf(string[from]);
+		  result[0] = ' ';
+		  result[1] = ' ';
+		  result[2] = ' ';
+	       }
+
+	       /* Pull out the bullet marker.  */
+	       while (string[x] != R_MARKER && string[x] != 0)
+	       {
+		  if (result != 0)
+		     result[x] = string[x] | A_BOLD;
 		  x++;
 	       }
-	    }
+	       adjust = 1;
 
-	    start = x + 4;
+	       /* Set the alignment variables.  */
+	       start = x;
+	       used = x;
+	    }
+	    else if (string[1] == 'I' && string[2] == '=')
+	    {
+	       from = 2;
+	       x = 0;
+
+	       while (string[++from] != R_MARKER && string[from] != 0)
+	       {
+		  if (isdigit((int)string[from]))
+		  {
+		     adjust = (adjust * 10) + DigitOf(string[from]);
+		     x++;
+		  }
+	       }
+
+	       start = x + 4;
+	    }
 	 }
 
 	 while (adjust-- > 0)
@@ -405,14 +478,14 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	    /* Are we inside a format marker?  */
 	    if (! insideMarker)
 	    {
-	       if (string[from] == '<'
+	       if (string[from] == L_MARKER
 		&& (string[from + 1] == '/'
 		 || string[from + 1] == '!'
 		 || string[from + 1] == '#'))
 	       {
 		  insideMarker = TRUE;
 	       }
-	       else if (string[from] == '\\' && string[from + 1] == '<')
+	       else if (string[from] == '\\' && string[from + 1] == L_MARKER)
 	       {
 		  from++;
 		  if (result != 0)
@@ -422,12 +495,13 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       }
 	       else if (string[from] == '\t')
 	       {
-		  for (x=0; x < 8; x++)
+		  do
 		  {
 		     if (result != 0)
 			result[used] = ' ';
 		     used++;
 		  }
+		  while (used & 7);
 	       }
 	       else
 	       {
@@ -440,7 +514,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	    {
 	       switch (string[from])
 	       {
-	       case '>':
+	       case R_MARKER:
 		  insideMarker = 0;
 		  break;
 	       case '#':
@@ -542,11 +616,11 @@ chtype *char2Chtype (char *string, int *to, int *align)
 		  break;
 	       }
 	       case '/':
-		  from = parseAttribute(string, from, &mask);
+		  from = encodeAttribute(string, from, &mask);
 		  attrib = attrib | mask;
 		  break;
 	       case '!':
-		  from = parseAttribute(string, from, &mask);
+		  from = encodeAttribute(string, from, &mask);
 		  attrib = attrib & ~mask;
 		  break;
 	       }
@@ -591,38 +665,107 @@ int chlen (chtype *string)
 }
 
 /*
+ * Compare a regular string to a chtype string
+ */
+int cmpStrChstr(char *str, chtype *chstr)
+{
+   int r = 0;
+
+   if (!str && !chstr)
+      return 0;
+   if (!str)
+      return 1;
+   if (!chstr)
+      return -1;
+
+   while (!r && *str && *chstr)
+   {
+      r = *str - (*chstr & A_CHARTEXT);
+      ++str;
+      ++chstr;
+   }
+
+   if (r)
+      return r;
+   else if (! *str)
+      return -1;
+   else if (! *chstr)
+      return 1;
+   return 0;
+}
+
+void chstrncpy(char *dest, chtype *src, int maxcount)
+{
+   int i = 0;
+
+   while (i < maxcount && *src)
+      *dest++ = (*src++ & A_CHARTEXT);
+
+   *dest = '\0';
+}
+
+/*
  * This returns a pointer to char * of a chtype *
+ * Formatting codes are omitted.
  */
 char *chtype2Char (chtype *string)
 {
-   /* Declare local variables.	*/
-   char *newstring;
-   int len = 0;
-   int x;
+   char *newstring = 0;
 
-   /* Is the string null?  */
-   if (string == 0)
+   if (string != 0)
    {
-      return (0);
+      int len = chlen(string);
+      int x;
+
+      if ((newstring = (char *)malloc (sizeof (char) * (len + 1))) != 0)
+      {
+	 for (x=0; x < len; x++)
+	 {
+	    newstring[x] = (char)(string[x] & A_CHARTEXT);
+	 }
+	 newstring[len] = '\0';
+      }
    }
+   return (newstring);
+}
 
-   /* Get the length of the string.  */
-   len = chlen(string);
+/*
+ * This returns a pointer to char * of a chtype *
+ * Formatting codes are embedded.
+ */
+char *chtype2String (chtype *string)
+{
+   char *newstring = 0;
 
-   /* Make the new string.  */
-   newstring = (char *)malloc (sizeof (char) * (len + 1));
-   /*cleanChar (newstring, len + 1, '\0');*/
-
-   /* Start translating.  */
-   for (x=0; x < len; x++)
+   if (string != 0)
    {
-      newstring[x] = (char)(string[x] & A_CHARTEXT);
+      int pass;
+      int len = chlen(string);
+
+      for (pass = 0; pass < 2; ++pass)
+      {
+	 int x;
+	 unsigned need = 0;
+
+	 for (x = 0; x < len; ++x)
+	 {
+	    need = decodeAttribute(newstring, need,
+				   (x > 0) ? string[x-1] : 0,
+				   string[x]);
+	    if (newstring != 0)
+	       newstring[need] = string[x] & A_CHARTEXT;
+	    ++need;
+	 }
+	 if (pass)
+	    newstring[need] = 0;
+	 ++need;
+	 if (!pass)
+	 {
+	    if ((newstring = (char *)malloc(need)) == 0)
+	       break;
+	 }
+      }
    }
-
-   /* Force a null character on the end of the string.	*/
-   newstring[len] = '\0';
-
-   /* Return it.  */
    return (newstring);
 }
 
@@ -675,67 +818,45 @@ static int comparSort (const void *a, const void *b)
 void sortList (char *list[], int length)
 {
    if (length > 1)
-      qsort(list, length, sizeof(list[0]), comparSort);
+      qsort(list, (unsigned) length, sizeof(list[0]), comparSort);
 }
 
 /*
- * This strips white space off of the given string.
+ * This strips white space from the given string.
  */
 void stripWhiteSpace (EStripType stripType, char *string)
 {
    /* Declare local variables.	*/
-   int stringLength = 0;
-   int alphaChar = 0;
-   int x = 0;
+   unsigned stringLength = 0;
+   unsigned alphaChar = 0;
+   unsigned x;
 
    /* Make sure the string is not null.	 */
-   if (string == 0)
+   if (string != 0
+    && (stringLength = strlen(string)) != 0)
    {
-      return;
-   }
-
-   /* Get the length of the string.  */
-   stringLength = (int)strlen(string);
-   if (stringLength == 0)
-   {
-      return;
-   }
-
-   /* Strip the white space from the front.  */
-   if (stripType == vFRONT || stripType == vBOTH)
-   {
-      /* Find the first non-whitespace character.  */
-      while (string[alphaChar] == ' ' || string[alphaChar] == '\t')
+      /* Strip leading whitespace */
+      if (stripType == vFRONT || stripType == vBOTH)
       {
-	 alphaChar++;
-      }
-
-      /* Trim off the white space.  */
-      if (alphaChar != stringLength)
-      {
-	 for (x=0; x < (stringLength-alphaChar); x++)
+	 /* Find the first non-whitespace character.  */
+	 while (string[alphaChar] == ' ' || string[alphaChar] == '\t')
 	 {
-	    string[x] = string[x + alphaChar];
+	    alphaChar++;
 	 }
-	 string[stringLength-alphaChar] = '\0';
-      }
-      else
-      {
-	 /* Set the string to zero.  */
-	 memset (string, 0, stringLength);
-      }
-   }
 
-   /* Get the length of the string.  */
-   stringLength = (int)strlen(string)-1;
+	 for (x = alphaChar; x <= stringLength; ++x)
+	    string[x - alphaChar] = string[x];
+      }
 
-   /* Strip the space from behind if it was asked for.	*/
-   if (stripType == vBACK || stripType == vBOTH)
-   {
-      /* Find the first non-whitespace character.  */
-      while (string[stringLength] == ' ' || string[stringLength] == '\t')
+      /* Strip trailing whitespace */
+      if (stripType == vBACK || stripType == vBOTH)
       {
-	 string[stringLength--] = '\0';
+	 stringLength = strlen(string);
+	 while (stringLength-- != 0
+	   && (string[stringLength] == ' ' || string[stringLength] == '\t'))
+	 {
+	    string[stringLength] = '\0';
+	 }
       }
    }
 }
@@ -990,46 +1111,42 @@ int CDKgetDirectoryContents (char *directory, char ***list)
 int searchList (char **list, int listSize, char *pattern)
 {
    /* Declare local variables.	*/
-   int len	= 0;
-   int Index	= -1;
+   unsigned len;
+   int Index = -1;
    int x, ret;
 
    /* Make sure the pattern isn't null. */
-   if (pattern == 0)
+   if (pattern != 0)
    {
-      return Index;
-   }
-   len = (int)strlen (pattern);
+      len = strlen (pattern);
 
-   /* Cycle through the list looking for the word. */
-   for (x=0; x < listSize; x++)
-   {
-      /* Do a string compare. */
-      ret = strncmp (list[x], pattern, len);
+      /* Cycle through the list looking for the word. */
+      for (x=0; x < listSize; x++)
+      {
+	 /* Do a string compare. */
+	 ret = strncmp (list[x], pattern, len);
 
-     /*
-      * If 'ret' is less than 0, then the current word is
-      * alphabetically less than the provided word. At this
-      * point we will set the index to the current position.
-      * If 'ret' is greater than 0, then the current word is
-      * alphabettically greater than the given word. We should
-      * return with index, which might contain the last best
-      * match. If they are equal, then we've found it.
-      */
-      if (ret < 0)
-      {
-	 Index = ret;
-      }
-      else if (ret > 0)
-      {
-	 return Index;
-      }
-      else
-      {
-	 return x;
+	/*
+	 * If 'ret' is less than 0, then the current word is alphabetically
+	 * less than the provided word.  At this point we will set the index to
+	 * the current position.  If 'ret' is greater than 0, then the current
+	 * word is alphabetically greater than the given word.  We should
+	 * return with index, which might contain the last best match.  If they
+	 * are equal, then we've found it.
+	 */
+	 if (ret < 0)
+	 {
+	    Index = ret;
+	 }
+	 else
+	 {
+	    if (ret == 0)
+	       Index = x;
+	    break;
+	 }
       }
    }
-   return -1;
+   return Index;
 }
 
 /*
@@ -1049,12 +1166,12 @@ int checkForLink (char *line, char *filename)
    len = (int)strlen (line);
 
    /* Strip out the filename. */
-   if (line[0] == '<' && line[1] == 'F' && line[2] == '=')
+   if (line[0] == L_MARKER && line[1] == 'F' && line[2] == '=')
    {
       /* Strip out the filename.  */
       while (x < len)
       {
-	 if (line[x] == '>')
+	 if (line[x] == R_MARKER)
 	 {
 	    break;
 	 }
@@ -1067,95 +1184,57 @@ int checkForLink (char *line, char *filename)
 }
 
 /*
- * This strips out the filename from the pathname. I would have
- * used rindex but it seems that not all the C libraries support
- * it. :(
+ * Returns the filename portion of the given pathname, i.e., after the last
+ * slash.
  */
 char *baseName (char *pathname)
 {
-   char *base		= 0;
-   int pathLen		= 0;
-   int pos		= 0;
-   int Index		= -1;
-   int x		= 0;
+   char *base = 0;
+   unsigned pathLen;
+   unsigned x;
 
-   /* Check if the string is null.  */
-   if (pathname == 0)
+   if (pathname != 0
+    && *pathname != '\0'
+    && (base = copyChar (pathname)) != 0)
    {
-      return 0;
-   }
-   base = copyChar (pathname);
-   pathLen = (int)strlen (pathname);
-
-   /* Find the last '/' in the pathname. */
-   x = pathLen - 1;
-   while ((pathname[x] != '\0') && (Index == -1) && (x > 0))
-   {
-      if (pathname[x] == '/')
+      if ((pathLen = strlen (pathname)) != 0)
       {
-	 Index = x;
-	 break;
+	 for (x = pathLen - 1; x != 0; --x)
+	 {
+	    /* Find the last '/' in the pathname. */
+	    if (pathname[x] == '/')
+	    {
+	       strcpy(base, pathname + x);
+	       break;
+	    }
+	 }
       }
-      x--;
-   }
-
-  /*
-   * If the index is -1, we never found one. Return a pointer
-   * to the string given to us.
-   */
-   if (Index == -1)
-   {
-      return base;
-   }
-
-   /* Clean out the base pointer. */
-   memset (base, '\0', pathLen);
-
-  /*
-   * We have found an index. Copy from the index to the
-   * end of the string into a new string.
-   */
-   for (x=Index + 1; x < pathLen; x++)
-   {
-      base[pos++] = pathname[x];
    }
    return base;
 }
 
 /*
- * This strips out the directory from the pathname. I would have
- * used rindex but it seems that not all the C libraries support
- * it. :(
+ * Returns the directory for the given pathname, i.e., the part before the
+ * last slash.
  */
 char *dirName (char *pathname)
 {
-   char *dir		= 0;
-   int pathLen		= 0;
-   int x		= 0;
+   char *dir = 0;
+   unsigned pathLen;
+   unsigned x;
 
    /* Check if the string is null.  */
-   if (pathname == 0)
+   if (pathname != 0
+    && (dir = copyChar (pathname)) != 0
+    && (pathLen = strlen (pathname)) != 0)
    {
-      return 0;
-   }
-   dir = copyChar (pathname);
-   pathLen = (int)strlen (pathname);
-
-   /* Starting from the end, look for the first '/' character. */
-   x = pathLen;
-   while ((dir[x] != '/') && (x > 0))
-   {
-      dir[x--] = '\0';
+      x = pathLen;
+      while ((dir[x] != '/') && (x > 0))
+      {
+	 dir[x--] = '\0';
+      }
    }
 
-   /* Now dir either has nothing or the basename. */
-   if (dir[0] == '\0')
-   {
-      /* If it has nothing, return nothing. */
-      return copyChar ("");
-   }
-
-   /* Otherwise, return the path. */
    return dir;
 }
 
@@ -1225,21 +1304,23 @@ void deleteCursesWindow (WINDOW *window)
 }
 
 /*
- * This moves a given window
+ * This moves a given window (if we're able to set the window's beginning).
+ * We do not use mvwin(), because it does (usually) not move subwindows.
  */
 void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
 {
-#ifdef HAVE_MVWIN
-   int xpos, ypos;
+   if (window != 0)
+   {
+      int xpos, ypos;
 
-   getyx(window, ypos, xpos);
-   xpos += xdiff;
-   ypos += ydiff;
-   mvwin(window, ypos, xpos);
-#else
-   window->_begx += xdiff;
-   window->_begy += ydiff;
-#endif
+      getbegyx(window, ypos, xpos);
+      if (setbegyx(window, ypos, xpos) != ERR) {
+	 xpos += xdiff;
+	 ypos += ydiff;
+	 werase(window);
+	 setbegyx(window, ypos, xpos);
+      }
+   }
 }
 
 /*

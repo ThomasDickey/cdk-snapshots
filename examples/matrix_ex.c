@@ -1,3 +1,5 @@
+/* $Id: matrix_ex.c,v 1.8 2002/07/17 19:34:28 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -18,7 +20,7 @@ int main (void)
    int cols			= 5;
    int vrows			= 3;
    int vcols			= 5;
-   char *coltitle[10], *rowtitle[10], *mesg[100];
+   char *coltitle[10], *rowtitle[10], *mesg[10];
    int colwidth[10], colvalue[10];
 
    /* Set up CDK. */
@@ -29,15 +31,26 @@ int main (void)
    initCDKColor();
 
    /* Create the horizontal and vertical matrix labels. */
-   coltitle[1] = "</B/5>Course";   colwidth[1] = 7 ; colvalue[1] = vUMIXED;
-   coltitle[2] = "</B/33>Lec 1";   colwidth[2] = 7 ; colvalue[2] = vUMIXED;
-   coltitle[3] = "</B/33>Lec 2";   colwidth[3] = 7 ; colvalue[3] = vUMIXED;
-   coltitle[4] = "</B/33>Lec 3";   colwidth[4] = 7 ; colvalue[4] = vUMIXED;
-   coltitle[5] = "</B/7>Flag";	   colwidth[5] = 1 ; colvalue[5] = vUMIXED;
-   rowtitle[1] = "</B/6>Course 1"; rowtitle[2] = "<C></B/6>Course 2";
-   rowtitle[3] = "</B/6>Course 3"; rowtitle[4] = "<L></B/6>Course 4";
-   rowtitle[5] = "</B/6>Course 5"; rowtitle[6] = "<R></B/6>Course 6";
-   rowtitle[7] = "</B/6>Course 7"; rowtitle[8] = "<R></B/6>Course 8";
+#define set_col(n, width, string) \
+   coltitle[n] = string;   colwidth[n] = width ; colvalue[n] = vUMIXED
+
+   set_col(1, 7, "</B/5>Course");
+   set_col(2, 7, "</B/33>Lec 1");
+   set_col(3, 7, "</B/33>Lec 2");
+   set_col(4, 7, "</B/33>Lec 3");
+   set_col(5, 1, "</B/7>Flag");
+
+#define set_row(n, string) \
+   rowtitle[n] = "<C></B/6>" string
+
+   set_row(1, "Course 1");
+   set_row(2, "Course 2");
+   set_row(3, "Course 3");
+   set_row(4, "Course 4");
+   set_row(5, "Course 5");
+   set_row(6, "Course 6");
+   set_row(7, "Course 7");
+   set_row(8, "Course 8");
 
    /* Create the title. */
    title = "<C>This is the CDK\n<C>matrix widget.\n<C><#LT><#HL(30)><#RT>";
@@ -76,12 +89,17 @@ int main (void)
    }
    else if (courseList->exitType == vNORMAL)
    {
-      mesg[0] = "<C>You exited the matrix normally.";
-      mesg[1] = "<C>To get the contents of the matrix cell, you can";
-      mesg[2] = "<C>dereference the info array off of the matrix widget.";
-      mesg[3] = "";
-      mesg[4] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 5);
+      char temp[80];
+
+      sprintf(temp, "Current cell (%d,%d)", courseList->crow, courseList->ccol);
+      mesg[0] = "<L>You exited the matrix normally.";
+      mesg[1] = temp;
+      mesg[2] = "<L>To get the contents of the matrix cell, you can";
+      mesg[3] = "<L>dereference the info array of the matrix widget:";
+      mesg[4] = courseList->info[courseList->crow][courseList->ccol];
+      mesg[5] = "";
+      mesg[6] = "<C>Press any key to continue.";
+      popupLabel (cdkscreen, mesg, 7);
    }
 
    /* Clean up. */

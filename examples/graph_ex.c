@@ -1,3 +1,5 @@
+/* $Id: graph_ex.c,v 1.8 2002/07/17 10:12:05 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -44,7 +46,7 @@ int main (void)
    graphChars	= "0123456789";
 
    /* Create the label values. */
-   mesg[0] = "Press Any Key When Done Viewing The Graph.";
+   mesg[0] = "Press any key when done viewing the graph.";
 
    /* Create the graph widget. */
    graph = newCDKGraph (cdkscreen, CENTER, CENTER, 10, 20,

@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.13 2002/04/30 22:02:21 tom Exp $
+ * $Id: matrix.h,v 1.17 2002/07/27 16:36:19 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -61,6 +61,9 @@ extern "C" {
 /*
  * Define the CDK matrix widget structure.
  */
+typedef struct SMatrix CDKMATRIX;
+typedef void (*MATRIXCB) (CDKMATRIX *matrix, chtype input);
+
 struct SMatrix {
    CDKOBJS	obj;
    WINDOW *	parent;
@@ -114,14 +117,12 @@ struct SMatrix {
    chtype	highlight;
    int		dominant;
    chtype	filler;
-   void *	callbackfn;
+   MATRIXCB	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
    void *	postProcessData;
 };
-typedef struct SMatrix CDKMATRIX;
-typedef void (*MATRIXCB) (CDKMATRIX *matrix, chtype input);
 
 /*
  * This creates a new pointer to a matrix widget.
@@ -157,9 +158,7 @@ int activateCDKMatrix (
 /*
  * This injects a single character into the matrix widget.
  */
-int injectCDKMatrix (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* input */);
+#define injectCDKMatrix(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * These set specific attributes of the matrix widget.
@@ -232,6 +231,13 @@ void setCDKMatrixBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKMatrixBackgroundAttrib (
+		CDKMATRIX *	/* matrix */,
+		chtype		/* attribute */);
+
+/*
  * This draws the matrix on the screen.
  */
 #define drawCDKMatrix(obj,Box) drawCDKObject(obj,Box)
@@ -275,8 +281,7 @@ int moveToCDKMatrixCell (
 /*
  * This destroys the matrix widget and associated memory.
  */
-void destroyCDKMatrix (
-		CDKMATRIX *	/* matrix */);
+#define destroyCDKMatrix(obj) destroyCDKObject(obj)
 
 /*
  * This jumps to the given matrix cell. You can pass in

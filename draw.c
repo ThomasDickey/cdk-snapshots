@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/12/30 23:10:57 $
- * $Revision: 1.40 $
+ * $Date: 2002/07/21 19:26:00 $
+ * $Revision: 1.49 $
  */
 
 /*
@@ -13,24 +13,27 @@
 void initCDKColor (void)
 {
 #ifdef HAVE_START_COLOR
-   /* Declare local variables. */
    int color[]	= {
 			COLOR_WHITE,	COLOR_RED,	COLOR_GREEN,
 			COLOR_YELLOW,	COLOR_BLUE,	COLOR_MAGENTA,
 			COLOR_CYAN,	COLOR_BLACK
 		};
-   int pair	= 1;
-   int x, y;
+   int pair = 1;
+   int fg, bg;
+   int limit;
 
-   /* Start color first. */
-   start_color();
+   if (has_colors()) {
+      start_color();
 
-   /* Create the color pairs. */
-   for (x=0; x < 8; x++)
-   {
-      for (y=0; y < 8; y++)
+      limit = (COLORS < 8) ? COLORS : 8;
+
+      /* Create the color pairs. */
+      for (fg=0; fg < limit; fg++)
       {
-	 init_pair (pair++, color[x], color[y]);
+	 for (bg=0; bg < limit; bg++)
+	 {
+	    init_pair (pair++, color[fg], color[bg]);
+	 }
       }
    }
 #endif
@@ -46,21 +49,14 @@ void boxWindow (WINDOW *window, chtype attr)
    int tly	= 0;
    int brx	= getmaxx(window) - 1;
    int bry	= getmaxy(window) - 1;
-   int x, y;
 
    /* Draw horizontal lines. */
-   for (x=tlx; x<=brx;x++)
-   {
-       mvwaddch (window, tly, x, ACS_HLINE | attr);
-       mvwaddch (window, bry, x, ACS_HLINE | attr);
-    }
+   mvwhline(window, tly, 0, ACS_HLINE | attr, getmaxx(window));
+   mvwhline(window, bry, 0, ACS_HLINE | attr, getmaxx(window));
 
    /* Draw vertical lines. */
-   for (y=tly; y<=bry;y++)
-   {
-       mvwaddch (window, y, tlx, ACS_VLINE | attr);
-       mvwaddch (window, y, brx, ACS_VLINE | attr);
-    }
+   mvwvline(window, 0, tlx, ACS_VLINE | attr, getmaxy(window));
+   mvwvline(window, 0, brx, ACS_VLINE | attr, getmaxy(window));
 
    /* Draw in the corners. */
    mvwaddch (window, tly, tlx, ACS_ULCORNER | attr);
@@ -82,93 +78,42 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
    int y2	= getmaxy(win) - 1;
    int x2	= getmaxx(win) - 1;
    int count	= 0;
-   int x, y;
 
    /* Draw horizontal lines. */
    if (horz != 0)
    {
-      for (x=x1; x<=x2; x++)
-      {
-	 if (attr != 0)
-	 {
-	    mvwaddch (win, y1, x, horz | attr);
-	    mvwaddch (win, y2, x, horz | attr);
-	 }
-	 else
-	 {
-	    mvwaddch (win, y1, x, horz);
-	    mvwaddch (win, y2, x, horz);
-	 }
-      }
+      mvwhline(win, y1, 0, horz | attr, getmaxx(win));
+      mvwhline(win, y2, 0, horz | attr, getmaxx(win));
       count++;
    }
 
    /* Draw vertical lines. */
    if (vert != 0)
    {
-      for (y=y1; y<=y2; y++)
-      {
-	 if (attr != 0)
-	 {
-	    mvwaddch (win, y, x1, vert | attr);
-	    mvwaddch (win, y, x2, vert | attr);
-	 }
-	 else
-	 {
-	    mvwaddch (win, y, x1, vert);
-	    mvwaddch (win, y, x2, vert);
-	 }
-      }
+      mvwvline(win, 0, x1, vert | attr, getmaxy(win));
+      mvwvline(win, 0, x2, vert | attr, getmaxy(win));
       count++;
    }
 
    /* Draw in the corners. */
    if (tlc != 0)
    {
-      if (attr != 0)
-      {
-	 mvwaddch (win, y1, x1, tlc | attr);
-      }
-      else
-      {
-	 mvwaddch (win, y1, x1, tlc);
-      }
+      mvwaddch (win, y1, x1, tlc | attr);
       count++;
    }
    if (trc != 0)
    {
-      if (attr != 0)
-      {
-	 mvwaddch (win, y1, x2, trc | attr);
-      }
-      else
-      {
-	 mvwaddch (win, y1, x2, trc);
-      }
+      mvwaddch (win, y1, x2, trc | attr);
       count++;
    }
    if (blc != 0)
    {
-      if (attr != 0)
-      {
-	 mvwaddch (win, y2, x1, blc | attr);
-      }
-      else
-      {
-	 mvwaddch (win, y2, x1, blc);
-      }
+      mvwaddch (win, y2, x1, blc | attr);
       count++;
    }
    if (brc != 0)
    {
-      if (attr != 0)
-      {
-	 mvwaddch (win, y2, x2, brc | attr);
-      }
-      else
-      {
-	 mvwaddch (win, y2, x2, brc);
-      }
+      mvwaddch (win, y2, x2, brc | attr);
       count++;
    }
    if (count != 0)
@@ -191,19 +136,13 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
    /* Determine if we are drawing a horizontal or vertical line. */
    if (ydiff == 0)
    {
-      /* Horizontal line.      <--------- X --------> */
-      for (x=0; x < xdiff; x++)
-      {
-	 mvwaddch (window, starty, startx + x, line);
-      }
+      if (xdiff > 0)
+	 mvwhline (window, starty, startx, line, xdiff);
    }
    else if (xdiff == 0)
    {
-      /* Vertical line. */
-      for (y=0; y < ydiff; y++)
-      {
-	 mvwaddch (window, starty + y, startx, line);
-      }
+      if (ydiff > 0)
+	 mvwvline (window, starty, startx, line, ydiff);
    }
    else
    {
@@ -253,21 +192,15 @@ void drawShadow (WINDOW *shadowWin)
 {
    if (shadowWin != 0)
    {
-      int x = 0;
       int x_hi = getmaxx(shadowWin) - 1;
       int y_hi = getmaxy(shadowWin) - 1;
 
       /* Draw the line on the bottom. */
-      for (x=1; x <= x_hi; x++)
-      {
-	 mvwaddch (shadowWin, y_hi, x, ACS_HLINE    | A_DIM);
-      }
+      mvwhline(shadowWin, y_hi, 1, ACS_HLINE | A_DIM, x_hi);
 
       /* Draw the line on the right. */
-      for (x=0; x < y_hi; x++)
-      {
-	 mvwaddch (shadowWin, x, x_hi, ACS_VLINE    | A_DIM);
-      }
+      mvwvline(shadowWin, 0, x_hi, ACS_VLINE | A_DIM, y_hi);
+
       mvwaddch (shadowWin, 0,	 x_hi, ACS_URCORNER | A_DIM);
       mvwaddch (shadowWin, y_hi, 0,    ACS_LLCORNER | A_DIM);
       mvwaddch (shadowWin, y_hi, x_hi, ACS_LRCORNER | A_DIM);
@@ -288,11 +221,8 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
    if (align == HORIZONTAL)
    {
       display = MINIMUM(display,getmaxx(window)-1);
-      for (x=0; x < display ; x++)
-      {
-	 /* Draw the message on a horizontal axis. */
-	 mvwaddch (window, ypos, xpos+x, string[x+start] | A_NORMAL);
-      }
+      if (display > 0)
+	 mvwaddnstr (window, ypos, xpos, string + start, display);
    }
    else
    {
@@ -300,8 +230,25 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-	 mvwaddch (window, ypos+x, xpos, string[x+start] | A_NORMAL);
+	 mvwaddch (window, ypos+x, xpos, string[x+start]);
       }
+   }
+}
+
+void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int end)
+{
+   static char *blanks;
+
+   if (start < end)
+   {
+      if (blanks == 0 || (int) strlen(blanks) < (end - start))
+      {
+	 unsigned want = (end - start) + 1000;
+	 freeChar (blanks);
+	 blanks = malloc (want);
+	 cleanChar (blanks, want-1, ' ');
+      }
+      writeChar (window, xpos, ypos, blanks, align, start, end);
    }
 }
 
@@ -335,6 +282,19 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
    }
 }
 
+#ifndef HAVE_WADDCHNSTR
+/* NetBSD bug */
+static int cdk_waddchnstr (WINDOW *window, const chtype *string, int len)
+{
+   int y, x, n;
+   getyx(window, y, x);
+   for (n = 0; n < len; ++n)
+      mvwaddch(window, y, x + n, string[n]);
+}
+#undef  waddchnstr
+#define waddchnstr(window, string, len) cdk_waddchnstr(window, string, len)
+#endif
+
 /*
  * This writes out a chtype * string.
  */
@@ -356,9 +316,10 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
    {
       /* Draw the message on a horizontal axis. */
       display = MINIMUM(diff,getmaxx(window)-xpos);
-      for (x=0; x < display; x++)
+      if (display > 0)
       {
-	 mvwaddch (window, ypos, xpos+x, string[x+start]);
+	 wmove(window, ypos, xpos);
+	 waddchnstr (window, string + start, display);
       }
    }
    else
@@ -420,21 +381,54 @@ void popupLabel (CDKSCREEN *screen, char **mesg, int count)
 {
    /* Declare local variables. */
    CDKLABEL *popup = 0;
+   int oldCursState;
 
    /* Create the label. */
    popup = newCDKLabel (screen, CENTER, CENTER, mesg, count, TRUE, FALSE);
 
+   oldCursState = curs_set(0);
    /* Draw it on the screen. */
    drawCDKLabel (popup, TRUE);
 
    /* Wait for some input. */
    keypad (popup->win, TRUE);
-   wgetch (popup->win);
+   getcCDKObject (ObjOf(popup));
 
    /* Kill it. */
    destroyCDKLabel (popup);
 
    /* Clean the screen. */
+   curs_set(oldCursState);
+   eraseCDKScreen (screen);
+   refreshCDKScreen (screen);
+}
+
+/*
+ * This pops up a message.
+ */
+void popupLabelAttrib (CDKSCREEN *screen, char **mesg, int count, chtype attrib)
+{
+   /* Declare local variables. */
+   CDKLABEL *popup = 0;
+   int oldCursState;
+
+   /* Create the label. */
+   popup = newCDKLabel (screen, CENTER, CENTER, mesg, count, TRUE, FALSE);
+   setCDKLabelBackgroundAttrib(popup, attrib);
+
+   oldCursState = curs_set(0);
+   /* Draw it on the screen. */
+   drawCDKLabel (popup, TRUE);
+
+   /* Wait for some input. */
+   keypad (popup->win, TRUE);
+   getcCDKObject (ObjOf(popup));
+
+   /* Kill it. */
+   destroyCDKLabel (popup);
+
+   /* Clean the screen. */
+   curs_set(oldCursState);
    eraseCDKScreen (screen);
    refreshCDKScreen (screen);
 }
@@ -667,7 +661,7 @@ char *selectFile (CDKSCREEN *screen, char *title)
    }
 
    /* Otherwise... */
-   filename = strdup (holder);
+   filename = copyChar (holder);
    destroyCDKFselect (fselect);
    refreshCDKScreen (screen);
    return (filename);

@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.14 2002/04/30 21:53:26 tom Exp $
+ * $Id: radio.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -137,9 +137,7 @@ int activateCDKRadio (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKRadio (
-		CDKRADIO *	/* radio */,
-		chtype		/* input */);
+#define injectCDKRadio(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * These set various attributes of the widget.
@@ -249,6 +247,13 @@ void setCDKRadioBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKRadioBackgroundAttrib (
+		CDKRADIO *	/* radio */,
+		chtype		/* attribute */);
+
+/*
  * This draws the widget on the screen.
  */
 #define drawCDKRadio(obj,Box) drawCDKObject(obj,Box)
@@ -271,8 +276,7 @@ void setCDKRadioBackgroundColor (
 /*
  * This destroys a widget pointer.
  */
-void destroyCDKRadio (
-		CDKRADIO *	/* radio */);
+#define destroyCDKRadio(obj) destroyCDKObject(obj)
 
 /*
  * These set the pre/post process callback functions.

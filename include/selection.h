@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.14 2002/04/30 22:02:21 tom Exp $
+ * $Id: selection.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -142,9 +142,7 @@ int activateCDKSelection (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKSelection (
-		CDKSELECTION *	/* selection */,
-		chtype		/* input */);
+#define injectCDKSelection(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This draws the selection widget.
@@ -169,8 +167,7 @@ int injectCDKSelection (
 /*
  * This destroys the widget and all associated memory.
  */
-void destroyCDKSelection (
-		CDKSELECTION *	/* selection */);
+#define destroyCDKSelection(obj) destroyCDKObject(obj)
 
 /*
  * This sets various attributes of the selection widget.
@@ -211,6 +208,16 @@ void setCDKSelectionHighlight (
 		chtype		/* highlight */);
 
 chtype getCDKSelectionHighlight (
+		CDKSELECTION *	/* selection */);
+
+/*
+ * set/get the current item index
+ */
+void setCDKSelectionCurrent (
+		CDKSELECTION *	/* selection */,
+		int		/* index */);
+
+int getCDKSelectionCurrent (
 		CDKSELECTION *	/* selection */);
 
 /*
@@ -299,6 +306,13 @@ void setCDKSelectionBoxAttribute (
 void setCDKSelectionBackgroundColor (
 		CDKSELECTION *	/* selection */,
 		char *		/* color */);
+
+/*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKSelectionBackgroundAttrib (
+		CDKSELECTION *	/* selection */,
+		chtype		/* attribute */);
 
 /*
  * These set the pre/post process callback functions.

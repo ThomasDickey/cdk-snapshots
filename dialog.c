@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.63 $
+ * $Date: 2002/07/27 15:00:02 $
+ * $Revision: 1.72 $
  */
 
-DeclareCDKObjects(my_funcs,Dialog);
+DeclareCDKObjects(DIALOG, Dialog, Int);
 
 /*
  * This function creates a dialog widget.
@@ -15,8 +15,9 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
 {
    /* Declare local variables. */
    CDKDIALOG *dialog	= newCDKObject(CDKDIALOG, &my_funcs);
+   int borderSize       = Box ? 1 : 0;
+   int boxHeight	= rows + 2 * borderSize + separator + 1;
    int boxWidth		= MIN_DIALOG_WIDTH;
-   int boxHeight	= rows + 3 + separator;
    int maxmessagewidth	= -1;
    int buttonwidth	= 0;
    int xpos		= xplace;
@@ -43,10 +44,10 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    /* Determine the final dimensions of the box. */
    boxWidth	= MAXIMUM(boxWidth, maxmessagewidth);
    boxWidth	= MAXIMUM(boxWidth, buttonwidth);
-   boxWidth	= boxWidth + 4;
+   boxWidth	= boxWidth + 2 + 2*borderSize;
 
    /* Now we have to readjust the x and y positions. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Set up the dialog box attributes. */
    ScreenOf(dialog)		= cdkscreen;
@@ -62,7 +63,9 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->separator		= separator;
    dialog->exitType		= vNEVER_ACTIVATED;
    ObjOf(dialog)->box		= Box;
-   dialog->shadow		= shadow;
+   ObjOf(dialog)->borderSize	= borderSize;
+   ObjOf(dialog)->inputWindow  	= dialog->win;
+   dialog->shadow  		= shadow;
    dialog->ULChar		= ACS_ULCORNER;
    dialog->URChar		= ACS_URCORNER;
    dialog->LLChar		= ACS_LLCORNER;
@@ -101,13 +104,13 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    for (x = 0; x < buttonCount; x++)
    {
       dialog->buttonPos[x]	= buttonadj;
-      buttonadj			= buttonadj + dialog->buttonLen[x] + 1;
+      buttonadj			= buttonadj + dialog->buttonLen[x] + borderSize;
    }
 
    /* Create the string alignments. */
    for (x=0; x < rows; x++)
    {
-      dialog->infoPos[x] = justifyString (boxWidth, dialog->infoLen[x], dialog->infoPos[x]);
+      dialog->infoPos[x] = justifyString (boxWidth-2*borderSize, dialog->infoLen[x], dialog->infoPos[x]);
    }
 
    /* Was there a shadow? */
@@ -134,6 +137,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    /* Declare local variables. */
    chtype input = 0;
    int ret;
+   int borderSize = ObjOf(dialog)->box ? 1 : 0;
 
    /* Draw the dialog box. */
    drawCDKDialog (dialog, ObjOf(dialog)->box);
@@ -141,7 +145,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    /* Lets move to the first button. */
    writeChtypeAttrib (dialog->win,
 			dialog->buttonPos[dialog->currentButton],
-			dialog->boxHeight-2,
+			dialog->boxHeight-1-borderSize,
 			dialog->buttonLabel[dialog->currentButton],
 			dialog->highlight,
 			HORIZONTAL,
@@ -154,7 +158,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
       for (;;)
       {
 	 /* Get the input. */
-	 input = wgetch (dialog->win);
+	 input = getcCDKObject (ObjOf(dialog));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKDialog (dialog, input);
@@ -188,11 +192,14 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 /*
  * This injects a single character into the dialog widget.
  */
-int injectCDKDialog (CDKDIALOG *dialog, chtype input)
+static int _injectCDKDialog (CDKOBJS *object, chtype input)
 {
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
    int firstButton	= 0;
    int lastButton	= dialog->buttonCount - 1;
    int ppReturn		= 1;
+   int ret		= unknownInt;
+   bool complete	= FALSE;
 
    /* Set the exit type. */
    dialog->exitType = vEARLY_EXIT;
@@ -210,13 +217,13 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
       if (checkCDKObjectBind (vDIALOG, dialog, input) != 0)
       {
 	 dialog->exitType = vESCAPE_HIT;
-	 return -1;
+	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_LEFT : case CDK_PREV :
+	    case KEY_LEFT : case CDK_PREV : case KEY_BTAB : case '\b' :
 		 if (dialog->currentButton == firstButton)
 		 {
 		    dialog->currentButton = lastButton;;
@@ -249,31 +256,35 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
 
 	    case KEY_ESC :
 		 dialog->exitType = vESCAPE_HIT;
-		 return -1;
+		 complete = TRUE;
+		 break;
 
 	    case KEY_RETURN : case KEY_ENTER :
 		 dialog->exitType = vNORMAL;
-		 return dialog->currentButton;
+		 ret = dialog->currentButton;
+		 complete = TRUE;
+		 break;
 
-	 default :
-	    break;
+	    default :
+		 break;
 	 }
       }
 
       /* Should we call a post-process? */
-      if (dialog->postProcessFunction != 0)
+      if (!complete && (dialog->postProcessFunction != 0))
       {
 	 dialog->postProcessFunction (vDIALOG, dialog, dialog->postProcessData, input);
       }
    }
 
-   /* Redraw the buttons. */
-   drawCDKDialogButtons (dialog);
-   wrefresh (dialog->win);
+   if (!complete) {
+      drawCDKDialogButtons (dialog);
+      wrefresh (dialog->win);
+      dialog->exitType = vEARLY_EXIT;
+   }
 
-   /* Exit the dialog box. */
-   dialog->exitType = vEARLY_EXIT;
-   return -1;
+   ResultOf(dialog).valueInt = ret;
+   return (ret != unknownInt);
 }
 
 /*
@@ -301,7 +312,7 @@ static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(dialog), &xpos, &ypos, dialog->boxWidth, dialog->boxHeight);
+   alignxy (WindowOf(dialog), &xpos, &ypos, dialog->boxWidth, dialog->boxHeight, 1);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -309,12 +320,7 @@ static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean rel
 
    /* Move the window to the new location. */
    moveCursesWindow(dialog->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (dialog->shadowWin != 0)
-   {
-      moveCursesWindow(dialog->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(dialog->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(dialog));
@@ -334,6 +340,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    int x = 0;
+   int borderSize = object->borderSize;
 
    /* Is there a shadow? */
    if (dialog->shadowWin != 0)
@@ -355,7 +362,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    for (x=0; x < dialog->messageRows; x++)
    {
       writeChtype (dialog->win,
-			dialog->infoPos[x], x + 1,
+			dialog->infoPos[x] + borderSize, x + borderSize,
 			dialog->info[x],
 			HORIZONTAL, 0,
 			dialog->infoLen[x]);
@@ -372,13 +379,10 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
 /*
  * This function destroys the dialog widget.
  */
-void destroyCDKDialog (CDKDIALOG *dialog)
+static void _destroyCDKDialog (CDKOBJS *object)
 {
-   /* Declare local variables. */
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
    int x = 0;
-
-   /* Erase the object. */
-   eraseCDKDialog (dialog);
 
    /* Clean up the char pointers. */
    for (x=0; x < dialog->messageRows ; x++)
@@ -396,9 +400,6 @@ void destroyCDKDialog (CDKDIALOG *dialog)
 
    /* Unregister this object. */
    unregisterCDKObject (vDIALOG, dialog);
-
-   /* Finish cleaning up. */
-   free (dialog);
 }
 
 /*
@@ -406,9 +407,13 @@ void destroyCDKDialog (CDKDIALOG *dialog)
  */
 static void _eraseCDKDialog (CDKOBJS *object)
 {
-   CDKDIALOG *dialog = (CDKDIALOG *)object;
-   eraseCursesWindow (dialog->win);
-   eraseCursesWindow (dialog->shadowWin);
+   if (validCDKObject (object))
+   {
+      CDKDIALOG *dialog = (CDKDIALOG *)object;
+
+      eraseCursesWindow (dialog->win);
+      eraseCursesWindow (dialog->shadowWin);
+   }
 }
 
 /*
@@ -507,10 +512,19 @@ void setCDKDialogBackgroundColor (CDKDIALOG *dialog, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (dialog->win, holder[0]);
+   setCDKDialogBackgroundAttrib (dialog, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
+}
+
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKDialogBackgroundAttrib (CDKDIALOG *dialog, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (dialog->win, attrib);
 }
 
 /*
@@ -520,19 +534,20 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
 {
    /* Declare local variables. */
    int x;
+   int borderSize = ObjOf(dialog)->box ? 1 : 0;
 
    for (x=0; x < dialog->buttonCount; x++)
    {
       writeChtype (dialog->win,
 			dialog->buttonPos[x],
-			dialog->boxHeight-2,
+			dialog->boxHeight-1-borderSize,
 			dialog->buttonLabel[x],
 			HORIZONTAL, 0,
 			dialog->buttonLen[x]);
    }
    writeChtypeAttrib (dialog->win,
 			dialog->buttonPos[dialog->currentButton],
-			dialog->boxHeight-2,
+			dialog->boxHeight-1-borderSize,
 			dialog->buttonLabel[dialog->currentButton],
 			dialog->highlight,
 			HORIZONTAL, 0,
@@ -543,10 +558,10 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
    {
       for (x=1; x < dialog->boxWidth-1; x++)
       {
-	 mvwaddch (dialog->win, dialog->boxHeight-3, x, ACS_HLINE | dialog->BoxAttrib);
+	 mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, x, ACS_HLINE | dialog->BoxAttrib);
       }
-      mvwaddch (dialog->win, dialog->boxHeight-3, 0, ACS_LTEE | dialog->BoxAttrib);
-      mvwaddch (dialog->win, dialog->boxHeight-3, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);
+      mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, 0, ACS_LTEE | dialog->BoxAttrib);
+      mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);
    }
 }
 
@@ -566,4 +581,24 @@ void setCDKDialogPostProcess (CDKDIALOG *dialog, PROCESSFN callback, void *data)
 {
    dialog->postProcessFunction = callback;
    dialog->postProcessData = data;
+}
+
+static void _focusCDKDialog(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKDialog(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKDialog(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKDialog(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

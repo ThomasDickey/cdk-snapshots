@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/08/19 00:47:17 $
- * $Revision: 1.61 $
+ * $Date: 2002/07/27 16:04:09 $
+ * $Revision: 1.68 $
  */
 
-DeclareCDKObjects(my_funcs,Label);
+DeclareCDKObjects(LABEL, Label, Unknown);
 
 /*
  * This creates a label widget.
@@ -18,7 +18,8 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= INT_MIN;
-   int boxHeight	= rows + 2;
+   int borderSize       = Box ? 1 : 0;
+   int boxHeight	= rows + 2*borderSize;
    int xpos		= xplace;
    int ypos		= yplace;
    int x		= 0;
@@ -30,12 +31,12 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
       label->info[x] = char2Chtype (mesg[x], &label->infoLen[x], &label->infoPos[x]);
       boxWidth = MAXIMUM (boxWidth, label->infoLen[x]);
    }
-   boxWidth += 2;
+   boxWidth += 2*borderSize;
 
    /* Create the string alignments. */
    for (x=0; x < rows; x++)
    {
-      label->infoPos[x] = justifyString (boxWidth, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x]	= justifyString (boxWidth-2*borderSize, label->infoLen[x], label->infoPos[x]);
    }
 
   /*
@@ -45,7 +46,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Create the label. */
    ScreenOf(label)	= cdkscreen;
@@ -58,6 +59,8 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    label->boxWidth	= boxWidth;
    label->boxHeight	= boxHeight;
    ObjOf(label)->box	= Box;
+   ObjOf(label)->borderSize = borderSize;
+   ObjOf(label)->inputWindow  = label->win;
    label->shadow	= shadow;
    label->ULChar	= ACS_ULCORNER;
    label->URChar	= ACS_URCORNER;
@@ -118,6 +121,7 @@ void setCDKLabel (CDKLABEL *label, char **mesg, int lines, boolean Box)
 void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
 {
    int x;
+   int borderSize = BorderOf(label);
 
    /* Clean out the old message. */
    for (x=0; x < label->rows; x++)
@@ -132,7 +136,7 @@ void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
    for (x=0; x < label->rows; x++)
    {
       label->info[x]	= char2Chtype (info[x], &label->infoLen[x], &label->infoPos[x]);
-      label->infoPos[x] = justifyString (label->boxWidth, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x]	= justifyString (label->boxWidth-2*borderSize, label->infoLen[x], label->infoPos[x]);
    }
 
    /* Redraw the label widget. */
@@ -207,10 +211,19 @@ void setCDKLabelBackgroundColor (CDKLABEL *label, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (label->win, holder[0]);
+   setCDKLabelBackgroundAttrib (label, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
+}
+
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKLabelBackgroundAttrib (CDKLABEL *label, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (label->win, attrib);
 }
 
 /*
@@ -220,6 +233,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKLABEL *label = (CDKLABEL *)object;
    int x = 0;
+   int borderSize = object->borderSize;
 
    /* Is there a shadow? */
    if (label->shadowWin != 0)
@@ -240,7 +254,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    /* Draw in the message. */
    for (x=0; x < label->rows; x++)
    {
-      writeChtype (label->win, label->infoPos[x], x + 1, label->info[x], HORIZONTAL, 0, label->infoLen[x]);
+      writeChtype (label->win, label->infoPos[x]+borderSize, x+borderSize, label->info[x], HORIZONTAL, 0, label->infoLen[x]);
    }
 
    /* Refresh the window. */
@@ -253,10 +267,13 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
  */
 static void _eraseCDKLabel (CDKOBJS *object)
 {
-   CDKLABEL *label = (CDKLABEL *)object;
+   if (validCDKObject (object))
+   {
+      CDKLABEL *label = (CDKLABEL *)object;
 
-   eraseCursesWindow (label->win);
-   eraseCursesWindow (label->shadowWin);
+      eraseCursesWindow (label->win);
+      eraseCursesWindow (label->shadowWin);
+   }
 }
 
 /*
@@ -283,7 +300,7 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(label), &xpos, &ypos, label->boxWidth, label->boxHeight);
+   alignxy (WindowOf(label), &xpos, &ypos, label->boxWidth, label->boxHeight, BorderOf(label));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -291,12 +308,7 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
 
    /* Move the window to the new location. */
    moveCursesWindow(label->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (label->shadowWin != 0)
-   {
-      moveCursesWindow(label->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(label->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(label));
@@ -312,12 +324,10 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
 /*
  * This destroys the label object pointer.
  */
-void destroyCDKLabel (CDKLABEL *label)
+static void _destroyCDKLabel (CDKOBJS *object)
 {
+   CDKLABEL *label = (CDKLABEL *)object;
    int x;
-
-   /* Erase the old label. */
-   eraseCDKLabel (label);
 
    /* Free up the character pointers. */
    for (x=0; x < label->rows ; x++)
@@ -331,9 +341,6 @@ void destroyCDKLabel (CDKLABEL *label)
 
    /* Unregister the object. */
    unregisterCDKObject (vLABEL, label);
-
-   /* Free the object pointer. */
-   free (label);
 }
 
 /*
@@ -344,7 +351,7 @@ char waitCDKLabel (CDKLABEL *label, char key)
    /* If the key is null, we'll accept anything. */
    if ( key == 0 )
    {
-      return (wgetch (label->win));
+      return (getcCDKObject (ObjOf(label)));
    }
    else
    {
@@ -352,11 +359,36 @@ char waitCDKLabel (CDKLABEL *label, char key)
       int code;
       for (;;)
       {
-	 code = wgetch(label->win);
+	 code = getcCDKObject(ObjOf(label));
 	 if (code == key)
 	 {
 	    return ( code );
 	 }
       }
    }
+}
+
+static int _injectCDKLabel (CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
+{
+   return 0;
+}
+
+static void _focusCDKLabel(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKLabel(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKLabel(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKLabel(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }
