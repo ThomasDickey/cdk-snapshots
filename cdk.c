@@ -1,9 +1,9 @@
 #include <cdk.h>
 
 /*
- * $Author: tom $
- * $Date: 2000/06/29 01:05:19 $
- * $Revision: 1.167 $
+ * $Author: Simon.Burge $
+ * $Date: 2000/09/15 10:19:51 $
+ * $Revision: 1.168 $
  */
 
 char *GPasteBuffer = 0;
@@ -1223,8 +1223,17 @@ void deleteCursesWindow (WINDOW *window)
  */
 void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
 {
+#ifdef HAVE_MVWIN
+   int xpos, ypos;
+
+   getyx(window, ypos, xpos);
+   xpos += xdiff;
+   ypos += ydiff;
+   mvwin(window, ypos, xpos);
+#else
    window->_begx += xdiff;
    window->_begy += ydiff;
+#endif
 }
 
 /*

@@ -138,11 +138,11 @@ CDKSRC		= \
 		viewer.c
 
 CDKMAN		= \
+		cdk.3 \
 		cdk_alphalist.3 \
 		cdk_binding.3 \
 		cdk_buttonbox.3 \
 		cdk_calendar.3 \
-		cdk_cdk.3 \
 		cdk_dialog.3 \
 		cdk_display.3 \
 		cdk_entry.3 \
@@ -156,6 +156,7 @@ CDKMAN		= \
 		cdk_mentry.3 \
 		cdk_menu.3 \
 		cdk_misc.3 \
+		cdk_position.3 \
 		cdk_radio.3 \
 		cdk_scale.3 \
 		cdk_screen.3 \

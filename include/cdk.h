@@ -176,19 +176,19 @@ typedef int boolean;
  * Not all variants of curses define getmaxx, etc.  But use the provided ones
  * if they exist, to work around differences in the underlying implementation.
  */
-#ifndef getmaxx
+#if !(defined(getmaxx) || defined(HAVE_GETMAXX))
 #define getmaxx(a)	((a)->_maxx)
 #endif
 
-#ifndef getmaxy
+#if !(defined(getmaxy) || defined(HAVE_GETMAXY))
 #define getmaxy(a)	((a)->_maxy)
 #endif
 
-#ifndef getbegx
+#if !(defined(getbegx) || defined(HAVE_GETBEGX))
 #define getbegx(a)	((a)->_begx)
 #endif
 
-#ifndef getbegy
+#if !(defined(getbegy) || defined(HAVE_GETBEGY))
 #define getbegy(a)	((a)->_begy)
 #endif
 

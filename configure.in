@@ -105,7 +105,7 @@ pdcurses) #(vi
 	;;
 esac
 
-CF_CURSES_FUNCS(start_color)
+CF_CURSES_FUNCS(start_color getmaxx getmaxy getbegx getbegy mvwin)
 
 dnl
 dnl Set pre-processor compile time variables.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/06/29 01:02:39 $
- * $Revision: 1.28 $
+ * $Date: 2000/09/15 10:08:31 $
+ * $Revision: 1.29 $
  */
 
 /*
@@ -954,7 +954,7 @@ static void completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object 
    CDKSCROLL *scrollp	= (CDKSCROLL *)fselect->scrollField;
    CDKENTRY *entry	= (CDKENTRY *)fselect->entryField;
    char *filename	= copyChar (entry->info);
-   char *basename	= baseName (filename);
+   char *my_basename	= baseName (filename);
    char *dirname	= dirName (filename);
    char *dirPWD		= dirName (fselect->pwd);
    char *basePWD	= baseName (fselect->pwd);
@@ -1045,7 +1045,7 @@ static void completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object 
    }
 
    /* Clean up our pointers. */
-   freeChar (basename);
+   freeChar (my_basename);
    freeChar (dirname);
    freeChar (dirPWD);
    freeChar (basePWD);
