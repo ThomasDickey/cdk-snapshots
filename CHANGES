@@ -7,6 +7,19 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/11/19 - T.E.Dickey <dickey@his.com>
+========================================
+	+ modify searches in viewer widget to allow for overlapping partial
+	  matches, e.g., if the pattern is "00A", it will find the match in
+	  a line consisting of "000A".  Also corrected logic to matches can
+	  extend to the end of a line.
+	+ add 'N' to viewer to implement reverse search.
+	+ modify ':' command in viewer to start with current line number
+	  rather than 0.  Also adjust the size of the scale widget to allow
+	  for very large line numbers, e.g., more than 5 digits.
+	+ remove an obsolete limit-check in viewer widget that limited view
+	  to 4996 lines, fix a few off-by-one indices.
+
 2003/11/18 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ correct viewer widget, making it interpret tabs and non-printing

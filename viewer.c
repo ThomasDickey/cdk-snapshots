@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/19 01:43:53 $
- * $Revision: 1.127 $
+ * $Date: 2003/11/19 22:31:10 $
+ * $Revision: 1.128 $
  */
 
 /*
@@ -287,7 +287,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
    int currentLine	= 0;
    int x		= 0;
 
-   listSize = MINIMUM(listSize, MAX_LINES - 4);
+   ++listSize;		/* add a line for links */
 
    /* Clean out the old viewer info. (if there is any) */
    cleanCDKViewer(viewer);
@@ -299,7 +299,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
 
    /* Copy the information given. */
    currentLine = 0;
-   for (x=0; x <= listSize; x++)
+   for (x=0; x < listSize; x++)
    {
       if (list[x] == 0)
       {
@@ -370,7 +370,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
    viewer->listSize = currentLine-1;
    if (viewer->listSize <= viewer->viewSize)
    {
-      viewer->maxTopLine = -1;
+      viewer->maxTopLine = 0;
    }
    else
    {
@@ -679,6 +679,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 		 REFRESH = TRUE;
 		 break;
 
+	    case 'N' :
 	    case 'n' :
 		 if (SearchPattern == 0)
 		 {
@@ -687,7 +688,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 		 }
 		 else
 		 {
-		    if (! searchForWord(viewer, SearchPattern, SearchDirection))
+		    if (! searchForWord(viewer, SearchPattern, ((input == 'n') ? SearchDirection : !SearchDirection)))
 		    {
 		       sprintf (temp, "</5>Pattern '%s' not found.<!5>", SearchPattern);
 		       popUpLabel (viewer, tempInfo);
@@ -722,6 +723,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 		 break;
 
 	    default :
+		 Beep();
 		 break;
 	 }
       }
@@ -781,85 +783,71 @@ static void getAndStorePattern (CDKSCREEN *screen)
 }
 
 /*
- * This searches for the word and realigns the value on the screen.
+ * This searches for a line containing the word and realigns the value on the
+ * screen.
  */
 static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
 {
    int x, y, pos, len, plen;
+   int found = 0;
 
-   /* If the pattern is null then return. */
-   if (pattern == 0)
+   /* If the pattern is empty then return. */
+   if (pattern != 0 && (plen = strlen(pattern)) != 0)
    {
-      return(0);
-   }
-   plen = (int)strlen(pattern);
-
-   /* Given the direction, start looking.... */
-   if (direction == DOWN)
-   {
-      /* Start looking from 'here' down. */
-      for (x = viewer->currentTop + 1; x < viewer->listSize; x++)
+      if (direction == DOWN)
       {
-	/*
-	 * Start looking. If we find it, then set the value of
-	 * viewer->currentTop and possibly even leftChar...
-	 */
-	 len	= chlen (viewer->list[x]);
-	 pos	= 0;
-	 for (y=0; y < len; y++)
+	 /* Start looking from 'here' down. */
+	 for (x = viewer->currentTop + 1; !found && (x < viewer->listSize); x++)
 	 {
-	    /* We have to tear the attributes from the chtype. */
-	    char plainChar	= viewer->list[x][y] & A_CHARTEXT;
-
-	    /* We have found the word at this point. */
-	    if (pos == plen)
+	    len = chlen (viewer->list[x]);
+	    for (y = pos = 0; y < len; y++)
 	    {
-	       viewer->currentTop	= (x < viewer->maxTopLine  ? x : viewer->maxTopLine);
-	       viewer->leftChar = (y < viewer->boxWidth ? 0 : viewer->maxLeftChar);
-	       return (1);
+	       int plainChar = CharOf(viewer->list[x][y]);
+
+	       if (CharOf(pattern[pos]) != plainChar)
+	       {
+		  y -= pos;
+		  pos = 0;
+	       }
+	       else if (++pos == plen)
+	       {
+		  viewer->currentTop = (x < viewer->maxTopLine ? x : viewer->maxTopLine);
+		  viewer->leftChar = (y < viewer->boxWidth ? 0 : viewer->maxLeftChar);
+		  found = 1;
+		  break;
+	       }
+
 	    }
-
-	    /* Keep trudging along. */
-	    if (pattern[pos++] != plainChar)
+	 }
+      }
+      else
+      {
+	 /* Start looking from 'here' up. */
+	 for (x = viewer->currentTop - 1; !found && (x >= 0); x--)
+	 {
+	    len = chlen (viewer->list[x]);
+	    for (y = pos = 0; y < len; y++)
 	    {
-	       pos	= 0;
+	       int plainChar = CharOf(viewer->list[x][y]);
+
+	       if (CharOf(pattern[pos]) != plainChar)
+	       {
+		  y -= pos;
+		  pos = 0;
+	       }
+	       else if (++pos == plen)
+	       {
+		  viewer->currentTop = x;
+		  viewer->leftChar = (y < viewer->boxWidth ? 0 : viewer->maxLeftChar);
+		  found = 1;
+		  break;
+	       }
+
 	    }
 	 }
       }
    }
-   else
-   {
-      /* Start looking from 'here' up. */
-      for (x = viewer->currentTop - 1; x >= 0; x--)
-      {
-	/*
-	 * Start looking. If we find it, then set the value of
-	 * viewer->currentTop and possibly even leftChar...
-	 */
-	 len	= chlen (viewer->list[x]);
-	 pos	= 0;
-	 for (y=0; y < len; y++)
-	 {
-	    /* We have to tear the attributes from the chtype. */
-	    char plainChar	= viewer->list[x][y] & A_CHARTEXT;
-
-	    /* We have found the word at this point. */
-	    if (pos == plen)
-	    {
-	       viewer->currentTop	= x;
-	       viewer->leftChar = (y < viewer->boxWidth ? 0 : viewer->maxLeftChar);
-	       return (1);
-	    }
-
-	    /* Keep trudging along. */
-	    if (pattern[pos++] != plainChar)
-	    {
-	       pos	= 0;
-	    }
-	 }
-      }
-   }
-   return(0);
+   return(found);
 }
 
 /*
@@ -869,8 +857,11 @@ static int jumpToLine (CDKVIEWER *viewer)
 {
    int line		= 0;
    CDKSCALE * newline	= newCDKScale (ScreenOf(viewer), CENTER, CENTER,
-				"<C>Jump To Line", "</5>Line :", A_BOLD, 5,
-				0, 0, viewer->maxTopLine + 1, 1, 10, TRUE, TRUE);
+				"<C>Jump To Line", "</5>Line :", A_BOLD,
+				intlen(viewer->listSize) + 1,
+				viewer->currentTop + 1,
+				0, viewer->maxTopLine + 1,
+				1, 10, TRUE, TRUE);
    line = activateCDKScale (newline, 0);
    destroyCDKScale (newline);
    return ((line-1));
@@ -989,7 +980,7 @@ static void drawCDKViewerButtons (CDKVIEWER *viewer)
    for (x=0; x < viewer->buttonLen[viewer->currentButton]; x++)
    {
       /* Strip the character of any extra attributes. */
-      character = viewer->button[viewer->currentButton][x] & A_CHARTEXT;
+      character = CharOf(viewer->button[viewer->currentButton][x]);
 
       /* Add the character into the window. */
       mvwaddch (viewer->win, viewer->boxHeight-2,
