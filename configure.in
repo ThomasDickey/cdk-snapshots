@@ -101,6 +101,8 @@ pdcurses) #(vi
 	CF_PDCURSES_X11
 	;;
 *)
+	CF_CURSES_CPPFLAGS
+	CF_NCURSES_VERSION
 	CF_CURSES_LIBS
 	;;
 esac

@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.5 2000/09/23 15:12:08 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.6 2001/04/20 22:50:02 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,7 +9,7 @@ char *XCursesProgramName="cdkcalendar";
 /*
  * Declare file local prototypes.
  */
-void widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
@@ -333,8 +333,9 @@ void getTodaysDate (int *day, int *month, int *year)
    (*year) = dateInfo->tm_year + 1900;
 }
 
-void widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);
+   return (TRUE);
 }
