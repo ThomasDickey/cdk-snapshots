@@ -7,6 +7,17 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2000/4/9 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ modify newwin() call in subwindow_ex.c to account for actual screen
+	  size rather than assuming 25 lines (reported by Gary Funck
+	  <gary@Intrepid.Com>).
+	+ add CF_X_ATHENA and CF_X_TOOLKIT configure macros for --with-pdcurses
+	  option, needed if the Xcurses or dependent libraries are static
+	  rather than shared.
+	+ correct typo in configure check for HPUX 11.x (reported by Bjorn
+	  Helgaas <helgaas@rsn.hp.com>).
+
 2000/2/18 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add case for HPUX 11.x use of cur_colr library (reported by
