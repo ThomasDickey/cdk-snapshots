@@ -14,7 +14,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  * 	This product includes software developed by Mike Glover
  * 	and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors
@@ -46,6 +46,7 @@ typedef struct CDKBINDING {
 typedef struct CDKFUNCS {
    void		(*drawObj)(struct CDKOBJS *, boolean);
    void		(*eraseObj)(struct CDKOBJS *);
+   void		(*moveObj)(struct CDKOBJS *, int, int, boolean, boolean);
 } CDKFUNCS;
 
 /*
@@ -63,10 +64,27 @@ typedef struct CDKOBJS {
 } CDKOBJS;
 
 #define ObjOf(ptr)    (&(ptr)->obj)
+#define MethodOf(ptr) (ObjOf(ptr)->fn)
 #define ScreenOf(ptr) (ObjOf(ptr)->screen)
 #define WindowOf(ptr) (ScreenOf(ptr)->window)
 
 void *	_newCDKObject(unsigned, CDKFUNCS *);
 #define newCDKObject(type,funcs) (type *)_newCDKObject(sizeof(type),funcs)
+
+#define drawCDKObject(o,box)		MethodOf(o)->drawObj(ObjOf(o),box)
+#define eraseCDKObject(o)		MethodOf(o)->eraseObj(ObjOf(o))
+#define moveCDKObject(o,x,y,rel,ref)  	MethodOf(o)->moveObj(ObjOf(o),x,y,rel,ref)
+
+#define DeclareCDKObjects(table,module) \
+static void _drawCDK ## module (struct CDKOBJS *, boolean); \
+static void _eraseCDK ## module (struct CDKOBJS *); \
+static void _moveCDK ## module (struct CDKOBJS *, int, int, boolean, boolean); \
+static CDKFUNCS table = { \
+    _drawCDK ## module, \
+    _eraseCDK ## module, \
+    _moveCDK ## module, \
+};
+
+void positionCDKObject (CDKOBJS *, WINDOW *);
 
 #endif /* CDK_OBJS_H */

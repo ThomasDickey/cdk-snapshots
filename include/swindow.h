@@ -77,8 +77,6 @@ struct SSwindow {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -224,19 +222,12 @@ void setCDKSwindowBackgroundColor (
 /*
  * This draws the scrolling window on the screen.
  */
-void _drawCDKSwindow (
-		CDKOBJS *	/* swindow */,
-		boolean		/* Box */);
-
-#define drawCDKSwindow(swindow,Box) _drawCDKSwindow(ObjOf(swindow),Box)
+#define drawCDKSwindow(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKSwindow (
-		CDKOBJS *	/* swindow */);
-
-#define eraseCDKSwindow(swindow) _eraseCDKSwindow(ObjOf(swindow))
+#define eraseCDKSwindow(obj) eraseCDKObject(obj)
 
 /*
  * This cleans out all of the information from the window.
@@ -263,18 +254,12 @@ void trimCDKSwindow (
 /*
  * This moves the window to the given location.
  */
-void moveCDKSwindow (
-		CDKSWINDOW *	/* swindow */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKSwindow(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively positions the widget on the screen.
  */
-void positionCDKSwindow (
-		CDKSWINDOW *	/* swindow */);
+#define positionCDKSwindow(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all associated memory.

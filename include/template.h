@@ -83,8 +83,6 @@ struct STemplate {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    void *	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
@@ -201,19 +199,12 @@ void setCDKTemplateBackgroundColor (
 /*
  * This draws the cdktemplate on the screen.
  */
-void _drawCDKTemplate (
-		CDKOBJS *	/* cdktemplate */,
-		boolean 	/* Box */);
-
-#define drawCDKTemplate(cdktemplate,Box) _drawCDKTemplate(ObjOf(cdktemplate),Box)
+#define drawCDKTemplate(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the widget from the screen.
  */
-void _eraseCDKTemplate (
-		CDKOBJS *	/* cdktemplate */);
-
-#define eraseCDKTemplate(cdktemplate) _eraseCDKTemplate(ObjOf(cdktemplate))
+#define eraseCDKTemplate(obj) eraseCDKObject(obj)
 
 /*
  * This erases the cdktemplates contents.
@@ -224,18 +215,12 @@ void cleanCDKTemplate (
 /*
  * This moves the widget to the given location on the screen.
  */
-void moveCDKTemplate (
-		CDKTEMPLATE *	/* cdktemplate */,
-		int 		/* xpos */,
-		int 		/* ypos */,
-		boolean 	/* relative */,
-		boolean 	/* refresh */);
+#define moveCDKTemplate(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively positions the widget on the screen.
  */
-void positionCDKTemplate (
-		CDKTEMPLATE *	/* cdktemplate */);
+#define positionCDKTemplate(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all associated memory.

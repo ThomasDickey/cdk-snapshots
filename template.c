@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:29 $
- * $Revision: 1.78 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.81 $
  */
 
 /*
@@ -19,10 +19,7 @@ static void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction);
  */
 extern char *GPasteBuffer;
 
-static CDKFUNCS my_funcs = {
-    _drawCDKTemplate,
-    _eraseCDKTemplate,
-};
+DeclareCDKObjects(my_funcs,Template)
 
 /*
  * This creates a cdktemplate widget.
@@ -576,8 +573,9 @@ char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, char *info)
 /*
  * This moves the cdktemplate field to the given location.
  */
-void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKTemplate (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    /* Declare local variables. */
    int currentX = getbegx(cdktemplate->win);
    int currentY = getbegy(cdktemplate->win);
@@ -589,7 +587,7 @@ void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean 
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(cdktemplate->win) + xplace;
@@ -629,158 +627,9 @@ void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean 
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(cdktemplate->win);
-   int origY	= getbegy(cdktemplate->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (cdktemplate->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(cdktemplate->win) > 0)
-         {
-            moveCDKTemplate (cdktemplate, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(cdktemplate->win) < getmaxy(WindowOf(cdktemplate))-1)
-         {
-            moveCDKTemplate (cdktemplate, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(cdktemplate->win) > 0)
-         {
-            moveCDKTemplate (cdktemplate, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(cdktemplate->win) < getmaxx(WindowOf(cdktemplate))-1)
-         {
-            moveCDKTemplate (cdktemplate, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(cdktemplate->win) > 0 && getbegx(cdktemplate->win) > 0)
-         {
-            moveCDKTemplate (cdktemplate, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(cdktemplate->win) < getmaxx(WindowOf(cdktemplate))-1
-	  && getbegy(cdktemplate->win) > 0)
-         {
-            moveCDKTemplate (cdktemplate, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(cdktemplate->win) > 0 && getendx(cdktemplate->win) < getmaxx(WindowOf(cdktemplate))-1)
-         {
-            moveCDKTemplate (cdktemplate, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(cdktemplate->win) < getmaxx(WindowOf(cdktemplate))-1
-	  && getendy(cdktemplate->win) < getmaxy(WindowOf(cdktemplate))-1)
-         {
-            moveCDKTemplate (cdktemplate, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKTemplate (cdktemplate, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKTemplate (cdktemplate, getbegx(cdktemplate->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKTemplate (cdktemplate, getbegx(cdktemplate->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKTemplate (cdktemplate, LEFT, getbegy(cdktemplate->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKTemplate (cdktemplate, RIGHT, getbegy(cdktemplate->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKTemplate (cdktemplate, CENTER, getbegy(cdktemplate->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKTemplate (cdktemplate, getbegx(cdktemplate->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(cdktemplate));
-         refreshCDKScreen (ScreenOf(cdktemplate));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKTemplate (cdktemplate, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the tmeplate widget.
  */
-void _drawCDKTemplate (CDKOBJS *object, boolean Box)
+static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    int x;
@@ -998,7 +847,7 @@ void destroyCDKTemplate (CDKTEMPLATE *cdktemplate)
 /*
  * This function erases the widget.
  */
-void _eraseCDKTemplate (CDKOBJS *object)
+static void _eraseCDKTemplate (CDKOBJS *object)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
 

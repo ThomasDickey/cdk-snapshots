@@ -80,8 +80,6 @@ struct SEntry {
    chtype	VChar;
    chtype	HChar;
    chtype	BoxAttrib;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    void *	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
@@ -224,19 +222,12 @@ void setCDKEntryBackgroundColor (
 /*
  * This draws the entry field.
  */
-void _drawCDKEntry (
-		CDKOBJS *	/* entry */,
-		boolean		/* Box */);
-
-#define drawCDKEntry(entry,box) _drawCDKEntry(ObjOf(entry),box)
+#define drawCDKEntry(obj,box) drawCDKObject(obj,box)
 
 /*
  * This erases the widget from the screen.
  */
-void _eraseCDKEntry (
-		CDKOBJS *	/* entry */);
-
-#define eraseCDKEntry(entry) _eraseCDKEntry(ObjOf(entry))
+#define eraseCDKEntry(obj) eraseCDKObject(obj)
 
 /*
  * This cleans out the value of the entry field.
@@ -247,18 +238,12 @@ void cleanCDKEntry (
 /*
  * This moves the widget to the given location.
  */
-void moveCDKEntry (
-		CDKENTRY *	/* entry */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKEntry(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This is an interactive method of moving the widget.
  */
-void positionCDKEntry (
-		CDKENTRY *	/* entry */);
+#define positionCDKEntry(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the memory associated with the widget.

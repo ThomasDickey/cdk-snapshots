@@ -125,11 +125,7 @@ boolean getCDKLabelBox (
 /*
  * This draws the label.
  */
-void _drawCDKLabel (
-		CDKOBJS *	/* label */,
-		boolean		/* Box */);
-
-#define drawCDKLabel(label,Box) _drawCDKLabel(ObjOf(label),Box)
+#define drawCDKLabel(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * These functions set the drawing characters of the widget.
@@ -172,10 +168,7 @@ void setCDKLabelBackgroundColor (
 /*
  * This erases the label.
  */
-void _eraseCDKLabel (
-		CDKOBJS *	/* label */);
-
-#define eraseCDKLabel(label) _eraseCDKLabel(ObjOf(label))
+#define eraseCDKLabel(obj) eraseCDKObject(obj)
 
 /*
  * This destroys the label and the memory used by it.
@@ -194,17 +187,11 @@ char waitCDKLabel (
 /*
  * This moves the label.
  */
-void moveCDKLabel (
-		CDKLABEL *	/* label */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKLabel(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the label.
  */
-void positionCDKLabel (
-		CDKLABEL *	/* label */);
+#define positionCDKLabel(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 #endif /* CDKLABEL_H */

@@ -3,8 +3,8 @@
  
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:51:14 $
- * $Revision: 1.46 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.49 $
  */
  
 /*
@@ -14,10 +14,7 @@ static int adjustAlphalistCB (EObjectType objectType, void *object, void *client
 static int completeWordCB (EObjectType objectType, void *object, void *clientData, chtype key);
 static int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, chtype input);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKAlphalist,
-    _eraseCDKAlphalist,
-};
+DeclareCDKObjects(my_funcs,Alphalist)
 
 /*
  * This creates the alphalist widget.
@@ -146,7 +143,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 /*
  * This erases the file selector from the screen.
  */
-void _eraseCDKAlphalist (CDKOBJS *obj)
+static void _eraseCDKAlphalist (CDKOBJS *obj)
 {
    CDKALPHALIST *alphalist = (CDKALPHALIST *)obj;
 
@@ -160,8 +157,10 @@ void _eraseCDKAlphalist (CDKOBJS *obj)
 /*
  * This moves the alphalist field to the given location.
  */
-void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKAlphalist (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    /* Declare local variables. */
    int currentX = getbegx(alphalist->win);
    int currentY = getbegy(alphalist->win);
@@ -212,158 +211,9 @@ void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean 
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKAlphalist (CDKALPHALIST *alphalist)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(alphalist->win);
-   int origY	= getbegy(alphalist->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (alphalist->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(alphalist->win) > 0)
-         {
-            moveCDKAlphalist (alphalist, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(alphalist->win) < getmaxy(WindowOf(alphalist))-1)
-         {
-            moveCDKAlphalist (alphalist, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(alphalist->win) > 0)
-         {
-            moveCDKAlphalist (alphalist, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1)
-         {
-            moveCDKAlphalist (alphalist, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(alphalist->win) > 0 && getbegx(alphalist->win) > 0)
-         {
-            moveCDKAlphalist (alphalist, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1
-	  && getbegy(alphalist->win) > 0)
-         {
-            moveCDKAlphalist (alphalist, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(alphalist->win) > 0 && getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1)
-         {
-            moveCDKAlphalist (alphalist, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1
-	  && getendy(alphalist->win) < getmaxy(WindowOf(alphalist))-1)
-         {
-            moveCDKAlphalist (alphalist, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKAlphalist (alphalist, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKAlphalist (alphalist, getbegx(alphalist->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKAlphalist (alphalist, getbegx(alphalist->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKAlphalist (alphalist, LEFT, getbegy(alphalist->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKAlphalist (alphalist, RIGHT, getbegy(alphalist->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKAlphalist (alphalist, CENTER, getbegy(alphalist->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKAlphalist (alphalist, getbegx(alphalist->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(alphalist));
-         refreshCDKScreen (ScreenOf(alphalist));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKAlphalist (alphalist, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This draws the file selector widget.
  */
-void _drawCDKAlphalist (CDKOBJS *obj, boolean Box GCC_UNUSED)
+static void _drawCDKAlphalist (CDKOBJS *obj, boolean Box GCC_UNUSED)
 {
     CDKALPHALIST * alphalist = (CDKALPHALIST *)obj;
 

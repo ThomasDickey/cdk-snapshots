@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:29 $
- * $Revision: 1.82 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.85 $
  */
 
 /*
@@ -12,10 +12,7 @@
  */
 static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKSelection,
-    _eraseCDKSelection,
-};
+DeclareCDKObjects(my_funcs,Selection)
 
 /*
  * This function creates a selection widget.
@@ -523,8 +520,9 @@ int injectCDKSelection (CDKSELECTION *selection, chtype input)
 /*
  * This moves the selection field to the given location.
  */
-void moveCDKSelection (CDKSELECTION *selection, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKSelection (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKSELECTION *selection = (CDKSELECTION *)object;
    /* Declare local variables. */
    int currentX = getbegx(selection->win);
    int currentY = getbegy(selection->win);
@@ -536,7 +534,7 @@ void moveCDKSelection (CDKSELECTION *selection, int xplace, int yplace, boolean 
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(selection->win) + xplace;
@@ -577,158 +575,9 @@ void moveCDKSelection (CDKSELECTION *selection, int xplace, int yplace, boolean 
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKSelection (CDKSELECTION *selection)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(selection->win);
-   int origY	= getbegy(selection->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (selection->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(selection->win) > 0)
-         {
-            moveCDKSelection (selection, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(selection->win) < getmaxy(WindowOf(selection))-1)
-         {
-            moveCDKSelection (selection, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(selection->win) > 0)
-         {
-            moveCDKSelection (selection, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(selection->win) < getmaxx(WindowOf(selection))-1)
-         {
-            moveCDKSelection (selection, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(selection->win) > 0 && getbegx(selection->win) > 0)
-         {
-            moveCDKSelection (selection, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(selection->win) < getmaxx(WindowOf(selection))-1
-	  && getbegy(selection->win) > 0)
-         {
-            moveCDKSelection (selection, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(selection->win) > 0 && getendx(selection->win) < getmaxx(WindowOf(selection))-1)
-         {
-            moveCDKSelection (selection, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(selection->win) < getmaxx(WindowOf(selection))-1
-	  && getendy(selection->win) < getmaxy(WindowOf(selection))-1)
-         {
-            moveCDKSelection (selection, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKSelection (selection, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKSelection (selection, getbegx(selection->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKSelection (selection, getbegx(selection->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKSelection (selection, LEFT, getbegy(selection->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKSelection (selection, RIGHT, getbegy(selection->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKSelection (selection, CENTER, getbegy(selection->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKSelection (selection, getbegx(selection->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(selection));
-         refreshCDKScreen (ScreenOf(selection));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKSelection (selection, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the selection list.
  */
-void _drawCDKSelection (CDKOBJS *object, boolean Box)
+static void _drawCDKSelection (CDKOBJS *object, boolean Box)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
    int x;
@@ -982,7 +831,7 @@ void destroyCDKSelection (CDKSELECTION *selection)
 /*
  * This function erases the selection list from the screen.
  */
-void _eraseCDKSelection (CDKOBJS *object)
+static void _eraseCDKSelection (CDKOBJS *object)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
 

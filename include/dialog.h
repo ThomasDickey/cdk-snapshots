@@ -78,8 +78,6 @@ struct SDialogBox {
    boolean	separator;
    boolean	shadow;
    chtype	highlight;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -207,35 +205,22 @@ void drawCDKDialogButton (
 /*
  * This draws the dialog box widget.
  */
-void _drawCDKDialog (
-		CDKOBJS *	/* dialog */,
-		boolean		/* Box */);
-
-#define drawCDKDialog(dialog,box) _drawCDKDialog(ObjOf(dialog),box)
+#define drawCDKDialog(obj,box) drawCDKObject(obj,box)
 
 /*
  * This erases the dialog box from the screen.
  */
-void _eraseCDKDialog (
-		CDKOBJS *	/* dialog */);
-
-#define eraseCDKDialog(dialog) _eraseCDKDialog(ObjOf(dialog))
+#define eraseCDKDialog(obj) eraseCDKObject(obj)
 
 /*
  * This moves the dialog box to a new screen location.
  */
-void moveCDKDialog (
-		CDKDIALOG *	/* dialog */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKDialog(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to position the widget on the screen interactively.
  */
-void positionCDKDialog (
-		CDKDIALOG *	/* dialog */);
+#define positionCDKDialog(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the memory associated with it.

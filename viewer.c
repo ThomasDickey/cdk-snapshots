@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 09:57:10 $
- * $Revision: 1.95 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.98 $
  */
 
 /*
@@ -28,10 +28,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer);
 static char *	SearchPattern	= (char *)NULL;
 int		SearchDirection	= DOWN;
 
-static CDKFUNCS my_funcs = {
-    _drawCDKViewer,
-    _eraseCDKViewer,
-};
+DeclareCDKObjects(my_funcs, Viewer)
 
 /*
  * This function creates a new viewer object.
@@ -870,8 +867,9 @@ static void popUpLabel (CDKVIEWER *viewer, char *mesg)
 /*
  * This moves the viewer field to the given location.
  */
-void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKViewer (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKVIEWER *viewer = (CDKVIEWER *)object;
    /* Declare local variables. */
    int currentX = getbegx(viewer->win);
    int currentY = getbegy(viewer->win);
@@ -918,158 +916,9 @@ void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative,
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKViewer (CDKVIEWER *viewer)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(viewer->win);
-   int origY	= getbegy(viewer->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (viewer->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(viewer->win) > 0)
-         {
-            moveCDKViewer (viewer, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(viewer->win) < getmaxy(WindowOf(viewer))-1)
-         {
-            moveCDKViewer (viewer, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(viewer->win) > 0)
-         {
-            moveCDKViewer (viewer, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(viewer->win) < getmaxx(WindowOf(viewer))-1)
-         {
-            moveCDKViewer (viewer, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(viewer->win) > 0 && getbegx(viewer->win) > 0)
-         {
-            moveCDKViewer (viewer, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(viewer->win) < getmaxx(WindowOf(viewer))-1
-	  && getbegy(viewer->win) > 0)
-         {
-            moveCDKViewer (viewer, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(viewer->win) > 0 && getendx(viewer->win) < getmaxx(WindowOf(viewer))-1)
-         {
-            moveCDKViewer (viewer, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(viewer->win) < getmaxx(WindowOf(viewer))-1
-	  && getendy(viewer->win) < getmaxy(WindowOf(viewer))-1)
-         {
-            moveCDKViewer (viewer, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKViewer (viewer, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKViewer (viewer, getbegx(viewer->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKViewer (viewer, getbegx(viewer->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKViewer (viewer, LEFT, getbegy(viewer->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKViewer (viewer, RIGHT, getbegy(viewer->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKViewer (viewer, CENTER, getbegy(viewer->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKViewer (viewer, getbegx(viewer->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(viewer));
-         refreshCDKScreen (ScreenOf(viewer));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKViewer (viewer, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the viewer widget.
  */
-void _drawCDKViewer (CDKOBJS *object, boolean Box)
+static void _drawCDKViewer (CDKOBJS *object, boolean Box)
 {
    CDKVIEWER *viewer = (CDKVIEWER *)object;
 
@@ -1228,7 +1077,7 @@ void destroyCDKViewer (CDKVIEWER *viewer)
 /*
  * This function erases the viewer widget from the screen.
  */
-void _eraseCDKViewer (CDKOBJS *object)
+static void _eraseCDKViewer (CDKOBJS *object)
 {
    CDKVIEWER *viewer = (CDKVIEWER *)object;
 

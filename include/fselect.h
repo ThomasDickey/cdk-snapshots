@@ -253,35 +253,22 @@ void setCDKFselectBackgroundColor (
 /*
  * This draws the widget.
  */
-void _drawCDKFselect (
-		CDKOBJS *	/* fselect */,
-		boolean		/* Box */);
-
-#define drawCDKFselect(fselect,Box) _drawCDKFselect(ObjOf(fselect),Box)
+#define drawCDKFselect(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the widget.
  */
-void _eraseCDKFselect (
-		CDKOBJS *	/* fselect */);
-
-#define eraseCDKFselect(fselect) _eraseCDKFselect(ObjOf(fselect))
+#define eraseCDKFselect(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKFselect (
-		CDKFSELECT *	/* fselect */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKFselect(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the widget.
  */
-void positionCDKFselect (
-		CDKFSELECT *	/* fselect */);
+#define positionCDKFselect(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the associated memory.

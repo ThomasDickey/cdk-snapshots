@@ -76,8 +76,6 @@ struct SItemList {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -208,11 +206,7 @@ void setCDKItemlistBackgroundColor (
 /*
  * This draws the itemlist widget.
  */
-void _drawCDKItemlist (
-		CDKOBJS *	/* itemlist */,
-		boolean		/* Box */);
-
-#define drawCDKItemlist(itemlist,Box) _drawCDKItemlist(ObjOf(itemlist),Box)
+#define drawCDKItemlist(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This draws the itemlist field.
@@ -223,26 +217,17 @@ void drawCDKItemlistField (
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKItemlist (
-		CDKOBJS *	/* itemlist */);
-
-#define eraseCDKItemlist(itemlist) _eraseCDKItemlist(ObjOf(itemlist))
+#define eraseCDKItemlist(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given position.
  */
-void moveCDKItemlist (
-		CDKITEMLIST *	/* itemlist */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKItemlist(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively move the widget.
  */
-void positionCDKItemlist (
-		CDKITEMLIST *	/* itemlist */);
+#define positionCDKItemlist(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the associated memory.

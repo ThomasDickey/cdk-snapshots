@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.73 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.76 $
  */
 
 /*
@@ -12,10 +12,7 @@
  */
 static void drawCDKRadioList (CDKRADIO *radio, boolean Box);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKRadio,
-    _eraseCDKRadio,
-};
+DeclareCDKObjects(my_funcs,Radio)
 
 /*
  * This function creates the radio widget.
@@ -495,8 +492,9 @@ int injectCDKRadio (CDKRADIO *radio, chtype input)
 /*
  * This moves the radio field to the given location.
  */
-void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKRadio (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKRADIO *radio = (CDKRADIO *)object;
    /* Declare local variables. */
    int currentX = getbegx(radio->win);
    int currentY = getbegy(radio->win);
@@ -508,7 +506,7 @@ void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, bo
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
- */
+    */
    if (relative)
    {
       xpos = getbegx(radio->win) + xplace;
@@ -548,160 +546,10 @@ void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, bo
    }
 }
 
-
-/*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKRadio (CDKRADIO *radio)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(radio->win);
-   int origY	= getbegy(radio->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (radio->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(radio->win) > 0)
-         {
-            moveCDKRadio (radio, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(radio->win) < getmaxy(WindowOf(radio))-1)
-         {
-            moveCDKRadio (radio, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(radio->win) > 0)
-         {
-            moveCDKRadio (radio, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1)
-         {
-            moveCDKRadio (radio, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(radio->win) > 0 && getbegx(radio->win) > 0)
-         {
-            moveCDKRadio (radio, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1
-	  && getbegy(radio->win) > 0)
-         {
-            moveCDKRadio (radio, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(radio->win) > 0 && getendx(radio->win) < getmaxx(WindowOf(radio))-1)
-         {
-            moveCDKRadio (radio, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1
-	  && getendy(radio->win) < getmaxy(WindowOf(radio))-1)
-         {
-            moveCDKRadio (radio, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKRadio (radio, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKRadio (radio, getbegx(radio->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKRadio (radio, getbegx(radio->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKRadio (radio, LEFT, getbegy(radio->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKRadio (radio, RIGHT, getbegy(radio->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKRadio (radio, CENTER, getbegy(radio->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKRadio (radio, getbegx(radio->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(radio));
-         refreshCDKScreen (ScreenOf(radio));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKRadio (radio, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
 /*
  * This function draws the radio widget.
  */
-void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
+static void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKRADIO *radio = (CDKRADIO *)object;
    int x;
@@ -981,7 +829,7 @@ void destroyCDKRadio (CDKRADIO *radio)
 /*
  * This function erases the radio widget.
  */
-void _eraseCDKRadio (CDKOBJS *object)
+static void _eraseCDKRadio (CDKOBJS *object)
 {
    CDKRADIO *radio = (CDKRADIO *)object;
 
@@ -1026,9 +874,9 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
    }
 
    /* Readjust all of the variables ... */
-   radio->listSize		= listSize;
-   radio->viewSize		= radio->boxHeight - (2 + radio->titleLines);
-   radio->lastItem		= listSize - 1;
+   radio->listSize	= listSize;
+   radio->viewSize	= radio->boxHeight - (2 + radio->titleLines);
+   radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 
    /* Is the view size smaller then the window? */

@@ -16,9 +16,9 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- * 	This product includes software developed by Mike Glover
- * 	and contributors.
+ *    must display the following acknowledgment:
+ *      This product includes software developed by Mike Glover
+ *      and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
@@ -39,55 +39,88 @@
 /*
  * This boxes a window.
  */
-void boxWindow (WINDOW *window, chtype attr);
+void boxWindow (
+		WINDOW *	/* window */,
+		chtype		/* attr */);
 
 /*
  * This draws a single line with the character supplied by 'character'
  */
-void drawLine (WINDOW *window,
-                int startx, int starty, 
-		int endx, int endy, 
-		chtype character);
+void drawLine (
+		WINDOW *	/* window */,
+		int		/* startx */,
+		int		/* starty */,
+		int		/* endx */,
+		int		/* endy */,
+		chtype		/* character */);
 
 /*
  * This writes a string segment on the given window.
  */
-void writeChar (WINDOW *window,
-                int xpos, int ypos, char *string,
-                int align, int start, int len);
+void writeChar (
+		WINDOW *	/* window */,
+		int		/* xpos */,
+		int		/* ypos */,
+		char *		/* string */,
+		int		/* align */,
+		int		/* start */,
+		int		/* len */);
 
 /*
  * This writes a string segment on the given window.
  */
-void writeCharAttrib (WINDOW *window,
-                int xpos, int ypos, char *string,
-                chtype attr, int align, int start, int len);
+void writeCharAttrib (
+		WINDOW *	/* window */,
+		int		/* xpos */,
+		int		/* ypos */,
+		char *		/* string */,
+		chtype		/* attr */,
+		int		/* align */,
+		int		/* start */,
+		int		/* len */);
 
 /*
  * This writes a string segment on the given window.
  */
-void writeChtype (WINDOW *window,
-                        int xpos, int ypos, chtype *string,
-                        int align, int start, int len);
+void writeChtype (
+		WINDOW *	/* window */,
+		int		/* xpos */,
+		int		/* ypos */,
+		chtype *	/* string */,
+		int		/* align */,
+		int		/* start */,
+		int		/* len */);
 
 /*
  * This writes a string segment on the given window.
  */
-void writeChtypeAttrib (WINDOW *window,
-                        int xpos, int ypos, chtype *string,
-                        chtype attr, int align, int start, int len);
+void writeChtypeAttrib (
+		WINDOW *	/* window */,
+		int		/* xpos */,
+		int		/* ypos */,
+		chtype *	/* string */,
+		chtype		/* attr */,
+		int		/* align */,
+		int		/* start */,
+		int		/* len */);
 
 /*
  * This boxes a window using the given characters.
  */
-void attrbox (WINDOW *window,
-                chtype tlc, chtype trc,
-                chtype blc, chtype brc,
-                chtype hor, chtype vert,
-                chtype type);
+void attrbox (
+		WINDOW *	/* window */,
+		chtype		/* tlc */,
+		chtype		/* trc */,
+		chtype		/* blc */,
+		chtype		/* brc */,
+		chtype		/* hor */,
+		chtype		/* vert */,
+		chtype		/* type */);
 
 /*
  * This draws the shadow window of the widget.
  */
-void drawShadow (WINDOW *window);
-#endif
+void drawShadow (
+		WINDOW *	/* window */);
+
+#endif /* CDKDRAW_H */

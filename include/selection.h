@@ -95,8 +95,6 @@ struct SSelection {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -140,35 +138,22 @@ int injectCDKSelection (
 /*
  * This draws the selection widget.
  */
-void _drawCDKSelection (
-		CDKOBJS *	/* selection */,
-		boolean		/* Box */);
-
-#define drawCDKSelection(selection,Box) _drawCDKSelection(ObjOf(selection),Box)
+#define drawCDKSelection(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the selection widget from the screen.
  */
-void _eraseCDKSelection (
-		CDKOBJS *	/* selection */);
-
-#define eraseCDKSelection(selection) _eraseCDKSelection(ObjOf(selection))
+#define eraseCDKSelection(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKSelection (
-		CDKSELECTION *	/* selection */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKSelection(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively moves the widget on the screen.
  */
-void positionCDKSelection (
-		CDKSELECTION *	/* selection */);
+#define positionCDKSelection(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all associated memory.

@@ -3,8 +3,8 @@
    
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.74 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.77 $
  */
 
 /*
@@ -14,10 +14,7 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box);
 static void createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers,
 				char **list, int listSize);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKScroll,
-    _eraseCDKScroll,
-};
+DeclareCDKObjects(my_funcs,Scroll)
 
 /*
  * This function creates a new scrolling list widget.
@@ -549,8 +546,9 @@ void setCDKScrollPosition (CDKSCROLL *scrollp, int item)
 /*
  * This moves the scroll field to the given location.
  */
-void moveCDKScroll (CDKSCROLL *scrollp, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKScroll (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKSCROLL *scrollp = (CDKSCROLL *)object;
    /* Declare local variables. */
    int currentX = getbegx(scrollp->win);
    int currentY = getbegy(scrollp->win);
@@ -562,7 +560,7 @@ void moveCDKScroll (CDKSCROLL *scrollp, int xplace, int yplace, boolean relative
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(scrollp->win) + xplace;
@@ -602,160 +600,10 @@ void moveCDKScroll (CDKSCROLL *scrollp, int xplace, int yplace, boolean relative
    }
 }
 
-
-/*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKScroll (CDKSCROLL *scrollp)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(scrollp->win);
-   int origY	= getbegy(scrollp->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (scrollp->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(scrollp->win) > 0)
-         {
-            moveCDKScroll (scrollp, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(scrollp->win) < getmaxy(WindowOf(scrollp))-1)
-         {
-            moveCDKScroll (scrollp, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(scrollp->win) > 0)
-         {
-            moveCDKScroll (scrollp, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(scrollp->win) < getmaxx(WindowOf(scrollp))-1)
-         {
-            moveCDKScroll (scrollp, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(scrollp->win) > 0 && getbegx(scrollp->win) > 0)
-         {
-            moveCDKScroll (scrollp, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(scrollp->win) < getmaxx(WindowOf(scrollp))-1
-	  && getbegy(scrollp->win) > 0)
-         {
-            moveCDKScroll (scrollp, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(scrollp->win) > 0 && getendx(scrollp->win) < getmaxx(WindowOf(scrollp))-1)
-         {
-            moveCDKScroll (scrollp, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(scrollp->win) < getmaxx(WindowOf(scrollp))-1
-	  && getendy(scrollp->win) < getmaxy(WindowOf(scrollp))-1)
-         {
-            moveCDKScroll (scrollp, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKScroll (scrollp, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKScroll (scrollp, getbegx(scrollp->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKScroll (scrollp, getbegx(scrollp->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKScroll (scrollp, LEFT, getbegy(scrollp->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKScroll (scrollp, RIGHT, getbegy(scrollp->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKScroll (scrollp, CENTER, getbegy(scrollp->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKScroll (scrollp, getbegx(scrollp->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(scrollp));
-         refreshCDKScreen (ScreenOf(scrollp));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKScroll (scrollp, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
 /*
  * This function draws the scrolling list widget.
  */
-void _drawCDKScroll (CDKOBJS *object, boolean Box)
+static void _drawCDKScroll (CDKOBJS *object, boolean Box)
 {
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
    int x;
@@ -1037,7 +885,7 @@ void destroyCDKScroll (CDKSCROLL *scrollp)
 /*
  * This function erases the scrolling list from the screen.
  */
-void _eraseCDKScroll (CDKOBJS *object)
+static void _eraseCDKScroll (CDKOBJS *object)
 {
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
 

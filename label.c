@@ -3,14 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.54 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.57 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKLabel,
-    _eraseCDKLabel,
-};
+DeclareCDKObjects(my_funcs,Label)
 
 /*
  * This creates a label widget.
@@ -121,7 +118,6 @@ void setCDKLabel (CDKLABEL *label, char **mesg, int lines, boolean Box)
  */
 void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
 {
-   /* Declare local vairables. */
    int x;
 
    /* Clean out the old message. */
@@ -221,7 +217,7 @@ void setCDKLabelBackgroundColor (CDKLABEL *label, char *color)
 /*
  * This draws the label widget.
  */
-void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
+static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKLABEL *label = (CDKLABEL *)object;
    int x = 0;
@@ -256,7 +252,7 @@ void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
 /*
  * This erases the label widget.
  */
-void _eraseCDKLabel (CDKOBJS *object)
+static void _eraseCDKLabel (CDKOBJS *object)
 {
    CDKLABEL *label = (CDKLABEL *)object;
 
@@ -267,9 +263,9 @@ void _eraseCDKLabel (CDKOBJS *object)
 /*
  * This moves the label field to the given location.
  */
-void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
-   /* Declare local variables. */
+   CDKLABEL *label = (CDKLABEL *)object;
    int currentX = getbegx(label->win);
    int currentY = getbegy(label->win);
    int xpos	= xplace;
@@ -315,161 +311,10 @@ void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, bo
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKLabel (CDKLABEL *label)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(label->win);
-   int origY	= getbegy(label->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (label->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(label->win) > 0)
-         {
-            moveCDKLabel (label, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(label->win) < getmaxy(WindowOf(label))-1)
-         {
-            moveCDKLabel (label, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(label->win) > 0)
-         {
-            moveCDKLabel (label, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(label->win) < getmaxx(WindowOf(label))-1)
-         {
-            moveCDKLabel (label, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(label->win) > 0 && getbegx(label->win) > 0)
-         {
-            moveCDKLabel (label, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(label->win) < getmaxx(WindowOf(label))-1
-	  && getbegy(label->win) > 0)
-         {
-            moveCDKLabel (label, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(label->win) > 0 && getendx(label->win) < getmaxx(WindowOf(label))-1)
-         {
-            moveCDKLabel (label, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(label->win) < getmaxx(WindowOf(label))-1
-	  && getendy(label->win) < getmaxy(WindowOf(label))-1)
-         {
-            moveCDKLabel (label, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKLabel (label, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKLabel (label, getbegx(label->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKLabel (label, getbegx(label->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKLabel (label, LEFT, getbegy(label->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKLabel (label, RIGHT, getbegy(label->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKLabel (label, CENTER, getbegy(label->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKLabel (label, getbegx(label->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(label));
-         refreshCDKScreen (ScreenOf(label));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKLabel (label, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-
-/*
  * This destroys the label object pointer.
  */
 void destroyCDKLabel (CDKLABEL *label)
 {
-   /* Declare local variables. */
    int x;
 
    /* Erase the old label. */

@@ -68,28 +68,99 @@ default:: cdklib
 #
 # Create the file lists.
 #
-CDKHDR		= cdk.h alphalist.h binding.h buttonbox.h \
-			calendar.h cdk_config.h cdk_objs.h \
-			cdk_util.h cdkscreen.h \
-			curdefs.h dialog.h draw.h entry.h \
-			fselect.h graph.h histogram.h itemlist.h \
-			label.h marquee.h matrix.h mentry.h \
-			menu.h radio.h scale.h scroll.h selection.h \
-			slider.h swindow.h template.h viewer.h
-CDKSRC		= draw.c cdk.c cdkscreen.c binding.c debug.c \
-			alphalist.c buttonbox.c calendar.c dialog.c \
-			entry.c graph.c fselect.c histogram.c itemlist.c \
-			label.c marquee.c matrix.c mentry.c menu.c radio.c \
-			scale.c scroll.c selection.c slider.c swindow.c \
-			template.c viewer.c
-CDKMAN		= cdk_alphalist.3 cdk_binding.3 cdk_buttonbox.3 cdk_calendar.3 \
-			cdk_cdk.3 cdk_dialog.3 cdk_display.3 cdk_entry.3 \
-			cdk_fselect.3 cdk_graph.3 cdk_histogram.3 cdk_itemlist.3 \
-			cdk_label.3 cdk_marquee.3 cdk_matrix.3 cdk_mentry.3 \
-			cdk_menu.3 cdk_misc.3 cdk_radio.3 cdk_scale.3 cdk_screen.3 \
-			cdk_scroll.3 cdk_selection.3 cdk_slider.3 cdk_swindow.3 \
-			cdk_template.3 cdk_viewer.3
+CDKHDR		= \
+		alphalist.h \
+		binding.h \
+		buttonbox.h \
+		calendar.h \
+		cdk.h \
+		cdk_config.h \
+		cdk_objs.h \
+		cdk_util.h \
+		cdkscreen.h \
+		curdefs.h \
+		dialog.h \
+		draw.h \
+		entry.h \
+		fselect.h \
+		graph.h \
+		histogram.h \
+		itemlist.h \
+		label.h \
+		marquee.h \
+		matrix.h \
+		mentry.h \
+		menu.h \
+		radio.h \
+		scale.h \
+		scroll.h \
+		selection.h \
+		slider.h \
+		swindow.h \
+		template.h \
+		viewer.h
+
+CDKSRC		= \
+		alphalist.c \
+		binding.c \
+		buttonbox.c \
+		calendar.c \
+		cdk.c \
+		cdkscreen.c \
+		debug.c \
+		dialog.c \
+		draw.c \
+		entry.c \
+		fselect.c \
+		graph.c \
+		histogram.c \
+		itemlist.c \
+		label.c \
+		marquee.c \
+		matrix.c \
+		mentry.c \
+		menu.c \
+		position.c \
+		radio.c \
+		scale.c \
+		scroll.c \
+		selection.c \
+		slider.c \
+		swindow.c \
+		template.c \
+		viewer.c
+
+CDKMAN		= \
+		cdk_alphalist.3 \
+		cdk_binding.3 \
+		cdk_buttonbox.3 \
+		cdk_calendar.3 \
+		cdk_cdk.3 \
+		cdk_dialog.3 \
+		cdk_display.3 \
+		cdk_entry.3 \
+		cdk_fselect.3 \
+		cdk_graph.3 \
+		cdk_histogram.3 \
+		cdk_itemlist.3 \
+		cdk_label.3 \
+		cdk_marquee.3 \
+		cdk_matrix.3 \
+		cdk_mentry.3 \
+		cdk_menu.3 \
+		cdk_misc.3 \
+		cdk_radio.3 \
+		cdk_scale.3 \
+		cdk_screen.3 \
+		cdk_scroll.3 \
+		cdk_selection.3 \
+		cdk_slider.3 \
+		cdk_swindow.3 \
+		cdk_template.3 \
+		cdk_viewer.3
+
 CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
+
 CDKOBJS		= $(CDKSRC:.c=.o)
 
 #

@@ -103,8 +103,6 @@ struct SMatrix {
    chtype	highlight;
    int		dominant;
    chtype	filler;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    void *	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
@@ -225,19 +223,12 @@ void setCDKMatrixBackgroundColor (
 /*
  * This draws the matrix on the screen.
  */
-void _drawCDKMatrix (
-		CDKOBJS *	/* matrix */,
-		boolean		/* Box */);
-
-#define drawCDKMatrix(matrix,Box) _drawCDKMatrix(ObjOf(matrix),Box)
+#define drawCDKMatrix(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the matrix from the screen.
  */
-void _eraseCDKMatrix (
-		CDKOBJS *	/* matrix */);
-
-#define eraseCDKMatrix(matrix) _eraseCDKMatrix(ObjOf(matrix))
+#define eraseCDKMatrix(obj) eraseCDKObject(obj)
 
 /*
  * This cleans out all the cells from the matrix.
@@ -263,18 +254,12 @@ int moveToCDKMatrixCell (
 /*
  * This moves the matrix on the screen to the given location.
  */
-void moveCDKMatrix (
-		CDKMATRIX *	/* matrix */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKMatrix(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the matrix.
  */
-void positionCDKMatrix (
-		CDKMATRIX *	/* matrix */);
+#define positionCDKMatrix(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the matrix widget and associated memory.

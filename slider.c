@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:29 $
- * $Revision: 1.38 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.41 $
  */
 
 /*
@@ -12,10 +12,7 @@
  */
 static void drawCDKSliderField (CDKSLIDER *slider);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKSlider,
-    _eraseCDKSlider,
-};
+DeclareCDKObjects(my_funcs,Slider)
 
 /*
  * This function creates a slider widget.
@@ -365,8 +362,9 @@ int injectCDKSlider (CDKSLIDER *slider, chtype input)
 /*
  * This moves the slider field to the given location.
  */
-void moveCDKSlider (CDKSLIDER *slider, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKSlider (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKSLIDER *slider = (CDKSLIDER *)object;
    /* Declare local variables. */
    int currentX = getbegx(slider->win);
    int currentY = getbegy(slider->win);
@@ -378,7 +376,7 @@ void moveCDKSlider (CDKSLIDER *slider, int xplace, int yplace, boolean relative,
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(slider->win) + xplace;
@@ -418,158 +416,9 @@ void moveCDKSlider (CDKSLIDER *slider, int xplace, int yplace, boolean relative,
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKSlider (CDKSLIDER *slider)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(slider->win);
-   int origY	= getbegy(slider->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (slider->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(slider->win) > 0)
-         {
-            moveCDKSlider (slider, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(slider->win) < getmaxy(WindowOf(slider))-1)
-         {
-            moveCDKSlider (slider, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(slider->win) > 0)
-         {
-            moveCDKSlider (slider, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(slider->win) < getmaxx(WindowOf(slider))-1)
-         {
-            moveCDKSlider (slider, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(slider->win) > 0 && getbegx(slider->win) > 0)
-         {
-            moveCDKSlider (slider, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(slider->win) < getmaxx(WindowOf(slider))-1
-	  && getbegy(slider->win) > 0)
-         {
-            moveCDKSlider (slider, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(slider->win) > 0 && getendx(slider->win) < getmaxx(WindowOf(slider))-1)
-         {
-            moveCDKSlider (slider, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(slider->win) < getmaxx(WindowOf(slider))-1
-	  && getendy(slider->win) < getmaxy(WindowOf(slider))-1)
-         {
-            moveCDKSlider (slider, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKSlider (slider, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKSlider (slider, getbegx(slider->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKSlider (slider, getbegx(slider->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKSlider (slider, LEFT, getbegy(slider->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKSlider (slider, RIGHT, getbegy(slider->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKSlider (slider, CENTER, getbegy(slider->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKSlider (slider, getbegx(slider->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(slider));
-         refreshCDKScreen (ScreenOf(slider));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKSlider (slider, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the slider widget.
  */
-void _drawCDKSlider (CDKOBJS *object, boolean Box)
+static void _drawCDKSlider (CDKOBJS *object, boolean Box)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
    int x;
@@ -742,7 +591,7 @@ void destroyCDKSlider (CDKSLIDER *slider)
 /*
  * This function erases the slider widget from the screen.
  */
-void _eraseCDKSlider (CDKOBJS *object)
+static void _eraseCDKSlider (CDKOBJS *object)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
 

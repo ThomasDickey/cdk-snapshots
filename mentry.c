@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.105 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.108 $
  */
 
 /*
@@ -17,10 +17,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
  */
 extern char *GPasteBuffer;
 
-static CDKFUNCS my_funcs = {
-    _drawCDKMentry,
-    _eraseCDKMentry,
-};
+DeclareCDKObjects(my_funcs,Mentry)
 
 /*
  * This creates a pointer to a muliple line entry widget.
@@ -655,8 +652,9 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
 /*
  * This moves the mentry field to the given location.
  */
-void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKMENTRY *mentry = (CDKMENTRY *)object;
    /* Declare local variables. */
    int currentX = getbegx(mentry->win);
    int currentY = getbegy(mentry->win);
@@ -668,7 +666,7 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(mentry->win) + xplace;
@@ -702,156 +700,6 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
    if (refresh_flag)
    {
       drawCDKMentry (mentry, ObjOf(mentry)->box);
-   }
-}
-
-
-/*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKMentry (CDKMENTRY *mentry)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(mentry->win);
-   int origY	= getbegy(mentry->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (mentry->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(mentry->win) > 0)
-         {
-            moveCDKMentry (mentry, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(mentry->win) < getmaxy(WindowOf(mentry))-1)
-         {
-            moveCDKMentry (mentry, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(mentry->win) > 0)
-         {
-            moveCDKMentry (mentry, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1)
-         {
-            moveCDKMentry (mentry, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(mentry->win) > 0 && getbegx(mentry->win) > 0)
-         {
-            moveCDKMentry (mentry, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1
-	  && getbegy(mentry->win) > 0)
-         {
-            moveCDKMentry (mentry, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(mentry->win) > 0 && getendx(mentry->win) < getmaxx(WindowOf(mentry))-1)
-         {
-            moveCDKMentry (mentry, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1
-	  && getendy(mentry->win) < getmaxy(WindowOf(mentry))-1)
-         {
-            moveCDKMentry (mentry, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKMentry (mentry, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKMentry (mentry, getbegx(mentry->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKMentry (mentry, getbegx(mentry->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKMentry (mentry, LEFT, getbegy(mentry->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKMentry (mentry, RIGHT, getbegy(mentry->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKMentry (mentry, CENTER, getbegy(mentry->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKMentry (mentry, getbegx(mentry->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(mentry));
-         refreshCDKScreen (ScreenOf(mentry));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKMentry (mentry, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
    }
 }
 
@@ -1053,7 +901,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 /*
  * This function draws the multiple line entry field.
  */
-void _drawCDKMentry (CDKOBJS *object, boolean Box)
+static void _drawCDKMentry (CDKOBJS *object, boolean Box)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
 
@@ -1152,7 +1000,7 @@ void setCDKMentryBackgroundColor (CDKMENTRY *mentry, char *color)
 /*
  * This function erases the multiple line entry field from the screen.
  */
-void _eraseCDKMentry (CDKOBJS *object)
+static void _eraseCDKMentry (CDKOBJS *object)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
 

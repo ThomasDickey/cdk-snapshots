@@ -11,7 +11,7 @@ me.
 
 If you do this, I will mail you back telling you if the information was
 sufficient or not. If it is, I will tell you when I hope to have this bug
-licked by. If you need an urgent update (ie: your boss is crawling down your
+licked by. If you need an urgent update (i.e., your boss is crawling down your
 throat for your program to work) tell me, I'll get to it ASAP. BTW, thanks for
 trusting my code enough to use in the 'real world' :).
 
@@ -129,17 +129,17 @@ Release	Widget		Problem						Fixed
 			it should be compared to where it has to be.
 4.8.2	Swindow		The scrolling window would core out if too many	Mar/97
 			lines were added. This was because I never
-			checked the maximum lines value suuplied
+			checked the maximum lines value supplied
 			when the widget was created.
 ------------------------------------------------------------------------------
-4.9.0	Dialog		The seperation line on the widget was being	April/97
+4.9.0	Dialog		The separation line on the widget was being	April/97
 			drawn too far if the curses breed was not
 			ncurses.
-4.9.0	Viewer		The seperation line on the widget was being	April/97
+4.9.0	Viewer		The separation line on the widget was being	April/97
 			drawn too far if the curses breed was not
 			ncurses.
 4.9.0	Matrix		The boxwidth would not get calculated correctly	April/97
-			when a wierd mixture of rows/columns and
+			when a weird mixture of rows/columns and
 			spacing was used.
 4.9.0	Swindow		Centered text did not scroll correctly.		May/97
 4.9.0	Fselect		Fixed cut and paste typo in the 		May/97

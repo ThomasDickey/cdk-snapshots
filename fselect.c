@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.18 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.21 $
  */
 
 /*
@@ -19,10 +19,7 @@ static char *expandFilename (char *filename);
  */
 extern char *GPasteBuffer;
 
-static CDKFUNCS my_funcs = {
-    _drawCDKFselect,
-    _eraseCDKFselect,
-};
+DeclareCDKObjects(my_funcs,Fselect)
 
 /*
  * This creates a file selection widget.
@@ -181,7 +178,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
 /*
  * This erases the file selector from the screen.
  */
-void _eraseCDKFselect (CDKOBJS *object)
+static void _eraseCDKFselect (CDKOBJS *object)
 {
    CDKFSELECT * fselect = (CDKFSELECT *)object;
 
@@ -193,8 +190,9 @@ void _eraseCDKFselect (CDKOBJS *object)
 /*
  * This moves the fselect field to the given location.
  */
-void moveCDKFselect (CDKFSELECT *fselect, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKFselect (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKFSELECT *fselect = (CDKFSELECT *)object;
    /* Declare local variables. */
    int currentX = getbegx(fselect->win);
    int currentY = getbegy(fselect->win);
@@ -243,158 +241,9 @@ void moveCDKFselect (CDKFSELECT *fselect, int xplace, int yplace, boolean relati
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKFselect (CDKFSELECT *fselect)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(fselect->win);
-   int origY	= getbegy(fselect->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (fselect->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(fselect->win) > 0)
-         {
-            moveCDKFselect (fselect, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(fselect->win) < getmaxy(WindowOf(fselect))-1)
-         {
-            moveCDKFselect (fselect, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(fselect->win) > 0)
-         {
-            moveCDKFselect (fselect, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(fselect->win) < getmaxx(WindowOf(fselect))-1)
-         {
-            moveCDKFselect (fselect, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(fselect->win) > 0 && getbegx(fselect->win) > 0)
-         {
-            moveCDKFselect (fselect, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(fselect->win) < getmaxx(WindowOf(fselect))-1
-	  && getbegy(fselect->win) > 0)
-         {
-            moveCDKFselect (fselect, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(fselect->win) > 0 && getendx(fselect->win) < getmaxx(WindowOf(fselect))-1)
-         {
-            moveCDKFselect (fselect, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(fselect->win) < getmaxx(WindowOf(fselect))-1
-	  && getendy(fselect->win) < getmaxy(WindowOf(fselect))-1)
-         {
-            moveCDKFselect (fselect, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKFselect (fselect, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKFselect (fselect, getbegx(fselect->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKFselect (fselect, getbegx(fselect->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKFselect (fselect, LEFT, getbegy(fselect->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKFselect (fselect, RIGHT, getbegy(fselect->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKFselect (fselect, CENTER, getbegy(fselect->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKFselect (fselect, getbegx(fselect->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(fselect));
-         refreshCDKScreen (ScreenOf(fselect));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKFselect (fselect, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This draws the file selector widget.
  */
-void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
+static void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKFSELECT *fselect = (CDKFSELECT *)object;
 
