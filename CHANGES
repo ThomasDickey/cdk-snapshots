@@ -5,6 +5,12 @@ Modifications copyright Thomas E. Dickey 1999-2004, 2005
 
 This file outlines all of the changes/additions from one release to another.
 
+2005/03/23 - T.E.Dickey <dickey@his.com>
+	+ modify deleteCDKScrollItem() to resequence numbers (request by Fu
+	  Steve X).
+	+ cleanup memory allocation in scroll.c, make addCDKScrollItem
+	  reallocate the scroll widget's arrays (report by Fu Steve X).
+
 2005/03/08 - T.E.Dickey <dickey@his.com>
 	+ correct logic of deleteCDKScrollItem(), which did not preserve the
 	  final null-pointer at the end of the list (report by Fu Steve X).
