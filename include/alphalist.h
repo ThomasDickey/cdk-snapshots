@@ -1,9 +1,9 @@
 #ifndef CDKALPHALIST_H
 #define CDKALPHALIST_H	1
 
-#include "cdk.h"
-#include "entry.h"
-#include "scroll.h"
+#include <cdk.h>
+#include <entry.h>
+#include <scroll.h>
 
 /*
  * Description of the widget:

@@ -1,11 +1,29 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Some changes copyright Thomas Dickey 1999-2000
+Some changes copyright Thomas Dickey 1999, 2000
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
+
+2000/2/18 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ add case for HPUX 11.x use of cur_colr library (reported by
+	  Bjorn Helgaas <helgaas@rsn.hp.com>).
+	+ add configure option --with-pdcurses, to link with the X11 version
+	  of PDCurses.
+	+ eliminate quoted includes, in favor of bracketed form.
+	+ ifdef'd limits.h, moving that into cdk.h with a fallback definition
+	  for INT_MIN and INT_MAX.
+	+ minor fixes for building with SunOS 5lib version: configure check
+	  for getopt variables, correction to demos/Makefile.in
+
+2000/1/17 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ add lib-prefix and executable suffix checks to configure script for
+	  port to OS/2 EMX.
+	+ add configure check for lstat().
 
 2000/1/16 - T.E.Dickey <dickey@clark.net>
 ==========================================
@@ -32,7 +50,7 @@ were fixed from release to release.
 ==========================================
 	+ update email and url for Mike Glover based on 4.9.9 version dated
 	  1999/7/29.
-	
+
 1999/6/26 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add configure options --with-dbmalloc and --with-dmalloc to simplify

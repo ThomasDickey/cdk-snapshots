@@ -1,4 +1,4 @@
-#include "cdk.h"
+#include <cdk.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="scale_ex";

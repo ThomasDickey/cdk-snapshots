@@ -32,13 +32,14 @@
 #
 SHELL		= /bin/sh
 
-CDKLIB		= libcdk.a
+CDKLIB		= @LIB_PREFIX@cdk.a
 VERSION		= 4.9.9
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
 
 srcdir		= @srcdir@
+VPATH		= $(srcdir)
 
 DESTDIR		=
 includedir	= $(DESTDIR)@includedir@
@@ -50,7 +51,7 @@ LIB_DIR		= $(libdir)
 MAN_DIR		= $(mandir)/man3
 
 CFLAGS		= @CFLAGS@
-CPPFLAGS	= -I$(srcdir)/include @CPPFLAGS@ @DEFS@
+CPPFLAGS	= -I./include -I$(srcdir)/include @CPPFLAGS@ @DEFS@
 EXTRA_CFLAGS	= @EXTRA_CFLAGS@
 CC		= @CC@
 LDFLAGS		= @LDFLAGS@
@@ -162,6 +163,8 @@ CDKMAN		= \
 CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
 
 CDKOBJS		= $(CDKSRC:.c=.o)
+
+$(CDKOBJS) :	include/cdk_config.h
 
 #
 # Standard library directive.

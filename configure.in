@@ -4,6 +4,8 @@ dnl
 AC_INIT(include/cdk.h)
 AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
 
+CF_CHECK_CACHE
+
 dnl
 dnl Checks for programs.
 dnl
@@ -16,6 +18,8 @@ AC_PROG_INSTALL
 AC_C_CONST
 
 CF_DISABLE_ECHO
+CF_PROG_EXT
+CF_LIB_PREFIX
 
 AC_ARG_WITH(warnings,
 [  --with-warnings         turn on gcc warnings, for debugging ],[
@@ -47,22 +51,15 @@ if test $with_dmalloc = yes ; then
 	AC_CHECK_LIB(dmalloc,dmalloc_debug)
 fi
 
-AC_ARG_WITH(ncurses,
-	[  --with-ncurses          compile/link with ncurses library],
-	[	
-	CF_NCURSES_CPPFLAGS
-	CF_NCURSES_LIBS
-	],[
-	CF_CURSES_LIBS
-])
-AC_CHECK_FUNC(start_color,[AC_DEFINE(HAVE_COLOR)])
-
 dnl
 dnl Checks for header files.
 dnl
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(limits.h unistd.h)
+AC_CHECK_HEADERS(\
+limits.h \
+unistd.h \
+)
 
 dnl
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -70,6 +67,7 @@ dnl
 AC_TYPE_MODE_T
 AC_STRUCT_TM
 CF_CURSES_CHTYPE
+CF_GETOPT_HEADER
 
 dnl
 dnl Checks for library functions.
@@ -82,9 +80,26 @@ strdup \
 strerror \
 )
 
+CF_FUNC_LSTAT
+
+dnl Check for curses libraries last, since XCurses has dependencies which
+dnl break the checks for other functions.
+AC_ARG_WITH(ncurses,
+	[  --with-ncurses          compile/link with ncurses library],
+	[	
+	CF_NCURSES_CPPFLAGS
+	CF_NCURSES_LIBS
+	],[
+AC_ARG_WITH(pdcurses,
+	[  --with-pdcurses         compile/link with pdcurses X11 library],
+	[CF_PDCURSES_X11],
+	[
+	CF_CURSES_LIBS
+])])
+
+CF_CURSES_FUNCS(start_color)
+
 dnl
 dnl Set pre-processor compile time variables.
 dnl
-AC_CHECK_FUNC(XCursesExit, AC_DEFINE(HAVE_XCURSES))
-
 AC_OUTPUT(Makefile examples/Makefile demos/Makefile,,,sort)

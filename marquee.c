@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:08:32 $
- * $Revision: 1.51 $
+ * $Date: 2000/02/18 23:20:55 $
+ * $Revision: 1.52 $
  */
 
 DeclareCDKObjects(my_funcs,Marquee);

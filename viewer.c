@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/17 00:00:39 $
- * $Revision: 1.103 $
+ * $Date: 2000/02/19 01:39:31 $
+ * $Revision: 1.105 $
  */
 
 /*
@@ -252,7 +252,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 		int len		= 0;
 
 	       /* Could not open the file. */
-#ifdef HAVE_COLOR
+#ifdef HAVE_START_COLOR
 	       sprintf (temp, "<C></16>Link Failed: Could not open the file %s", filename);
 #else
 	       sprintf (temp, "<C></K>Link Failed: Could not open the file %s", filename);

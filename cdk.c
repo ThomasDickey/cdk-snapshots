@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/17 00:01:33 $
- * $Revision: 1.159 $
+ * $Date: 2000/02/19 01:39:33 $
+ * $Revision: 1.162 $
  */
 
 char *GPasteBuffer = 0;
@@ -311,7 +311,7 @@ static int parseAttribute(char *string, int from, chtype *mask)
    }
    else if (isdigit((int)string[from + 1]) && isdigit((int)string[from + 2]))
    {
-#ifdef HAVE_COLOR
+#ifdef HAVE_START_COLOR
       pair	= DigitOf(string[from + 1]) * 10 + DigitOf(string[from + 2]);
       *mask	= COLOR_PAIR(pair);
 #else
@@ -321,7 +321,7 @@ static int parseAttribute(char *string, int from, chtype *mask)
    }
    else if (isdigit((int)string[from + 1]))
    {
-#ifdef HAVE_COLOR
+#ifdef HAVE_START_COLOR
       pair	= DigitOf(string[from + 1]);
       *mask	= COLOR_PAIR(pair);
 #else
@@ -901,43 +901,32 @@ void CDKfreeStrings(char **list)
 
 int mode2Filetype (mode_t mode)
 {
-   int filetype;
-
-   /* Determine the file type.	*/
-   if (S_ISLNK (mode))
-   {
-      filetype = 'l';
-   }
-#ifdef S_ISSOCK
-   else if (S_ISSOCK (mode))
-   {
-      filetype = '@';
-   }
+   static const struct {
+      mode_t	mode;
+      char	code;
+   } table[] = {
+#ifdef S_IFBLK
+      { S_IFBLK,  'b' },  /* Block device */
 #endif
-   else if (S_ISREG(mode))
-   {
-      filetype = '-';
+      { S_IFCHR,  'c' },  /* Character device */
+      { S_IFDIR,  'd' },  /* Directory */
+      { S_IFREG,  '-' },  /* Regular file */
+#ifdef S_IFLNK
+      { S_IFLNK,  'l' },  /* Socket */
+#endif
+      { S_IFSOCK, '@' },  /* Socket */
+      { S_IFIFO,  '&' },  /* Pipe */
+   };
+   int filetype = '?';
+   unsigned n;
+
+   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++) {
+      if ((mode & S_IFMT) == table[n].mode) {
+	 filetype = table[n].code;
+	 break;
+      }
    }
-   else if (S_ISDIR(mode))
-   {
-      filetype = 'd';
-   }
-   else if (S_ISCHR(mode))
-   {
-      filetype = 'c';
-   }
-   else if (S_ISBLK(mode))
-   {
-      filetype = 'b';
-   }
-   else if (S_ISFIFO(mode))
-   {
-      filetype = '&';
-   }
-   else
-   {
-      filetype = '?';
-   }
+
    return filetype;
 
 }
@@ -964,7 +953,9 @@ int mode2Char (char *string, mode_t mode)
       { S_IXOTH,	9,	'x' },
       { S_ISUID,	3,	's' },
       { S_ISGID,	6,	's' },
+#ifdef S_ISVTX
       { S_ISVTX,	9,	't' },
+#endif
    };
 
    /* Declare local variables.	*/

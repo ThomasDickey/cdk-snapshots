@@ -1,7 +1,6 @@
-#include "cdk.h"
+#include <cdk.h>
 #include <sybfront.h>
 #include <sybdb.h>
-#include <limits.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="syb";

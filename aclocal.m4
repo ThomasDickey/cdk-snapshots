@@ -62,80 +62,31 @@ ifelse($3,,[    :]dnl
 ])dnl
   ])])dnl
 dnl ---------------------------------------------------------------------------
-dnl Test for availability of useful gcc __attribute__ directives to quiet
-dnl compiler warnings.  Though useful, not all are supported -- and contrary
-dnl to documentation, unrecognized directives cause older compilers to barf.
-AC_DEFUN([CF_GCC_ATTRIBUTES],
+dnl Check if we're accidentally using a cache from a different machine.
+dnl Derive the system name, as a check for reusing the autoconf cache.
+dnl
+dnl If we've packaged config.guess and config.sub, run that (since it does a
+dnl better job than uname).
+AC_DEFUN([CF_CHECK_CACHE],
 [
-if test -n "$GCC"
-then
-cat > conftest.i <<EOF
-#ifndef GCC_PRINTF
-#define GCC_PRINTF 0
-#endif
-#ifndef GCC_SCANF
-#define GCC_SCANF 0
-#endif
-#ifndef GCC_NORETURN
-#define GCC_NORETURN /* nothing */
-#endif
-#ifndef GCC_UNUSED
-#define GCC_UNUSED /* nothing */
-#endif
-EOF
-if test -n "$GCC"
-then
-	AC_CHECKING([for gcc __attribute__ directives])
-	changequote(,)dnl
-cat > conftest.$ac_ext <<EOF
-#line __oline__ "configure"
-#include "confdefs.h"
-#include "conftest.h"
-#include "conftest.i"
-#if	GCC_PRINTF
-#define GCC_PRINTFLIKE(fmt,var) __attribute__((format(printf,fmt,var)))
-#else
-#define GCC_PRINTFLIKE(fmt,var) /*nothing*/
-#endif
-#if	GCC_SCANF
-#define GCC_SCANFLIKE(fmt,var)  __attribute__((format(scanf,fmt,var)))
-#else
-#define GCC_SCANFLIKE(fmt,var)  /*nothing*/
-#endif
-extern void wow(char *,...) GCC_SCANFLIKE(1,2);
-extern void oops(char *,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
-extern void foo(void) GCC_NORETURN;
-int main(int argc GCC_UNUSED, char *argv[] GCC_UNUSED) { return 0; }
-EOF
-	changequote([,])dnl
-	for cf_attribute in scanf printf unused noreturn
-	do
-		CF_UPPER(CF_ATTRIBUTE,$cf_attribute)
-		cf_directive="__attribute__(($cf_attribute))"
-		echo "checking for gcc $cf_directive" 1>&AC_FD_CC
-		case $cf_attribute in
-		scanf|printf)
-		cat >conftest.h <<EOF
-#define GCC_$CF_ATTRIBUTE 1
-EOF
-			;;
-		*)
-		cat >conftest.h <<EOF
-#define GCC_$CF_ATTRIBUTE $cf_directive
-EOF
-			;;
-		esac
-		if AC_TRY_EVAL(ac_compile); then
-			test -n "$verbose" && AC_MSG_RESULT(... $cf_attribute)
-			cat conftest.h >>confdefs.h
-#		else
-#			sed -e 's/__attr.*/\/*nothing*\//' conftest.h >>confdefs.h
-		fi
-	done
+if test -f $srcdir/config.guess ; then
+	AC_CANONICAL_HOST
+	system_name="$host_os"
 else
-	fgrep define conftest.i >>confdefs.h
+	system_name="`(uname -s -r) 2>/dev/null`"
+	if test -z "$system_name" ; then
+		system_name="`(hostname) 2>/dev/null`"
+	fi
 fi
-rm -rf conftest*
+test -n "$system_name" && AC_DEFINE_UNQUOTED(SYSTEM_NAME,"$system_name")
+AC_CACHE_VAL(cf_cv_system_name,[cf_cv_system_name="$system_name"])
+
+test -z "$system_name" && system_name="$cf_cv_system_name"
+test -n "$cf_cv_system_name" && AC_MSG_RESULT("Configuring for $cf_cv_system_name")
+
+if test ".$system_name" != ".$cf_cv_system_name" ; then
+	AC_MSG_RESULT(Cached system name ($system_name) does not agree with actual ($cf_cv_system_name))
+	AC_ERROR("Please remove config.cache and try again.")
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
@@ -160,6 +111,47 @@ if test $cf_cv_chtype_decl = yes ; then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl Curses-functions are a little complicated, since a lot of them are macros.
+AC_DEFUN([CF_CURSES_FUNCS],
+[
+AC_REQUIRE([CF_XOPEN_CURSES])
+for cf_func in $1
+do
+	CF_UPPER(cf_tr_func,$cf_func)
+	AC_MSG_CHECKING(for ${cf_func})
+	CF_MSG_LOG(${cf_func})
+	AC_CACHE_VAL(cf_cv_func_$cf_func,[
+		eval cf_result='$ac_cv_func_'$cf_func
+		if test ".$cf_result" != ".no"; then
+			AC_TRY_LINK([
+#ifdef HAVE_XCURSES
+#include <xcurses.h>
+char * XCursesProgramName = "test";
+#else
+#include <curses.h>
+#ifdef HAVE_TERM_H
+#include <term.h>
+#endif
+#endif],
+			[
+#ifndef ${cf_func}
+long foo = (long)(&${cf_func});
+#endif
+			],
+			[cf_result=yes],
+			[cf_result=no])
+		fi
+		eval 'cf_cv_func_'$cf_func'=$cf_result'
+	])
+	# use the computed/retrieved cache-value:
+	eval 'cf_result=$cf_cv_func_'$cf_func
+	AC_MSG_RESULT($cf_result)
+	if test $cf_result != no; then
+		AC_DEFINE_UNQUOTED(HAVE_${cf_tr_func})
+	fi
+done
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl Look for the curses libraries.  Older curses implementations may require
 dnl termcap/termlib to be linked as well.
 AC_DEFUN([CF_CURSES_LIBS],[
@@ -168,7 +160,7 @@ case $host_os in #(vi
 freebsd*) #(vi
 	AC_CHECK_LIB(mytinfo,tgoto,[LIBS="-lmytinfo $LIBS"])
 	;;
-hpux10.*)
+hpux10.*|hpux10.*)
 	AC_CHECK_LIB(cur_colr,initscr,[
 		LIBS="-lcur_colr $LIBS"
 		CFLAGS="-I/usr/include/curses_colr $CFLAGS"
@@ -255,7 +247,7 @@ dnl
 AC_DEFUN([CF_DISABLE_ECHO],[
 AC_MSG_CHECKING(if you want to see long compiling messages)
 CF_ARG_DISABLE(echo,
-	[  --disable-echo          test: display "compiling" commands],
+	[  --disable-echo          display "compiling" commands],
 	[
     ECHO_LD='@echo linking [$]@;'
     RULE_CC='	@echo compiling [$]<'
@@ -321,6 +313,105 @@ linux*) # Suse Linux does not follow /usr/lib convention
 esac
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl A conventional existence-check for 'lstat' won't work with the Linux
+dnl version of gcc 2.7.0, since the symbol is defined only within <sys/stat.h>
+dnl as an inline function.
+dnl
+dnl So much for portability.
+AC_DEFUN([CF_FUNC_LSTAT],
+[
+AC_MSG_CHECKING(for lstat)
+AC_CACHE_VAL(ac_cv_func_lstat,[
+AC_TRY_LINK([
+#include <sys/types.h>
+#include <sys/stat.h>],
+	[lstat(".", (struct stat *)0)],
+	[ac_cv_func_lstat=yes],
+	[ac_cv_func_lstat=no])
+	])
+AC_MSG_RESULT($ac_cv_func_lstat )
+if test $ac_cv_func_lstat = yes; then
+	AC_DEFINE(HAVE_LSTAT)
+fi
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Test for availability of useful gcc __attribute__ directives to quiet
+dnl compiler warnings.  Though useful, not all are supported -- and contrary
+dnl to documentation, unrecognized directives cause older compilers to barf.
+AC_DEFUN([CF_GCC_ATTRIBUTES],
+[
+if test -n "$GCC"
+then
+cat > conftest.i <<EOF
+#ifndef GCC_PRINTF
+#define GCC_PRINTF 0
+#endif
+#ifndef GCC_SCANF
+#define GCC_SCANF 0
+#endif
+#ifndef GCC_NORETURN
+#define GCC_NORETURN /* nothing */
+#endif
+#ifndef GCC_UNUSED
+#define GCC_UNUSED /* nothing */
+#endif
+EOF
+if test -n "$GCC"
+then
+	AC_CHECKING([for $CC __attribute__ directives])
+	changequote(,)dnl
+cat > conftest.$ac_ext <<EOF
+#line __oline__ "configure"
+#include "confdefs.h"
+#include "conftest.h"
+#include "conftest.i"
+#if	GCC_PRINTF
+#define GCC_PRINTFLIKE(fmt,var) __attribute__((format(printf,fmt,var)))
+#else
+#define GCC_PRINTFLIKE(fmt,var) /*nothing*/
+#endif
+#if	GCC_SCANF
+#define GCC_SCANFLIKE(fmt,var)  __attribute__((format(scanf,fmt,var)))
+#else
+#define GCC_SCANFLIKE(fmt,var)  /*nothing*/
+#endif
+extern void wow(char *,...) GCC_SCANFLIKE(1,2);
+extern void oops(char *,...) GCC_PRINTFLIKE(1,2) GCC_NORETURN;
+extern void foo(void) GCC_NORETURN;
+int main(int argc GCC_UNUSED, char *argv[] GCC_UNUSED) { return 0; }
+EOF
+	changequote([,])dnl
+	for cf_attribute in scanf printf unused noreturn
+	do
+		CF_UPPER(CF_ATTRIBUTE,$cf_attribute)
+		cf_directive="__attribute__(($cf_attribute))"
+		echo "checking for $CC $cf_directive" 1>&AC_FD_CC
+		case $cf_attribute in
+		scanf|printf)
+		cat >conftest.h <<EOF
+#define GCC_$CF_ATTRIBUTE 1
+EOF
+			;;
+		*)
+		cat >conftest.h <<EOF
+#define GCC_$CF_ATTRIBUTE $cf_directive
+EOF
+			;;
+		esac
+		if AC_TRY_EVAL(ac_compile); then
+			test -n "$verbose" && AC_MSG_RESULT(... $cf_attribute)
+			cat conftest.h >>confdefs.h
+#		else
+#			sed -e 's/__attr.*/\/*nothing*\//' conftest.h >>confdefs.h
+		fi
+	done
+else
+	fgrep define conftest.i >>confdefs.h
+fi
+rm -rf conftest*
+fi
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl Check if the compiler supports useful warning options.  There's a few that
 dnl we don't use, simply because they're too noisy:
 dnl
@@ -340,7 +431,7 @@ then
 int main(int argc, char *argv[]) { return (argv[argc-1] == 0) ; }
 EOF
 	changequote([,])dnl
-	AC_CHECKING([for gcc warning options])
+	AC_CHECKING([for $CC warning options])
 	cf_save_CFLAGS="$CFLAGS"
 	EXTRA_CFLAGS="-W -Wall"
 	cf_warn_CONST=""
@@ -368,6 +459,33 @@ EOF
 	CFLAGS="$cf_save_CFLAGS"
 fi
 AC_SUBST(EXTRA_CFLAGS)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Check for getopt's variables which are commonly defined in stdlib.h or
+dnl (nonstandard) in getopt.h
+AC_DEFUN([CF_GETOPT_HEADER],
+[
+AC_CACHE_CHECK(for header declaring getopt variables,cf_cv_getopt_header,[
+cf_cv_getopt_header=none
+for cf_header in stdio.h stdlib.h getopt.h
+do
+AC_TRY_COMPILE([
+#include <$cf_header>],
+[int x = optind; char *y = optarg],
+[cf_cv_getopt_header=$cf_header
+ break])
+done
+])
+case $cf_cv_getopt_header in #(vi
+getopt.h) #(vi
+	AC_DEFINE(HAVE_GETOPT_H)
+	AC_DEFINE(HAVE_GETOPT_HEADER)
+	;;
+stdlib.h) #(vi
+	AC_DEFINE(HAVE_STDLIB_H)
+	AC_DEFINE(HAVE_GETOPT_HEADER)
+	;;
+esac
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Construct a search-list for a nonstandard header-file
@@ -471,30 +589,58 @@ test "$prefix" != /usr           && $1="[$]$1 /usr/lib /usr/lib/$2"
 test "$prefix" != /opt           && $1="[$]$1 /opt/lib /opt/lib/$2"
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl Compute the library-prefix for the given host system
+dnl $1 = variable to set
+AC_DEFUN([CF_LIB_PREFIX],
+[
+	case $cf_cv_system_name in
+	os2)	LIB_PREFIX=''     ;;
+	*)	LIB_PREFIX='lib'  ;;
+	esac
+ifelse($1,,,[$1=$LIB_PREFIX])
+	AC_SUBST(LIB_PREFIX)
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl Some 'make' programs support $(MAKEFLAGS), some $(MFLAGS), to pass 'make'
 dnl options to lower-levels.  It's very useful for "make -n" -- if we have it.
-dnl (GNU 'make' does both :-)
+dnl (GNU 'make' does both, something POSIX 'make', which happens to make the
+dnl $(MAKEFLAGS) variable incompatible because it adds the assignments :-)
 AC_DEFUN([CF_MAKEFLAGS],
 [
 AC_MSG_CHECKING([for makeflags variable])
 AC_CACHE_VAL(cf_cv_makeflags,[
 	cf_cv_makeflags=''
-	for cf_option in '-$(MAKEFLAGS)' '$(MFLAGS)' 
+	for cf_option in '-$(MAKEFLAGS)' '$(MFLAGS)'
 	do
 		cat >cf_makeflags.tmp <<CF_EOF
 all :
-	echo '.$cf_option'
+	@ echo '.$cf_option'
 CF_EOF
-		set cf_result=`${MAKE-make} -f cf_makeflags.tmp 2>/dev/null`
-		if test "$cf_result" != "."
-		then
-			cf_cv_makeflags=$cf_option
+		cf_result=`${MAKE-make} -k -f cf_makeflags.tmp 2>/dev/null`
+		case "$cf_result" in
+		.*k)
+			cf_result=`${MAKE-make} -k -f cf_makeflags.tmp CC=cc 2>/dev/null`
+			case "$cf_result" in
+			.*CC=*)	cf_cv_makeflags=
+				;;
+			*)	cf_cv_makeflags=$cf_option
+				;;
+			esac
 			break
-		fi
+			;;
+		*)	echo no match "$cf_result"
+			;;
+		esac
 	done
 	rm -f cf_makeflags.tmp])
 AC_MSG_RESULT($cf_cv_makeflags)
 AC_SUBST(cf_cv_makeflags)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Write a debug message to config.log, along with the line number in the
+dnl configure script.
+AC_DEFUN([CF_MSG_LOG],[
+echo "(line __oline__) testing $* ..." 1>&AC_FD_CC
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Look for the SVr4 curses clone 'ncurses' in the standard places, adjusting
@@ -678,6 +824,52 @@ changequote([,])dnl
 AC_MSG_RESULT($cf_cv_ncurses_version)
 ])
 dnl ---------------------------------------------------------------------------
+dnl Configure for PDCurses' X11 library
+AC_DEFUN([CF_PDCURSES_X11],[
+AC_PATH_XTRA
+LDFLAGS="$LDFLAGS $X_LIBS"
+CFLAGS="$CFLAGS $X_CFLAGS"
+AC_CHECK_LIB(X11,XOpenDisplay,
+	[LIBS="-lX11 $LIBS"],,
+	[$X_PRE_LIBS $LIBS $X_EXTRA_LIBS])
+AC_CACHE_CHECK(for XCurses library,cf_cv_lib_XCurses,[
+LIBS="-lXCurses $LIBS"
+AC_TRY_LINK([
+#include <xcurses.h>
+char *XCursesProgramName = "test";
+],[XCursesExit();],
+[cf_cv_lib_XCurses=yes],
+[cf_cv_lib_XCurses=no])
+])
+if test $cf_cv_lib_XCurses = yes ; then
+	AC_DEFINE(UNIX)
+	AC_DEFINE(XCURSES)
+	AC_DEFINE(HAVE_XCURSES)
+else
+	AC_ERROR(Cannot link with XCurses)
+fi
+])
+dnl ---------------------------------------------------------------------------
+dnl Compute $PROG_EXT, used for non-Unix ports, such as OS/2 EMX.
+AC_DEFUN([CF_PROG_EXT],
+[
+AC_REQUIRE([CF_CHECK_CACHE])
+PROG_EXT=
+case $cf_cv_system_name in
+os2*)
+    # We make sure -Zexe is not used -- it would interfere with @PROG_EXT@
+    CFLAGS="$CFLAGS -Zmt -D__ST_MT_ERRNO__"
+    CXXFLAGS="$CXXFLAGS -Zmt -D__ST_MT_ERRNO__"
+    LDFLAGS=`echo "$LDFLAGS -Zmt -Zcrtdll" | sed "s/-Zexe//g"`
+    PROG_EXT=".exe"
+    ;;
+cygwin*)
+    PROG_EXT=".exe"
+    ;;
+esac
+AC_SUBST(PROG_EXT)
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl	Shorthand macro for substituting things that the user may override
 dnl	with an environment variable.
 dnl
@@ -765,5 +957,5 @@ AC_TRY_LINK([
 	long x = winnstr(stdscr, "", 0)],
 	[cf_cv_need_xopen_extension=yes],
 	[cf_cv_need_xopen_extension=no])])])
-test $cf_cv_need_xopen_extension = yes && AC_DEFINE(_XOPEN_SOURCE_EXTENDED)
+test $cf_cv_need_xopen_extension = yes && CFLAGS="$CFLAGS -D_XOPEN_SOURCE_EXTENDED"
 ])dnl

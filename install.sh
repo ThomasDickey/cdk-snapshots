@@ -1,27 +1,15 @@
 #! /bin/sh
 #
 # install - install a program, script, or datafile
-# This comes from X11R5 (mit/util/scripts/install.sh).
-#
-# Copyright 1991 by the Massachusetts Institute of Technology
-#
-# Permission to use, copy, modify, distribute, and sell this software and its
-# documentation for any purpose is hereby granted without fee, provided that
-# the above copyright notice appear in all copies and that both that
-# copyright notice and this permission notice appear in supporting
-# documentation, and that the name of M.I.T. not be used in advertising or
-# publicity pertaining to distribution of the software without specific,
-# written prior permission.  M.I.T. makes no representations about the
-# suitability of this software for any purpose.  It is provided "as is"
-# without express or implied warranty.
+# This comes from X11R5.
 #
 # Calling this script install-sh is preferred over install.sh, to prevent
 # `make' implicit rules from creating a file called install from it
 # when there is no Makefile.
 #
 # This script is compatible with the BSD install script, but was written
-# from scratch.  It can only install one file at a time, a restriction
-# shared with many OS's install programs.
+# from scratch.
+#
 
 
 # set DOITPROG to echo to test this script
@@ -41,7 +29,7 @@ stripprog="${STRIPPROG-strip}"
 rmprog="${RMPROG-rm}"
 mkdirprog="${MKDIRPROG-mkdir}"
 
-transformbasename=""
+tranformbasename=""
 transform_arg=""
 instcmd="$mvprog"
 chmodcmd="$chmodprog 0755"
@@ -115,7 +103,7 @@ fi
 if [ x"$dir_arg" != x ]; then
 	dst=$src
 	src=""
-	
+
 	if [ -d $dst ]; then
 		instcmd=:
 	else
@@ -124,7 +112,7 @@ if [ x"$dir_arg" != x ]; then
 else
 
 # Waiting for this to be detected by the "$instcmd $src $dsttmp" command
-# might cause directories to be created, which would be especially bad 
+# might cause directories to be created, which would be especially bad
 # if $src (and thus $dsttmp) contains '*'.
 
 	if [ -f $src -o -d $src ]
@@ -134,7 +122,7 @@ else
 		echo "install:  $src does not exist"
 		exit 1
 	fi
-	
+
 	if [ x"$dst" = x ]
 	then
 		echo "install:	no destination specified"
@@ -201,17 +189,17 @@ else
 
 # If we're going to rename the final executable, determine the name now.
 
-	if [ x"$transformarg" = x ] 
+	if [ x"$transformarg" = x ]
 	then
 		dstfile=`basename $dst`
 	else
-		dstfile=`basename $dst $transformbasename | 
+		dstfile=`basename $dst $transformbasename |
 			sed $transformarg`$transformbasename
 	fi
 
 # don't allow the sed command to completely eliminate the filename
 
-	if [ x"$dstfile" = x ] 
+	if [ x"$dstfile" = x ]
 	then
 		dstfile=`basename $dst`
 	else
@@ -242,7 +230,7 @@ else
 # Now rename the file to the real destination.
 
 	$doit $rmcmd -f $dstdir/$dstfile &&
-	$doit $mvcmd $dsttmp $dstdir/$dstfile 
+	$doit $mvcmd $dsttmp $dstdir/$dstfile
 
 fi &&
 

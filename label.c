@@ -1,10 +1,9 @@
-#include "cdk.h"
-#include <limits.h>
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:07:27 $
- * $Revision: 1.59 $
+ * $Date: 2000/02/18 23:20:55 $
+ * $Revision: 1.60 $
  */
 
 DeclareCDKObjects(my_funcs,Label);
