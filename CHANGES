@@ -7,6 +7,11 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/12/01 - T.E.Dickey <dickey@his.com>
+========================================
+	+ correct logic in char2Chtype() for <#UL>, <#UR> and <#LR>, broken in
+	  1999/06/05 (report by William L Davis).
+
 2003/11/30 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ remove borderSize parameter from alignxy().
