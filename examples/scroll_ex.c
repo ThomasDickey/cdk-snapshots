@@ -1,3 +1,5 @@
+/* $Id: scroll_ex.c,v 1.11 2003/11/25 00:03:03 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES

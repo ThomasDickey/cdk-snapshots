@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.15 2003/11/19 22:20:40 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.18 2003/11/25 01:15:37 tom Exp $
 .TH cdk_viewer 3
 .SH NAME
 activateCDKViewer,
@@ -96,8 +96,8 @@ setCDKViewerVerticalChar \- curses viewer list widget.
 .B "void setCDKViewer ("
 .BI "CDKVIEWER *" "viewer",
 .BI "char *" "title",
-.BI "char **" "info",
-.BI "int " "infoSize",
+.BI "char **" "list",
+.BI "int " "listSize",
 .BI "chtype " "buttonAttribute",
 .BI "boolean " "interpret",
 .BI "boolean " "showLineInfo",
@@ -125,9 +125,9 @@ setCDKViewerVerticalChar \- curses viewer list widget.
 .TP 15
 .B "void setCDKViewerInfo ("
 .BI "CDKVIEWER *" "viewer",
-.BI "char **" "itemList",
+.BI "char **" "list",
 .BI "int " "listSize",
-.BI "boolean " "numbers");
+.BI "boolean " "interpret");
 .TP 15
 .B "void setCDKViewerTitle ("
 .BI "CDKVIEWER *" "viewer",
@@ -263,16 +263,20 @@ allows the user to move the widget around the screen via the cursor/keypad keys.
 See \fBcdk_position (3)\fR for key bindings.
 .TP 5
 .B setCDKViewer
-lets the programmer modify certain elements of an existing
+lets the programmer modify several elements of an existing
 viewer widget.
 The parameter \fBtitle\fR is the title to be displayed on
 the top of the viewer.
-The parameter \fBinfo\fR is the information to display,
-while \fBinfoSize\fR states how many rows there are in the \fBinfo\fR array.
+.IP
+The parameter \fBlist\fR is the information to display,
+while \fBlistSize\fR states how many rows there are in the \fBlist\fR array.
+If \fBlistSize\fR is negative, \fBlist\fR is scanned to find its
+length, including files which will be included via embedded links.
+.IP
 The parameter \fBbuttonAttribute\fR states the attribute of the current
 highlighted button.
 The boolean parameter \fBinterpret\fR tells the viewer to
-interpret the contents of \fBinfo\fR for Cdk display command.
+interpret the contents of \fBlist\fR for Cdk display command.
 The \fBshowLineInfo\fR boolean flag tells the viewer to show to show the
 line number and percentage in the top left corner of the viewer window.
 The parameters \fBbox\fR and \fBshadow\fR are the same as in the function
@@ -299,6 +303,7 @@ the given character.
 .TP 5
 .B setCDKViewerInfo
 sets the contents of the viewer widget.
+See \fBsetCDKViewer\fP for parameter descriptions.
 .TP 5
 .B setCDKViewerInfoLine
 turns on/off the information line in the top left hand corner of

@@ -7,6 +7,20 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/11/24 - T.E.Dickey <dickey@his.com>
+========================================
+	+ display a "processing..." message in setCDKViewerInfo while building
+	  the internal data structures (request by Mike Leib).
+	+ modify viewer widget to compute the total number of lines to display,
+	  making it independent of the listSize parameter.
+	+ modify viewer widget to accept a negative listSize parameter,
+	  making it count the length of list[], ending with a null.
+	+ modify viewer_ex, adding -f, -i and -l options.  The -f option
+	  bypasses the fselect widget, specifying the filename directly.
+	  The -i option tells whether to interpret embedded markup, and
+	  the -l option tells viewer_ex to load the file using an embedded
+	  link.
+
 2003/11/19 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ modify searches in viewer widget to allow for overlapping partial

@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.7 2002/07/16 22:39:26 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.8 2003/11/25 00:54:34 tom Exp $ */
 
 #include <cdk.h>
 
@@ -102,6 +102,7 @@ int main (int argc, char **argv)
    lines = CDKreadFile (filename, &info);
    if (lines == -1)
    {
+      endCDK();
       printf ("Could not open %s\n", filename);
       exit (1);
    }
