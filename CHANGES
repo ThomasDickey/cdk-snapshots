@@ -5,6 +5,14 @@ Modifications copyright Thomas E. Dickey 1999-2003, 2004
 
 This file outlines all of the changes/additions from one release to another.
 
+2004/11/07 - T.E.Dickey <dickey@his.com>
+========================================
+	+ correct top-level Makefile.in to remove libtool's auxiliary files
+	  in the "make clean" rule.
+	+ amend simplification of writeCharAttrib(), ensuring that attributes
+	  passed in the chtype-string are not ignored (report by Benoit
+	  Bidoggia).
+
 2004/10/04 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ correct logic of writeBlanks(), which did not check for malloc
