@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:52:59 $
- * $Revision: 1.56 $
+ * $Date: 2004/10/04 23:56:33 $
+ * $Revision: 1.57 $
  */
 
 /*
@@ -225,49 +225,30 @@ void drawShadow (WINDOW *shadowWin)
 }
 
 /*
- * This writes out a char * string with no attributes.
+ * Write a string of blanks, using writeChar().
  */
-void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int start, int end)
+void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int end)
 {
-   /* Declare local variables. */
-   int display = end - start;
-   int x;
+   if (start < end)
+   {
+      unsigned want = (end - start) + 1000;
+      char *blanks = (char *)malloc (want);
 
-   /* Check the alignment of the message. */
-   if (align == HORIZONTAL)
-   {
-      display = MINIMUM(display,getmaxx(window)-1);
-      if (display > 0)
-	 mvwaddnstr (window, ypos, xpos, string + start, display);
-   }
-   else
-   {
-      /* Draw the message on a vertical axis. */
-      display = MINIMUM(display,getmaxy(window)-1);
-      for (x=0; x < display ; x++)
+      if (blanks != 0)
       {
-	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]));
+	 cleanChar (blanks, want - 1, ' ');
+	 writeChar (window, xpos, ypos, blanks, align, start, end);
+	 freeChar (blanks);
       }
    }
 }
 
-void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int end)
+/*
+ * This writes out a char * string with no attributes.
+ */
+void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int start, int end)
 {
-
-   if (start < end)
-   {
-      char *blanks = 0;
-
-      if (blanks == 0 || (int) strlen(blanks) < (end - start))
-      {
-	 unsigned want = (end - start) + 1000;
-	 freeChar (blanks);
-	 blanks = (char *)malloc (want);
-	 cleanChar (blanks, want-1, ' ');
-      }
-      writeChar (window, xpos, ypos, blanks, align, start, end);
-      freeChar (blanks);
-   }
+   writeCharAttrib (window, xpos, ypos, string, A_NORMAL, align, start, end);
 }
 
 /*
@@ -275,15 +256,13 @@ void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int 
  */
 void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype attr, int align, int start, int end)
 {
-   /* Declare local variables. */
    int display = end - start;
    int x;
 
-   /* Check the alignment of the message. */
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(display,getmaxx(window)-1);
+      display = MINIMUM(display, getmaxx(window) - 1);
       for (x=0; x < display ; x++)
       {
 	 mvwaddch (window, ypos, xpos+x, CharOf(string[x+start]) | attr);
@@ -292,7 +271,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(display,getmaxy(window)-1);
+      display = MINIMUM(display, getmaxy(window) - 1);
       for (x=0; x < display ; x++)
       {
 	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]) | attr);
@@ -300,98 +279,39 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
    }
 }
 
-#ifndef HAVE_WADDCHNSTR
-/* NetBSD bug */
-static int cdk_waddchnstr (WINDOW *window, const chtype *string, int len)
-{
-   int y, x, n;
-   getyx(window, y, x);
-   for (n = 0; n < len; ++n)
-   {
-      if (mvwaddch(window, y, x + n, string[n]) == ERR)
-	 return ERR;
-   }
-   return OK;
-}
-#undef  waddchnstr
-#define waddchnstr(window, string, len) cdk_waddchnstr(window, string, len)
-#endif
-
 /*
  * This writes out a chtype * string.
  */
 void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align, int start, int end)
 {
-   /* Declare local variables. */
-   int diff		= 0;
-   int display		= 0;
-   int x		= 0;
-
-   /* Determine how much we need to display. */
-   if (end >= start)
-   {
-      diff = end - start;
-   }
-
-   /* Check the alignment of the message. */
-   if (align == HORIZONTAL)
-   {
-      /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,getmaxx(window)-xpos);
-      if (display > 0)
-      {
-	 wmove(window, ypos, xpos);
-	 waddchnstr (window, string + start, display);
-      }
-   }
-   else
-   {
-      /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,getmaxy(window)-ypos);
-      for (x=0; x < display; x++)
-      {
-	 mvwaddch (window, ypos+x, xpos, string[x+start]);
-      }
-   }
+   writeChtypeAttrib (window, xpos, ypos, string, A_NORMAL, align, start, end);
 }
 
 /*
- * This writes out a chtype * string forcing the chtype string
- * to be printed out with the given attributes instead.
+ * This writes out a chtype * string * with the given attributes.
  */
 void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chtype attr, int align, int start, int end)
 {
-   /* Declare local variables. */
-   int diff		= 0;
+   int diff		= end - start;
    int display		= 0;
    int x		= 0;
-   chtype plain;
 
-   /* Determine how much we need to display. */
-   if ( end >= start)
-   {
-      diff = end - start;
-   }
-
-   /* Check the alignment of the message. */
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,getmaxx(window)-xpos);
+      display = MINIMUM(diff, getmaxx(window) - xpos);
       for (x=0; x < display; x++)
       {
-	 plain = CharOf(string[x+start]);
-	 mvwaddch (window, ypos, xpos+x, plain | attr);
+	 mvwaddch (window, ypos, xpos+x, CharOf(string[x+start]) | attr);
       }
    }
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,getmaxy(window)-ypos);
+      display = MINIMUM(diff, getmaxy(window) - ypos);
       for (x=0; x < display; x++)
       {
-	 plain = CharOf(string[x+start]);
-	 mvwaddch (window, ypos+x, xpos, plain | attr);
+	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]) | attr);
       }
    }
 }

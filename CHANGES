@@ -5,6 +5,17 @@ Modifications copyright Thomas E. Dickey 1999-2003, 2004
 
 This file outlines all of the changes/additions from one release to another.
 
+2004/10/04 - T.E.Dickey <dickey@his.com>
+========================================
+	+ correct logic of writeBlanks(), which did not check for malloc
+	  failure and made an unnecessary call to freeChar().
+	+ simplify draw.c a little by using writeCharAttrib() and
+	  writeChtypeAttrib() to implement writeChar() and writeChtype().
+	+ revert 2002/07/27 change that used waddchnstr() in writeChtype(),
+	  since it does not render control characters (report by Mike Leib). 
+	+ fix an infinite loop in viewer.c when displaying control characters
+	  such as form-feed.
+
 2004/08/31 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ add a simple compatibility header (cdk_compat.h), which can be

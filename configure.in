@@ -119,7 +119,7 @@ CF_CURSES_FUNCS(\
 	getmaxx \
 	getmaxy \
 	start_color \
-	waddchnstr \
+	\
 )
 
 CF_CURSES_SETBEGYX

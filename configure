@@ -7156,7 +7156,7 @@ for cf_func in \
 	getmaxx \
 	getmaxy \
 	start_color \
-	waddchnstr \
+	\
 
 do
 	
