@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2003/04/17 22:17:44 $
- * $Revision: 1.174 $
+ * $Date: 2003/11/16 21:51:16 $
+ * $Revision: 1.182 $
  */
 
 /*
@@ -12,27 +12,20 @@
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character);
 static void drawCDKEntryField (CDKENTRY *entry);
 
-/*
- * Declare file local variables.
- */
-extern char *GPasteBuffer;
-
-DeclareCDKObjects(ENTRY, Entry, String);
+DeclareCDKObjects(ENTRY, Entry, setCdk, String);
 
 /*
  * This creates a pointer to an entry widget.
  */
 CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int min, int max, boolean Box, boolean shadow)
 {
-   /* Set up some variables. */
-   CDKENTRY *entry	= newCDKObject(CDKENTRY, &my_funcs);
+   CDKENTRY *entry	= 0;
    chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int fieldWidth	= fWidth;
    int boxWidth		= 0;
-   int borderSize       = Box ? 1 : 0;
-   int boxHeight	= (borderSize * 2) + 1;
+   int boxHeight;
    int maxWidth		= INT_MIN;
    int xpos		= xplace;
    int ypos		= yplace;
@@ -41,13 +34,19 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    char **temp		= 0;
    int x, len, junk2;
 
+   if ((entry = newCDKObject(CDKENTRY, &my_funcs)) == 0)
+      return (0);
+
+   setCDKEntryBox (entry, Box);
+   boxHeight		= (BorderOf(entry) * 2) + 1;
+
   /*
    * If the fieldWidth is a negative value, the fieldWidth will
    * be COLS-fieldWidth, otherwise, the fieldWidth will be the
    * given width.
    */
    fieldWidth = setWidgetDimension (parentWidth, fieldWidth, 0);
-   boxWidth = fieldWidth + 2*borderSize;
+   boxWidth = fieldWidth + 2 * BorderOf(entry);
 
    /* Set some basic values of the entry field. */
    entry->label		= 0;
@@ -65,6 +64,8 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
       entry->titleLines = CDKcountStrings (temp);
@@ -84,14 +85,15 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
        if (maxWidth > boxWidth)
        {
 	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2*borderSize;
+          boxWidth = maxWidth + 2 * BorderOf(entry);
        }
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(entry));
       for (x=0; x < entry->titleLines; x++)
       {
 	 entry->title[x]	= char2Chtype (temp[x], &entry->titleLen[x], &entry->titlePos[x]);
-	 entry->titlePos[x]	= justifyString (boxWidth, entry->titleLen[x], entry->titlePos[x]);
+	 entry->titlePos[x]	= justifyString (titleWidth, entry->titleLen[x], entry->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -107,10 +109,10 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    */
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = (fieldWidth > (boxWidth - entry->labelLen - 2*borderSize) ? (boxWidth - entry->labelLen - 2*borderSize) : fieldWidth);
+   fieldWidth = MINIMUM(fieldWidth, boxWidth - entry->labelLen - 2 * BorderOf(entry));
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(entry));
 
    /* Make the label window. */
    entry->win = subwin (cdkscreen->window, boxHeight, boxWidth, ypos, xpos);
@@ -118,27 +120,23 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Is the window null? */
    if (entry->win == 0)
    {
-      /* Clean up the pointers. */
-      freeChtype (entry->label);
-      free (entry);
-
-      /* Exit with null. */
+      _destroyCDKEntry (ObjOf(entry));
       return (0);
    }
    keypad (entry->win, TRUE);
 
    /* Make the field window. */
    entry->fieldWin = subwin (entry->win, 1, fieldWidth,
-				ypos + entry->titleLines + borderSize,
-				xpos + entry->labelLen + horizontalAdjust + borderSize);
+				ypos + entry->titleLines + BorderOf(entry),
+				xpos + entry->labelLen + horizontalAdjust + BorderOf(entry));
    keypad (entry->fieldWin, TRUE);
 
    /* Make the label win, if we need to. */
    if (label != 0)
    {
       entry->labelWin = subwin (entry->win, 1, entry->labelLen,
-					ypos + entry->titleLines + borderSize,
-					xpos + horizontalAdjust + borderSize);
+					ypos + entry->titleLines + BorderOf(entry),
+					xpos + horizontalAdjust + BorderOf(entry));
    }
 
    /* Make room for the info char * pointer. */
@@ -154,11 +152,9 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    entry->fieldWidth		= fieldWidth;
    entry->filler		= filler;
    entry->hidden		= filler;
-   ObjOf(entry)->box		= Box;
    ObjOf(entry)->inputWindow    = entry->fieldWin;
    ObjOf(entry)->acceptsFocus   = 1;
    ReturnOf(entry)              = NULL;
-   BorderOf(entry)              = Box ? 1 : 0;
    entry->shadow		= shadow;
    entry->screenCol		= 0;
    entry->leftChar		= 0;
@@ -166,13 +162,6 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    entry->max			= max;
    entry->boxWidth		= boxWidth;
    entry->boxHeight		= boxHeight;
-   entry->ULChar		= ACS_ULCORNER;
-   entry->URChar		= ACS_URCORNER;
-   entry->LLChar		= ACS_LLCORNER;
-   entry->LRChar		= ACS_LRCORNER;
-   entry->HChar			= ACS_HLINE;
-   entry->VChar			= ACS_VLINE;
-   entry->BoxAttrib		= A_NORMAL;
    entry->exitType		= vNEVER_ACTIVATED;
    entry->dispType		= dispType;
    entry->callbackfn		= CDKEntryCallBack;
@@ -204,7 +193,6 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
  */
 char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input = 0;
    char *ret	= 0;
 
@@ -260,7 +248,6 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 static int _injectCDKEntry (CDKOBJS *object, chtype input)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   /* Declare local variables. */
    int ppReturn = 1;
    int temp, x, charCount, stringLen;
    char holder;
@@ -550,7 +537,6 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   /* Declare local variables. */
    int currentX = getbegx(entry->win);
    int currentY = getbegy(entry->win);
    int xpos	= xplace;
@@ -602,7 +588,6 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
  */
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
-   /* Declare local variables. */
    int plainchar = (character & A_CHARTEXT);
    unsigned temp, x;
 
@@ -686,7 +671,6 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
  */
 void cleanCDKEntry (CDKENTRY *entry)
 {
-   /* Declare local variables. */
    int width = entry->fieldWidth;
 
    /* Erase the information in the character pointer. */
@@ -720,11 +704,7 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (entry->win,
-		entry->ULChar, entry->URChar,
-		entry->LLChar, entry->LRChar,
-		entry->HChar,  entry->VChar,
-		entry->BoxAttrib);
+      drawObjBox (entry->win, ObjOf(entry));
    }
 
    /* Draw in the title if there is one. */
@@ -733,7 +713,7 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
       for (x=0; x < entry->titleLines; x++)
       {
 	 writeChtype (entry->win,
-			entry->titlePos[x],
+			entry->titlePos[x] + BorderOf(entry),
 			x + (object->box ? 1 : 0),
 			entry->title[x],
 			HORIZONTAL, 0,
@@ -762,7 +742,6 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
  */
 static void drawCDKEntryField (CDKENTRY *entry)
 {
-   /* Declare variables. */
    int infoLength	= 0;
    int x		= 0;
 
@@ -861,7 +840,6 @@ void setCDKEntry (CDKENTRY *entry, char *value, int min, int max, boolean Box GC
  */
 void setCDKEntryValue (CDKENTRY *entry, char *newValue)
 {
-   /* Declare local variables. */
    int copychars	= 0;
    int stringLen	= 0;
    int charCount	= 0;
@@ -960,43 +938,16 @@ chtype getCDKEntryHiddenChar (CDKENTRY *entry)
 }
 
 /*
- * This gets whether or not the entry field will be boxed.
+ * This sets the widgets box attribute.
  */
+void setCDKEntryBox (CDKENTRY *entry, boolean Box)
+{
+   ObjOf(entry)->box = Box;
+   ObjOf(entry)->borderSize = Box ? 1 : 0;
+}
 boolean getCDKEntryBox (CDKENTRY *entry)
 {
    return ObjOf(entry)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKEntryULChar (CDKENTRY *entry, chtype character)
-{
-   entry->ULChar = character;
-}
-void setCDKEntryURChar (CDKENTRY *entry, chtype character)
-{
-   entry->URChar = character;
-}
-void setCDKEntryLLChar (CDKENTRY *entry, chtype character)
-{
-   entry->LLChar = character;
-}
-void setCDKEntryLRChar (CDKENTRY *entry, chtype character)
-{
-   entry->LRChar = character;
-}
-void setCDKEntryVerticalChar (CDKENTRY *entry, chtype character)
-{
-   entry->VChar = character;
-}
-void setCDKEntryHorizontalChar (CDKENTRY *entry, chtype character)
-{
-   entry->HChar = character;
-}
-void setCDKEntryBoxAttribute (CDKENTRY *entry, chtype character)
-{
-   entry->BoxAttrib = character;
 }
 
 /*

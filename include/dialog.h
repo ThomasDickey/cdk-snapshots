@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
+ * $Id: dialog.h,v 1.18 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -78,13 +78,6 @@ struct SDialogBox {
    int		currentButton;
    int		boxWidth;
    int		boxHeight;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	separator;
    boolean	shadow;
@@ -164,35 +157,15 @@ boolean getCDKDialogBox (
 		CDKDIALOG *	/* dialog */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKDialogULChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogURChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogLLChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogLRChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogVerticalChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogHorizontalChar (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
-
-void setCDKDialogBoxAttribute (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* character */);
+#define setCDKDialogULChar(w,c)            setULCharOf(w,c)
+#define setCDKDialogURChar(w,c)            setURCharOf(w,c)
+#define setCDKDialogLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKDialogLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKDialogVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKDialogHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKDialogBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

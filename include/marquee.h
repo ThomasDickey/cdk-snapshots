@@ -1,5 +1,5 @@
 /*
- * $Id: marquee.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
+ * $Id: marquee.h,v 1.16 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -65,13 +65,6 @@ struct SMarquee {
    int		boxWidth;
    int		boxHeight;
    boolean	shadow;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
 };
 typedef struct SMarquee CDKMARQUEE;
 
@@ -128,35 +121,25 @@ void deactivateCDKMarquee (
 #define destroyCDKMarquee(obj) destroyCDKObject(obj)
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKMarqueeULChar (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
+#define setCDKMarqueeULChar(w,c)           setULCharOf(w,c)
+#define setCDKMarqueeURChar(w,c)           setURCharOf(w,c)
+#define setCDKMarqueeLLChar(w,c)           setLLCharOf(w,c)
+#define setCDKMarqueeLRChar(w,c)           setLRCharOf(w,c)
+#define setCDKMarqueeVerticalChar(w,c)     setVTCharOf(w,c)
+#define setCDKMarqueeHorizontalChar(w,c)   setHZCharOf(w,c)
+#define setCDKMarqueeBoxAttribute(w,c)     setBXAttrOf(w,c)
 
-void setCDKMarqueeURChar (
+/*
+ * This sets the box attribute of the widget.
+ */
+void setCDKMarqueeBox (
 		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
+		boolean		/* Box */);
 
-void setCDKMarqueeLLChar (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
-
-void setCDKMarqueeLRChar (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
-
-void setCDKMarqueeVerticalChar (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
-
-void setCDKMarqueeHorizontalChar (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
-
-void setCDKMarqueeBoxAttribute (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* character */);
+boolean getCDKMarqueeBox (
+		CDKMARQUEE *	/* marquee */);
 
 /*
  * This sets the background color of the widget.

@@ -1,22 +1,20 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/08/07 18:15:23 $
- * $Revision: 1.73 $
+ * $Date: 2003/11/16 21:49:35 $
+ * $Revision: 1.79 $
  */
 
-DeclareCDKObjects(DIALOG, Dialog, Int);
+DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
 
 /*
  * This function creates a dialog widget.
  */
 CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, char **buttonLabel, int buttonCount, chtype highlight, boolean separator, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKDIALOG *dialog	= newCDKObject(CDKDIALOG, &my_funcs);
-   int borderSize       = Box ? 1 : 0;
-   int boxHeight	= rows + 2 * borderSize + separator + 1;
+   CDKDIALOG *dialog	= 0;
+   int boxHeight;
    int boxWidth		= MIN_DIALOG_WIDTH;
    int maxmessagewidth	= -1;
    int buttonwidth	= 0;
@@ -25,6 +23,12 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    int temp		= 0;
    int buttonadj	= 0;
    int x		= 0;
+
+   if ((dialog = newCDKObject(CDKDIALOG, &my_funcs)) == 0)
+      return (0);
+
+   setCDKDialogBox (dialog, Box);
+   boxHeight		= rows + 2 * BorderOf(dialog) + separator + 1;
 
    /* Translate the char * message to a chtype * */
    for (x=0; x < rows; x++)
@@ -44,10 +48,10 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    /* Determine the final dimensions of the box. */
    boxWidth	= MAXIMUM(boxWidth, maxmessagewidth);
    boxWidth	= MAXIMUM(boxWidth, buttonwidth);
-   boxWidth	= boxWidth + 2 + 2*borderSize;
+   boxWidth	= boxWidth + 2 + 2 * BorderOf(dialog);
 
    /* Now we have to readjust the x and y positions. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(dialog));
 
    /* Set up the dialog box attributes. */
    ScreenOf(dialog)		= cdkscreen;
@@ -62,17 +66,8 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->highlight		= highlight;
    dialog->separator		= separator;
    dialog->exitType		= vNEVER_ACTIVATED;
-   ObjOf(dialog)->box		= Box;
-   ObjOf(dialog)->borderSize	= borderSize;
    ObjOf(dialog)->inputWindow  	= dialog->win;
    dialog->shadow  		= shadow;
-   dialog->ULChar		= ACS_ULCORNER;
-   dialog->URChar		= ACS_URCORNER;
-   dialog->LLChar		= ACS_LLCORNER;
-   dialog->LRChar		= ACS_LRCORNER;
-   dialog->HChar		= ACS_HLINE;
-   dialog->VChar		= ACS_VLINE;
-   dialog->BoxAttrib		= A_NORMAL;
    dialog->preProcessFunction	= 0;
    dialog->preProcessData	= 0;
    dialog->postProcessFunction	= 0;
@@ -81,20 +76,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    /* If we couldn't create the window, we should return a null value. */
    if (dialog->win == 0)
    {
-      /* Couldn't create the window. Clean up used memory. */
-      for (x=0; x < dialog->messageRows ; x++)
-      {
-	 freeChtype (dialog->info[x]);
-      }
-      for (x=0; x < dialog->buttonCount; x++)
-      {
-	 freeChtype (dialog->buttonLabel[x]);
-      }
-
-      /* Remove the memory used by the dialog pointer. */
-      free (dialog);
-
-      /* Return a null dialog box. */
+      _destroyCDKDialog (ObjOf(dialog));
       return (0);
    }
    keypad (dialog->win, TRUE);
@@ -104,13 +86,13 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    for (x = 0; x < buttonCount; x++)
    {
       dialog->buttonPos[x]	= buttonadj;
-      buttonadj			= buttonadj + dialog->buttonLen[x] + borderSize;
+      buttonadj			= buttonadj + dialog->buttonLen[x] + BorderOf(dialog);
    }
 
    /* Create the string alignments. */
    for (x=0; x < rows; x++)
    {
-      dialog->infoPos[x] = justifyString (boxWidth-2*borderSize, dialog->infoLen[x], dialog->infoPos[x]);
+      dialog->infoPos[x] = justifyString (boxWidth - 2 * BorderOf(dialog), dialog->infoLen[x], dialog->infoPos[x]);
    }
 
    /* Was there a shadow? */
@@ -134,10 +116,8 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
  */
 int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input = 0;
    int ret;
-   int borderSize = ObjOf(dialog)->box ? 1 : 0;
 
    /* Draw the dialog box. */
    drawCDKDialog (dialog, ObjOf(dialog)->box);
@@ -145,7 +125,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    /* Lets move to the first button. */
    writeChtypeAttrib (dialog->win,
 			dialog->buttonPos[dialog->currentButton],
-			dialog->boxHeight-1-borderSize,
+			dialog->boxHeight - 1 - BorderOf(dialog),
 			dialog->buttonLabel[dialog->currentButton],
 			dialog->highlight,
 			HORIZONTAL,
@@ -293,7 +273,6 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
-   /* Declare local variables. */
    int currentX = getbegx(dialog->win);
    int currentY = getbegy(dialog->win);
    int xpos	= xplace;
@@ -340,7 +319,6 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    int x = 0;
-   int borderSize = object->borderSize;
 
    /* Is there a shadow? */
    if (dialog->shadowWin != 0)
@@ -351,18 +329,14 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    /* Box the widget if they asked. */
    if (Box)
    {
-      attrbox (dialog->win,
-		dialog->ULChar, dialog->URChar,
-		dialog->LLChar, dialog->LRChar,
-		dialog->HChar,	dialog->VChar,
-		dialog->BoxAttrib);
+      drawObjBox (dialog->win, ObjOf(dialog));
    }
 
    /* Draw in the message. */
    for (x=0; x < dialog->messageRows; x++)
    {
       writeChtype (dialog->win,
-			dialog->infoPos[x] + borderSize, x + borderSize,
+			dialog->infoPos[x] + BorderOf(dialog), x + BorderOf(dialog),
 			dialog->info[x],
 			HORIZONTAL, 0,
 			dialog->infoLen[x]);
@@ -456,42 +430,11 @@ boolean getCDKDialogSeparator (CDKDIALOG *dialog)
 void setCDKDialogBox (CDKDIALOG *dialog, boolean Box)
 {
    ObjOf(dialog)->box = Box;
+   ObjOf(dialog)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKDialogBox (CDKDIALOG *dialog)
 {
    return ObjOf(dialog)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKDialogULChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->ULChar = character;
-}
-void setCDKDialogURChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->URChar = character;
-}
-void setCDKDialogLLChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->LLChar = character;
-}
-void setCDKDialogLRChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->LRChar = character;
-}
-void setCDKDialogVerticalChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->VChar = character;
-}
-void setCDKDialogHorizontalChar (CDKDIALOG *dialog, chtype character)
-{
-   dialog->HChar = character;
-}
-void setCDKDialogBoxAttribute (CDKDIALOG *dialog, chtype character)
-{
-   dialog->BoxAttrib = character;
 }
 
 /*
@@ -532,15 +475,13 @@ void setCDKDialogBackgroundAttrib (CDKDIALOG *dialog, chtype attrib)
  */
 void drawCDKDialogButtons (CDKDIALOG *dialog)
 {
-   /* Declare local variables. */
    int x;
-   int borderSize = ObjOf(dialog)->box ? 1 : 0;
 
    for (x=0; x < dialog->buttonCount; x++)
    {
       writeChtype (dialog->win,
 			dialog->buttonPos[x],
-			dialog->boxHeight-1-borderSize,
+			dialog->boxHeight - 1 - BorderOf(dialog),
 			dialog->buttonLabel[x],
 			HORIZONTAL, 0,
 			dialog->buttonLen[x]);
@@ -549,16 +490,18 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
    /* Draw the separation line. */
    if (dialog->separator)
    {
+      chtype boxattr = BXAttrOf(dialog);
+
       for (x=1; x < dialog->boxWidth-1; x++)
       {
-	 mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, x, ACS_HLINE | dialog->BoxAttrib);
+	 mvwaddch (dialog->win, dialog->boxHeight - 2 - BorderOf(dialog), x, ACS_HLINE | boxattr);
       }
-      mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, 0, ACS_LTEE | dialog->BoxAttrib);
-      mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);
+      mvwaddch (dialog->win, dialog->boxHeight - 2 - BorderOf(dialog), 0, ACS_LTEE | boxattr);
+      mvwaddch (dialog->win, dialog->boxHeight - 2 - BorderOf(dialog), getmaxx(dialog->win)-1, ACS_RTEE | boxattr);
    }
    writeChtypeAttrib (dialog->win,
 			dialog->buttonPos[dialog->currentButton],
-			dialog->boxHeight-1-borderSize,
+			dialog->boxHeight - 1 - BorderOf(dialog),
 			dialog->buttonLabel[dialog->currentButton],
 			dialog->highlight,
 			HORIZONTAL, 0,

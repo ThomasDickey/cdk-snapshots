@@ -1,5 +1,5 @@
 /*
- * $Id: template.h,v 1.17 2002/07/27 16:39:09 tom Exp $
+ * $Id: template.h,v 1.18 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -88,13 +88,6 @@ struct STemplate {
    int		min;
    chtype	labelAttr;
    chtype	fieldAttr;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    TEMPLATECB	callbackfn;
@@ -169,35 +162,15 @@ boolean getCDKTemplateBox (
 		CDKTEMPLATE *	/* cdktemplate */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKTemplateULChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateURChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateLLChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateLRChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateVerticalChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateHorizontalChar (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
-
-void setCDKTemplateBoxAttribute (
-		CDKTEMPLATE *	/* cdktemplate */,
-		chtype 		/* character */);
+#define setCDKTemplateULChar(w,c)          setULCharOf(w,c)
+#define setCDKTemplateURChar(w,c)          setURCharOf(w,c)
+#define setCDKTemplateLLChar(w,c)          setLLCharOf(w,c)
+#define setCDKTemplateLRChar(w,c)          setLRCharOf(w,c)
+#define setCDKTemplateVerticalChar(w,c)    setVTCharOf(w,c)
+#define setCDKTemplateHorizontalChar(w,c)  setHZCharOf(w,c)
+#define setCDKTemplateBoxAttribute(w,c)    setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

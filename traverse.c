@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/17 22:59:36 $
- * $Revision: 1.7 $
+ * $Date: 2003/11/16 21:08:13 $
+ * $Revision: 1.8 $
  */
 
 #define KEY_CTRLX '\030'

@@ -1,31 +1,34 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 15:01:06 $
- * $Revision: 1.66 $
+ * $Date: 2003/11/16 21:56:57 $
+ * $Revision: 1.72 $
  */
 
-DeclareCDKObjects(HISTOGRAM, Histogram, Unknown);
+DeclareCDKObjects(HISTOGRAM, Histogram, setCdk, Unknown);
 
 /*
  * This creates a histogram widget.
  */
 CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, int orient, char *title, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKHISTOGRAM *histogram	= newCDKObject(CDKHISTOGRAM, &my_funcs);
+   CDKHISTOGRAM *histogram	= 0;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
-   int borderSize               = 1;
    int xpos			= xplace;
    int ypos			= yplace;
    int oldWidth			= 0;
    int oldHeight		= 0;
    char **temp			= 0;
    int x;
+
+   if ((histogram = newCDKObject(CDKHISTOGRAM, &my_funcs)) == 0)
+      return (0);
+
+   setCDKHistogramBox (histogram, Box);
 
   /*
    * If the height is a negative value, the height will
@@ -46,6 +49,8 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth = boxWidth - (2 * BorderOf(histogram));
+
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
       histogram->titleLines = CDKcountStrings (temp);
@@ -54,7 +59,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
       for (x=0; x < histogram->titleLines; x++)
       {
 	 histogram->title[x]	= char2Chtype (temp[x], &histogram->titleLen[x], &histogram->titlePos[x]);
-	 histogram->titlePos[x] = justifyString (boxWidth, histogram->titleLen[x], histogram->titlePos[x]);
+	 histogram->titlePos[x] = justifyString (titleWidth, histogram->titleLen[x], histogram->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -74,7 +79,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    boxHeight = (boxHeight > parentHeight ? oldHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(histogram));
 
    /* Create the histogram pointer. */
    ScreenOf(histogram)		= cdkscreen;
@@ -87,21 +92,11 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->fieldHeight	= boxHeight-histogram->titleLines-2;
    histogram->orient		= orient;
    histogram->shadow		= shadow;
-   histogram->ULChar		= ACS_ULCORNER;
-   histogram->URChar		= ACS_URCORNER;
-   histogram->LLChar		= ACS_LLCORNER;
-   histogram->LRChar		= ACS_LRCORNER;
-   histogram->HChar		= ACS_HLINE;
-   histogram->VChar		= ACS_VLINE;
-   histogram->BoxAttrib		= A_NORMAL;
 
    /* Is the window null. */
    if (histogram->win == 0)
    {
-      /* Clean up any memory used. */
-      free (histogram);
-
-      /* Return a null pointer. */
+      destroyCDKObject(histogram);
       return (0);
    }
    keypad (histogram->win, TRUE);
@@ -123,8 +118,6 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->lowString = 0;
    histogram->highString = 0;
    histogram->curString = 0;
-   ObjOf(histogram)->box = Box;
-   ObjOf(histogram)->borderSize = borderSize;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -165,7 +158,6 @@ void setCDKHistogram (CDKHISTOGRAM *histogram, EHistogramDisplayType viewType, i
  */
 void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value)
 {
-   /* Declare local variables. */
    char string[100];
    int len;
 
@@ -497,42 +489,11 @@ chtype getCDKHistogramFillerChar (CDKHISTOGRAM *histogram)
 void setCDKHistogramBox (CDKHISTOGRAM *histogram, boolean Box)
 {
    ObjOf(histogram)->box = Box;
+   ObjOf(histogram)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKHistogramBox (CDKHISTOGRAM *histogram)
 {
    return ObjOf(histogram)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKHistogramULChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->ULChar = character;
-}
-void setCDKHistogramURChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->URChar = character;
-}
-void setCDKHistogramLLChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->LLChar = character;
-}
-void setCDKHistogramLRChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->LRChar = character;
-}
-void setCDKHistogramVerticalChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->VChar = character;
-}
-void setCDKHistogramHorizontalChar (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->HChar = character;
-}
-void setCDKHistogramBoxAttribute (CDKHISTOGRAM *histogram, chtype character)
-{
-   histogram->BoxAttrib = character;
 }
 
 /*
@@ -574,7 +535,6 @@ void setCDKHistogramBackgroundAttrib (CDKHISTOGRAM *histogram, chtype attrib)
 static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
-   /* Declare local variables. */
    int currentX = getbegx(histogram->win);
    int currentY = getbegy(histogram->win);
    int xpos	= xplace;
@@ -634,11 +594,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (histogram->win,
-		histogram->ULChar, histogram->URChar,
-		histogram->LLChar, histogram->LRChar,
-		histogram->HChar,  histogram->VChar,
-		histogram->BoxAttrib);
+      drawObjBox (histogram->win, ObjOf(histogram));
    }
 
    /* Do we have a shadow to draw? */
@@ -653,7 +609,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       for (x=0; x < histogram->titleLines; x++)
       {
 	 writeChtype (histogram->win,
-			histogram->titlePos[x],
+			histogram->titlePos[x] + BorderOf(histogram),
 			x + 1,
 			histogram->title[x],
 			HORIZONTAL, 0,

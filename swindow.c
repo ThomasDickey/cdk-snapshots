@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:06:44 $
- * $Revision: 1.79 $
+ * $Date: 2003/11/16 22:15:48 $
+ * $Revision: 1.85 $
  */
 
 /*
@@ -11,24 +11,27 @@
  */
 static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box);
 
-DeclareCDKObjects(SWINDOW, Swindow, Int);
+DeclareCDKObjects(SWINDOW, Swindow, setCdk, Int);
 
 /*
  * This function creates a scrolling window widget.
  */
 CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, int saveLines, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKSWINDOW	*swindow	= newCDKObject(CDKSWINDOW, &my_funcs);
+   CDKSWINDOW	*swindow	= 0;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
-   int borderSize               = 1;
    int xpos			= xplace;
    int ypos			= yplace;
    char **temp			= 0;
    int x;
+
+   if ((swindow = newCDKObject(CDKSWINDOW, &my_funcs)) == 0)
+      return (0);
+
+   setCDKSwindowBox (swindow, Box);
 
   /*
    * If the height is a negative value, the height will
@@ -47,14 +50,17 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       swindow->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(swindow));
       for (x=0; x < swindow->titleLines; x++)
       {
 	 swindow->title[x]	= char2Chtype (temp[x], &swindow->titleLen[x], &swindow->titlePos[x]);
-	 swindow->titlePos[x]	= justifyString (boxWidth, swindow->titleLen[x], swindow->titlePos[x]);
+	 swindow->titlePos[x]	= justifyString (titleWidth, swindow->titleLen[x], swindow->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -77,22 +83,13 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->titleAdj = swindow->titleLines + 1;
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(swindow));
 
    /* Make the scrolling window */
    swindow->win = newwin (boxHeight, boxWidth, ypos, xpos);
-
-   /* Is the window null?? */
    if (swindow->win == 0)
    {
-      /* Clean up. */
-      for (x=0; x < swindow->titleLines; x++)
-      {
-	 freeChtype (swindow->title[x]);
-      }
-      free(swindow);
-
-      /* Return a null pointer. */
+      destroyCDKObject(swindow);
       return (0);
    }
    keypad (swindow->win, TRUE);
@@ -120,21 +117,12 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->widestLine		= -1;
    swindow->saveLines		= saveLines;
    swindow->exitType		= vNEVER_ACTIVATED;
-   ObjOf(swindow)->box		= Box;
-   ObjOf(swindow)->borderSize   = 1;
    ObjOf(swindow)->inputWindow	= swindow->win;
    swindow->shadow		= shadow;
    swindow->preProcessFunction	= 0;
    swindow->preProcessData	= 0;
    swindow->postProcessFunction = 0;
    swindow->postProcessData	= 0;
-   swindow->ULChar		= ACS_ULCORNER;
-   swindow->URChar		= ACS_URCORNER;
-   swindow->LLChar		= ACS_LLCORNER;
-   swindow->LRChar		= ACS_LRCORNER;
-   swindow->HChar		= ACS_HLINE;
-   swindow->VChar		= ACS_VLINE;
-   swindow->BoxAttrib		= A_NORMAL;
 
    /* For each line in the window, set the value to null. */
    for (x=0; x < MAX_LINES; x++)
@@ -172,7 +160,6 @@ void setCDKSwindow (CDKSWINDOW *swindow, char **info, int lines, boolean Box)
  */
 void setCDKSwindowContents (CDKSWINDOW *swindow, char **info, int lines)
 {
-   /* Declare local variables. */
    int x = 0;
 
    /* First lets clean all the lines in the window. */
@@ -206,6 +193,7 @@ chtype **getCDKSwindowContents (CDKSWINDOW *swindow, int *size)
 void setCDKSwindowBox (CDKSWINDOW *swindow, boolean Box)
 {
    ObjOf(swindow)->box = Box;
+   ObjOf(swindow)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKSwindowBox (CDKSWINDOW *swindow)
 {
@@ -217,7 +205,6 @@ boolean getCDKSwindowBox (CDKSWINDOW *swindow)
  */
 void addCDKSwindow  (CDKSWINDOW *swindow, char *info, int insertPos)
 {
-   /* Declare variables. */
    int x = 0;
 
   /*
@@ -355,7 +342,6 @@ void jumpToLineCDKSwindow (CDKSWINDOW *swindow, int line)
  */
 void cleanCDKSwindow (CDKSWINDOW *swindow)
 {
-   /* Declare local variables. */
    int x;
 
    /* Clean up the memory used ... */
@@ -447,7 +433,6 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
    /* Check if actions is null. */
    if (actions == 0)
    {
-      /* Declare some local variables. */
       chtype input;
       int ret;
 
@@ -466,7 +451,6 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
    }
    else
    {
-      /* Declare some local variables. */
       int length = chlen (actions);
       int x = 0;
       int ret;
@@ -493,7 +477,6 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
 static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
-   /* Declare local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -668,7 +651,6 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
-   /* Declare local variables. */
    int currentX = getbegx(swindow->win);
    int currentY = getbegy(swindow->win);
    int xpos	= xplace;
@@ -725,11 +707,7 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
    /* Box the widget if needed */
    if (Box)
    {
-      attrbox (swindow->win,
-		swindow->ULChar, swindow->URChar,
-		swindow->LLChar, swindow->LRChar,
-		swindow->HChar,	 swindow->VChar,
-		swindow->BoxAttrib);
+      drawObjBox (swindow->win, ObjOf(swindow));
    }
 
    /* Draw in the title if there is one */
@@ -738,8 +716,8 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
       for (x=0; x < swindow->titleLines; x++)
       {
 	 writeChtype (swindow->win,
-			swindow->titlePos[x],
-			x + 1,
+			swindow->titlePos[x] + BorderOf(swindow),
+			x + BorderOf(swindow),
 			swindow->title[x],
 			HORIZONTAL, 0,
 			swindow->titleLen[x]);
@@ -757,7 +735,6 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
  */
 static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
 {
-   /* Declare local variables. */
    int lastLine, screenPos, x;
 
    /* Determine the last line to draw. */
@@ -802,38 +779,6 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
 }
 
 /*
- * These functions set the drawing characters of the widget.
- */
-void setCDKSwindowULChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->ULChar = character;
-}
-void setCDKSwindowURChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->URChar = character;
-}
-void setCDKSwindowLLChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->LLChar = character;
-}
-void setCDKSwindowLRChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->LRChar = character;
-}
-void setCDKSwindowVerticalChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->VChar = character;
-}
-void setCDKSwindowHorizontalChar (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->HChar = character;
-}
-void setCDKSwindowBoxAttribute (CDKSWINDOW *swindow, chtype character)
-{
-   swindow->BoxAttrib = character;
-}
-
-/*
  * This sets the background color of the widget.
  */
 void setCDKSwindowBackgroundColor (CDKSWINDOW *swindow, char *color)
@@ -873,7 +818,6 @@ void setCDKSwindowBackgroundAttrib (CDKSWINDOW *swindow, chtype attrib)
 static void _destroyCDKSwindow (CDKOBJS *object)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
-   /* Declare local variables. */
    int x;
 
    /* Clear out the character pointers. */
@@ -914,27 +858,28 @@ static void _eraseCDKSwindow (CDKOBJS *object)
  */
 int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
 {
-   /* Declare local variables. */
    FILE *ps;
    char temp[BUFSIZ];
-   int count = 0;
+   int count = -1;
 
+   endwin();
    /* Try to open the command. */
-   if ((ps = popen (command, "r")) == 0)
+   if ((ps = popen (command, "r")) != 0)
    {
-      return -1;
-   }
+      /* Start reading. */
+      while (fgets (temp, sizeof(temp), ps) != 0)
+      {
+	 size_t len = strlen(temp);
+	 if (len != 0 && temp[len-1] == '\n')
+	    temp[--len] = '\0';
+	 /* Add the line to the scrolling window. */
+	 addCDKSwindow  (swindow, temp, insertPos);
+	 count++;
+      }
 
-   /* Start reading. */
-   while (fgets (temp, sizeof(temp), ps) != 0)
-   {
-      /* Add the line to the scrolling window. */
-      addCDKSwindow  (swindow, temp, insertPos);
-      count++;
+      /* Close the pipe. */
+      pclose (ps);
    }
-
-   /* Close the pipe. */
-   fclose (ps);
    return count;
 }
 
@@ -944,7 +889,6 @@ int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
  */
 void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 {
-   /* Declare local variables. */
    CDKENTRY *entry	= 0;
    char *filename	= 0;
    char temp[256], *mesg[10];
@@ -1018,7 +962,6 @@ void saveCDKSwindowInformation (CDKSWINDOW *swindow)
  */
 void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 {
-   /* Declare local variables. */
    CDKFSELECT *fselect	= 0;
    CDKDIALOG *dialog	= 0;
    char *filename	= 0;
@@ -1120,7 +1063,6 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
  */
 int dumpCDKSwindow (CDKSWINDOW *swindow, char *filename)
 {
-   /* Declare local variables. */
    FILE *outputFile	= 0;
    char *rawLine	= 0;
    int x;

@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/23 19:26:51 $
- * $Revision: 1.181 $
+ * $Date: 2003/11/16 15:17:55 $
+ * $Revision: 1.185 $
  */
 
 #define L_MARKER '<'
@@ -25,22 +25,28 @@ void Beep(void)
  */
 void cleanChar (char *s, int len, char character)
 {
-   int x;
-   for (x=0; x < len; x++)
+   if (s != 0)
    {
-      s[x] = character;
+      int x;
+      for (x=0; x < len; x++)
+      {
+	 s[x] = character;
+      }
+      s[--x] = '\0';
    }
-   s[--x] = '\0';
 }
 
 void cleanChtype (chtype *s, int len, chtype character)
 {
-   int x;
-   for (x=0; x < len; x++)
+   if (s != 0)
    {
-      s[x] = character;
+      int x;
+      for (x=0; x < len; x++)
+      {
+	 s[x] = character;
+      }
+      s[--x] = '\0';
    }
-   s[--x] = '\0';
 }
 
 /*
@@ -147,9 +153,23 @@ void freeChtype (chtype *string)
  */
 void freeCharList (char **list, unsigned size)
 {
-   while (size-- != 0) {
-      freeChar(list[size]);
-      list[size] = 0;
+   if (list != 0) {
+      while (size-- != 0)
+      {
+	 freeChar(list[size]);
+	 list[size] = 0;
+      }
+   }
+}
+
+void freeChtypeList (chtype **list, unsigned size)
+{
+   if (list != 0) {
+      while (size-- != 0)
+      {
+	 freeChtype(list[size]);
+	 list[size] = 0;
+      }
    }
 }
 
@@ -916,7 +936,8 @@ char **CDKsplitString(char *string, int separator)
 }
 
 /*
- * Add a new string to a list.
+ * Add a new string to a list.  Keep a null pointer on the end so we can use
+ * CDKfreeStrings() to deallocate the whole list.
  */
 unsigned CDKallocStrings(char ***list, char *item, unsigned length, unsigned used)
 {
@@ -952,7 +973,7 @@ unsigned CDKcountStrings(char **list)
 }
 
 /*
- * Free a list of strings
+ * Free a list of strings, terminated by a null pointer.
  */
 void CDKfreeStrings(char **list)
 {
@@ -961,6 +982,20 @@ void CDKfreeStrings(char **list)
       void *base = (void *)list;
       while (*list != 0)
 	 free(*list++);
+      free(base);
+   }
+}
+
+/*
+ * Free a list of chtype-strings, terminated by a null pointer.
+ */
+void CDKfreeChtypes(chtype **list)
+{
+   if (list != 0)
+   {
+      void *base = (void *)list;
+      while (*list != 0)
+	 freeChtype(*list++);
       free(base);
    }
 }
@@ -1092,7 +1127,8 @@ int CDKgetDirectoryContents (char *directory, char ***list)
    /* Read the directory.  */
    while ((dirStruct = readdir (dp)) != 0)
    {
-      used = CDKallocStrings(list, dirStruct->d_name, counter++, used);
+      if (strcmp(dirStruct->d_name, "."))
+	 used = CDKallocStrings(list, dirStruct->d_name, counter++, used);
    }
 
    /* Close the directory.  */

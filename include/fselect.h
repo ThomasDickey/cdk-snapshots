@@ -1,5 +1,5 @@
 /*
- * $Id: fselect.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
+ * $Id: fselect.h,v 1.19 2003/11/16 14:23:56 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -22,6 +22,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -64,7 +66,7 @@ struct SFileSelector {
    WINDOW *	shadowWin;
    CDKENTRY *	entryField;
    CDKSCROLL *	scrollField;
-   char *	dirContents[MAX_ITEMS];
+   char **	dirContents;
    int		fileCounter;
    char *	pwd;
    char *	pathname;
@@ -223,33 +225,13 @@ char **getCDKFselectDirContents (
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKFselectULChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectURChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectLLChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectLRChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectVerticalChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectHorizontalChar (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
-
-void setCDKFselectBoxAttribute (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* character */);
+#define setCDKFselectULChar(w,c)           setULCharOf(w,c)
+#define setCDKFselectURChar(w,c)           setURCharOf(w,c)
+#define setCDKFselectLLChar(w,c)           setLLCharOf(w,c)
+#define setCDKFselectLRChar(w,c)           setLRCharOf(w,c)
+#define setCDKFselectVerticalChar(w,c)     setVTCharOf(w,c)
+#define setCDKFselectHorizontalChar(w,c)   setHZCharOf(w,c)
+#define setCDKFselectBoxAttribute(w,c)     setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

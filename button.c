@@ -1,14 +1,14 @@
-#include "cdk.h"
+#include <cdk_int.h>
 #include "button.h"
 #include <limits.h>
 
 /*
  * $Author: tom $
- * $Date: 2003/04/17 22:21:41 $
- * $Revision: 1.10 $
+ * $Date: 2003/11/16 21:43:07 $
+ * $Revision: 1.16 $
  */
 
-DeclareCDKObjects (BUTTON, Button, Int);
+DeclareCDKObjects (BUTTON, Button, setCdk, Int);
 
 /*
  * This creates a button widget.
@@ -18,23 +18,26 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
 			 boolean shadow)
 {
    /* Maintain the button information. */
-   CDKBUTTON *button = newCDKObject(CDKBUTTON, &my_funcs);
-   int parentWidth = getmaxx (cdkscreen->window) - 1;
-   int parentHeight = getmaxy (cdkscreen->window) - 1;
-   int boxWidth = 0;
-   int borderSize = Box ? 1 : 0;
-   int boxHeight = 1 + 2 * borderSize;
+   CDKBUTTON *button	= 0;
+   int parentWidth      = getmaxx (cdkscreen->window) - 1;
+   int parentHeight     = getmaxy (cdkscreen->window) - 1;
+   int boxWidth         = 0;
+   int boxHeight;
    int xpos = xplace;
    int ypos = yplace;
 
-   /* Determine the box width. */
+   if ((button = newCDKObject(CDKBUTTON, &my_funcs)) == 0)
+      return (0);
+
+   setCDKButtonBox (button, Box);
+   boxHeight = 1 + 2 * BorderOf(button);
 
    /* Translate the char * to a chtype. */
    button->info = char2Chtype (text, &button->infoLen, &button->infoPos);
-   boxWidth = MAXIMUM (boxWidth, button->infoLen) + 2 * borderSize;
+   boxWidth = MAXIMUM (boxWidth, button->infoLen) + 2 * BorderOf(button);
 
    /* Create the string alignments. */
-   button->infoPos = justifyString (boxWidth - 2 * borderSize,
+   button->infoPos = justifyString (boxWidth - 2 * BorderOf(button),
 				    button->infoLen, button->infoPos);
 
    /*
@@ -44,7 +47,7 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(button));
 
    /* Create the button. */
    ScreenOf (button)            = cdkscreen;
@@ -59,27 +62,14 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
    button->callback             = callback;
    ObjOf (button)->inputWindow  = button->win;
    ObjOf (button)->acceptsFocus = TRUE;
-   ObjOf (button)->box          = Box;
-   ObjOf (button)->borderSize   = borderSize;
    button->exitType		= vNEVER_ACTIVATED;
    button->shadow               = shadow;
-   button->ULChar               = ACS_ULCORNER;
-   button->URChar               = ACS_URCORNER;
-   button->LLChar               = ACS_LLCORNER;
-   button->LRChar               = ACS_LRCORNER;
-   button->HChar                = ACS_HLINE;
-   button->VChar                = ACS_VLINE;
-   button->BoxAttrib            = A_NORMAL;
 
    /* Is the window NULL? */
    if (button->win == (WINDOW *) NULL)
    {
-      /* Free up any memory used. */
-      freeChtype (button->info);
-      free (button);
-
-      /* Return a NULL pointer. */
-      return ((CDKBUTTON *) NULL);
+      _destroyCDKButton (ObjOf(button));
+      return (0);
    }
 
    keypad (button->win, TRUE);
@@ -156,11 +146,7 @@ void setCDKButton (CDKBUTTON * button, char *mesg, boolean Box)
  */
 void setCDKButtonMessage (CDKBUTTON * button, char *info)
 {
-   /* Declare local vairables. */
-   int borderSize = BorderOf (button);
-
    /* Clean out the old message. */
-
    freeChtype (button->info);
    button->infoPos = 0;
    button->infoLen = 0;
@@ -168,7 +154,7 @@ void setCDKButtonMessage (CDKBUTTON * button, char *info)
    /* Copy in the new message. */
 
    button->info = char2Chtype (info, &button->infoLen, &button->infoPos);
-   button->infoPos = justifyString (button->boxWidth - 2 * borderSize,
+   button->infoPos = justifyString (button->boxWidth - 2 * BorderOf(button),
 				    button->infoLen, button->infoPos);
 
    /* Redraw the button widget. */
@@ -187,43 +173,12 @@ chtype *getCDKButtonMessage (CDKBUTTON * button)
 void setCDKButtonBox (CDKBUTTON * button, boolean Box)
 {
    ObjOf (button)->box = Box;
+   ObjOf (button)->borderSize = Box ? 1 : 0;
 }
 
 boolean getCDKButtonBox (CDKBUTTON * button)
 {
    return ObjOf (button)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKButtonULChar (CDKBUTTON * button, chtype character)
-{
-   button->ULChar = character;
-}
-void setCDKButtonURChar (CDKBUTTON * button, chtype character)
-{
-   button->URChar = character;
-}
-void setCDKButtonLLChar (CDKBUTTON * button, chtype character)
-{
-   button->LLChar = character;
-}
-void setCDKButtonLRChar (CDKBUTTON * button, chtype character)
-{
-   button->LRChar = character;
-}
-void setCDKButtonVerticalChar (CDKBUTTON * button, chtype character)
-{
-   button->VChar = character;
-}
-void setCDKButtonHorizontalChar (CDKBUTTON * button, chtype character)
-{
-   button->HChar = character;
-}
-void setCDKButtonBoxAttribute (CDKBUTTON * button, chtype character)
-{
-   button->BoxAttrib = character;
 }
 
 /*
@@ -262,12 +217,11 @@ void setCDKButtonBackgroundAttrib (CDKBUTTON * button, chtype attrib)
 static void drawCDKButtonText (CDKBUTTON * button)
 {
    int boxWidth = button->boxWidth;
-   int borderSize = BorderOf (button);
    int i;
 
    /* Draw in the message. */
 
-   for (i = 0; i < boxWidth - 2 * borderSize; i++)
+   for (i = 0; i < boxWidth - 2 * BorderOf(button); i++)
    {
       chtype c;
       int pos = button->infoPos;
@@ -284,7 +238,7 @@ static void drawCDKButtonText (CDKBUTTON * button)
 	 c |= A_REVERSE;
       }
 
-      mvwaddch (button->win, borderSize, i + borderSize, c);
+      mvwaddch (button->win, BorderOf(button), i + BorderOf(button), c);
    }
 }
 
@@ -304,11 +258,7 @@ static void _drawCDKButton (CDKOBJS * object, boolean Box GCC_UNUSED)
    /* Box the widget if asked. */
    if (ObjOf (button)->box)
    {
-      attrbox (button->win,
-	       button->ULChar, button->URChar,
-	       button->LLChar, button->LRChar,
-	       button->HChar, button->VChar,
-	       button->BoxAttrib);
+      drawObjBox (button->win, ObjOf(button));
    }
    drawCDKButtonText (button);
    touchwin (button->win);

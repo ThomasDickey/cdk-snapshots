@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/08/10 00:33:24 $
- * $Revision: 1.50 $
+ * $Date: 2003/11/16 19:57:54 $
+ * $Revision: 1.52 $
  */
 
 /*
@@ -123,6 +123,22 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
 }
 
 /*
+ * Draw a box around the given window using the object's defined line-drawing
+ * characters.
+ */
+void drawObjBox (WINDOW *win, CDKOBJS *object)
+{
+   attrbox (win,
+	    object->ULChar,
+	    object->URChar,
+	    object->LLChar,
+	    object->LRChar,
+	    object->HZChar,
+	    object->VTChar,
+	    object->BXAttr);
+}
+
+/*
  * This draws a line on the given window. (odd angle lines not working yet)
  */
 void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chtype line)
@@ -237,10 +253,11 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
 
 void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int end)
 {
-   static char *blanks;
 
    if (start < end)
    {
+      char *blanks = 0;
+
       if (blanks == 0 || (int) strlen(blanks) < (end - start))
       {
 	 unsigned want = (end - start) + 1000;
@@ -249,6 +266,7 @@ void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int 
 	 cleanChar (blanks, want-1, ' ');
       }
       writeChar (window, xpos, ypos, blanks, align, start, end);
+      freeChar (blanks);
    }
 }
 

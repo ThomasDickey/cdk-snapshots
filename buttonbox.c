@@ -1,25 +1,23 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 12:28:42 $
- * $Revision: 1.36 $
+ * $Date: 2003/11/16 21:45:45 $
+ * $Revision: 1.43 $
  */
 
-DeclareCDKObjects(BUTTONBOX, Buttonbox, Int);
+DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
 
 /*
  * This returns a CDK buttonbox widget pointer.
  */
 CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int height, int width, char *title, int rows, int cols, char **buttons, int buttonCount, chtype highlight, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKBUTTONBOX *buttonbox	= newCDKObject(CDKBUTTONBOX, &my_funcs);
+   CDKBUTTONBOX *buttonbox	= 0;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= 0;
    int boxHeight		= 0;
-   int borderSize               = Box ? 1 : 0;
    int maxColWidth		= INT_MIN;
    int maxWidth			= INT_MIN;
    int colWidth			= 0;
@@ -29,6 +27,11 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    chtype *holder		= 0;
    char **temp			= 0;
    int x, y, len, junk;
+
+   if ((buttonbox = newCDKObject(CDKBUTTONBOX, &my_funcs)) == 0)
+      return (0);
+
+   setCDKButtonboxBox (buttonbox, Box);
 
    /* Set some default values for the widget. */
    buttonbox->rowAdjust = 0;
@@ -51,6 +54,8 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
       buttonbox->titleLines = CDKcountStrings (temp);
@@ -62,13 +67,14 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
 	 maxWidth = MAXIMUM (maxWidth, len);
 	 freeChtype (holder);
       }
-      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * borderSize);
+      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * BorderOf(buttonbox));
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(buttonbox));
       for (x=0; x < buttonbox->titleLines; x++)
       {
 	 buttonbox->title[x]	= char2Chtype (temp[x], &buttonbox->titleLen[x], &buttonbox->titlePos[x]);
-	 buttonbox->titlePos[x] = justifyString (boxWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
+	 buttonbox->titlePos[x] = justifyString (titleWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -112,7 +118,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Now we have to readjust the x and y positions. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(buttonbox));
 
    /* Set up the buttonbox box attributes. */
    ScreenOf(buttonbox)			= cdkscreen;
@@ -127,17 +133,8 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    buttonbox->boxWidth			= boxWidth;
    buttonbox->highlight			= highlight;
    buttonbox->exitType			= vNEVER_ACTIVATED;
-   ObjOf(buttonbox)->box		= Box;
-   ObjOf(buttonbox)->borderSize		= borderSize;
    ObjOf(buttonbox)->inputWindow	= buttonbox->win;
    buttonbox->shadow			= shadow;
-   buttonbox->ULChar			= ACS_ULCORNER;
-   buttonbox->URChar			= ACS_URCORNER;
-   buttonbox->LLChar			= ACS_LLCORNER;
-   buttonbox->LRChar			= ACS_LRCORNER;
-   buttonbox->HChar			= ACS_HLINE;
-   buttonbox->VChar			= ACS_VLINE;
-   buttonbox->BoxAttrib			= A_NORMAL;
    buttonbox->ButtonAttrib		= A_NORMAL;
    buttonbox->preProcessFunction	= 0;
    buttonbox->preProcessData		= 0;
@@ -159,16 +156,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    /* If we couldn't create the window, we should return a null value. */
    if (buttonbox->win == 0)
    {
-      /* Couldn't create the window. Clean up used memory. */
-      for (x=0; x < buttonbox->buttonCount; x++)
-      {
-	 freeChtype (buttonbox->button[x]);
-      }
-
-      /* Remove the memory used by the buttonbox pointer. */
-      free (buttonbox);
-
-      /* Return a null buttonbox box. */
+      _destroyCDKButtonbox (ObjOf(buttonbox));
       return (0);
    }
    keypad (buttonbox->win, TRUE);
@@ -194,7 +182,6 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
  */
 int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input = 0;
    int ret;
 
@@ -380,6 +367,7 @@ chtype getCDKButtonboxHighlight (CDKBUTTONBOX *buttonbox)
 void setCDKButtonboxBox (CDKBUTTONBOX *buttonbox, boolean Box)
 {
    ObjOf(buttonbox)->box = Box;
+   ObjOf(buttonbox)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKButtonboxBox (CDKBUTTONBOX *buttonbox)
 {
@@ -436,11 +424,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
    /* Box the widget if they asked. */
    if (Box)
    {
-      attrbox (buttonbox->win,
-		buttonbox->ULChar, buttonbox->URChar,
-		buttonbox->LLChar, buttonbox->LRChar,
-		buttonbox->HChar,  buttonbox->VChar,
-		buttonbox->BoxAttrib);
+      drawObjBox (buttonbox->win, ObjOf(buttonbox));
    }
 
    /* Draw in the title if there is one. */
@@ -449,7 +433,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
       for (x=0; x < buttonbox->titleLines; x++)
       {
 	 writeChtype (buttonbox->win,
-			buttonbox->titlePos[x],
+			buttonbox->titlePos[x] + BorderOf(buttonbox),
 			x + 1,
 			buttonbox->title[x],
 			HORIZONTAL, 0,
@@ -527,7 +511,6 @@ static void _eraseCDKButtonbox (CDKOBJS *object)
 static void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
-   /* Declare local variables. */
    int currentX = getbegx(buttonbox->win);
    int currentY = getbegy(buttonbox->win);
    int xpos	= xplace;
@@ -591,42 +574,6 @@ static void _destroyCDKButtonbox (CDKOBJS *object)
 
    /* Unregister this object. */
    unregisterCDKObject (vBUTTONBOX, buttonbox);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKButtonboxULChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->ULChar = character;
-}
-void setCDKButtonboxURChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->URChar = character;
-}
-void setCDKButtonboxLLChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->LLChar = character;
-}
-void setCDKButtonboxLRChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->LRChar = character;
-}
-void setCDKButtonboxVerticalChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->VChar = character;
-}
-void setCDKButtonboxHorizontalChar (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->HChar = character;
-}
-void setCDKButtonboxBoxAttribute (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->BoxAttrib = character;
-}
-void setCDKButtonboxButtonAttrib (CDKBUTTONBOX *buttonbox, chtype character)
-{
-   buttonbox->ButtonAttrib = character;
 }
 
 /*

@@ -1,29 +1,34 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:07:52 $
- * $Revision: 1.62 $
+ * $Date: 2003/11/16 21:55:40 $
+ * $Revision: 1.68 $
  */
 
-DeclareCDKObjects(GRAPH, Graph, Unknown);
+DeclareCDKObjects(GRAPH, Graph, setCdk, Unknown);
+
+#define TITLE_LM 3
 
 /*
  * This creates a graph widget.
  */
 CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *xtitle, char *ytitle)
 {
-   /* Declare local variables. */
-   CDKGRAPH *graph	= newCDKObject(CDKGRAPH, &my_funcs);
+   CDKGRAPH *graph	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= width;
    int boxHeight	= height;
-   int borderSize       = 1;
    int xpos		= xplace;
    int ypos		= yplace;
    char **temp		= 0;
    int x;
+
+   if ((graph = newCDKObject(CDKGRAPH, &my_funcs)) == 0)
+      return (0);
+
+   setCDKGraphBox (graph, FALSE);
 
   /*
    * If the height is a negative value, the height will
@@ -49,6 +54,8 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth = boxWidth - (BorderOf(graph) + TITLE_LM);
+
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
       graph->titleLines = CDKcountStrings (temp);
@@ -57,7 +64,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
       for (x=0; x < graph->titleLines; x++)
       {
 	 graph->title[x]	= char2Chtype (temp[x], &graph->titleLen[x], &graph->titlePos[x]);
-	 graph->titlePos[x]	= justifyString (boxWidth, graph->titleLen[x], graph->titlePos[x]);
+	 graph->titlePos[x]	= justifyString (titleWidth, graph->titleLen[x], graph->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -75,7 +82,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(graph));
 
    /* Create the graph pointer. */
    ScreenOf(graph)	= cdkscreen;
@@ -83,29 +90,17 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    graph->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    graph->boxHeight	= boxHeight;
    graph->boxWidth	= boxWidth;
-   ObjOf(graph)->box	= FALSE;
-   ObjOf(graph)->borderSize = 1;
    graph->minx		= 0;
    graph->maxx		= 0;
    graph->xscale	= 0;
    graph->yscale	= 0;
    graph->count		= 0;
    graph->displayType	= vLINE;
-   graph->ULChar	= ACS_ULCORNER;
-   graph->URChar	= ACS_URCORNER;
-   graph->LLChar	= ACS_LLCORNER;
-   graph->LRChar	= ACS_LRCORNER;
-   graph->HChar		= ACS_HLINE;
-   graph->VChar		= ACS_VLINE;
-   graph->BoxAttrib	= A_NORMAL;
 
    /* Is the graph pointer null? */
    if (graph->win == 0)
    {
-      /* Clean up any memory used. */
-      free (graph);
-
-      /* Return a null pointer. */
+      destroyCDKObject(graph);
       return ( 0 );
    }
    keypad (graph->win, TRUE);
@@ -184,7 +179,6 @@ static void setScales (CDKGRAPH *graph)
  */
 int setCDKGraphValues (CDKGRAPH *graph, int *values, int count, boolean startAtZero)
 {
-   /* Declare local variables. */
    int min		= INT_MAX;
    int max		= INT_MIN;
    int x;
@@ -263,7 +257,6 @@ int getCDKGraphValue (CDKGRAPH *graph, int Index)
  */
 int setCDKGraphCharacters (CDKGRAPH *graph, char *characters)
 {
-   /* Declare local variables. */
    chtype *newTokens = 0;
    int charCount, junk;
 
@@ -295,7 +288,6 @@ chtype *getCDKGraphCharacters (CDKGRAPH *graph)
  */
 int setCDKGraphCharacter (CDKGRAPH *graph, int Index, char *character)
 {
-   /* Declare local variables. */
    chtype *newTokens = 0;
    int charCount, junk;
 
@@ -341,38 +333,6 @@ EGraphDisplayType getCDKGraphDisplayType (CDKGRAPH *graph)
 }
 
 /*
- * These functions set the drawing characters of the widget.
- */
-void setCDKGraphULChar (CDKGRAPH *graph, chtype character)
-{
-   graph->ULChar = character;
-}
-void setCDKGraphURChar (CDKGRAPH *graph, chtype character)
-{
-   graph->URChar = character;
-}
-void setCDKGraphLLChar (CDKGRAPH *graph, chtype character)
-{
-   graph->LLChar = character;
-}
-void setCDKGraphLRChar (CDKGRAPH *graph, chtype character)
-{
-   graph->LRChar = character;
-}
-void setCDKGraphVerticalChar (CDKGRAPH *graph, chtype character)
-{
-   graph->VChar = character;
-}
-void setCDKGraphHorizontalChar (CDKGRAPH *graph, chtype character)
-{
-   graph->HChar = character;
-}
-void setCDKGraphBoxAttribute (CDKGRAPH *graph, chtype character)
-{
-   graph->BoxAttrib = character;
-}
-
-/*
  * This sets the background color of the widget.
  */
 void setCDKGraphBackgroundColor (CDKGRAPH *graph, char *color)
@@ -411,7 +371,6 @@ void setCDKGraphBackgroundAttrib (CDKGRAPH *graph, chtype attrib)
 static void _moveCDKGraph (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKGRAPH *graph = (CDKGRAPH *)object;
-   /* Declare local variables. */
    int currentX = getbegx(graph->win);
    int currentY = getbegy(graph->win);
    int xpos	= xplace;
@@ -457,6 +416,7 @@ static void _moveCDKGraph (CDKOBJS *object, int xplace, int yplace, boolean rela
 void setCDKGraphBox (CDKGRAPH *graph, boolean Box)
 {
    ObjOf(graph)->box = Box;
+   ObjOf(graph)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKGraphBox (CDKGRAPH *graph)
 {
@@ -478,11 +438,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    /* Box it if needed. */
    if (Box)
    {
-      attrbox (graph->win,
-		graph->ULChar, graph->URChar,
-		graph->LLChar, graph->LRChar,
-		graph->HChar,  graph->VChar,
-		graph->BoxAttrib);
+      drawObjBox (graph->win, ObjOf(graph));
    }
 
    /* Draw in the vertical axis. */
@@ -497,7 +453,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
       for (x=0; x < graph->titleLines; x++)
       {
 	 writeChtype (graph->win,
-			graph->titlePos[x],
+			graph->titlePos[x] + BorderOf(graph) + TITLE_LM,
 			x + 1,
 			graph->title[x],
 			HORIZONTAL, 0,
@@ -544,7 +500,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
       wrefresh (graph->win);
       return;
    }
-   spacing = (graph->boxWidth - 3) / graph->count;
+   spacing = (graph->boxWidth - TITLE_LM) / graph->count;
 
    /* Draw in the graph line/plot points. */
    for (y=0; y < graph->count; y++)

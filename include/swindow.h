@@ -1,5 +1,5 @@
 /*
- * $Id: swindow.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
+ * $Id: swindow.h,v 1.17 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -79,13 +79,6 @@ struct SSwindow {
    int		maxLeftChar;
    int		widestLine;
    int		saveLines;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    PROCESSFN	preProcessFunction;
@@ -191,35 +184,15 @@ boolean getCDKSwindowBox (
 		CDKSWINDOW *	/* swindow */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKSwindowULChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowURChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowLLChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowLRChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowVerticalChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowHorizontalChar (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
-
-void setCDKSwindowBoxAttribute (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* character */);
+#define setCDKSwindowULChar(w,c)           setULCharOf(w,c)
+#define setCDKSwindowURChar(w,c)           setURCharOf(w,c)
+#define setCDKSwindowLLChar(w,c)           setLLCharOf(w,c)
+#define setCDKSwindowLRChar(w,c)           setLRCharOf(w,c)
+#define setCDKSwindowVerticalChar(w,c)     setVTCharOf(w,c)
+#define setCDKSwindowHorizontalChar(w,c)   setHZCharOf(w,c)
+#define setCDKSwindowBoxAttribute(w,c)     setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

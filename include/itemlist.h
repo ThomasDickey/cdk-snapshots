@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
+ * $Id: itemlist.h,v 1.18 2003/11/16 15:10:54 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -70,21 +72,14 @@ struct SItemList {
    chtype *	label;
    int		labelLen;
    int		fieldWidth;
-   chtype *	item[MAX_ITEMS];
-   int		itemPos[MAX_ITEMS];
-   int		itemLen[MAX_ITEMS];
+   chtype **	item;
+   int *	itemPos;
+   int *	itemLen;
    int		itemCount;
    int		currentItem;
    int		defaultItem;
    int		boxWidth;
    int		boxHeight;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    PROCESSFN	preProcessFunction;
@@ -175,35 +170,15 @@ boolean getCDKItemlistBox (
 		CDKITEMLIST *	/* itemlist */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKItemlistULChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistURChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistLLChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistLRChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistVerticalChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistHorizontalChar (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
-
-void setCDKItemlistBoxAttribute (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* character */);
+#define setCDKItemlistULChar(w,c)          setULCharOf(w,c)
+#define setCDKItemlistURChar(w,c)          setURCharOf(w,c)
+#define setCDKItemlistLLChar(w,c)          setLLCharOf(w,c)
+#define setCDKItemlistLRChar(w,c)          setLRCharOf(w,c)
+#define setCDKItemlistVerticalChar(w,c)    setVTCharOf(w,c)
+#define setCDKItemlistHorizontalChar(w,c)  setHZCharOf(w,c)
+#define setCDKItemlistBoxAttribute(w,c)    setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

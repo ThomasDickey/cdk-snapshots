@@ -1,14 +1,16 @@
-.\" $Id: cdk_marquee.3,v 1.10 2003/04/17 23:17:52 tom Exp $
+.\" $Id: cdk_marquee.3,v 1.11 2003/11/15 01:31:10 tom Exp $
 .TH cdk_marquee 3
 .SH NAME
 activateCDKMarquee,
 destroyCDKMarquee,
 drawCDKMarquee,
 eraseCDKMarquee,
+getCDKMarqueeBox,
 moveCDKMarquee,
 newCDKMarquee,
 positionCDKMarquee,
 setCDKMarqueeBackgroundColor,
+setCDKMarqueeBox,
 setCDKMarqueeBoxAttribute,
 setCDKMarqueeHorizontalChar,
 setCDKMarqueeLLChar,
@@ -43,6 +45,9 @@ setCDKMarqueeVerticalChar \- curses marquee widget
 .B "void eraseCDKMarquee ("
 .BI "CDKMARQUEE *" "marquee");
 .TP 15
+.B "boolean getCDKMarqueeBox ("
+.BI "CDKMENTRY *" "mentry");
+.TP 15
 .B "void moveCDKMarquee ("
 .BI "CDKMARQUEE *" "marquee",
 .BI "int " "xpos",
@@ -64,6 +69,10 @@ setCDKMarqueeVerticalChar \- curses marquee widget
 .B "void setCDKMarqueeBackgroundColor ("
 .BI "CDKMARQUEE *" "marquee",
 .BI "char * " "color");
+.TP 15
+.B "void setCDKMarqueeBox ("
+.BI "CDKMENTRY *" "mentry",
+.BI "boolean " "boxWidget");
 .TP 15
 .B "void setCDKMarqueeBoxAttribute ("
 .BI "CDKMARQUEE *" "marquee",
@@ -125,6 +134,9 @@ If the \fBbox\fR parameter is true, the widget is drawn with a box.
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
 .TP 5
+.B getCDKMarqueeBox
+returns true if the widget will be drawn with a box around it.
+.TP 5
 .B moveCDKMarquee
 moves the given widget to the given position.
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
@@ -170,6 +182,9 @@ See \fBcdk_position (3)\fR for key bindings.
 sets the background color of the widget.
 The parameter \fBcolor\fR is in the format of the Cdk format strings.
 For more information see \fIcdk_display (3)\fR.
+.TP 5
+.B setCDKMarqueeBox
+sets whether the widget will be drawn with a box around it.
 .TP 5
 .B setCDKMarqueeBoxAttribute
 sets the attribute of the box.

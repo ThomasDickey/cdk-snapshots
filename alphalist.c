@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
  
 /*
  * $Author: tom $
- * $Date: 2002/07/27 12:27:22 $
- * $Revision: 1.64 $
+ * $Date: 2003/11/16 22:46:17 $
+ * $Revision: 1.69 $
  */
  
 /*
@@ -12,28 +12,37 @@
 static BINDFN_PROTO(adjustAlphalistCB);
 static BINDFN_PROTO(completeWordCB);
 static int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, chtype input);
+static int createList (CDKALPHALIST *alphalist, char *list[], int listSize);
 
-DeclareCDKObjects(ALPHALIST, Alphalist, String);
+DeclareSetXXchar(static, _setMy);
+DeclareCDKObjects(ALPHALIST, Alphalist, _setMy, String);
 
 /*
  * This creates the alphalist widget.
  */
 CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *label, char *list[], int listSize, chtype fillerChar, chtype highlight, boolean Box, boolean shadow)
 {
-   /* Set up some variables. */
-   CDKALPHALIST *alphalist	= newCDKObject(CDKALPHALIST, &my_funcs);
+   CDKALPHALIST *alphalist	= 0;
    chtype *chtypeLabel		= 0;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
-   int borderSize               = Box ? 1 : 0;
    int xpos			= xplace;
    int ypos			= yplace;
    int entryWidth		= 0;
    int entryHeight		= 0;
    int labelLen			= 0;
    int x, junk2;
+
+   if ((alphalist = newCDKObject(CDKALPHALIST, &my_funcs)) == 0
+    || !createList(alphalist, list, listSize))
+   {
+      destroyCDKObject(alphalist);
+      return (0);
+   }
+
+   setCDKAlphalistBox (alphalist, Box);
 
   /*
    * If the height is a negative value, the height will
@@ -57,13 +66,14 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(alphalist));
 
    /* Make the file selector window. */
    alphalist->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    if (alphalist->win == 0)
    {
+      destroyCDKObject(alphalist);
       return (0);
    }
    keypad (alphalist->win, TRUE);
@@ -76,8 +86,6 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->boxHeight		= boxHeight;
    alphalist->boxWidth		= boxWidth;
    alphalist->exitType		= vNEVER_ACTIVATED;
-   ObjOf(alphalist)->box	= Box;
-   ObjOf(alphalist)->borderSize = borderSize;
    alphalist->shadow		= shadow;
    alphalist->shadowWin		= 0;
 
@@ -88,6 +96,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* We need to sort the list before we use it. */
+   /* FIXME: sort after copying, so we don't break the caller */
    sortList (list, listSize);
 
    /* Copy the list information. */
@@ -98,10 +107,10 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->listSize = listSize;
 
    /* Create the entry field. */
-   entryWidth = boxWidth - (labelLen + 2 + 2*borderSize);
+   entryWidth = boxWidth - (labelLen + 2 + 2 * BorderOf(alphalist));
    alphalist->entryField = newCDKEntry (cdkscreen,
-					getbegx(alphalist->win) + borderSize,
-					getbegy(alphalist->win) + borderSize,
+					getbegx(alphalist->win) + BorderOf(alphalist),
+					getbegy(alphalist->win) + BorderOf(alphalist),
 					title, label,
 					A_NORMAL, fillerChar, 
 					vMIXED, entryWidth, 0, 512,
@@ -124,11 +133,11 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Create the scrolling list. */
    entryHeight = getmaxy(alphalist->entryField->win);
    alphalist->scrollField = newCDKScroll (cdkscreen, 
-					  getbegx(alphalist->win) + borderSize,
-					  getbegy(alphalist->entryField->win) + entryHeight + borderSize,
+					  getbegx(alphalist->win) + BorderOf(alphalist),
+					  getbegy(alphalist->entryField->win) + entryHeight + BorderOf(alphalist),
 					  RIGHT,
-					  boxHeight - entryHeight - (borderSize*2),
-					  boxWidth - (1+2*borderSize),
+					  boxHeight - entryHeight - (BorderOf(alphalist)*2),
+					  boxWidth - (1 + 2 * BorderOf(alphalist)),
 					  0, list, listSize,
 					  NONUMBERS, A_REVERSE,
 					  Box, FALSE);
@@ -318,19 +327,9 @@ void setCDKAlphalistContents (CDKALPHALIST *alphalist, char *list[], int listSiz
    /* Declare local variables. */
    CDKSCROLL *scrollp	= (CDKSCROLL *)alphalist->scrollField;
    CDKENTRY *entry	= (CDKENTRY *)alphalist->entryField;
-   int x;
 
-   freeCharList (alphalist->list, alphalist->listSize);
-
-   /* We need to sort the list before we use it. */
-   sortList (list, listSize);
-
-   /* Copy in the new information. */
-   alphalist->listSize		= listSize;
-   for (x=0; x < listSize; x++)
-   {
-      alphalist->list[x] = copyChar (list[x]);
-   }
+   if (!createList(alphalist, list, listSize))
+      return;
 
    /* Set the information in the scrolling list. */
    setCDKScroll (scrollp, list, listSize, NONUMBERS, scrollp->highlight, ObjOf(scrollp)->box);
@@ -386,6 +385,7 @@ chtype getCDKAlphalistHighlight (CDKALPHALIST *alphalist)
 void setCDKAlphalistBox (CDKALPHALIST *alphalist, boolean Box)
 {
    ObjOf(alphalist)->box = Box;
+   ObjOf(alphalist)->borderSize = Box ? 1 : 0;
 }
 
 boolean getCDKAlphalistBox (CDKALPHALIST *alphalist)
@@ -396,34 +396,48 @@ boolean getCDKAlphalistBox (CDKALPHALIST *alphalist)
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKAlphalistULChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyULchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKEntryULChar (alphalist->entryField, character);
 }
-void setCDKAlphalistURChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyURchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKEntryURChar (alphalist->entryField, character);
 }
-void setCDKAlphalistLLChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyLLchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKScrollLLChar (alphalist->scrollField, character);
 }
-void setCDKAlphalistLRChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyLRchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKScrollLRChar (alphalist->scrollField, character);
 }
-void setCDKAlphalistVerticalChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyVTchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKEntryVerticalChar (alphalist->entryField, character);
    setCDKScrollVerticalChar (alphalist->scrollField, character);
 }
-void setCDKAlphalistHorizontalChar (CDKALPHALIST *alphalist, chtype character)
+static void _setMyHZchar (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKEntryHorizontalChar (alphalist->entryField, character);
    setCDKScrollHorizontalChar (alphalist->scrollField, character);
 }
-void setCDKAlphalistBoxAttribute (CDKALPHALIST *alphalist, chtype character)
+static void _setMyBXattr (CDKOBJS *object, chtype character)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+
    setCDKEntryBoxAttribute (alphalist->entryField, character);
    setCDKScrollBoxAttribute (alphalist->scrollField, character);
 }
@@ -454,20 +468,34 @@ void setCDKAlphalistBackgroundAttrib (CDKALPHALIST *alphalist, chtype attrib)
  */
 static void _destroyCDKAlphalist (CDKOBJS *object)
 {
-   CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
+   if (object != 0)
+   {
+      CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
 
-   freeCharList (alphalist->list, alphalist->listSize);
+      CDKfreeStrings(alphalist->list);
 
-   /* Destroy the other Cdk objects. */
-   destroyCDKEntry (alphalist->entryField);
-   destroyCDKScroll (alphalist->scrollField);
- 
-   /* Free up the window pointers. */
-   deleteCursesWindow (alphalist->shadowWin);
-   deleteCursesWindow (alphalist->win);
+      /* Destroy the other Cdk objects. */
+      if  (alphalist->entryField != 0)
+      {
+	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_UP);
+	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_DOWN);
+	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_NPAGE);
+	 unbindCDKObject (vENTRY, alphalist->entryField, CONTROL('F'));
+	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_PPAGE);
+	 unbindCDKObject (vENTRY, alphalist->entryField, CONTROL('B'));
+	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_TAB);
 
-   /* Unregister the object. */
-   unregisterCDKObject (vALPHALIST, alphalist);
+	 destroyCDKEntry (alphalist->entryField);
+      }
+      destroyCDKScroll (alphalist->scrollField);
+    
+      /* Free up the window pointers. */
+      deleteCursesWindow (alphalist->shadowWin);
+      deleteCursesWindow (alphalist->win);
+
+      /* Unregister the object. */
+      unregisterCDKObject (vALPHALIST, alphalist);
+   }
 }
 
 /*
@@ -682,6 +710,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       selected		= -1;
 
       /* Start looking for alternate words. */
+      /* FIXME: bsearch would be more suitable */
       while ((currentIndex < alphalist->listSize)
 	  && (strncmp (alphalist->list[currentIndex], entry->info, wordLength) == 0))
       {
@@ -743,4 +772,49 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       drawCDKEntry (entry, ObjOf(entry)->box);
    }
    return (TRUE);
+}
+
+static int createList (CDKALPHALIST *alphalist, char *list[], int listSize)
+{
+   int status = 0;
+
+   if (listSize > 0)
+   {
+      char **newlist = typeCallocN(char *, listSize + 1);
+
+      if (newlist != 0)
+      {
+	 char **oldlist = alphalist->list;
+	 int x;
+
+	 /*
+	  * We'll sort the list before we use it.  It would have been better to
+	  * declare list[] const and only modify the copy, but there may be
+	  * clients that rely on the old behavior.
+	  */
+	 sortList (list, listSize);
+
+	 /* Copy in the new information. */
+	 status = 1;
+	 for (x=0; x < listSize; x++)
+	 {
+	    if ((newlist[x] = copyChar (list[x])) == 0)
+	    {
+	       status = 0;
+	       break;
+	    }
+	 }
+	 if (status)
+	 {
+	    CDKfreeStrings(oldlist);
+	    alphalist->listSize = listSize;
+	    alphalist->list = newlist;
+	 }
+	 else
+	 {
+	    CDKfreeStrings(newlist);
+	 }
+      }
+   }
+   return status;
 }

@@ -1,3 +1,5 @@
+/* $Id: radio_ex.c,v 1.8 2003/11/16 18:42:45 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -46,26 +48,52 @@ int main (void)
       exit (1);
    }
 
-   /* Activate the radio list. */
-   selection = activateCDKRadio (radio, 0);
+   /* loop until user selects a file, or cancels */
+   for (;;)
+   {
+      /* Activate the radio list. */
+      selection = activateCDKRadio (radio, 0);
 
-   /* Check the exit status of the widget. */
-   if (radio->exitType == vESCAPE_HIT)
-   {
-      mesg[0] = "<C>You hit escape. No item selected.";
-      mesg[1] = "",
-      mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-   }
-   else if (radio->exitType == vNORMAL)
-   {
-      mesg[0] = "<C>You selected the filename";
-      sprintf (temp, "<C>%s", item[selection]);
-      mesg[1] = copyChar (temp);
-      mesg[2] = "";
-      mesg[3] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 4);
-      freeChar (mesg[1]);
+      /* Check the exit status of the widget. */
+      if (radio->exitType == vESCAPE_HIT)
+      {
+	 mesg[0] = "<C>You hit escape. No item selected.";
+	 mesg[1] = "",
+	 mesg[2] = "<C>Press any key to continue.";
+	 popupLabel (cdkscreen, mesg, 3);
+	 break;
+      }
+      else if (radio->exitType == vNORMAL)
+      {
+	 struct stat sb;
+
+	 if (stat(item[selection], &sb) == 0
+	  && (sb.st_mode & S_IFMT) == S_IFDIR) {
+	    char **nitem = 0;
+
+	    mesg[0] = "<C>You selected a directory";
+	    sprintf (temp, "<C>%s", item[selection]);
+	    mesg[1] = temp;
+	    mesg[2] = "";
+	    mesg[3] = "<C>Press any key to continue.";
+	    popupLabel (cdkscreen, mesg, 4);
+	    if ((count = CDKgetDirectoryContents (item[selection], &nitem)) > 0)
+	    {
+	       CDKfreeStrings(item);
+	       item = nitem;
+	       chdir(item[selection]);
+	       setCDKRadioItems (radio, item, count);
+	    }
+	 } else {
+	    mesg[0] = "<C>You selected the filename";
+	    sprintf (temp, "<C>%s", item[selection]);
+	    mesg[1] = temp;
+	    mesg[2] = "";
+	    mesg[3] = "<C>Press any key to continue.";
+	    popupLabel (cdkscreen, mesg, 4);
+	    break;
+	 }
+      }
    }
 
    /* Clean up. */

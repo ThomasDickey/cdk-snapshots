@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:38:21 $
- * $Revision: 1.124 $
+ * $Date: 2003/11/16 22:04:45 $
+ * $Revision: 1.131 $
  */
 
 /*
@@ -11,20 +11,14 @@
  */
 static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
 
-/*
- * Declare file local variables.
- */
-extern char *GPasteBuffer;
-
-DeclareCDKObjects(MENTRY, Mentry, String);
+DeclareCDKObjects(MENTRY, Mentry, setCdk, String);
 
 /*
  * This creates a pointer to a muliple line entry widget.
  */
 CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
 {
-   /* Set up some variables */
-   CDKMENTRY *mentry	= newCDKObject(CDKMENTRY, &my_funcs);
+   CDKMENTRY *mentry	= 0;
    chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
@@ -38,6 +32,11 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int ypos		= yplace;
    char **temp		= 0;
    int x, len, junk, junk2;
+
+   if ((mentry = newCDKObject(CDKMENTRY, &my_funcs)) == 0)
+      return (0);
+
+   setCDKMentryBox (mentry, Box);
 
   /*
    * If the fieldWidth is a negative value, the fieldWidth will
@@ -70,6 +69,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth = boxWidth - (2 * BorderOf(mentry));
+
       temp = CDKsplitString (title, '\n');
       mentry->titleLines = CDKcountStrings (temp);
 
@@ -95,7 +96,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       for (x=0; x < mentry->titleLines; x++)
       {
 	 mentry->title[x]	= char2Chtype (temp[x], &mentry->titleLen[x], &mentry->titlePos[x]);
-	 mentry->titlePos[x]	= justifyString (boxWidth, mentry->titleLen[x], mentry->titlePos[x]);
+	 mentry->titlePos[x]	= justifyString (titleWidth, mentry->titleLen[x], mentry->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -123,14 +124,9 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Is the window null??? */
    if (mentry->win == 0)
    {
-      /* Free up any memory used. */
-      freeChtype (mentry->label);
-      free (mentry);
-
-      /* Return a null pointer. */
+      destroyCDKObject(mentry);
       return (0);
    }
-
 
    /* Create the label window. */
    if (mentry->label != 0)
@@ -168,7 +164,6 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->boxWidth		= boxWidth;
    mentry->filler		= filler;
    mentry->hidden		= filler;
-   ObjOf(mentry)->box		= Box;
    ObjOf(mentry)->inputWindow	= mentry->win;
    mentry->currentRow		= 0;
    mentry->currentCol		= 0;
@@ -177,13 +172,6 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->dispType		= dispType;
    mentry->min			= min;
    mentry->logicalRows		= logicalRows;
-   mentry->ULChar		= ACS_ULCORNER;
-   mentry->URChar		= ACS_URCORNER;
-   mentry->LLChar		= ACS_LLCORNER;
-   mentry->LRChar		= ACS_LRCORNER;
-   mentry->HChar		= ACS_HLINE;
-   mentry->VChar		= ACS_VLINE;
-   mentry->BoxAttrib		= A_NORMAL;
    mentry->exitType		= vNEVER_ACTIVATED;
    mentry->callbackfn		= CDKMentryCallBack;
    mentry->preProcessFunction	= 0;
@@ -212,7 +200,6 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
  */
 char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input = 0;
    char *ret	= 0;
 
@@ -262,7 +249,6 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 static int _injectCDKMentry (CDKOBJS *object, chtype input)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
-   /* Declare local variables. */
    int cursorPos	= ((mentry->currentRow + mentry->topRow) *
 				mentry->fieldWidth) + mentry->currentCol;
    int ppReturn		= 1;
@@ -656,7 +642,6 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
-   /* Declare local variables. */
    int currentX = getbegx(mentry->win);
    int currentY = getbegy(mentry->win);
    int xpos	= xplace;
@@ -703,7 +688,6 @@ static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean rel
  */
 void drawCDKMentryField (CDKMENTRY *mentry)
 {
-   /* Declare local variables. */
    int currchar		= (mentry->fieldWidth * mentry->topRow);
    int length		= 0;
    int lastpos		= 0;
@@ -721,7 +705,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
       for (x=0; x < mentry->titleLines; x++)
       {
 	 writeChtype (mentry->win,
-			mentry->titlePos[x],
+			mentry->titlePos[x] + BorderOf(mentry),
 			x + 1,
 			mentry->title[x],
 			HORIZONTAL, 0,
@@ -778,7 +762,6 @@ void drawCDKMentryField (CDKMENTRY *mentry)
  */
 static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 {
-   /* Declare local variables. */
    int cursorPos = ((mentry->currentRow + mentry->topRow) *
 			 mentry->fieldWidth) + mentry->currentCol;
    int infoLength = (int)strlen (mentry->info);
@@ -907,11 +890,7 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (mentry->win,
-		mentry->ULChar, mentry->URChar,
-		mentry->LLChar, mentry->LRChar,
-		mentry->HChar,	mentry->VChar,
-		mentry->BoxAttrib);
+      drawObjBox (mentry->win, ObjOf(mentry));
       wrefresh (mentry->win);
    }
 
@@ -933,38 +912,6 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
 
    /* Draw the mentry field. */
    drawCDKMentryField (mentry);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKMentryULChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->ULChar = character;
-}
-void setCDKMentryURChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->URChar = character;
-}
-void setCDKMentryLLChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->LLChar = character;
-}
-void setCDKMentryLRChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->LRChar = character;
-}
-void setCDKMentryVerticalChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->VChar = character;
-}
-void setCDKMentryHorizontalChar (CDKMENTRY *mentry, chtype character)
-{
-   mentry->HChar = character;
-}
-void setCDKMentryBoxAttribute (CDKMENTRY *mentry, chtype character)
-{
-   mentry->BoxAttrib = character;
 }
 
 /*
@@ -1063,7 +1010,6 @@ void setCDKMentry (CDKMENTRY *mentry, char *value, int min, boolean Box)
  */
 void setCDKMentryValue (CDKMENTRY *mentry, char *newValue)
 {
-   /* Declare local variables. */
    int fieldCharacters	= mentry->rows * mentry->fieldWidth;
    int len		= 0;
    int copychars	= 0;
@@ -1150,6 +1096,7 @@ int getCDKMentryMin (CDKMENTRY *mentry)
 void setCDKMentryBox (CDKMENTRY *mentry, boolean Box)
 {
    ObjOf(mentry)->box = Box;
+   ObjOf(mentry)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKMentryBox (CDKMENTRY *mentry)
 {

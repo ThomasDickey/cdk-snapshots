@@ -1,38 +1,42 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2003/04/17 22:18:10 $
- * $Revision: 1.98 $
+ * $Date: 2003/11/16 22:11:08 $
+ * $Revision: 1.106 $
  */
 
 /*
  * Declare file local prototypes.
  */
+static int createList(CDKSELECTION *selection, char **list, int listSize);
 static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box);
 
-DeclareCDKObjects(SELECTION, Selection, Int);
+DeclareCDKObjects(SELECTION, Selection, setCdk, Int);
 
 /*
  * This function creates a selection widget.
  */
 CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace, int height, int width, char *title, char **list, int listSize, char **choices, int choiceCount, chtype highlight, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKSELECTION *selection	= newCDKObject(CDKSELECTION, &my_funcs);
+   CDKSELECTION *selection	= 0;
    chtype *holder		= 0;
    int maxWidth			= INT_MIN;
-   int widestitem		= -1;
+   int widestItem		= -1;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
-   int borderSize		= Box ? 1 : 0;
    int xpos			= xplace;
    int ypos			= yplace;
    int x			= 0;
    char **temp			= 0;
    int len, junk2;
+
+   if ((selection = newCDKObject(CDKSELECTION, &my_funcs)) == 0)
+      return (0);
+
+   setCDKSelectionBox (selection, Box);
 
   /*
    * If the height is a negative value, the height will
@@ -51,25 +55,28 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Translate the char * title to a chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       selection->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
-      for (x=0; x < selection->titleLines; x++)
+      for (x = 0; x < selection->titleLines; x++)
       {
 	 holder = char2Chtype (temp[x], &len, &junk2);
 	 maxWidth = MAXIMUM (maxWidth, len);
 	 freeChtype (holder);
       }
-      boxWidth = MAXIMUM (boxWidth, maxWidth + 2*borderSize);
+      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * BorderOf(selection));
 
       /* For each line in the title, convert from char * to chtype * */
-      for (x=0; x < selection->titleLines; x++)
+      titleWidth = boxWidth - (2 * BorderOf(selection));
+      for (x = 0; x < selection->titleLines; x++)
       {
 	 selection->title[x] = char2Chtype (temp[x],
 					    &selection->titleLen[x],
 					    &selection->titlePos[x]);
-	 selection->titlePos[x] = justifyString (boxWidth-2*borderSize,
+	 selection->titlePos[x] = justifyString (titleWidth,
 						selection->titleLen[x],
 						selection->titlePos[x]);
       }
@@ -90,15 +97,15 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* Set the rest of the variables. */
-   selection->titleAdj		= selection->titleLines + borderSize;
+   selection->titleAdj		= selection->titleLines + BorderOf(selection);
    selection->listSize		= listSize;
-   selection->viewSize		= boxHeight - (2*borderSize + selection->titleLines);
+   selection->viewSize		= boxHeight - (2 * BorderOf(selection) + selection->titleLines);
    selection->lastItem		= listSize - 1;
    selection->maxTopItem	= listSize - selection->viewSize;
    selection->maxchoicelen	= -1;
 
    /* Is the view size smaller then the window??? */
-   if (listSize < (boxHeight-borderSize-selection->titleAdj))
+   if (listSize < (boxHeight - BorderOf(selection) - selection->titleAdj))
    {
       selection->viewSize	= listSize;
       selection->listSize	= listSize;
@@ -124,11 +131,11 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Determine the size of the scrollbar toggle and the step. */
-   selection->step		= (float)(boxHeight - 2*borderSize) / (float)selection->listSize;
-   selection->toggleSize	= (selection->listSize > (boxHeight - 2*borderSize) ? 1 : ceilCDK(selection->step));
+   selection->step		= (float)(boxHeight - 2 * BorderOf(selection)) / (float)selection->listSize;
+   selection->toggleSize	= (selection->listSize > (boxHeight - 2 * BorderOf(selection)) ? 1 : ceilCDK(selection->step));
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(selection));
 
    /* Make the selection window */
    selection->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -136,14 +143,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Is the window null?? */
    if (selection->win == 0)
    {
-      /* Clean up any memory used. */
-      for (x=0; x < selection->titleLines; x++)
-      {
-	 freeChtype (selection->title[x]);
-      }
-      free (selection);
-
-      /* Return a null pointer. */
+      destroyCDKObject(selection);
       return (0);
    }
 
@@ -154,16 +154,16 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    if (splace == RIGHT)
    {
       selection->scrollbarWin = subwin (selection->win,
-					boxHeight - selection->titleAdj - borderSize, 1,
+					boxHeight - selection->titleAdj - BorderOf(selection), 1,
 					ypos + selection->titleAdj,
-					xpos + boxWidth - 1 - borderSize);
+					xpos + boxWidth - 1 - BorderOf(selection));
    }
    else if (splace == LEFT)
    {
       selection->scrollbarWin = subwin (selection->win,
-					boxHeight - selection->titleAdj - borderSize, 1,
+					boxHeight - selection->titleAdj - BorderOf(selection), 1,
 					ypos + selection->titleAdj,
-					xpos + borderSize);
+					xpos + BorderOf(selection));
    }
    else
    {
@@ -184,7 +184,6 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    selection->highlight			= highlight;
    selection->choiceCount		= choiceCount;
    selection->exitType			= vNEVER_ACTIVATED;
-   ObjOf(selection)->box		= Box;
    ObjOf(selection)->acceptsFocus	= 1;
    ObjOf(selection)->inputWindow	= selection->win;
    selection->shadow			= shadow;
@@ -193,48 +192,33 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    selection->postProcessFunction	= 0;
    selection->postProcessData		= 0;
    selection->shadowWin			= 0;
-   selection->ULChar			= ACS_ULCORNER;
-   selection->URChar			= ACS_URCORNER;
-   selection->LLChar			= ACS_LLCORNER;
-   selection->LRChar			= ACS_LRCORNER;
-   selection->HChar			= ACS_HLINE;
-   selection->VChar			= ACS_VLINE;
-   selection->BoxAttrib			= A_NORMAL;
 
    /* Each choice has to be converted from char * to chtype * */
-   for (x=0; x < choiceCount; x++)
+   for (x = 0; x < choiceCount; x++)
    {
       selection->choice[x]	= char2Chtype (choices[x], &selection->choicelen[x], &junk2);
       selection->maxchoicelen	= MAXIMUM (selection->maxchoicelen, selection->choicelen[x]);
    }
 
    /* Each item in the needs to be converted to chtype * */
-   for (x=0; x < listSize; x++)
+   widestItem = createList(selection, list, listSize);
+   if (widestItem <= 0)
    {
-      selection->item[x] = char2Chtype (list[x],
-					&selection->itemLen[x],
-					&selection->itemPos[x]);
-      selection->itemPos[x] = justifyString ((selection->boxWidth - selection->maxchoicelen - 2*borderSize),
-					     selection->itemLen[x],
-					     selection->itemPos[x]) + selection->maxchoicelen + borderSize;
-      selection->selections[x] = 0;
-      widestitem = MAXIMUM (widestitem, selection->itemLen[x]);
-
-      /* Set the mode of the selection lists. */
-      selection->mode[x] = 0;
+      destroyCDKObject(selection);
+      return (0);
    }
 
   /*
    * Determine how many characters we can shift to the right
    * before all the items have been scrolled off the screen.
    */
-   if ((selection->boxWidth-selection->maxchoicelen) > widestitem)
+   if ((selection->boxWidth - selection->maxchoicelen) > widestItem)
    {
       selection->maxLeftChar = 0;
    }
    else
    {
-      selection->maxLeftChar = widestitem-(selection->boxWidth-selection->maxchoicelen-2);
+      selection->maxLeftChar = widestItem-(selection->boxWidth - selection->maxchoicelen - 2);
    }
 
    /* Do we need to create a shadow. */
@@ -264,7 +248,6 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    /* Check if actions is null. */
    if (actions == 0)
    {
-      /* Declare some local variables. */
       chtype input;
       int ret;
 
@@ -283,13 +266,12 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    }
    else
    {
-      /* Declare some local variables. */
       int length = chlen (actions);
       int x = 0;
       int ret;
 
       /* Inject each character one at a time. */
-      for (x=0; x < length; x++)
+      for (x = 0; x < length; x++)
       {
 	 ret = injectCDKSelection (selection, actions[x]);
 	 if (selection->exitType != vEARLY_EXIT)
@@ -310,7 +292,6 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
 static int _injectCDKSelection (CDKOBJS *object, chtype input)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
-   /* Declare local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -437,7 +418,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 		       {
 			  selection->currentTop		= selection->maxTopItem;
 			  selection->currentItem	= selection->lastItem;
-			  selection->currentHigh	= selection->viewSize-1;
+			  selection->currentHigh	= selection->viewSize - 1;
 		       }
 		    }
 		    else
@@ -455,7 +436,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 	       case 'G' :
 		    selection->currentTop	= selection->maxTopItem;
 		    selection->currentItem	= selection->lastItem;
-		    selection->currentHigh	= selection->viewSize-1;
+		    selection->currentHigh	= selection->viewSize - 1;
 		    break;
 
 	       case '$' :
@@ -469,7 +450,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 	       case SPACE :
 		    if (selection->mode[selection->currentItem] == 0)
 		    {
-		       if (selection->selections[selection->currentItem] == selection->choiceCount-1)
+		       if (selection->selections[selection->currentItem] == selection->choiceCount - 1)
 		       {
 			  selection->selections[selection->currentItem] = 0;
 		       }
@@ -527,7 +508,6 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 static void _moveCDKSelection (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
-   /* Declare local variables. */
    int currentX = getbegx(selection->win);
    int currentY = getbegy(selection->win);
    int xpos	= xplace;
@@ -585,10 +565,10 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
    /* Draw in the title if there is one. */
    if (selection->titleLines != 0)
    {
-      for (x=0; x < selection->titleLines; x++)
+      for (x = 0; x < selection->titleLines; x++)
       {
 	 writeChtype (selection->win,
-			selection->titlePos[x],
+			selection->titlePos[x] + BorderOf(selection),
 			x + 1,
 			selection->title[x],
 			HORIZONTAL, 0,
@@ -605,7 +585,6 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
  */
 static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSED)
 {
-   /* Declare local variables. */
    int scrollbarAdj	= 0;
    int screenPos	= 0;
    int x;
@@ -620,7 +599,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    }
 
    /* Redraw the list... */
-   for (x=0; x < selection->viewSize; x++)
+   for (x = 0; x < selection->viewSize; x++)
    {
       screenPos = selection->itemPos[x + selection->currentTop] - selection->leftChar + scrollbarAdj;
 
@@ -662,7 +641,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* Draw in the filler character for the scroll bar. */
    if (selection->scrollbarWin != 0)
    {
-      for (x=0; x < selection->boxHeight-1; x++)
+      for (x = 0; x < selection->boxHeight - 1; x++)
       {
 	 mvwaddch (selection->scrollbarWin, x, 0, ACS_CKBOARD);
       }
@@ -681,7 +660,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* Determine where the toggle is supposed to be. */
    if (selection->scrollbar)
    {
-      if (selection->listSize > selection->boxHeight-2)
+      if (selection->listSize > selection->boxHeight - 2)
       {
 	 selection->togglePos = floorCDK((float)selection->currentItem * (float)selection->step);
       }
@@ -691,14 +670,14 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       }
 
       /* Make sure the toggle button doesn't go out of bounds. */
-      scrollbarAdj = (selection->togglePos + selection->toggleSize)-(selection->boxHeight-selection->titleAdj-1);
+      scrollbarAdj = (selection->togglePos + selection->toggleSize)-(selection->boxHeight - selection->titleAdj - 1);
       if (scrollbarAdj > 0)
       {
 	 selection->togglePos -= scrollbarAdj;
       }
 
       /* Draw the scrollbar. */
-      for (x=selection->togglePos; x < selection->togglePos + selection->toggleSize; x++)
+      for (x = selection->togglePos; x < selection->togglePos + selection->toggleSize; x++)
       {
 	 mvwaddch (selection->scrollbarWin, x, 0, ' ' | A_REVERSE);
       }
@@ -709,48 +688,12 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* Box it if needed */
    if (ObjOf(selection)->box)
    {
-      attrbox (selection->win,
-		selection->ULChar, selection->URChar,
-		selection->LLChar, selection->LRChar,
-		selection->HChar,  selection->VChar,
-		selection->BoxAttrib);
+      drawObjBox (selection->win, ObjOf(selection));
    }
 
    /* Refresh the window. */
    touchwin (selection->win);
    wrefresh (selection->win);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKSelectionULChar (CDKSELECTION *selection, chtype character)
-{
-   selection->ULChar = character;
-}
-void setCDKSelectionURChar (CDKSELECTION *selection, chtype character)
-{
-   selection->URChar = character;
-}
-void setCDKSelectionLLChar (CDKSELECTION *selection, chtype character)
-{
-   selection->LLChar = character;
-}
-void setCDKSelectionLRChar (CDKSELECTION *selection, chtype character)
-{
-   selection->LRChar = character;
-}
-void setCDKSelectionVerticalChar (CDKSELECTION *selection, chtype character)
-{
-   selection->VChar = character;
-}
-void setCDKSelectionHorizontalChar (CDKSELECTION *selection, chtype character)
-{
-   selection->HChar = character;
-}
-void setCDKSelectionBoxAttribute (CDKSELECTION *selection, chtype character)
-{
-   selection->BoxAttrib = character;
 }
 
 /*
@@ -796,22 +739,22 @@ void setCDKSelectionBackgroundAttrib (CDKSELECTION *selection, chtype attrib)
 static void _destroyCDKSelection (CDKOBJS *object)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
-   /* Declare local variables. */
    int x;
 
    /* Clean up the char pointers. */
-   for (x=0; x < selection->titleLines; x++)
+   for (x = 0; x < selection->titleLines; x++)
    {
       freeChtype (selection->title[x]);
    }
-   for (x=0; x < selection->listSize; x++)
-   {
-      freeChtype (selection->item[x]);
-   }
-   for (x=0; x < selection->choiceCount; x++)
+   for (x = 0; x < selection->choiceCount; x++)
    {
       freeChtype (selection->choice[x]);
    }
+   CDKfreeChtypes(selection->item);
+   if (selection->itemPos    != 0) free (selection->itemPos);
+   if (selection->itemLen    != 0) free (selection->itemLen);
+   if (selection->selections != 0) free (selection->selections);
+   if (selection->mode	     != 0) free (selection->mode);
 
    /* Clean up the windows. */
    deleteCursesWindow (selection->scrollbarWin);
@@ -851,20 +794,15 @@ void setCDKSelection (CDKSELECTION *selection, chtype highlight, int choices[], 
  */
 void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
 {
-   /* Declare some wars. */
-   int widestitem	= -1;
+   int widestItem	= -1;
    int x		= 0;
 
-   /* Clean out the old list. */
-   for (x=0; x < selection->listSize; x++)
-   {
-      freeChtype (selection->item[x]);
-      selection->itemLen[x] = 0;
-      selection->itemPos[x] = 0;
-   }
+   widestItem = createList(selection, list, listSize);
+   if (widestItem <= 0)
+      return;
 
    /* Clean up the display. */
-   for (x=0; x < selection->viewSize ; x++)
+   for (x = 0; x < selection->viewSize ; x++)
    {
       writeBlanks (selection->win, 1, selection->titleAdj + x,
 		   HORIZONTAL, 0, getmaxx(selection->win));
@@ -877,7 +815,7 @@ void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
    selection->maxTopItem	= listSize - selection->viewSize;
 
    /* Is the view size smaller then the window? */
-   if (listSize < (selection->boxHeight-1-selection->titleAdj))
+   if (listSize < (selection->boxHeight - 1 - selection->titleAdj))
    {
       selection->viewSize	= listSize;
       selection->listSize	= listSize;
@@ -892,43 +830,27 @@ void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
    selection->leftChar		= 0;
 
    /* Set the information for the selection bar. */
-   selection->step		= (float)(selection->boxHeight-2) / (float)selection->listSize;
-   selection->toggleSize	= (selection->listSize > (selection->boxHeight-2) ? 1 : ceilCDK(selection->step));
-
-   /* Each item in the needs to be converted to chtype * */
-   for (x=0; x < listSize; x++)
-   {
-      selection->item[x] = char2Chtype (list[x],
-					&selection->itemLen[x],
-					&selection->itemPos[x]);
-      selection->itemPos[x] = justifyString ((selection->boxWidth-selection->maxchoicelen),
-						selection->itemLen[x],
-						selection->itemPos[x]) + selection->maxchoicelen;
-      selection->selections[x] = 0;
-      widestitem = MAXIMUM (widestitem, selection->itemLen[x]);
-
-      /* Set the mode of the selection lists. */
-      selection->mode[x] = 0;
-   }
+   selection->step		= (float)(selection->boxHeight - 2) / (float)selection->listSize;
+   selection->toggleSize	= (selection->listSize > (selection->boxHeight - 2) ? 1 : ceilCDK(selection->step));
 
   /*
    * Determine how many characters we can shift to the right
    * before all the items have been scrolled off the screen.
    */
-   if ((selection->boxWidth-selection->maxchoicelen) > widestitem)
+   if ((selection->boxWidth - selection->maxchoicelen) > widestItem)
    {
       selection->maxLeftChar = 0;
    }
    else
    {
-      selection->maxLeftChar = widestitem-(selection->boxWidth-selection->maxchoicelen-2);
+      selection->maxLeftChar = widestItem-(selection->boxWidth - selection->maxchoicelen - 2);
    }
 }
 int getCDKSelectionItems (CDKSELECTION *selection, char *list[])
 {
    int x;
 
-   for (x=0; x < selection->listSize; x++)
+   for (x = 0; x < selection->listSize; x++)
    {
       list[x] = chtype2Char (selection->item[x]);
    }
@@ -942,6 +864,7 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
 {
    char **temp;
    int x;
+   int titleWidth;
 
    /* Make sure the title isn't null. */
    if (title == 0)
@@ -950,7 +873,7 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
    }
 
    /* Clear out the old title. */
-   for (x=0; x < selection->titleLines; x++)
+   for (x = 0; x < selection->titleLines; x++)
    {
       freeChtype (selection->title[x]);
    }
@@ -959,12 +882,13 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
    selection->titleLines = CDKcountStrings (temp);
 
    /* For each line in the title, convert from char * to chtype * */
-   for (x=0; x < selection->titleLines; x++)
+   titleWidth = selection->boxWidth - (2 * BorderOf(selection));
+   for (x = 0; x < selection->titleLines; x++)
    {
       selection->title[x] = char2Chtype (temp[x],
 					&selection->titleLen[x],
 					&selection->titlePos[x]);
-      selection->titlePos[x] = justifyString (selection->boxWidth,
+      selection->titlePos[x] = justifyString (titleWidth,
 						selection->titleLen[x],
 						selection->titlePos[x]);
    }
@@ -977,7 +901,7 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
    selection->maxchoicelen	= -1;
 
    /* Is the view size smaller then the window??? */
-   if (selection->listSize < (selection->boxHeight-1-selection->titleAdj))
+   if (selection->listSize < (selection->boxHeight - 1 - selection->titleAdj))
    {
       selection->viewSize	= selection->listSize;
       selection->lastItem	= selection->listSize;
@@ -985,11 +909,12 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
    }
 
    /* Determine the size of the scrollbar toggle and the step. */
-   selection->step		= (float)(selection->boxHeight-2) / (float)selection->listSize;
-   selection->toggleSize	= (selection->listSize > (selection->boxHeight-2) ? 1 : ceilCDK(selection->step));
+   selection->step		= (float)(selection->boxHeight - 2) / (float)selection->listSize;
+   selection->toggleSize	= (selection->listSize > (selection->boxHeight - 2) ? 1 : ceilCDK(selection->step));
 }
 char *getCDKSelectionTitle (CDKSELECTION *selection GCC_UNUSED)
 {
+   /* FIXME: this is not implemented */
    return ("HELLO");
 }
 
@@ -1010,11 +935,10 @@ chtype getCDKSelectionHighlight (CDKSELECTION *selection)
  */
 void setCDKSelectionChoices (CDKSELECTION *selection, int choices[])
 {
-   /* Declare local variables. */
    int x;
 
    /* Set the choice values in the selection list. */
-   for (x=0; x < selection->listSize; x++)
+   for (x = 0; x < selection->listSize; x++)
    {
       if (choices[x] < 0)
       {
@@ -1022,7 +946,7 @@ void setCDKSelectionChoices (CDKSELECTION *selection, int choices[])
       }
       else if (choices[x] > selection->choiceCount)
       {
-	 selection->selections[x] = selection->choiceCount-1;
+	 selection->selections[x] = selection->choiceCount - 1;
       }
       else
       {
@@ -1050,7 +974,7 @@ void setCDKSelectionChoice (CDKSELECTION *selection, int Index, int choice)
    }
    else if (choice > selection->choiceCount)
    {
-      correctChoice = selection->choiceCount-1;
+      correctChoice = selection->choiceCount - 1;
    }
 
    /* Make sure the index isn't out of range. */
@@ -1060,7 +984,7 @@ void setCDKSelectionChoice (CDKSELECTION *selection, int Index, int choice)
    }
    else if (Index > selection->listSize)
    {
-      Index = selection->listSize-1;
+      Index = selection->listSize - 1;
    }
 
    /* Set the choice value. */
@@ -1075,7 +999,7 @@ int getCDKSelectionChoice (CDKSELECTION *selection, int Index)
    }
    else if (Index > selection->listSize)
    {
-      return selection->selections[selection->listSize-1];
+      return selection->selections[selection->listSize - 1];
    }
    else
    {
@@ -1098,7 +1022,7 @@ void setCDKSelectionModes (CDKSELECTION *selection, int modes[])
    }
 
    /* Set the modes. */
-   for (x=0; x < selection->listSize; x++)
+   for (x = 0; x < selection->listSize; x++)
    {
       selection->mode[x] = modes[x];
    }
@@ -1126,7 +1050,7 @@ void setCDKSelectionMode (CDKSELECTION *selection, int Index, int mode)
    }
    else if (Index > selection->listSize)
    {
-      selection->mode[selection->listSize-1] = mode;
+      selection->mode[selection->listSize - 1] = mode;
    }
    else
    {
@@ -1142,7 +1066,7 @@ int getCDKSelectionMode (CDKSELECTION *selection, int Index)
    }
    else if (Index > selection->listSize)
    {
-      return selection->mode[selection->listSize-1];
+      return selection->mode[selection->listSize - 1];
    }
    else
    {
@@ -1156,6 +1080,7 @@ int getCDKSelectionMode (CDKSELECTION *selection, int Index)
 void setCDKSelectionBox (CDKSELECTION *selection, boolean Box)
 {
    ObjOf(selection)->box = Box;
+   ObjOf(selection)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKSelectionBox (CDKSELECTION *selection)
 {
@@ -1228,4 +1153,68 @@ static void _refreshDataCDKSelection(CDKOBJS *entry GCC_UNUSED)
 static void _saveDataCDKSelection(CDKOBJS *entry GCC_UNUSED)
 {
    /* FIXME */
+}
+
+static int createList(CDKSELECTION *selection, char **list, int listSize)
+{
+   int status = 0;
+   int widestItem = 0;
+   int x;
+
+   if (listSize > 0)
+   {
+      chtype **	newList = typeCallocN(chtype *, listSize + 1);
+      int *	newLen  = typeCallocN(int, listSize + 1);
+      int *	newPos  = typeCallocN(int, listSize + 1);
+      int *	newSel  = typeCallocN(int, listSize + 1);
+      int *	newMode = typeCallocN(int, listSize + 1);
+
+      if (newList != 0
+       && newLen != 0
+       && newPos != 0
+       && newSel != 0
+       && newMode != 0)
+      {
+	 int boxWidth = (selection->boxWidth - selection->maxchoicelen - 2 * BorderOf(selection));
+	 int adjust = selection->maxchoicelen + BorderOf(selection);
+
+	 status = 1;
+	 for (x = 0; x < listSize; x++)
+	 {
+	    newList[x] = char2Chtype (list[x], &newLen[x], &newPos[x]);
+	    if (newList[x] == 0)
+	    {
+	       status = 0;
+	       break;
+	    }
+	    newPos[x]  = justifyString (boxWidth, newLen[x], newPos[x]) + adjust;
+	    widestItem = MAXIMUM (widestItem, newLen[x]);
+	 }
+
+	 if (status)
+	 {
+	    CDKfreeChtypes(selection->item);
+	    if (selection->itemPos    != 0) free (selection->itemPos);
+	    if (selection->itemLen    != 0) free (selection->itemLen);
+	    if (selection->selections != 0) free (selection->selections);
+	    if (selection->mode	      != 0) free (selection->mode);
+
+	    selection->item	  = newList;
+	    selection->itemPos	  = newPos;
+	    selection->itemLen	  = newLen;
+	    selection->selections = newSel;
+	    selection->mode	  = newMode;
+	 }
+	 else
+	 {
+	    CDKfreeChtypes(newList);
+	    if (newPos  != 0) free (newPos);
+	    if (newLen  != 0) free (newLen);
+	    if (newSel	!= 0) free (newSel);
+	    if (newMode	!= 0) free (newMode);
+	 }
+      }
+   }
+
+   return status ? widestItem : 0;
 }
