@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:31:49 $
- * $Revision: 1.36 $
+ * $Date: 2000/01/16 22:40:36 $
+ * $Revision: 1.37 $
  */
 
 /*
@@ -47,7 +47,7 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
 	       obj->bindingList = (CDKBINDING *)malloc(need);
 
 	    memset(&(obj->bindingList[obj->bindingCount]), 0,
-	           (next - obj->bindingCount) * sizeof(CDKBINDING));
+		   (next - obj->bindingCount) * sizeof(CDKBINDING));
 	    obj->bindingCount = next;
 	 }
 
@@ -83,8 +83,8 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
    }
    else if (Index >= 0 && Index < obj->bindingCount)
    {
-      obj->bindingList[Index].bindFunction	= (BINDFN)NULL;
-      obj->bindingList[Index].bindData		= (void *)NULL;
+      obj->bindingList[Index].bindFunction	= 0;
+      obj->bindingList[Index].bindData		= 0;
    }
 }
 
@@ -113,8 +113,8 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
       CDKOBJS *obj = (CDKOBJS *)object;
       for (x=0; x < obj->bindingCount; x++)
       {
-         (obj)->bindingList[x].bindFunction	= (BINDFN)NULL;
-         (obj)->bindingList[x].bindData		= (void *)NULL;
+	 (obj)->bindingList[x].bindFunction	= 0;
+	 (obj)->bindingList[x].bindData		= 0;
       }
    }
 }
@@ -136,12 +136,12 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
    */
    if ((Index >= 0) && (Index < obj->bindingCount))
    {
-      if ( (obj)->bindingList[Index].bindFunction != (BINDFN) NULL )
+      if ( (obj)->bindingList[Index].bindFunction != 0 )
       {
-         BINDFN function	= obj->bindingList[Index].bindFunction;
-         void * data		= obj->bindingList[Index].bindData;
-         function (cdktype, object, data, key);
-         return TRUE;
+	 BINDFN function	= obj->bindingList[Index].bindFunction;
+	 void * data		= obj->bindingList[Index].bindData;
+	 function (cdktype, object, data, key);
+	 return TRUE;
       }
    }
    return (FALSE);

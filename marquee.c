@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.49 $
+ * $Date: 2000/01/16 23:08:32 $
+ * $Revision: 1.51 $
  */
 
-DeclareCDKObjects(my_funcs,Marquee)
+DeclareCDKObjects(my_funcs,Marquee);
 
 /*
  * This creates a marquee widget.
@@ -37,7 +37,7 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    marquee->boxHeight	= boxHeight;
    marquee->boxWidth	= boxWidth;
-   marquee->shadowWin	= (WINDOW *)NULL;
+   marquee->shadowWin	= 0;
    marquee->active	= TRUE;
    marquee->width	= width;
    marquee->shadow	= shadow;
@@ -49,14 +49,14 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    marquee->VChar	= ACS_VLINE;
    marquee->BoxAttrib	= A_NORMAL;
 
-   /* Is the window NULL??? */
-   if (marquee->win == (WINDOW *)NULL)
+   /* Is the window null??? */
+   if (marquee->win == 0)
    {
       /* Clean up any memory. */
       free (marquee);
 
-      /* Return a NULL pointer. */
-      return ( (CDKMARQUEE *)NULL );
+      /* Return a null pointer. */
+      return ( 0 );
    }
    keypad (marquee->win, TRUE);
 
@@ -74,7 +74,7 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
 {
    /* Declear local variables. */
    chtype *message;
-   int mesgLength 	= 0;
+   int mesgLength	= 0;
    int startPos		= 0;
    int firstChar	= 0;
    int lastChar		= 1;
@@ -86,7 +86,7 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
    ObjOf(marquee)->box = Box;
 
    /* Make sure the message has some content. */
-   if (mesg == (char *)NULL)
+   if (mesg == 0)
    {
       return (-1);
    }
@@ -110,93 +110,93 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
    {
       if (marquee->active)
       {
-         /* Draw in the characters. */
-         y = firstChar;
-         for (x=startPos ; x < (startPos + viewSize) ; x++)
-         {
-            mvwaddch (marquee->win, 1, x, message[y]);
-            y++;
-         }
-         wrefresh (marquee->win);
+	 /* Draw in the characters. */
+	 y = firstChar;
+	 for (x=startPos ; x < (startPos + viewSize) ; x++)
+	 {
+	    mvwaddch (marquee->win, 1, x, message[y]);
+	    y++;
+	 }
+	 wrefresh (marquee->win);
 
-         /* Set my variables. */
-         if (mesgLength < (marquee->width-2))
-         {
-            if (lastChar < mesgLength)
-            {
-               lastChar ++;
-               viewSize ++;
-               startPos = marquee->width - viewSize + 1;
-            }
-            else if (lastChar == mesgLength)
-            {
-               if (startPos > 1)
-               {
-                  /* This means the whole string is visible. */
-                  startPos --;
-                  viewSize = mesgLength - 1;
-               }
-               else
-               {
-                 /* We have to start chopping the viewSize */
-                 startPos = 1;
-                 firstChar++;
-                 viewSize--;
-               }
-            }
-         }
-         else
-         {
-            if (startPos > 1)
-            {
-               lastChar ++;
-               viewSize ++;
-               startPos --;
-            }
-            else
-            {
-               if (lastChar < mesgLength)
-               {
-                  firstChar ++;
-                  lastChar  ++;
-                  startPos = 1;
-                  viewSize = marquee->width - 2;
-               }
-               else
-               {
-                  firstChar ++;
-                  viewSize --;
-                  startPos = 1;
-               }
-            }
-         }
+	 /* Set my variables. */
+	 if (mesgLength < (marquee->width-2))
+	 {
+	    if (lastChar < mesgLength)
+	    {
+	       lastChar ++;
+	       viewSize ++;
+	       startPos = marquee->width - viewSize + 1;
+	    }
+	    else if (lastChar == mesgLength)
+	    {
+	       if (startPos > 1)
+	       {
+		  /* This means the whole string is visible. */
+		  startPos --;
+		  viewSize = mesgLength - 1;
+	       }
+	       else
+	       {
+		 /* We have to start chopping the viewSize */
+		 startPos = 1;
+		 firstChar++;
+		 viewSize--;
+	       }
+	    }
+	 }
+	 else
+	 {
+	    if (startPos > 1)
+	    {
+	       lastChar ++;
+	       viewSize ++;
+	       startPos --;
+	    }
+	    else
+	    {
+	       if (lastChar < mesgLength)
+	       {
+		  firstChar ++;
+		  lastChar  ++;
+		  startPos = 1;
+		  viewSize = marquee->width - 2;
+	       }
+	       else
+	       {
+		  firstChar ++;
+		  viewSize --;
+		  startPos = 1;
+	       }
+	    }
+	 }
 
-         /* OK, lets check if we have to start over. */
-         if ( viewSize == 0 && firstChar == mesgLength)
-         {
-            /* Check if we need to repeat or not. */
-            repeatCount ++;
-            if (repeat > 0 && repeatCount == repeat)
-            {
-               freeChtype (message);
-               return (0);
-            }
+	 /* OK, lets check if we have to start over. */
+	 if ( viewSize == 0 && firstChar == mesgLength)
+	 {
+	    /* Check if we need to repeat or not. */
+	    repeatCount ++;
+	    if (repeat > 0 && repeatCount == repeat)
+	    {
+	       freeChtype (message);
+	       return (0);
+	    }
 
-            /* Time to start over.  */
-            mvwaddch (marquee->win, 1, 1, ' '|A_NORMAL);
-            wrefresh (marquee->win);
-            firstChar = 0;
-            lastChar = 1;
-            viewSize = lastChar - firstChar;
-            startPos = marquee->width - viewSize;
-            if (ObjOf(marquee)->box)
-            {
-               startPos--;
-            }
-         }
+	    /* Time to start over.  */
+	    mvwaddch (marquee->win, 1, 1, ' '|A_NORMAL);
+	    wrefresh (marquee->win);
+	    firstChar = 0;
+	    lastChar = 1;
+	    viewSize = lastChar - firstChar;
+	    startPos = marquee->width - viewSize;
+	    if (ObjOf(marquee)->box)
+	    {
+	       startPos--;
+	    }
+	 }
 
-         /* Now sleep */
-         usleep ((delay * 10000));
+	 /* Now sleep */
+	 napms (delay * 10);
       }
    }
 }
@@ -244,7 +244,7 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
    moveCursesWindow(marquee->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (marquee->shadowWin != (WINDOW *)NULL)
+   if (marquee->shadowWin != 0)
    {
       moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
    }
@@ -271,7 +271,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
    ObjOf(marquee)->box	= Box;
 
    /* Do we need to draw a shadow??? */
-   if (marquee->shadowWin != (WINDOW *)NULL)
+   if (marquee->shadowWin != 0)
    {
       drawShadow (marquee->shadowWin);
    }
@@ -282,7 +282,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
       attrbox (marquee->win,
 		marquee->ULChar, marquee->URChar,
 		marquee->LLChar, marquee->LRChar,
-		marquee->HChar,  marquee->VChar,
+		marquee->HChar,	 marquee->VChar,
 		marquee->BoxAttrib);
    }
 
@@ -358,11 +358,11 @@ void setCDKMarqueeBoxAttribute (CDKMARQUEE *marquee, chtype character)
  */
 void setCDKMarqueeBackgroundColor (CDKMARQUEE *marquee, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }

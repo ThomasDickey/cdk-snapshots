@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/12/20 02:14:44 $
- * $Revision: 1.153 $
+ * $Date: 2000/01/17 00:01:33 $
+ * $Revision: 1.159 $
  */
 
 char *GPasteBuffer = 0;
@@ -50,9 +50,9 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
    int first, gap, last;
 
    first = (getbegx(window) + BORDER);
-   last  = (getmaxx(window) - 2*BORDER + 1);
+   last	 = (getmaxx(window) - 2*BORDER + 1);
    if ((gap = (last - boxWidth)) < 0) gap = 0;
-   last  = first + gap;
+   last	 = first + gap;
 
    switch (*xpos)
    {
@@ -73,9 +73,9 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
       (*xpos) = first;
 
    first = (getbegy(window) + BORDER);
-   last  = (getmaxy(window) - 2*BORDER + 1);
+   last	 = (getmaxy(window) - 2*BORDER + 1);
    if ((gap = (last - boxHeight)) < 0) gap = 0;
-   last  = first + gap;
+   last	 = first + gap;
 
    switch (*ypos)
    {
@@ -185,36 +185,41 @@ char *substring (char *string, int start, int width)
 void freeChar (char *string)
 {
    if (string != 0)
-   {
       free (string);
-      string = 0;
-   }
 }
 
 void freeChtype (chtype *string)
 {
    if (string != 0)
-   {
       free (string);
-      string = 0;
+}
+
+/*
+ * Corresponding list freeing
+ */
+void freeCharList (char **list, unsigned size)
+{
+   while (size-- != 0) {
+      freeChar(list[size]);
+      list[size] = 0;
    }
 }
 
 /*
  * This performs a safe copy of a string. This means it adds the null
- * terminator on the end of the string.
+ * terminator on the end of the string, like strdup().
  */
 char *copyChar (char *original)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    char *newstring;
 
-   /* Make sure the string is not null.  */
+   /* Make sure the string is not null.	 */
    if (original == 0)
    {
       return 0;
    }
-   newstring = (char *)malloc (sizeof (char) * ((int)(strlen(original) + 1)));
+   newstring = (char *)malloc (strlen(original) + 1);
 
    /* Copy from one to the other.  */
    strcpy (newstring, original);
@@ -225,11 +230,11 @@ char *copyChar (char *original)
 
 chtype *copyChtype (chtype *original)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    chtype *newstring;
    int len, x;
 
-   /* Make sure the string is not null.  */
+   /* Make sure the string is not null.	 */
    if (original == 0)
    {
       return 0;
@@ -260,7 +265,7 @@ chtype *copyChtype (chtype *original)
  */
 int readFile (char *filename, char **array, int maxlines)
 {
-   FILE	*fd;
+   FILE *fd;
    char temp[BUFSIZ];
    int	lines	= 0;
 
@@ -362,7 +367,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
       {
 	 if (pass != 0)
 	 {
-	    if ((result = malloc((used+2) * sizeof(chtype))) == 0)
+	    if ((result = (chtype *)malloc((used+2) * sizeof(chtype))) == 0)
 	    {
 	       used = 0;
 	       break;
@@ -392,7 +397,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	 }
 	 else if (!strncmp(string, "<B=", 3))
 	 {
-	    /* Set the item index value in the string.  */
+	    /* Set the item index value in the string.	*/
 	    if (result != 0)
 	    {
 	       result[0] = ' ';
@@ -439,7 +444,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	 /* Set the format marker boolean to false.  */
 	 insideMarker	= FALSE;
 
-	 /* Start parsing the character string.  */
+	 /* Start parsing the character string.	 */
 	 for (from = start; from < len; from++)
 	 {
 	    /* Are we inside a format marker?  */
@@ -559,7 +564,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 		     from += 2;
 
 		     if (string[from + 1] == '(')
-		     /* Check for a possible numeric modifier.  */
+		     /* Check for a possible numeric modifier.	*/
 		     {
 			from++;
 			adjust = 0;
@@ -635,7 +640,7 @@ int chlen (chtype *string)
  */
 char *chtype2Char (chtype *string)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    char *newstring;
    int len = 0;
    int x;
@@ -659,7 +664,7 @@ char *chtype2Char (chtype *string)
       newstring[x] = (char)(string[x] & A_CHARTEXT);
    }
 
-   /* Force a null character on the end of the string.  */
+   /* Force a null character on the end of the string.	*/
    newstring[len] = '\0';
 
    /* Return it.  */
@@ -691,7 +696,7 @@ EDisplayType char2DisplayType (char *string)
       { "UHMIXED",	vUHMIXED },
       { "LHMIXED",	vLHMIXED },
       { "VIEWONLY",	vVIEWONLY },
-      { 0, 		vINVALID },
+      { 0,		vINVALID },
    };
 
    /* Make sure we cover our bases... */
@@ -741,7 +746,7 @@ void quickSort (char *list[], int left, int right)
    {
       if (strcmp (list[i], list[left]) < 0)
       {
-         swapIndex (list, ++last, i);
+	 swapIndex (list, ++last, i);
       }
    }
 
@@ -755,12 +760,12 @@ void quickSort (char *list[], int left, int right)
  */
 void stripWhiteSpace (EStripType stripType, char *string)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    int stringLength = 0;
    int alphaChar = 0;
    int x = 0;
 
-   /* Make sure the string is not null.  */
+   /* Make sure the string is not null.	 */
    if (string == 0)
    {
       return;
@@ -779,35 +784,35 @@ void stripWhiteSpace (EStripType stripType, char *string)
       /* Find the first non-whitespace character.  */
       while (string[alphaChar] == ' ' || string[alphaChar] == '\t')
       {
-         alphaChar++;
+	 alphaChar++;
       }
 
       /* Trim off the white space.  */
       if (alphaChar != stringLength)
       {
-         for (x=0; x < (stringLength-alphaChar); x++)
-         {
-            string[x] = string[x + alphaChar];
-         }
-         string[stringLength-alphaChar] = '\0';
+	 for (x=0; x < (stringLength-alphaChar); x++)
+	 {
+	    string[x] = string[x + alphaChar];
+	 }
+	 string[stringLength-alphaChar] = '\0';
       }
       else
       {
-         /* Set the string to zero.  */
-         string = (char *)memset (string, 0, stringLength);
+	 /* Set the string to zero.  */
+	 memset (string, 0, stringLength);
       }
    }
 
    /* Get the length of the string.  */
    stringLength = (int)strlen(string)-1;
 
-   /* Strip the space from behind if it was asked for.  */
+   /* Strip the space from behind if it was asked for.	*/
    if (stripType == vBACK || stripType == vBOTH)
    {
       /* Find the first non-whitespace character.  */
       while (string[stringLength] == ' ' || string[stringLength] == '\t')
       {
-         string[stringLength--] = '\0';
+	 string[stringLength--] = '\0';
       }
    }
 }
@@ -849,7 +854,7 @@ char **CDKsplitString(char *string, int separator)
 	       string++;
 
 	    need = string - first;
-	    if ((temp = malloc(need+1)) == 0)
+	    if ((temp = (char *)malloc(need+1)) == 0)
 	       break;
 
 	    memcpy(temp, first, need);
@@ -894,135 +899,91 @@ void CDKfreeStrings(char **list)
    }
 }
 
+int mode2Filetype (mode_t mode)
+{
+   int filetype;
+
+   /* Determine the file type.	*/
+   if (S_ISLNK (mode))
+   {
+      filetype = 'l';
+   }
+#ifdef S_ISSOCK
+   else if (S_ISSOCK (mode))
+   {
+      filetype = '@';
+   }
+#endif
+   else if (S_ISREG(mode))
+   {
+      filetype = '-';
+   }
+   else if (S_ISDIR(mode))
+   {
+      filetype = 'd';
+   }
+   else if (S_ISCHR(mode))
+   {
+      filetype = 'c';
+   }
+   else if (S_ISBLK(mode))
+   {
+      filetype = 'b';
+   }
+   else if (S_ISFIFO(mode))
+   {
+      filetype = '&';
+   }
+   else
+   {
+      filetype = '?';
+   }
+   return filetype;
+
+}
+
 /*
  * This function takes a mode_t type and creates a string represntation
  * of the permission mode.
  */
 int mode2Char (char *string, mode_t mode)
 {
-   /* Declare local variables.  */
-   int permissions = 0;
+   static struct {
+      mode_t	mask;
+      unsigned	col;
+      char	flag;
+   } table[] = {
+      { S_IRUSR,	1,	'r' },
+      { S_IWUSR,	2,	'w' },
+      { S_IXUSR,	3,	'x' },
+      { S_IRGRP,	4,	'r' },
+      { S_IWGRP,	5,	'w' },
+      { S_IXGRP,	6,	'x' },
+      { S_IROTH,	7,	'r' },
+      { S_IWOTH,	8,	'w' },
+      { S_IXOTH,	9,	'x' },
+      { S_ISUID,	3,	's' },
+      { S_ISGID,	6,	's' },
+      { S_ISVTX,	9,	't' },
+   };
 
-   /* Clean the string.  */
+   /* Declare local variables.	*/
+   int permissions = 0;
+   int filetype = mode2Filetype(mode);
+   unsigned n;
+
+   /* Clean the string.	 */
    cleanChar (string, 11, '-');
    string[11] = '\0';
 
-   /* Determine the file type.  */
-   if (S_ISLNK (mode))
-   {
-      string[0] = 'l';
-   }
-   else if (S_ISSOCK (mode))
-   {
-      string[0] = '@';
-   }
-   else if (S_ISREG(mode))
-   {
-      string[0] = '-';
-   }
-   else if (S_ISDIR(mode))
-   {
-      string[0] = 'd';
-   }
-   else if (S_ISCHR(mode))
-   {
-      string[0] = 'c';
-   }
-   else if (S_ISBLK(mode))
-   {
-      string[0] = 'b';
-   }
-   else if (S_ISFIFO(mode))
-   {
-      string[0] = '&';
-   }
-   else
-   {
+   if (filetype == '?')
       return -1;
-   }
 
-   /* Readable by owner?  */
-   if ((mode&S_IRUSR) != 0)
-   {
-      string[1] = 'r';
-      permissions += 400;
-   }
-
-   /* Writable by owner?  */
-   if ((mode & S_IWUSR) != 0)
-   {
-      string[2] = 'w';
-      permissions += 200;
-   }
-
-   /* Executable by owner?  */
-   if ((mode & S_IXUSR) != 0)
-   {
-      string[3] = 'x';
-      permissions += 100;
-   }
-
-   /* Readable by group?  */
-   if ((mode & S_IRGRP) != 0)
-   {
-      string[4] = 'r';
-      permissions += 40;
-   }
-
-   /* Writable by group?  */
-   if ((mode & S_IWGRP) != 0)
-   {
-      string[5] = 'w';
-      permissions += 20;
-   }
-
-   /* Executable by group?  */
-   if ((mode & S_IXGRP) != 0)
-   {
-      string[6] = 'x';
-      permissions += 10;
-   }
-
-   /* Readable by other?  */
-   if ((mode & S_IROTH) != 0)
-   {
-      string[7] = 'r';
-      permissions += 4;
-   }
-
-   /* Writable by other?  */
-   if ((mode & S_IWOTH) != 0)
-   {
-      string[8] = 'w';
-      permissions += 2;
-   }
-
-   /* Executable by other?  */
-   if ((mode & S_IXOTH) != 0)
-   {
-      string[9] = 'x';
-      permissions += 1;
-   }
-
-   /* Check for suid.  */
-   if ((mode & S_ISUID) != 0)
-   {
-      string[3] = 's';
-      permissions += 4000;
-   }
-
-   /* Check for sgid.  */
-   if ((mode & S_ISGID) != 0)
-   {
-      string[6] = 's';
-      permissions += 2000;
-   }
-
-   /* Check for sticky bit.  */
-   if ((mode & S_ISVTX) != 0)
-   {
-      string[0] = 't';
-      permissions += 1000;
+   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++) {
+      if ((mode & table[n].mask) != 0) {
+	 string[table[n].col] = table[n].flag;
+	 permissions |= table[n].mask;
+      }
    }
 
    /* Check for unusual permissions.  */
@@ -1054,7 +1015,7 @@ int intlen (int value)
  */
 int getDirectoryContents (char *directory, char **list, int maxListSize)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    struct dirent *dirStruct;
    int counter = 0;
    DIR *dp;
@@ -1073,7 +1034,7 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
    {
       if (counter <= maxListSize)
       {
-         list[counter++] = copyChar (dirStruct->d_name);
+	 list[counter++] = copyChar (dirStruct->d_name);
       }
    }
 
@@ -1092,7 +1053,7 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
  */
 int searchList (char **list, int listSize, char *pattern)
 {
-   /* Declare local variables.  */
+   /* Declare local variables.	*/
    int len	= 0;
    int Index	= -1;
    int x, ret;
@@ -1121,15 +1082,15 @@ int searchList (char **list, int listSize, char *pattern)
       */
       if (ret < 0)
       {
-         Index = ret;
+	 Index = ret;
       }
       else if (ret > 0)
       {
-         return Index;
+	 return Index;
       }
       else
       {
-         return x;
+	 return x;
       }
    }
    return -1;
@@ -1157,11 +1118,11 @@ int checkForLink (char *line, char *filename)
       /* Strip out the filename.  */
       while (x < len)
       {
-         if (line[x] == '>')
-         {
-            break;
-         }
-         filename[fPos++] = line[x++];
+	 if (line[x] == '>')
+	 {
+	    break;
+	 }
+	 filename[fPos++] = line[x++];
       }
       filename[fPos] = '\0';
       return 1;
@@ -1196,8 +1157,8 @@ char *baseName (char *pathname)
    {
       if (pathname[x] == '/')
       {
-         Index = x;
-         break;
+	 Index = x;
+	 break;
       }
       x--;
    }
@@ -1283,7 +1244,7 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
    {
       if (proposedDim >= parentDim)
       {
-         return parentDim;
+	 return parentDim;
       }
       return (proposedDim + adjustment);
    }
@@ -1354,12 +1315,3 @@ int ceilCDK(double value)
 {
    return -floorCDK(-value);
 }
-
-#ifndef HAVE_USLEEP
-void usleep (int delay);
-void usleep (int delay)
-{
-   int x;
-   for (x = 0; x <= (delay * 250) ; x++) {}
-}
-#endif

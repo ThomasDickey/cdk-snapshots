@@ -12,12 +12,12 @@ static BINDFN_PROTO(entryCB);
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKBUTTONBOX *buttonWidget	= (CDKBUTTONBOX *)NULL;
-   CDKENTRY *entry		= (CDKENTRY *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKBUTTONBOX *buttonWidget	= 0;
+   CDKENTRY *entry		= 0;
+   WINDOW *cursesWin		= 0;
    char *buttons[]		= {" OK ", " Cancel "};
-   char *info			= (char *)NULL;
+   char *info			= 0;
    int selection;
 
    /* Set up CDK. */
@@ -37,7 +37,7 @@ int main (void)
 			getbegx(entry->win),
 			getbegy(entry->win) + entry->boxHeight - 1,
 			1, entry->boxWidth - 1,
-			NULL, 1, 2,
+			0, 1, 2,
 			buttons, 2, A_REVERSE,
 			TRUE, FALSE);
 
@@ -55,7 +55,7 @@ int main (void)
 
    /* Activate the entry field. */
    drawCDKButtonbox (buttonWidget, TRUE);
-   info = copyChar (activateCDKEntry (entry, NULL));
+   info = copyChar (activateCDKEntry (entry, 0));
    selection = buttonWidget->currentButton;
 
    /* Clean up. */

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/06 00:30:14 $
- * $Revision: 1.58 $
+ * $Date: 2000/01/16 22:47:22 $
+ * $Revision: 1.59 $
  */
 
 static void segvTrap (int sig);
@@ -69,7 +69,7 @@ CDKSCREEN *initCDKScreen(WINDOW *window)
    screen->window	= window;
    for (x=0; x < MAX_OBJECTS; x++)
    {
-      screen->object[x] = (void *)NULL;
+      screen->object[x] = 0;
       screen->cdktype[x] = vNULL;
    }
 
@@ -84,7 +84,7 @@ void registerCDKObject (CDKSCREEN *screen, EObjectType cdktype, void *object)
 {
    /* Set some basic vars. */
    int objectNumber			= screen->objectCount;
-   CDKOBJS *obj 			= (CDKOBJS *)object;
+   CDKOBJS *obj				= (CDKOBJS *)object;
 
    screen->object[objectNumber]		= obj;
 
@@ -154,7 +154,7 @@ void raiseCDKObject (EObjectType cdktype, void *object)
 
       (obj)->screenIndex		= swapindex;
       (obj)->screen->object[swapindex]	= swapobject;
-      (obj)->screen->cdktype[swapindex]	= swaptype;
+      (obj)->screen->cdktype[swapindex] = swaptype;
    }
 }
 
@@ -181,7 +181,7 @@ void lowerCDKObject (EObjectType cdktype, void *object)
 
       (obj)->screenIndex		= swapindex;
       (obj)->screen->object[swapindex]	= swapobject;
-      (obj)->screen->cdktype[swapindex]	= swaptype;
+      (obj)->screen->cdktype[swapindex] = swaptype;
    }
 }
 
@@ -227,7 +227,7 @@ void eraseCDKScreen (CDKSCREEN *cdkscreen)
    for (x=0; x < objectCount; x++)
    {
       if (validObjType (cdkscreen->cdktype[x])) {
-          cdkscreen->object[x]->fn->eraseObj(cdkscreen->object[x]);
+	  cdkscreen->object[x]->fn->eraseObj(cdkscreen->object[x]);
       }
    }
 

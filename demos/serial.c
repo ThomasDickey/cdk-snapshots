@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <time.h>
+
 #include "cdk.h"
 
 #ifdef HAVE_XCURSES
@@ -17,7 +18,7 @@ char *XCursesProgramName="serial";
  * Create global definitions.
  */
 #define DEFAULT_PORT			"/dev/ttya"
-#define DEFAULT_POLL_INTERVAL		1000
+#define DEFAULT_POLL_INTERVAL		1	/* milliseconds */
 
 /*
  * This is the working function which probes the serial port.
@@ -27,7 +28,7 @@ boolean probeModem (void);
 /*
  * Define some global variables.
  */
-CDKLABEL *label		= (CDKLABEL *)NULL;
+CDKLABEL *label		= 0;
 int LLastState		= 0;
 int LCurrentState	= 0;
 extern char *optarg;
@@ -39,8 +40,8 @@ int LFD;
  */
 int main (int argc, char **argv)
 {
-   CDKSCREEN *cdkScreen	= (CDKSCREEN *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkScreen = 0;
+   WINDOW *cursesWin	= 0;
    int lines		= 0;
    char *info[256], temp[256];
    struct termios termInfo;
@@ -54,19 +55,19 @@ int main (int argc, char **argv)
    {
       if ((ret = getopt (argc, argv, "p:h")) == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'p' :
-               strcpy (port, optarg);
-               break;
+	 case 'p' :
+	       strcpy (port, optarg);
+	       break;
 
-         case 'h' :
-               printf ("Usage: %s [-p Port] [-i Poll Interval] [-c Poll Count] [-v] [-h]\n", argv[0]);
-               exit (0);
-               break;
+	 case 'h' :
+	       printf ("Usage: %s [-p Port] [-i Poll Interval] [-c Poll Count] [-v] [-h]\n", argv[0]);
+	       exit (0);
+	       break;
       }
    }
 
@@ -127,7 +128,7 @@ int main (int argc, char **argv)
       * Sleep for the given amount of time. We do this first so no
       * weird refresh things happen.
       */
-      usleep (DEFAULT_POLL_INTERVAL);
+      napms (DEFAULT_POLL_INTERVAL);
    }
 }
 
@@ -161,11 +162,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_LE)
       {
-         info[lines++] = copyChar ("Line Enabled       : <#DI>");
+	 info[lines++] = copyChar ("Line Enabled       : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Line Enabled       :  ");
+	 info[lines++] = copyChar ("Line Enabled       :  ");
       }
 
      /*
@@ -173,11 +174,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_DTR)
       {
-         info[lines++] = copyChar ("Data Terminal Ready: <#DI>");
+	 info[lines++] = copyChar ("Data Terminal Ready: <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Data Terminal Ready:  ");
+	 info[lines++] = copyChar ("Data Terminal Ready:  ");
       }
 
      /*
@@ -185,11 +186,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_CAR)
       {
-         info[lines++] = copyChar ("Carrier Detect     : <#DI>");
+	 info[lines++] = copyChar ("Carrier Detect     : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Carrier Detect     :  ");
+	 info[lines++] = copyChar ("Carrier Detect     :  ");
       }
 
      /*
@@ -197,11 +198,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_RTS)
       {
-         info[lines++] = copyChar ("Request To Send    : <#DI>");
+	 info[lines++] = copyChar ("Request To Send    : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Request To Send    :  ");
+	 info[lines++] = copyChar ("Request To Send    :  ");
       }
 
      /*
@@ -209,11 +210,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_CTS)
       {
-         info[lines++] = copyChar ("Clear To Send      : <#DI>");
+	 info[lines++] = copyChar ("Clear To Send      : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Clear To Send      :  ");
+	 info[lines++] = copyChar ("Clear To Send      :  ");
       }
 
      /*
@@ -221,11 +222,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_ST)
       {
-         info[lines++] = copyChar ("Secondary Transmit : <#DI>");
+	 info[lines++] = copyChar ("Secondary Transmit : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Secondary Transmit :  ");
+	 info[lines++] = copyChar ("Secondary Transmit :  ");
       }
 
      /*
@@ -233,11 +234,11 @@ boolean probeModem (void)
       */
       if (LCurrentState & TIOCM_SR)
       {
-         info[lines++] = copyChar ("Secondary Receive  : <#DI>");
+	 info[lines++] = copyChar ("Secondary Receive  : <#DI>");
       }
       else
       {
-         info[lines++] = copyChar ("Secondary Receive  :  ");
+	 info[lines++] = copyChar ("Secondary Receive  :  ");
       }
    }
    info[lines++] = copyChar ("");

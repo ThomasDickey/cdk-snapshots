@@ -4,7 +4,7 @@
 char *XCursesProgramName="codeViewer";
 #endif
 
-#define	MAXINFOLINES	10000
+#define MAXINFOLINES	10000
 
 /*
  * This program demonstrates the file selector and the viewer widget.
@@ -12,14 +12,14 @@ char *XCursesProgramName="codeViewer";
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKVIEWER *example	= (CDKVIEWER *)NULL;
-   CDKFSELECT *fSelect	= (CDKFSELECT *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKVIEWER *example	= 0;
+   CDKFSELECT *fSelect	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C>Pick a file.";
    char *label		= "File: ";
    char *directory	= ".";
-   char *filename	= (char *)NULL;
+   char *filename	= 0;
    char *info[MAXINFOLINES];
    char *button[5], vtitle[256], *mesg[4], temp[256];
    int selected, lines, ret;
@@ -30,17 +30,17 @@ int main (int argc, char **argv)
       ret = getopt (argc, argv, "d:f:");
       if (ret == -1)
       {
-         break;
+	 break;
       }
       switch (ret)
       {
-         case 'd' :
-              directory = strdup (optarg);
-              break;
+	 case 'd' :
+	      directory = strdup (optarg);
+	      break;
 
-         case 'f' :
-              filename = strdup (optarg);
-              break;
+	 case 'f' :
+	      filename = strdup (optarg);
+	      break;
       }
    }
 
@@ -70,25 +70,25 @@ int main (int argc, char **argv)
 			"</5>", "</48>", "</N>", "</N>", ObjOf(fSelect)->box);
 
       /* Activate the file selector. */
-      filename = copyChar (activateCDKFselect (fSelect, NULL));
+      filename = copyChar (activateCDKFselect (fSelect, 0));
 
       /* Check how the person exited from the widget. */
       if (fSelect->exitType == vESCAPE_HIT)
       {
-         /* Pop up a message for the user. */
-         mesg[0] = "<C>Escape hit. No file selected.";
-         mesg[1] = "";
-         mesg[2] = "<C>Press any key to continue.";
-         popupLabel (cdkscreen, mesg, 3);
+	 /* Pop up a message for the user. */
+	 mesg[0] = "<C>Escape hit. No file selected.";
+	 mesg[1] = "";
+	 mesg[2] = "<C>Press any key to continue.";
+	 popupLabel (cdkscreen, mesg, 3);
 
-         /* Destroy the file selector. */
-         destroyCDKFselect (fSelect);
+	 /* Destroy the file selector. */
+	 destroyCDKFselect (fSelect);
 
-         /* Exit CDK. */
-         destroyCDKScreen (cdkscreen);
-         endCDK();
+	 /* Exit CDK. */
+	 destroyCDKScreen (cdkscreen);
+	 endCDK();
 
-         exit (0);
+	 exit (0);
       }
    }
 
@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 				button, 2, A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
-   if (example == (CDKVIEWER *)NULL)
+   if (example == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -124,7 +124,7 @@ int main (int argc, char **argv)
    setCDKViewer (example, vtitle, info, lines, A_REVERSE, TRUE, TRUE, TRUE);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (example, (chtype *)NULL);
+   selected = activateCDKViewer (example, 0);
 
    /* Check how the person exited from the widget.*/
    if (example->exitType == vESCAPE_HIT)

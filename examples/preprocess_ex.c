@@ -12,11 +12,11 @@ int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chty
 int main (void)
 {
    /* Declare local variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKENTRY *widget	= (CDKENTRY *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKENTRY *widget	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C>Type in anything you want\n<C>but the dreaded letter </B>G<!B>!";
-   char	*info, *mesg[10], temp[256];
+   char *info, *mesg[10], temp[256];
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -27,11 +27,11 @@ int main (void)
 
    /* Create the entry field widget. */
    widget = newCDKEntry (cdkscreen, CENTER, CENTER,
-				title, NULL, A_NORMAL, '.', vMIXED, 
+				title, 0, A_NORMAL, '.', vMIXED,
 				40, 0, 256, TRUE, FALSE);
 
-   /* Is the widget NULL? */
-   if (widget == (CDKENTRY *)NULL)
+   /* Is the widget null? */
+   if (widget == 0)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -42,11 +42,11 @@ int main (void)
       exit (1);
    }
 
-   setCDKEntryPreProcess (widget, entryPreProcessCB, NULL);
+   setCDKEntryPreProcess (widget, entryPreProcessCB, 0);
 
    /* Activate the entry field. */
-   info	= activateCDKEntry (widget, (chtype *)NULL);
-   
+   info = activateCDKEntry (widget, 0);
+
    /* Tell them what they typed. */
    if (widget->exitType == vESCAPE_HIT)
    {
@@ -77,7 +77,7 @@ int main (void)
 int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
-   CDKDIALOG *widget	= (CDKDIALOG *)NULL;
+   CDKDIALOG *widget	= 0;
    char *buttons[]	= {"OK"};
    int buttonCount	= 1;
    int lines		= 0;
@@ -93,7 +93,7 @@ int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clien
       widget = newCDKDialog (ScreenOf(entry), CENTER, CENTER,
 				mesg, lines, buttons, buttonCount,
 				A_REVERSE, FALSE, FALSE, FALSE);
-      activateCDKDialog (widget, NULL);
+      activateCDKDialog (widget, 0);
       destroyCDKDialog (widget);
       drawCDKEntry (entry, ObjOf(entry)->box);
       return 0;

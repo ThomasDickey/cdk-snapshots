@@ -1,10 +1,28 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
+Some changes copyright Thomas Dickey 1999-2000
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
+
+2000/1/16 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ drop dependency on usleep(), using napms() which is standard with
+	  SVr4 curses.
+	+ rewrote mode2Char(), making it table-driven and splitting out
+	  mode2Filetype() to make porting simpler, by putting ifdef's for
+	  S_ISSOCK in one place only.
+	+ use new freeCharList() to reduce clutter.
+	+ eliminate casts of NULL, to reduce clutter.
+	+ change several uses of control characters in source to use CONTROL()
+	  macro.
+	+ correct format of date shown in bind_ex.c
+	+ correct nonstandard getcwd() usage in fselect.c
+	+ change demo and example makefiles to not strip executables.
+	+ modify demo/Makefile.in to work around Solaris' make program which
+	  does not process ".c" rule as desired.
 
 2000/1/8 - T.E.Dickey <dickey@clark.net>
 ==========================================

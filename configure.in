@@ -80,7 +80,6 @@ getcwd \
 mktime \
 strdup \
 strerror \
-usleep \
 )
 
 dnl

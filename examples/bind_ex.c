@@ -74,7 +74,7 @@ int main (void)
 				TRUE, TRUE, FALSE);
 
    /* Check if we got a null value back. */
-   if (question == (CDKDIALOG *)NULL)
+   if (question == (CDKDIALOG *)0)
    {
       destroyCDKScreen (cdkscreen);
 
@@ -87,58 +87,58 @@ int main (void)
    }
 
    /* Create the key binding. */
-   bindCDKObject (vDIALOG, question, '?', dialogHelpCB, NULL);
+   bindCDKObject (vDIALOG, question, '?', dialogHelpCB, 0);
 
    /* Activate the dialog box. */
    selection = 0;
    while (selection != 3)
    {
       /* Get the users button selection. */
-      selection = activateCDKDialog (question, (chtype *)NULL);
+      selection = activateCDKDialog (question, (chtype *)0);
 
       /* Check the results. */
       if (selection == 0)
       {
-         /* Get the users login name. */
-         info[0] = "<C>     </U>Login Name<!U>     ";
-         loginName = getlogin();
-         if (loginName == (char *)NULL)
-         {
-            strcpy (temp, "<C></R>Unknown");
-         }
-         else
-         {
-             sprintf (temp, "<C><%s>", loginName);
-         }
-         info[1] = copyChar (temp);
-         popupLabel (ScreenOf(question), info, 2);
-         freeChar (info[1]);
+	 /* Get the users login name. */
+	 info[0] = "<C>     </U>Login Name<!U>     ";
+	 loginName = getlogin();
+	 if (loginName == (char *)0)
+	 {
+	    strcpy (temp, "<C></R>Unknown");
+	 }
+	 else
+	 {
+	     sprintf (temp, "<C><%s>", loginName);
+	 }
+	 info[1] = copyChar (temp);
+	 popupLabel (ScreenOf(question), info, 2);
+	 freeChar (info[1]);
       }
       else if (selection == 1)
       {
-         /* Print out the time. */
-         time(&clck);
-         currentTime = localtime(&clck);
-         sprintf (temp, "<C>%d:%d:%d", currentTime->tm_hour,
+	 /* Print out the time. */
+	 time(&clck);
+	 currentTime = localtime(&clck);
+	 sprintf (temp, "<C>%d:%d:%d", currentTime->tm_hour,
 					currentTime->tm_min,
 					currentTime->tm_sec);
-         info[0] = "<C>   </U>Current Time<!U>   ";
-         info[1] = copyChar (temp);
-         popupLabel (ScreenOf(question), info, 2);
-         freeChar (info[1]);
+	 info[0] = "<C>   </U>Current Time<!U>   ";
+	 info[1] = copyChar (temp);
+	 popupLabel (ScreenOf(question), info, 2);
+	 freeChar (info[1]);
       }
       else if (selection == 2)
       {
-         /* Print out the date. */
-         time(&clck);
-         currentTime = localtime(&clck);
-         sprintf (temp, "<C>%d/%d/%d", currentTime->tm_mday,
+	 /* Print out the date. */
+	 time(&clck);
+	 currentTime = localtime(&clck);
+	 sprintf (temp, "<C>%d/%d/%02d", currentTime->tm_mday,
 					currentTime->tm_mon,
-					currentTime->tm_year);
-         info[0] = "<C>   </U>Current Date<!U>   ";
-         info[1] = copyChar (temp);
-         popupLabel (ScreenOf(question), info, 2);
-         freeChar (info[1]);
+					currentTime->tm_year % 100);
+	 info[0] = "<C>   </U>Current Date<!U>   ";
+	 info[1] = copyChar (temp);
+	 popupLabel (ScreenOf(question), info, 2);
+	 freeChar (info[1]);
       }
    }
 

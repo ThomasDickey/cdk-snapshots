@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:29:40 $
- * $Revision: 1.86 $
+ * $Date: 2000/01/16 23:23:09 $
+ * $Revision: 1.87 $
  */
 
 /*
@@ -12,7 +12,7 @@
  */
 static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box);
 
-DeclareCDKObjects(my_funcs,Selection)
+DeclareCDKObjects(my_funcs,Selection);
 
 /*
  * This function creates a selection widget.
@@ -21,7 +21,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 {
    /* Declare local variables. */
    CDKSELECTION *selection	= newCDKObject(CDKSELECTION, &my_funcs);
-   chtype *holder		= (chtype *)NULL;
+   chtype *holder		= 0;
    int maxWidth			= INT_MIN;
    int widestitem		= -1;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
@@ -57,21 +57,21 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
       /* We need to determine the widest title line. */
       for (x=0; x < selection->titleLines; x++)
       {
-         holder = char2Chtype (temp[x], &len, &junk2);
-         maxWidth = MAXIMUM (maxWidth, len);
-         freeChtype (holder);
+	 holder = char2Chtype (temp[x], &len, &junk2);
+	 maxWidth = MAXIMUM (maxWidth, len);
+	 freeChtype (holder);
       }
       boxWidth = MAXIMUM (boxWidth, maxWidth + 2);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < selection->titleLines; x++)
       {
-         selection->title[x] = char2Chtype (temp[x], 
+	 selection->title[x] = char2Chtype (temp[x], 
 					    &selection->titleLen[x], 
 					    &selection->titlePos[x]);
-         selection->titlePos[x] = justifyString (boxWidth, 
-					        selection->titleLen[x], 
-					        selection->titlePos[x]);
+	 selection->titlePos[x] = justifyString (boxWidth, 
+						selection->titleLen[x], 
+						selection->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -86,11 +86,11 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    {
       if (listSize > 8)
       {
-         boxHeight = selection->titleLines + 10;
+	 boxHeight = selection->titleLines + 10;
       }
       else
       {
-         boxHeight = selection->titleLines + listSize + 2;
+	 boxHeight = selection->titleLines + listSize + 2;
       }
    }
 
@@ -138,18 +138,18 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Make the selection window */
    selection->win = newwin (boxHeight, boxWidth, ypos, xpos);
    
-   /* Is the window NULL?? */
-   if (selection->win == (WINDOW *)NULL)
+   /* Is the window null?? */
+   if (selection->win == 0)
    {
       /* Clean up any memory used. */
       for (x=0; x < selection->titleLines; x++)
       {
-         freeChtype (selection->title[x]);
+	 freeChtype (selection->title[x]);
       }
       free (selection);
    
-      /* Return a NULL pointer. */
-      return ((CDKSELECTION *)NULL);
+      /* Return a null pointer. */
+      return (0);
    }
    
    /* Turn the keypad on for this window. */
@@ -172,7 +172,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
    else
    {
-      selection->scrollbarWin = (WINDOW *)NULL;
+      selection->scrollbarWin = 0;
    }
 
    /* Set the rest of the variables */
@@ -191,11 +191,11 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    selection->exitType			= vNEVER_ACTIVATED;
    ObjOf(selection)->box		= Box;
    selection->shadow			= shadow;
-   selection->preProcessFunction	= (PROCESSFN)NULL;
-   selection->preProcessData		= (void *)NULL;
-   selection->postProcessFunction	= (PROCESSFN)NULL;
-   selection->postProcessData		= (void *)NULL;
-   selection->shadowWin			= (WINDOW *)NULL;
+   selection->preProcessFunction	= 0;
+   selection->preProcessData		= 0;
+   selection->postProcessFunction	= 0;
+   selection->postProcessData		= 0;
+   selection->shadowWin			= 0;
    selection->ULChar			= ACS_ULCORNER;
    selection->URChar			= ACS_URCORNER;
    selection->LLChar			= ACS_LLCORNER;
@@ -264,8 +264,8 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    /* Draw the selection list */
    drawCDKSelection (selection, ObjOf(selection)->box);
    
-   /* Check if actions is NULL. */
-   if (actions == (chtype *)NULL)
+   /* Check if actions is null. */
+   if (actions == 0)
    {
       /* Declare some local variables. */
       chtype input;
@@ -273,15 +273,15 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    
       for (;;)
       {
-         /* Get the input. */
-         input = wgetch (selection->win);
+	 /* Get the input. */
+	 input = wgetch (selection->win);
    
-         /* Inject the character into the widget. */
-         ret = injectCDKSelection (selection, input);
-         if (selection->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 /* Inject the character into the widget. */
+	 ret = injectCDKSelection (selection, input);
+	 if (selection->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
    else
@@ -294,11 +294,11 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
-         ret = injectCDKSelection (selection, actions[x]);
-         if (selection->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 ret = injectCDKSelection (selection, actions[x]);
+	 if (selection->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
 
@@ -322,7 +322,7 @@ int injectCDKSelection (CDKSELECTION *selection, chtype input)
    drawCDKSelectionList (selection, ObjOf(selection)->box);
    
    /* Check if there is a pre-process function to be called. */
-   if (selection->preProcessFunction != (PROCESSFN)NULL)
+   if (selection->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
       ppReturn = ((PROCESSFN)(selection->preProcessFunction)) (vSELECTION, selection, selection->preProcessData, input);
@@ -334,178 +334,178 @@ int injectCDKSelection (CDKSELECTION *selection, chtype input)
       /* Check for a predefined binding. */
       if (checkCDKObjectBind (vSELECTION, selection, input) != 0)
       {
-         selection->exitType = vESCAPE_HIT;
-         return -1;
+	 selection->exitType = vESCAPE_HIT;
+	 return -1;
       }
       else
       {
-         switch (input)
-         {
-            case KEY_UP :
-                 if (selection->currentHigh == 0)
-                 {
-                    if (selection->currentTop != 0)
-                    {
-                       selection->currentTop--;
-                       selection->currentItem--;
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 else
-                 {
-                    selection->currentItem--;
-                    selection->currentHigh--;
-                 }
-                 break;
-           
-            case KEY_DOWN :
-                 if (selection->currentHigh == selection->viewSize - 1)
-                    {
-                       /* We need to scroll down one line. */
-                       if (selection->currentTop < selection->maxTopItem)
-                       {
-                          selection->currentTop++;
-                          selection->currentItem++;
-                       }
-                       else
-                       {
-                          Beep();
-                       }
-                    }
-                    else
-                    {
-                       selection->currentItem++;
-                       selection->currentHigh++;
-                    }
-                    break;
-         
-               case KEY_RIGHT :
-                    if (selection->leftChar >= selection->maxLeftChar)
-                    {
-                       Beep();
-                    }
-                    else
-                    {
-                       selection->leftChar ++;
-                    }
-                    break;
-         
-               case KEY_LEFT :
-                    if (selection->leftChar == 0)
-                    {
-                       Beep();
-                    }
-                    else
-                    {
-                       selection->leftChar --;
-                    }
-                    break;
-         
-               case KEY_PPAGE : case '' :
-                    if (selection->currentTop > 0)
-                    {
-                       if (selection->currentTop >= (selection->viewSize -1))
-                       {
-                          selection->currentTop	-= (selection->viewSize - 1);
-                          selection->currentItem	-= (selection->viewSize - 1);
-                       }
-                       else
-                       {
-                          selection->currentTop 	= 0;
-                          selection->currentItem	= 0;
-                          selection->currentHigh	= 0;
-                       }
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                    break;
-         
-               case KEY_NPAGE : case '' :
-                    if (selection->currentTop < selection->maxTopItem)
-                    {
-                       if ((selection->currentTop + selection->viewSize - 1) <= selection->maxTopItem)
-                       {
-                          selection->currentTop	+= (selection->viewSize - 1);
-                          selection->currentItem	+= (selection->viewSize - 1);
-                       }
-                       else
-                       {
-                          selection->currentTop 	= selection->maxTopItem;
-                          selection->currentItem	= selection->lastItem;
-                          selection->currentHigh	= selection->viewSize-1;
-                       }
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                    break;
-         
-               case 'g' : case '1' :
-                    selection->currentTop	= 0;
-                    selection->currentItem	= 0;
-                    selection->currentHigh	= 0;
-                    break;
-         
-               case 'G' :
-                    selection->currentTop 	= selection->maxTopItem;
-                    selection->currentItem	= selection->lastItem;
-                    selection->currentHigh	= selection->viewSize-1;
-                    break;
-         
-               case '$' :
-                    selection->leftChar	= selection->maxLeftChar;
-                    break;
-         
-               case '|' :
-                    selection->leftChar	= 0;
-                    break;
-         
-               case SPACE :
-                    if (selection->mode[selection->currentItem] == 0)
-                    {
-                       if (selection->selections[selection->currentItem] == selection->choiceCount-1)
-                       {
-                          selection->selections[selection->currentItem] = 0;
-                       }
-                       else
-                       {
-                          selection->selections[selection->currentItem]++;
-                       }
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                    break;
-         
-               case KEY_ESC :
-                    selection->exitType = vESCAPE_HIT;
-                    return -1;
-         
-               case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
-                    selection->exitType = vNORMAL;
-                    return 1;
-         
-               case CDK_REFRESH :
-                    eraseCDKScreen (ScreenOf(selection));
-                    refreshCDKScreen (ScreenOf(selection));
-                    break;
-         
-               default :
-                    break;
-         }
+	 switch (input)
+	 {
+	    case KEY_UP :
+		 if (selection->currentHigh == 0)
+		 {
+		    if (selection->currentTop != 0)
+		    {
+		       selection->currentTop--;
+		       selection->currentItem--;
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 else
+		 {
+		    selection->currentItem--;
+		    selection->currentHigh--;
+		 }
+		 break;
+	   
+	    case KEY_DOWN :
+		 if (selection->currentHigh == selection->viewSize - 1)
+		    {
+		       /* We need to scroll down one line. */
+		       if (selection->currentTop < selection->maxTopItem)
+		       {
+			  selection->currentTop++;
+			  selection->currentItem++;
+		       }
+		       else
+		       {
+			  Beep();
+		       }
+		    }
+		    else
+		    {
+		       selection->currentItem++;
+		       selection->currentHigh++;
+		    }
+		    break;
+	 
+	       case KEY_RIGHT :
+		    if (selection->leftChar >= selection->maxLeftChar)
+		    {
+		       Beep();
+		    }
+		    else
+		    {
+		       selection->leftChar ++;
+		    }
+		    break;
+	 
+	       case KEY_LEFT :
+		    if (selection->leftChar == 0)
+		    {
+		       Beep();
+		    }
+		    else
+		    {
+		       selection->leftChar --;
+		    }
+		    break;
+	 
+	       case KEY_PPAGE : case CONTROL('B') :
+		    if (selection->currentTop > 0)
+		    {
+		       if (selection->currentTop >= (selection->viewSize -1))
+		       {
+			  selection->currentTop -= (selection->viewSize - 1);
+			  selection->currentItem	-= (selection->viewSize - 1);
+		       }
+		       else
+		       {
+			  selection->currentTop		= 0;
+			  selection->currentItem	= 0;
+			  selection->currentHigh	= 0;
+		       }
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		    break;
+	 
+	       case KEY_NPAGE : case CONTROL('F') :
+		    if (selection->currentTop < selection->maxTopItem)
+		    {
+		       if ((selection->currentTop + selection->viewSize - 1) <= selection->maxTopItem)
+		       {
+			  selection->currentTop += (selection->viewSize - 1);
+			  selection->currentItem	+= (selection->viewSize - 1);
+		       }
+		       else
+		       {
+			  selection->currentTop		= selection->maxTopItem;
+			  selection->currentItem	= selection->lastItem;
+			  selection->currentHigh	= selection->viewSize-1;
+		       }
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		    break;
+	 
+	       case 'g' : case '1' :
+		    selection->currentTop	= 0;
+		    selection->currentItem	= 0;
+		    selection->currentHigh	= 0;
+		    break;
+	 
+	       case 'G' :
+		    selection->currentTop	= selection->maxTopItem;
+		    selection->currentItem	= selection->lastItem;
+		    selection->currentHigh	= selection->viewSize-1;
+		    break;
+	 
+	       case '$' :
+		    selection->leftChar = selection->maxLeftChar;
+		    break;
+	 
+	       case '|' :
+		    selection->leftChar = 0;
+		    break;
+	 
+	       case SPACE :
+		    if (selection->mode[selection->currentItem] == 0)
+		    {
+		       if (selection->selections[selection->currentItem] == selection->choiceCount-1)
+		       {
+			  selection->selections[selection->currentItem] = 0;
+		       }
+		       else
+		       {
+			  selection->selections[selection->currentItem]++;
+		       }
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		    break;
+	 
+	       case KEY_ESC :
+		    selection->exitType = vESCAPE_HIT;
+		    return -1;
+	 
+	       case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
+		    selection->exitType = vNORMAL;
+		    return 1;
+	 
+	       case CDK_REFRESH :
+		    eraseCDKScreen (ScreenOf(selection));
+		    refreshCDKScreen (ScreenOf(selection));
+		    break;
+	 
+	       default :
+		    break;
+	 }
       }
 
       /* Should we call a post-process? */
-      if (selection->postProcessFunction != (PROCESSFN)NULL)
+      if (selection->postProcessFunction != 0)
       {
-         ((PROCESSFN)(selection->postProcessFunction)) (vSELECTION, selection, selection->postProcessData, input);
+	 ((PROCESSFN)(selection->postProcessFunction)) (vSELECTION, selection, selection->postProcessData, input);
       }
    }
       
@@ -558,7 +558,7 @@ static void _moveCDKSelection (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* If there is a shadow box we have to move it too. */
-   if (selection->shadowWin != (WINDOW *)NULL)
+   if (selection->shadowWin != 0)
    {
       moveCursesWindow(selection->shadowWin, -xdiff, -ydiff);
    }
@@ -583,7 +583,7 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
    int x;
 
    /* Draw in the shadow if we need to. */
-   if (selection->shadowWin != (WINDOW *)NULL)
+   if (selection->shadowWin != 0)
    {
       drawShadow (selection->shadowWin);
    }
@@ -593,12 +593,12 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < selection->titleLines; x++)
       {
-         writeChtype (selection->win, 
-   			selection->titlePos[x],
+	 writeChtype (selection->win, 
+			selection->titlePos[x],
 			x + 1,
-   			selection->title[x],
-   			HORIZONTAL, 0,
-   			selection->titleLen[x]);
+			selection->title[x],
+			HORIZONTAL, 0,
+			selection->titleLen[x]);
       }
    }
    
@@ -636,81 +636,81 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
 
       /* Draw in the empty line. */
       writeChar (selection->win, 1,
-   			selection->titleAdj + x,
-   			emptyString,
-   			HORIZONTAL, 0,
-   			(int)strlen(emptyString));
+			selection->titleAdj + x,
+			emptyString,
+			HORIZONTAL, 0,
+			(int)strlen(emptyString));
    
       /* Draw in the selection item. */
       if (screenPos >= 0)
       {
-         writeChtype (selection->win,
-   		screenPos, x + selection->titleAdj,
-   		selection->item[x + selection->currentTop],
-   		HORIZONTAL, 0,
-   		selection->itemLen[x + selection->currentTop]);
+	 writeChtype (selection->win,
+		screenPos, x + selection->titleAdj,
+		selection->item[x + selection->currentTop],
+		HORIZONTAL, 0,
+		selection->itemLen[x + selection->currentTop]);
       }
       else
       {
-         writeChtype (selection->win,
-   		1, x + selection->titleAdj,
-   		selection->item[x + selection->currentTop],
-   		HORIZONTAL,
-   		selection->leftChar - selection->itemPos[x + selection->currentTop] + 1,
-   		selection->itemLen[x + selection->currentTop]);
+	 writeChtype (selection->win,
+		1, x + selection->titleAdj,
+		selection->item[x + selection->currentTop],
+		HORIZONTAL,
+		selection->leftChar - selection->itemPos[x + selection->currentTop] + 1,
+		selection->itemLen[x + selection->currentTop]);
       }
 
    
       /* Draw in the choice value. */
       writeChtype (selection->win, 1 + scrollbarAdj,
-   		x + selection->titleAdj,
-   		selection->choice[selection->selections[x + selection->currentTop]],
-   		HORIZONTAL,
-   		0,
-   		selection->choicelen[selection->selections[x + selection->currentTop]]);
+		x + selection->titleAdj,
+		selection->choice[selection->selections[x + selection->currentTop]],
+		HORIZONTAL,
+		0,
+		selection->choicelen[selection->selections[x + selection->currentTop]]);
    }
    
    /* Draw in the filler character for the scroll bar. */
-   if (selection->scrollbarWin != (WINDOW *)NULL)
+   if (selection->scrollbarWin != 0)
    {
       for (x=0; x < selection->boxHeight-1; x++)
       {
-         mvwaddch (selection->scrollbarWin, x, 0, ACS_CKBOARD);
+	 mvwaddch (selection->scrollbarWin, x, 0, ACS_CKBOARD);
       }
    }
 
    /* Draw in the current highlight. */
    writeChtypeAttrib (selection->win,
-                        selection->itemPos[selection->currentItem] + scrollbarAdj,
-                        selection->currentHigh + selection->titleAdj,
-                        selection->item[selection->currentItem],
-                        selection->highlight,
-                        HORIZONTAL, selection->leftChar,
-                        selection->itemLen[selection->currentItem]);
+			selection->itemPos[selection->currentItem] + scrollbarAdj,
+			selection->currentHigh + selection->titleAdj,
+			selection->item[selection->currentItem],
+			selection->highlight,
+			HORIZONTAL, selection->leftChar,
+			selection->itemLen[selection->currentItem]);
    
    /* Determine where the toggle is supposed to be. */
    if (selection->scrollbar)
    {
       if (selection->listSize > selection->boxHeight-2)
       {
-         selection->togglePos = floorCDK((float)selection->currentItem * (float)selection->step);
+	 selection->togglePos = floorCDK((float)selection->currentItem * (float)selection->step);
       }
       else
       {
-         selection->togglePos = ceilCDK((float)selection->currentItem * (float)selection->step);
+	 selection->togglePos = ceilCDK((float)selection->currentItem * (float)selection->step);
       }
 
       /* Make sure the toggle button doesn't go out of bounds. */
       scrollbarAdj = (selection->togglePos + selection->toggleSize)-(selection->boxHeight-selection->titleAdj-1);
       if (scrollbarAdj > 0)
       {
-         selection->togglePos -= scrollbarAdj;
+	 selection->togglePos -= scrollbarAdj;
       }
 
       /* Draw the scrollbar. */
       for (x=selection->togglePos; x < selection->togglePos + selection->toggleSize; x++)
       {
-         mvwaddch (selection->scrollbarWin, x, 0, ' ' | A_REVERSE);
+	 mvwaddch (selection->scrollbarWin, x, 0, ' ' | A_REVERSE);
       }
       touchwin (selection->scrollbarWin);
       wrefresh (selection->scrollbarWin);
@@ -768,11 +768,11 @@ void setCDKSelectionBoxAttribute (CDKSELECTION *selection, chtype character)
  */ 
 void setCDKSelectionBackgroundColor (CDKSELECTION *selection, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -782,7 +782,7 @@ void setCDKSelectionBackgroundColor (CDKSELECTION *selection, char *color)
 
    /* Set the widgets background color. */
    wbkgd (selection->win, holder[0]);
-   if (selection->scrollbarWin != (WINDOW *)NULL)
+   if (selection->scrollbarWin != 0)
    {
       wbkgd (selection->scrollbarWin, holder[0]);
    }
@@ -948,7 +948,7 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
    char **temp;
    int x;
 
-   /* Make sure the title isn't NULL. */
+   /* Make sure the title isn't null. */
    if (title == 0)
    {
       return;
@@ -1023,15 +1023,15 @@ void setCDKSelectionChoices (CDKSELECTION *selection, int choices[])
    {
       if (choices[x] < 0)
       {
-         selection->selections[x] = 0;
+	 selection->selections[x] = 0;
       }
       else if (choices[x] > selection->choiceCount)
       {
-         selection->selections[x] = selection->choiceCount-1;
+	 selection->selections[x] = selection->choiceCount-1;
       }
       else
       {
-         selection->selections[x] = choices[x];
+	 selection->selections[x] = choices[x];
       }
    }
 }
@@ -1096,8 +1096,8 @@ void setCDKSelectionModes (CDKSELECTION *selection, int modes[])
 {
    int x;
 
-   /* Make sure the widget pointer is not NULL. */
-   if (selection == (CDKSELECTION *)NULL)
+   /* Make sure the widget pointer is not null. */
+   if (selection == 0)
    {
       return;
    }
@@ -1118,8 +1118,8 @@ int *getCDKSelectionModes (CDKSELECTION *selection)
  */
 void setCDKSelectionMode (CDKSELECTION *selection, int Index, int mode)
 {
-   /* Make sure the widget pointer is not NULL. */
-   if (selection == (CDKSELECTION *)NULL)
+   /* Make sure the widget pointer is not null. */
+   if (selection == 0)
    {
       return;
    }

@@ -229,6 +229,13 @@ void freeChtype (
 		chtype *	/* string */);
 
 /*
+ * This frees the memory used by the given list of strings.
+ */
+void freeCharList (
+		char **		/* list */,
+		unsigned	/* size */);
+
+/*
  * This sets the elements of the given string to 'character'
  */
 void cleanChar (
@@ -282,6 +289,13 @@ char *copyChar (
  */
 int chlen (
 		chtype *	/* string */);
+
+/*
+ * This takes a file mode and returns the first character of the file
+ * permissions string.
+ */
+int mode2Filetype (
+		mode_t		/* fileMode */);
 
 /*
  * This takes a file mode and stores the character representation

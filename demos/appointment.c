@@ -7,7 +7,7 @@ char *XCursesProgramName="appointmentBook";
 /*
  * Create definitions.
  */
-#define	MAX_MARKERS	2000
+#define MAX_MARKERS	2000
 
 /*
  *
@@ -54,14 +54,14 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo);
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKCALENDAR *calendar	= (CDKCALENDAR *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKCALENDAR *calendar	= 0;
+   WINDOW *cursesWin		= 0;
    char *title			= "<C></U>CDK Appointment Book\n<C><#HL(30)>\n";
-   char *filename		= (char *)NULL;
-   struct tm *dateInfo		= (struct tm *)NULL;
-   time_t clck			= (time_t)NULL;
-   time_t retVal		= (time_t)NULL;
+   char *filename		= 0;
+   struct tm *dateInfo		= 0;
+   time_t clck			= 0;
+   time_t retVal		= 0;
    struct AppointmentInfo appointmentInfo;
    int day, month, year, ret, x;
    char temp[1000];
@@ -82,44 +82,44 @@ int main (int argc, char **argv)
       /* Are there any more command line options to parse. */
       if ((ret = getopt (argc, argv, "d:m:y:t:f:")) == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'd':
-              day = atoi (optarg);
-              break;
+	 case 'd':
+	      day = atoi (optarg);
+	      break;
 
-         case 'm':
-              month = atoi (optarg);
-              break;
+	 case 'm':
+	      month = atoi (optarg);
+	      break;
 
-         case 'y':
-              year = atoi (optarg);
-              break;
+	 case 'y':
+	      year = atoi (optarg);
+	      break;
 
-         case 't':
-              title = copyChar (optarg);
-              break;
+	 case 't':
+	      title = copyChar (optarg);
+	      break;
 
-         case 'f':
-              filename = copyChar (optarg);
-              break;
+	 case 'f':
+	      filename = copyChar (optarg);
+	      break;
       }
    }
 
    /* Create the appointment book filename. */
-   if (filename == (char *)NULL)
+   if (filename == 0)
    {
       char *home = getenv ("HOME");
-      if (home != (char *)NULL)
+      if (home != 0)
       {
-         sprintf (temp, "%s/.appointment", home);
+	 sprintf (temp, "%s/.appointment", home);
       }
       else
       {
-         strcat (temp, ".appointment");
+	 strcat (temp, ".appointment");
       }
       filename = copyChar (temp);
    }
@@ -141,8 +141,8 @@ int main (int argc, char **argv)
 				A_NORMAL, A_REVERSE,
 				TRUE, FALSE);
 
-   /* Is the widget NULL? */
-   if (calendar == (CDKCALENDAR *)NULL)
+   /* Is the widget null? */
+   if (calendar == 0)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);
@@ -180,7 +180,7 @@ int main (int argc, char **argv)
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Let the user play with the widget. */
-   retVal = activateCDKCalendar (calendar, NULL);
+   retVal = activateCDKCalendar (calendar, 0);
 
    /* Save the appointment information. */
    saveAppointmentFile (filename, &appointmentInfo);
@@ -217,7 +217,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* Split each line up and create an appointment. */
    for (x=0; x < linesRead; x++)
    {
-      temp = CDKsplitString (lines[x], '');
+      temp = CDKsplitString (lines[x], CONTROL('V'));
       segments = CDKcountStrings (temp);
 
      /*
@@ -226,12 +226,12 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
       */
       if (segments == 5)
       {
-         appInfo->appointment[appointments].day		= atoi (temp[0]);
-         appInfo->appointment[appointments].month	= atoi (temp[1]);
-         appInfo->appointment[appointments].year	= atoi (temp[2]);
-         appInfo->appointment[appointments].type	= atoi (temp[3]);
-         appInfo->appointment[appointments].description	= copyChar (temp[4]);
-         appointments++;
+	 appInfo->appointment[appointments].day		= atoi (temp[0]);
+	 appInfo->appointment[appointments].month	= atoi (temp[1]);
+	 appInfo->appointment[appointments].year	= atoi (temp[2]);
+	 appInfo->appointment[appointments].type	= atoi (temp[3]);
+	 appInfo->appointment[appointments].description = copyChar (temp[4]);
+	 appointments++;
       }
       CDKfreeStrings(temp);
    }
@@ -250,7 +250,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    int x;
 
    /* Can we open the file? */
-   if ((fd = fopen (filename, "w")) == NULL)
+   if ((fd = fopen (filename, "w")) == 0)
    {
       return;
    }
@@ -258,16 +258,16 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* Start writing. */
    for (x=0; x < appInfo->appointmentCount; x++)
    {
-      if (appInfo->appointment[x].description != (char *)NULL)
+      if (appInfo->appointment[x].description != 0)
       {
-         fprintf (fd, "%d%d%d%d%s\n",
-		appInfo->appointment[x].day,
-		appInfo->appointment[x].month,
-		appInfo->appointment[x].year,
-		appInfo->appointment[x].type,
+	 fprintf (fd, "%d%c%d%c%d%c%d%c%s\n",
+		appInfo->appointment[x].day, CONTROL('V'),
+		appInfo->appointment[x].month, CONTROL('V'),
+		appInfo->appointment[x].year, CONTROL('V'),
+		appInfo->appointment[x].type, CONTROL('V'),
 		appInfo->appointment[x].description);
 
-         freeChar (appInfo->appointment[x].description);
+	 freeChar (appInfo->appointment[x].description);
       }
    }
    fclose (fd);
@@ -279,10 +279,10 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
-   CDKENTRY *entry				= (CDKENTRY *)NULL;
-   CDKITEMLIST *itemlist			= (CDKITEMLIST *)NULL;
+   CDKENTRY *entry				= 0;
+   CDKITEMLIST *itemlist			= 0;
    char *items[]				= {"Birthday", "Anniversary", "Appointment", "Other"};
-   char *description				= (char *)NULL;
+   char *description				= 0;
    struct AppointmentInfo *appointmentInfo	= (struct AppointmentInfo *)clientData;
    int current					= appointmentInfo->appointmentCount;
    chtype marker;
@@ -290,13 +290,13 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 
    /* Create the itemlist widget. */
    itemlist = newCDKItemlist (ScreenOf(calendar),
-				CENTER, CENTER, NULL,
+				CENTER, CENTER, 0,
 				"Select Appointment Type: ",
 				items, 4, 0,
 				TRUE, FALSE);
 
    /* Get the appointment tye from the user. */
-   selection = activateCDKItemlist (itemlist, NULL);
+   selection = activateCDKItemlist (itemlist, 0);
 
    /* They hit escape, kill the itemlist widget and leave. */
    if (selection == -1)
@@ -321,8 +321,8 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 			TRUE, FALSE);
 
    /* Get the description. */
-   description = activateCDKEntry (entry, NULL);
-   if (description == (char *)NULL)
+   description = activateCDKEntry (entry, 0);
+   if (description == 0)
    {
       destroyCDKEntry (entry);
       drawCDKCalendar (calendar, ObjOf(calendar)->box);
@@ -370,9 +370,9 @@ static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 		(appointmentInfo->appointment[x].month == calendar->month) &&
 		(appointmentInfo->appointment[x].year == calendar->year))
       {
-         freeChar (appointmentInfo->appointment[x].description);
-         appointmentInfo->appointment[x].description = (char *)NULL;
-         break;
+	 freeChar (appointmentInfo->appointment[x].description);
+	 appointmentInfo->appointment[x].description = 0;
+	 break;
       }
    }
 
@@ -393,14 +393,14 @@ static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 static void displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
-   CDKLABEL *label				= (CDKLABEL *)NULL;
+   CDKLABEL *label				= 0;
    struct AppointmentInfo *appointmentInfo	= (struct AppointmentInfo *)clientData;
    int found					= 0;
    int day					= 0;
    int month					= 0;
    int year					= 0;
    int mesgLines				= 0;
-   char *type					= (char *)NULL;
+   char *type					= 0;
    char *mesg[10], temp[256];
    int x;
 
@@ -415,46 +415,46 @@ static void displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *obje
       /* Determine the appointment type. */
       if (appointmentInfo->appointment[x].type == vBirthday)
       {
-         type = "Birthday";
+	 type = "Birthday";
       }
       else if (appointmentInfo->appointment[x].type == vAnniversary)
       {
-         type = "Anniversary";
+	 type = "Anniversary";
       }
       else if (appointmentInfo->appointment[x].type == vAppointment)
       {
-         type = "Appointment";
+	 type = "Appointment";
       }
       else
       {
-         type = "Other";
+	 type = "Other";
       }
 
       /* Find the marker by the day/month/year. */
       if ((day == calendar->day) &&
 		(month == calendar->month) &&
 		(year == calendar->year) &&
-		(appointmentInfo->appointment[x].description != (char *)NULL))
+		(appointmentInfo->appointment[x].description != 0))
       {
-         /* Create the message for the label widget. */
-         sprintf (temp, "<C>Appointment Date: %02d/%02d/%d", day, month, year);
-         mesg[mesgLines++] = copyChar (temp);
-         mesg[mesgLines++] = copyChar (" ");
-         mesg[mesgLines++] = copyChar ("<C><#HL(35)>");
+	 /* Create the message for the label widget. */
+	 sprintf (temp, "<C>Appointment Date: %02d/%02d/%d", day, month, year);
+	 mesg[mesgLines++] = copyChar (temp);
+	 mesg[mesgLines++] = copyChar (" ");
+	 mesg[mesgLines++] = copyChar ("<C><#HL(35)>");
 
-         sprintf (temp, " Appointment Type: %s", type);
-         mesg[mesgLines++] = copyChar (temp);
+	 sprintf (temp, " Appointment Type: %s", type);
+	 mesg[mesgLines++] = copyChar (temp);
 
-         mesg[mesgLines++] = copyChar (" Description     :");
-         sprintf (temp, "    %s", appointmentInfo->appointment[x].description);
-         mesg[mesgLines++] = copyChar (temp);
+	 mesg[mesgLines++] = copyChar (" Description     :");
+	 sprintf (temp, "    %s", appointmentInfo->appointment[x].description);
+	 mesg[mesgLines++] = copyChar (temp);
 
-         mesg[mesgLines++] = copyChar ("<C><#HL(35)>");
-         mesg[mesgLines++] = copyChar (" ");
-         mesg[mesgLines++] = copyChar ("<C>Press space to continue.");
+	 mesg[mesgLines++] = copyChar ("<C><#HL(35)>");
+	 mesg[mesgLines++] = copyChar (" ");
+	 mesg[mesgLines++] = copyChar ("<C>Press space to continue.");
 
-         found = 1;
-         break;
+	 found = 1;
+	 break;
       }
    }
 

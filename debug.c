@@ -1,9 +1,9 @@
 #include "cdk.h"
 
 /*
- * $Author: glover $
- * $Date: 1997/04/06 22:59:36 $
- * $Revision: 1.7 $
+ * $Author: tom $
+ * $Date: 2000/01/16 22:48:38 $
+ * $Revision: 1.8 $
  */
 
 FILE	*CDKDEBUG;
@@ -16,8 +16,8 @@ FILE *startCDKDebug (char *filename)
 {
    char *defFile = "cdkdebug.log";
 
-   /* Check if the filename is NULL. */
-   if (filename == (char *)NULL)
+   /* Check if the filename is null. */
+   if (filename == 0)
    {
       filename = defFile;
    }
@@ -31,8 +31,8 @@ FILE *startCDKDebug (char *filename)
  */
 void writeCDKDebugMessage (FILE *fd, char *filename, char *function, int line, char *message)
 {
-   /* Print the message as long as the file descr. is not NULL.	*/
-   if (fd != NULL)
+   /* Print the message as long as the file pointer is not null. */
+   if (fd != 0)
    {
       fprintf (fd, "%s::%s (Line %d) %s\n", filename, function, line, message);
    }
@@ -43,7 +43,7 @@ void writeCDKDebugMessage (FILE *fd, char *filename, char *function, int line, c
  */
 void stopCDKDebug (FILE *fd)
 {
-   if (fd != NULL)
+   if (fd != 0)
    {
       fclose (fd);
    }

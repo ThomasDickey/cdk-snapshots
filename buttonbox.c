@@ -3,11 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 16:40:51 $
- * $Revision: 1.22 $
+ * $Date: 2000/01/16 22:42:32 $
+ * $Revision: 1.23 $
  */
 
-DeclareCDKObjects(my_funcs,Buttonbox)
+DeclareCDKObjects(my_funcs,Buttonbox);
 
 /*
  * This returns a CDK buttonbox widget pointer.
@@ -26,7 +26,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    int xpos			= xPos;
    int ypos			= yPos;
    int currentButton		= 0;
-   chtype *holder		= (chtype *)NULL;
+   chtype *holder		= 0;
    char **temp			= 0;
    int x, y, len, junk;
 
@@ -58,17 +58,17 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
       /* We need to determine the widest title line. */
       for (x=0; x < buttonbox->titleLines; x++)
       {
-         holder = char2Chtype (temp[x], &len, &junk);
-         maxWidth = MAXIMUM (maxWidth, len);
-         freeChtype (holder);
+	 holder = char2Chtype (temp[x], &len, &junk);
+	 maxWidth = MAXIMUM (maxWidth, len);
+	 freeChtype (holder);
       }
       boxWidth = MAXIMUM (boxWidth, maxWidth + 2);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < buttonbox->titleLines; x++)
       {
-         buttonbox->title[x]	= char2Chtype (temp[x], &buttonbox->titleLen[x], &buttonbox->titlePos[x]);
-         buttonbox->titlePos[x]	= justifyString (boxWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
+	 buttonbox->title[x]	= char2Chtype (temp[x], &buttonbox->titleLen[x], &buttonbox->titlePos[x]);
+	 buttonbox->titlePos[x] = justifyString (boxWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -92,11 +92,11 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
       /* Look for the widest item in this column. */
       for (y=0; y < rows; y++)
       {
-         if (currentButton < buttonCount)
-         {
-             maxColWidth = MAXIMUM (buttonbox->buttonLen[currentButton], maxColWidth);
-             currentButton++;
-         }
+	 if (currentButton < buttonCount)
+	 {
+	     maxColWidth = MAXIMUM (buttonbox->buttonLen[currentButton], maxColWidth);
+	     currentButton++;
+	 }
       }
 
       /* Keep the maximum column width for this column. */
@@ -118,7 +118,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    ScreenOf(buttonbox)			= cdkscreen;
    buttonbox->parent			= cdkscreen->window;
    buttonbox->win			= newwin (boxHeight, boxWidth, ypos, xpos);
-   buttonbox->shadowWin			= (WINDOW *)NULL;
+   buttonbox->shadowWin			= 0;
    buttonbox->buttonCount		= buttonCount;
    buttonbox->currentButton		= 0;
    buttonbox->rows			= rows;
@@ -136,10 +136,10 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    buttonbox->HChar			= ACS_HLINE;
    buttonbox->VChar			= ACS_VLINE;
    buttonbox->BoxAttrib			= A_NORMAL;
-   buttonbox->preProcessFunction	= (PROCESSFN)NULL;
-   buttonbox->preProcessData		= (void *)NULL;
-   buttonbox->postProcessFunction	= (PROCESSFN)NULL;
-   buttonbox->postProcessData		= (void *)NULL;
+   buttonbox->preProcessFunction	= 0;
+   buttonbox->preProcessData		= 0;
+   buttonbox->postProcessFunction	= 0;
+   buttonbox->postProcessData		= 0;
 
    /* Set up the row adjustment. */
    if (boxHeight - rows - buttonbox->titleLines > 0)
@@ -153,20 +153,20 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
       buttonbox->colAdjust = (int)((boxWidth-colWidth) / buttonbox->cols)-1;
    }
 
-   /* If we couldn't create the window, we should return a NULL value. */
-   if (buttonbox->win == (WINDOW *)NULL)
+   /* If we couldn't create the window, we should return a null value. */
+   if (buttonbox->win == 0)
    {
       /* Couldn't create the window. Clean up used memory. */
       for (x=0; x < buttonbox->buttonCount; x++)
       {
-         freeChtype (buttonbox->button[x]);
+	 freeChtype (buttonbox->button[x]);
       }
 
       /* Remove the memory used by the buttonbox pointer. */
       free (buttonbox);
 
-      /* Return a NULL buttonbox box. */
-      return ((CDKBUTTONBOX *)NULL);
+      /* Return a null buttonbox box. */
+      return (0);
    }
    keypad (buttonbox->win, TRUE);
 
@@ -192,26 +192,26 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
 int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
 {
    /* Declare local variables. */
-   chtype input = (chtype)NULL;
+   chtype input = 0;
    int ret;
 
    /* Draw the buttonbox box. */
    drawCDKButtonbox (buttonbox, ObjOf(buttonbox)->box);
 
-   /* Check if actions is NULL. */
-   if (actions == (chtype *)NULL)
+   /* Check if actions is null. */
+   if (actions == 0)
    {
       for (;;)
       {
-         /* Get the input. */
-         input = wgetch (buttonbox->win);
+	 /* Get the input. */
+	 input = wgetch (buttonbox->win);
 
-         /* Inject the character into the widget. */
-         ret = injectCDKButtonbox (buttonbox, input);
-         if (buttonbox->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 /* Inject the character into the widget. */
+	 ret = injectCDKButtonbox (buttonbox, input);
+	 if (buttonbox->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
    else
@@ -222,11 +222,11 @@ int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
-         ret = injectCDKButtonbox (buttonbox, actions[x]);
-         if (buttonbox->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 ret = injectCDKButtonbox (buttonbox, actions[x]);
+	 if (buttonbox->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
 
@@ -248,7 +248,7 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
    buttonbox->exitType = vEARLY_EXIT;
 
    /* Check if there is a pre-process function to be called. */
-   if (buttonbox->preProcessFunction != (PROCESSFN)NULL)
+   if (buttonbox->preProcessFunction != 0)
    {
       ppReturn = ((PROCESSFN)(buttonbox->preProcessFunction)) (vBUTTONBOX, buttonbox, buttonbox->preProcessData, input);
    }
@@ -259,79 +259,79 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind (vBUTTONBOX, buttonbox, input) != 0)
       {
-         buttonbox->exitType = vESCAPE_HIT;
-         return -1;
+	 buttonbox->exitType = vESCAPE_HIT;
+	 return -1;
       }
       else
       {
-         switch (input)
-         {
-            case KEY_LEFT : case CDK_PREV :
-                 if ((buttonbox->currentButton-buttonbox->rows) < firstButton)
-                 {
-                    buttonbox->currentButton = lastButton;
-                 }
-                 else
-                 {
-                    buttonbox->currentButton -= buttonbox->rows;
-                 }
-                 break;
+	 switch (input)
+	 {
+	    case KEY_LEFT : case CDK_PREV :
+		 if ((buttonbox->currentButton-buttonbox->rows) < firstButton)
+		 {
+		    buttonbox->currentButton = lastButton;
+		 }
+		 else
+		 {
+		    buttonbox->currentButton -= buttonbox->rows;
+		 }
+		 break;
 
-            case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
-                 if ((buttonbox->currentButton + buttonbox->rows) > lastButton)
-                 {
-                    buttonbox->currentButton = firstButton;
-                 }
-                 else
-                 {
-                    buttonbox->currentButton += buttonbox->rows;
-                 }
-                 break;
+	    case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
+		 if ((buttonbox->currentButton + buttonbox->rows) > lastButton)
+		 {
+		    buttonbox->currentButton = firstButton;
+		 }
+		 else
+		 {
+		    buttonbox->currentButton += buttonbox->rows;
+		 }
+		 break;
 
-            case KEY_UP :
-                 if ((buttonbox->currentButton-1) < firstButton)
-                 {
-                    buttonbox->currentButton = lastButton;
-                 }
-                 else
-                 {
-                    buttonbox->currentButton--;
-                 }
-                 break;
+	    case KEY_UP :
+		 if ((buttonbox->currentButton-1) < firstButton)
+		 {
+		    buttonbox->currentButton = lastButton;
+		 }
+		 else
+		 {
+		    buttonbox->currentButton--;
+		 }
+		 break;
 
-            case KEY_DOWN :
-                 if ((buttonbox->currentButton + 1) > lastButton)
-                 {
-                    buttonbox->currentButton = firstButton;
-                 }
-                 else
-                 {
-                    buttonbox->currentButton++;
-                 }
-                 break;
+	    case KEY_DOWN :
+		 if ((buttonbox->currentButton + 1) > lastButton)
+		 {
+		    buttonbox->currentButton = firstButton;
+		 }
+		 else
+		 {
+		    buttonbox->currentButton++;
+		 }
+		 break;
 
-            case CDK_REFRESH :
-                 eraseCDKScreen (ScreenOf(buttonbox));
-                 refreshCDKScreen (ScreenOf(buttonbox));
-                 break;
+	    case CDK_REFRESH :
+		 eraseCDKScreen (ScreenOf(buttonbox));
+		 refreshCDKScreen (ScreenOf(buttonbox));
+		 break;
 
-            case KEY_ESC :
-                 buttonbox->exitType = vESCAPE_HIT;
-                 return -1;
+	    case KEY_ESC :
+		 buttonbox->exitType = vESCAPE_HIT;
+		 return -1;
 
-            case KEY_RETURN : case KEY_ENTER :
-                 buttonbox->exitType = vNORMAL;
-                 return buttonbox->currentButton;
+	    case KEY_RETURN : case KEY_ENTER :
+		 buttonbox->exitType = vNORMAL;
+		 return buttonbox->currentButton;
 
-            default :
-                 break;
-         }
+	    default :
+		 break;
+	 }
       }
 
       /* Should we call a post-process? */
-      if (buttonbox->postProcessFunction != (PROCESSFN)NULL)
+      if (buttonbox->postProcessFunction != 0)
       {
-         ((PROCESSFN)(buttonbox->postProcessFunction)) (vBUTTONBOX, buttonbox, buttonbox->postProcessData, input);
+	 ((PROCESSFN)(buttonbox->postProcessFunction)) (vBUTTONBOX, buttonbox, buttonbox->postProcessData, input);
       }
    }
 
@@ -382,11 +382,11 @@ boolean getCDKButtonboxBox (CDKBUTTONBOX *buttonbox)
  */
 void setCDKButtonboxBackgroundColor (CDKBUTTONBOX *buttonbox, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -410,7 +410,7 @@ void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
    int x = 0;
 
    /* Is there a shadow? */
-   if (buttonbox->shadowWin != (WINDOW *)NULL)
+   if (buttonbox->shadowWin != 0)
    {
       drawShadow (buttonbox->shadowWin);
    }
@@ -431,7 +431,7 @@ void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < buttonbox->titleLines; x++)
       {
-         writeChtype (buttonbox->win,
+	 writeChtype (buttonbox->win,
 			buttonbox->titlePos[x],
 			x + 1,
 			buttonbox->title[x],
@@ -459,31 +459,31 @@ void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
    {
       for (x=0; x < buttonbox->cols; x++)
       {
-         row = buttonbox->titleLines + 1;
+	 row = buttonbox->titleLines + 1;
 
-         for (y=0; y < buttonbox->rows; y++)
-         {
-            if (currentButton == buttonbox->currentButton)
-            {
-               writeChtypeAttrib (buttonbox->win,
-                       			col, row,
-                       			buttonbox->button[currentButton],
-                       			buttonbox->highlight,
-                       			HORIZONTAL, 0,
-                       			buttonbox->buttonLen[currentButton]);
-            }
-            else
-            {
-               writeChtype (buttonbox->win,
+	 for (y=0; y < buttonbox->rows; y++)
+	 {
+	    if (currentButton == buttonbox->currentButton)
+	    {
+	       writeChtypeAttrib (buttonbox->win,
+					col, row,
+					buttonbox->button[currentButton],
+					buttonbox->highlight,
+					HORIZONTAL, 0,
+					buttonbox->buttonLen[currentButton]);
+	    }
+	    else
+	    {
+	       writeChtype (buttonbox->win,
 				col, row,
 				buttonbox->button[currentButton],
 				HORIZONTAL, 0,
 				buttonbox->buttonLen[currentButton]);
-            }
-            row += (1 + buttonbox->rowAdjust);
-            currentButton++;
-         }
-         col += buttonbox->columnWidths[x] + buttonbox->colAdjust + 1;
+	    }
+	    row += (1 + buttonbox->rowAdjust);
+	    currentButton++;
+	 }
+	 col += buttonbox->columnWidths[x] + buttonbox->colAdjust + 1;
       }
    }
    touchwin (buttonbox->win);
@@ -535,7 +535,7 @@ void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean relativ
    moveCursesWindow(buttonbox->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (buttonbox->shadowWin != (WINDOW *)NULL)
+   if (buttonbox->shadowWin != 0)
    {
       moveCursesWindow(buttonbox->shadowWin, -xdiff, -ydiff);
    }

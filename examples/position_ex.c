@@ -10,11 +10,11 @@ char *XCursesProgramName="position_ex";
 int main (void)
 {
    /* Declare local variables.*/
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKENTRY *directory	= (CDKENTRY *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKENTRY *directory	= 0;
+   WINDOW *cursesWin	= 0;
    char *label		= "</U/5>Directory:<!U!5> ";
-   char	*info		= 0;
+   char *info		= 0;
    char *mesg[10];
    char temp[256];
 
@@ -27,11 +27,11 @@ int main (void)
 
    /* Create the entry field widget. */
    directory = newCDKEntry (cdkscreen, CENTER, CENTER,
-				NULL, label, A_NORMAL, '.', vMIXED,
+				0, label, A_NORMAL, '.', vMIXED,
 				40, 0, 256, TRUE, FALSE);
 
-   /* Is the widget NULL? */
-   if (directory == (CDKENTRY *)NULL)
+   /* Is the widget null? */
+   if (directory == 0)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -47,7 +47,7 @@ int main (void)
    positionCDKEntry (directory);
 
    /* Activate the entry field. */
-   info	= activateCDKEntry (directory, (chtype *)NULL);
+   info = activateCDKEntry (directory, 0);
 
    /* Tell them what they typed. */
    if (directory->exitType == vESCAPE_HIT)

@@ -10,9 +10,9 @@ char *XCursesProgramName="itemlist_ex";
 int main (void)
 {
    /* Declare local variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKITEMLIST *monthlist	= (CDKITEMLIST *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKITEMLIST *monthlist	= 0;
+   WINDOW *cursesWin		= 0;
    char *title			= "<C>Pick A Month";
    char *label			= "</U/5>Month:";
    char *info[MAX_ITEMS], temp[256], *mesg[10];
@@ -23,12 +23,12 @@ int main (void)
    /*
     * Get the current date and set the default month to the
     * current month.
-    */ 
+    */
     time (&clck);
     dateInfo	= localtime (&clck);
     startMonth	= dateInfo->tm_mon;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -51,11 +51,11 @@ int main (void)
 
    /* Create the itemlist widget. */
    monthlist	= newCDKItemlist (cdkscreen, CENTER, CENTER,
-   					title, label, info, 12,
+					title, label, info, 12,
 					startMonth, TRUE, FALSE);
 
-   /* Is the widget NULL? */
-   if (monthlist == (CDKITEMLIST *)NULL)
+   /* Is the widget null? */
+   if (monthlist == 0)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -67,7 +67,7 @@ int main (void)
    }
 
    /* Activate the widget. */
-   choice = activateCDKItemlist (monthlist, (chtype *)NULL);
+   choice = activateCDKItemlist (monthlist, 0);
 
    /* Check how they exited from the widget. */
    if (monthlist->exitType == vESCAPE_HIT)

@@ -173,6 +173,8 @@ typedef int boolean;
 #define	COLOR_PAIR(a)	A_NORMAL
 #endif
 
+#define CONTROL(c)	((c) & 0x1f)
+
 /*
  * Derived macros
  */

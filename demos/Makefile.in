@@ -24,30 +24,7 @@ SYBINCDIR	= -I$(SYBROOT)/include
 SYBLIBDIR	= -L$(SYBROOT)/devlib
 SYBLIBS		= -lnsl -lsybdb
 
-#
-# Default compile option is stripped.
-#
-default: stripped
-
-#
-# Strip each of the binaries then strip them.
-#
-stripped:: $(BINS) stripBinaries
-
-#
-# Unstripped option for those who want it.
-#
-unstripped:: $(BINS)
-
-#
-# Strip all the binaries.
-#
-stripBinaries::
-	@for i in $(BINS); do \
-	   printf "Stripping %s ... " $$i; \
-	   strip $$i; \
-	   printf "Done.\n"; \
-	done
+all : $(BINS)
 
 #
 # Standard .c to .o compile line.
@@ -58,46 +35,45 @@ stripBinaries::
 #
 # Most of the examples are built from a single .c file using the same libraries
 #
-.o:
-	@ECHO_LD@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $< -o $@ $(LIBDIR) $(LIBS)
+LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $< -o $@ $(LIBDIR) $(LIBS)
 
 # fileview    - Basic file selector/file viewer combination.
-fileview: fileview.o
+fileview:	fileview.o	; $(LINKIT)
 
 # rolodex     - A fairly robust rolodex.
-rolodex: rolodex.o
+rolodex:	rolodex.o	; $(LINKIT)
 
 # command     - A basic command interface with command history.
-command: command.o
+command:	command.o	; $(LINKIT)
 
 # clock       - A simple little clock.
-clock: clock.o
+clock:		clock.o	; $(LINKIT)
 
 # stopSign    - A simple demo I wrote after a couple of pints. :)
-stopSign: stopSign.o
+stopSign:	stopSign.o	; $(LINKIT)
 
 # appointment - A basic appointment book/date keeper.
-appointment: appointment.o
+appointment:	appointment.o	; $(LINKIT)
 
 # serial      - This probes the serial port.
-serial: serial.o
+serial:		serial.o	; $(LINKIT)
 
 # keycheck    - This prints out the keys ASCII and Octal values.
-keycheck: keycheck.o
+keycheck:	keycheck.o	; $(LINKIT)
 
 # vinstall    - CDK based installer.
-vinstall: vinstall.o
+vinstall:	vinstall.o	; $(LINKIT)
 
 #
 # A Sybase interface.
 #
-syb: syb.c
+syb:	syb.c
 	$(CC) $(CFLAGS) -o $@ $? $(CPPFLAGS) $(SYBINCDIR) $(LIBDIR) $(SYBLIBDIR) $(LIBS) $(SYBLIBS)
 
 #
 # Standard clean directives.
 #
 clean::
-	$(RM) core *.o $(BINS)
-distclean:: clean
-	$(RM) Makefile
+	-rm -f core *.o $(BINS)
+distclean::	clean
+	-rm -f Makefile

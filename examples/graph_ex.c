@@ -7,19 +7,19 @@ char *XCursesProgramName="graph_ex";
 int main (void)
 {
    /* Declare vars. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKGRAPH *graph	= (CDKGRAPH *)NULL;
-   CDKLABEL *pausep	= (CDKLABEL *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
-   char	*title		= (char *)NULL;
-   char	*xtitle		= (char *)NULL;
-   char	*ytitle		= (char *)NULL;
-   char	*graphChars	= (char *)NULL;
-   char	*mesg[2];
+   CDKSCREEN *cdkscreen = 0;
+   CDKGRAPH *graph	= 0;
+   CDKLABEL *pausep	= 0;
+   WINDOW *cursesWin	= 0;
+   char *title		= 0;
+   char *xtitle		= 0;
+   char *ytitle		= 0;
+   char *graphChars	= 0;
+   char *mesg[2];
    int values[20], colors[20];
    int count;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -42,16 +42,16 @@ int main (void)
    xtitle	= "<C>X AXIS TITLE";
    ytitle	= "<C>Y AXIS TITLE";
    graphChars	= "0123456789";
-  
+
    /* Create the label values. */
    mesg[0] = "Press Any Key When Done Viewing The Graph.";
 
    /* Create the graph widget. */
-   graph = newCDKGraph (cdkscreen, CENTER, CENTER, 10, 20, 
+   graph = newCDKGraph (cdkscreen, CENTER, CENTER, 10, 20,
 			title, xtitle, ytitle);
 
-   /* Is the graph NULL? */
-   if (graph == (CDKGRAPH *)NULL)
+   /* Is the graph null? */
+   if (graph == 0)
    {
       /* Shut down CDK. */
       destroyCDKScreen (cdkscreen);
@@ -64,7 +64,7 @@ int main (void)
 
    /* Create the label widget. */
    pausep = newCDKLabel (cdkscreen, CENTER, BOTTOM, mesg, 1, TRUE, FALSE);
-   if (pausep == (CDKLABEL *)NULL)
+   if (pausep == 0)
    {
       /* Shut down CDK. */
       destroyCDKGraph (graph);

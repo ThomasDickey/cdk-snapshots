@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:30:01 $
- * $Revision: 1.42 $
+ * $Date: 2000/01/16 23:25:38 $
+ * $Revision: 1.43 $
  */
 
 /*
@@ -12,7 +12,7 @@
  */
 static void drawCDKSliderField (CDKSLIDER *slider);
 
-DeclareCDKObjects(my_funcs,Slider)
+DeclareCDKObjects(my_funcs,Slider);
 
 /*
  * This function creates a slider widget.
@@ -21,13 +21,13 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
 {
    /* Declare local variables. */
    CDKSLIDER *slider	= newCDKObject(CDKSLIDER, &my_funcs);
-   chtype *holder	= (chtype *)NULL;
+   chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxHeight	= 3;
    int boxWidth		= 0;
    int maxWidth		= INT_MIN;
-   int horizontalAdjust	= 0;
+   int horizontalAdjust = 0;
    int xpos		= xplace;
    int ypos		= yplace;
    int highValueLen	= intlen (high);
@@ -35,9 +35,9 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int x, len, junk, junk2;
 
    /* Set some basic values of the slider field. */
-   slider->label	= (chtype *)NULL;
+   slider->label	= 0;
    slider->labelLen	= 0;
-   slider->labelWin	= (WINDOW *)NULL;
+   slider->labelWin	= 0;
    slider->titleLines	= 0;
 
   /*
@@ -48,7 +48,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    fieldWidth = setWidgetDimension (parentWidth, fieldWidth, 0);
 
    /* Translate the label char *pointer to a chtype pointer. */
-   if (label != (char *)NULL)
+   if (label != 0)
    {
       slider->label	= char2Chtype (label, &slider->labelLen, &junk);
       boxWidth		= slider->labelLen + fieldWidth + highValueLen + 2;
@@ -67,9 +67,9 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       /* We need to determine the widest title line. */
       for (x=0; x < slider->titleLines; x++)
       {
-         holder = char2Chtype (temp[x], &len, &junk2);
-         maxWidth = MAXIMUM (maxWidth, len);
-         freeChtype (holder);
+	 holder = char2Chtype (temp[x], &len, &junk2);
+	 maxWidth = MAXIMUM (maxWidth, len);
+	 freeChtype (holder);
       }
 
       /*
@@ -78,15 +78,15 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
        */
        if (maxWidth > boxWidth)
        {
-          horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2;
+	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
+	  boxWidth = maxWidth + 2;
        }
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < slider->titleLines; x++)
       {
-         slider->title[x]	= char2Chtype (temp[x], &slider->titleLen[x], &slider->titlePos[x]);
-         slider->titlePos[x]	= justifyString (boxWidth, slider->titleLen[x], slider->titlePos[x]);
+	 slider->title[x]	= char2Chtype (temp[x], &slider->titleLen[x], &slider->titlePos[x]);
+	 slider->titlePos[x]	= justifyString (boxWidth, slider->titleLen[x], slider->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -110,19 +110,19 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Make the slider window. */
    slider->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
-   /* Is the main window NULL??? */
-   if (slider->win == (WINDOW *) NULL)
+   /* Is the main window null??? */
+   if (slider->win == 0)
    {
       freeChtype (slider->label);
       free (slider);
 
-      /* Return a NULL pointer. */
-      return ((CDKSLIDER *) NULL);
+      /* Return a null pointer. */
+      return (0);
    }
    keypad (slider->win, TRUE);
 
    /* Create the slider label window. */
-   if (slider->label != (chtype *)NULL)
+   if (slider->label != 0)
    {
       slider->labelWin = subwin (slider->win, 1,
 					slider->labelLen + 2,
@@ -140,7 +140,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Create the slider field. */
    ScreenOf(slider)		= cdkscreen;
    slider->parent		= cdkscreen->window;
-   slider->shadowWin		= (WINDOW *)NULL;
+   slider->shadowWin		= 0;
    slider->boxWidth		= boxWidth;
    slider->boxHeight		= boxHeight;
    slider->fieldWidth		= fieldWidth-1;
@@ -154,10 +154,10 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    slider->exitType		= vNEVER_ACTIVATED;
    ObjOf(slider)->box		= Box;
    slider->shadow		= shadow;
-   slider->preProcessFunction	= (PROCESSFN)NULL;
-   slider->preProcessData	= (void *)NULL;
-   slider->postProcessFunction	= (PROCESSFN)NULL;
-   slider->postProcessData	= (void *)NULL;
+   slider->preProcessFunction	= 0;
+   slider->preProcessData	= 0;
+   slider->postProcessFunction	= 0;
+   slider->postProcessData	= 0;
    slider->ULChar		= ACS_ULCORNER;
    slider->URChar		= ACS_URCORNER;
    slider->LLChar		= ACS_LLCORNER;
@@ -178,7 +178,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Do we want a shadow??? */
    if (shadow)
    {
-      slider->shadowWin	= newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
+      slider->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -202,21 +202,21 @@ int activateCDKSlider (CDKSLIDER *slider, chtype *actions)
    /* Draw the slider widget. */
    drawCDKSlider (slider, ObjOf(slider)->box);
 
-   /* Check if actions is NULL. */
-   if (actions == (chtype *)NULL)
+   /* Check if actions is null. */
+   if (actions == 0)
    {
-      chtype input = (chtype)NULL;
+      chtype input = 0;
       for (;;)
       {
-         /* Get the input. */
-         input = wgetch (slider->fieldWin);
+	 /* Get the input. */
+	 input = wgetch (slider->fieldWin);
 
-         /* Inject the character into the widget. */
-         ret = injectCDKSlider (slider, input);
-         if (slider->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 /* Inject the character into the widget. */
+	 ret = injectCDKSlider (slider, input);
+	 if (slider->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
    else
@@ -227,11 +227,11 @@ int activateCDKSlider (CDKSLIDER *slider, chtype *actions)
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
-         ret = injectCDKSlider (slider, actions[x]);
-         if (slider->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 ret = injectCDKSlider (slider, actions[x]);
+	 if (slider->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
 
@@ -255,7 +255,7 @@ int injectCDKSlider (CDKSLIDER *slider, chtype input)
    drawCDKSliderField (slider);
 
    /* Check if there is a pre-process function to be called. */
-   if (slider->preProcessFunction != (PROCESSFN)NULL)
+   if (slider->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
       ppReturn = ((PROCESSFN)(slider->preProcessFunction)) (vSLIDER, slider, slider->preProcessData, input);
@@ -267,87 +267,87 @@ int injectCDKSlider (CDKSLIDER *slider, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind(vSLIDER, slider, input) != 0)
       {
-         slider->exitType = vESCAPE_HIT;
-         return -1;
+	 slider->exitType = vESCAPE_HIT;
+	 return -1;
       }
       else
       {
-         switch (input)
-         {
-            case KEY_LEFT : case 'd' : case '-' : case KEY_DOWN :
-                 if (slider->current > slider->low)
-                 {
-                    slider->current -= slider->inc;
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	 switch (input)
+	 {
+	    case KEY_LEFT : case 'd' : case '-' : case KEY_DOWN :
+		 if (slider->current > slider->low)
+		 {
+		    slider->current -= slider->inc;
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-            case KEY_RIGHT : case 'u' : case '+' : case KEY_UP :
-                 if (slider->current < slider->high)
-                 {
-                    slider->current += slider->inc;
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	    case KEY_RIGHT : case 'u' : case '+' : case KEY_UP :
+		 if (slider->current < slider->high)
+		 {
+		    slider->current += slider->inc;
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-            case KEY_PPAGE : case 'U' : case '' :
-                 if ((slider->current + slider->fastinc) <= slider->high)
-                 {
-                    slider->current += slider->fastinc;
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	    case KEY_PPAGE : case 'U' : case CONTROL('B') :
+		 if ((slider->current + slider->fastinc) <= slider->high)
+		 {
+		    slider->current += slider->fastinc;
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-               case KEY_NPAGE : case 'D' : case '' :
-                 if ((slider->current - slider->fastinc) >= slider->low)
-                 {
-                    slider->current -= slider->fastinc;
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	       case KEY_NPAGE : case 'D' : case CONTROL('F') :
+		 if ((slider->current - slider->fastinc) >= slider->low)
+		 {
+		    slider->current -= slider->fastinc;
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-            case KEY_HOME : case 'g' : case '0' :
-                 slider->current = slider->low;
-                 break;
+	    case KEY_HOME : case 'g' : case '0' :
+		 slider->current = slider->low;
+		 break;
 
-            case KEY_END : case 'G' : case '$' :
-                 slider->current = slider->high;
-                 break;
+	    case KEY_END : case 'G' : case '$' :
+		 slider->current = slider->high;
+		 break;
 
-            case KEY_ESC :
-                 slider->exitType = vESCAPE_HIT;
-                 return -1;
+	    case KEY_ESC :
+		 slider->exitType = vESCAPE_HIT;
+		 return -1;
 
-            case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
-                 slider->exitType = vNORMAL;
-                 return (slider->current);
+	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
+		 slider->exitType = vNORMAL;
+		 return (slider->current);
 
-            case CDK_REFRESH :
-                 eraseCDKScreen (ScreenOf(slider));
-                 refreshCDKScreen (ScreenOf(slider));
-                 break;
+	    case CDK_REFRESH :
+		 eraseCDKScreen (ScreenOf(slider));
+		 refreshCDKScreen (ScreenOf(slider));
+		 break;
 
-            default :
-                 break;
-         }
+	    default :
+		 break;
+	 }
       }
 
       /* Should we call a post-process? */
-      if (slider->postProcessFunction != (PROCESSFN)NULL)
+      if (slider->postProcessFunction != 0)
       {
-         ((PROCESSFN)(slider->postProcessFunction)) (vSLIDER, slider, slider->postProcessData, input);
+	 ((PROCESSFN)(slider->postProcessFunction)) (vSLIDER, slider, slider->postProcessData, input);
       }
    }
 
@@ -392,14 +392,14 @@ static void _moveCDKSlider (CDKOBJS *object, int xplace, int yplace, boolean rel
 
    /* Move the window to the new location. */
    moveCursesWindow(slider->win, -xdiff, -ydiff);
-   if (slider->labelWin != (WINDOW *)NULL)
+   if (slider->labelWin != 0)
    {
       moveCursesWindow(slider->labelWin, -xdiff, -ydiff);
    }
    moveCursesWindow(slider->fieldWin, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (slider->shadowWin != (WINDOW *)NULL)
+   if (slider->shadowWin != 0)
    {
       moveCursesWindow(slider->shadowWin, -xdiff, -ydiff);
    }
@@ -424,7 +424,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
    int x;
 
    /* Draw the shadow. */
-   if (slider->shadowWin != (WINDOW *)NULL)
+   if (slider->shadowWin != 0)
    {
        drawShadow (slider->shadowWin);
    }
@@ -435,7 +435,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
       attrbox (slider->win,
 		slider->ULChar, slider->URChar,
 		slider->LLChar, slider->LRChar,
-		slider->HChar,  slider->VChar,
+		slider->HChar,	slider->VChar,
 		slider->BoxAttrib);
    }
 
@@ -444,7 +444,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < slider->titleLines; x++)
       {
-         writeChtype (slider->win,
+	 writeChtype (slider->win,
 			slider->titlePos[x],
 			x + 1,
 			slider->title[x],
@@ -455,7 +455,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
    }
 
    /* Draw the label. */
-   if (slider->labelWin != (WINDOW *)NULL)
+   if (slider->labelWin != 0)
    {
       writeChtype (slider->labelWin, 0, 0, slider->label, HORIZONTAL, 0, slider->labelLen);
       wrefresh (slider->labelWin);
@@ -534,11 +534,11 @@ void setCDKSliderBoxAttribute (CDKSLIDER *slider, chtype character)
  */
 void setCDKSliderBackgroundColor (CDKSLIDER *slider, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -549,7 +549,7 @@ void setCDKSliderBackgroundColor (CDKSLIDER *slider, char *color)
    /* Set the widgets background color. */
    wbkgd (slider->win, holder[0]);
    wbkgd (slider->fieldWin, holder[0]);
-   if (slider->labelWin != (WINDOW *)NULL)
+   if (slider->labelWin != 0)
    {
       wbkgd (slider->labelWin, holder[0]);
    }

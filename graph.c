@@ -3,11 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 16:46:06 $
- * $Revision: 1.53 $
+ * $Date: 2000/01/16 23:03:14 $
+ * $Revision: 1.54 $
  */
 
-DeclareCDKObjects(my_funcs,Graph)
+DeclareCDKObjects(my_funcs,Graph);
 
 /*
  * This creates a graph widget.
@@ -47,7 +47,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
@@ -56,8 +56,8 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < graph->titleLines; x++)
       {
-         graph->title[x]	= char2Chtype (temp[x], &graph->titleLen[x], &graph->titlePos[x]);
-         graph->titlePos[x]	= justifyString (boxWidth, graph->titleLen[x], graph->titlePos[x]);
+	 graph->title[x]	= char2Chtype (temp[x], &graph->titleLen[x], &graph->titlePos[x]);
+	 graph->titlePos[x]	= justifyString (boxWidth, graph->titleLen[x], graph->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -98,19 +98,19 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    graph->VChar		= ACS_VLINE;
    graph->BoxAttrib	= A_NORMAL;
 
-   /* Is the graph pointer NULL? */
-   if (graph->win == (WINDOW *)NULL)
+   /* Is the graph pointer null? */
+   if (graph->win == 0)
    {
       /* Clean up any memory used. */
       free (graph);
 
-      /* Return a NULL pointer. */
-      return ( (CDKGRAPH *)NULL );
+      /* Return a null pointer. */
+      return ( 0 );
    }
    keypad (graph->win, TRUE);
 
    /* Translate the X Axis title char * to a chtype * */
-   if (xtitle != (char *)NULL)
+   if (xtitle != 0)
    {
       graph->xtitle	= char2Chtype (xtitle, &graph->xtitleLen, &graph->xtitlePos);
       graph->xtitlePos	= justifyString (graph->boxHeight, graph->xtitleLen, graph->xtitlePos);
@@ -122,7 +122,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    }
 
    /* Translate the Y Axis title char * to a chtype * */
-   if (ytitle != (char *)NULL)
+   if (ytitle != 0)
    {
       graph->ytitle	= char2Chtype (ytitle, &graph->ytitleLen, &graph->ytitlePos);
       graph->ytitlePos	= justifyString (graph->boxWidth, graph->ytitleLen, graph->ytitlePos);
@@ -134,7 +134,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    }
 
    /* Set some values of the graph structure. */
-   graph->graphChar = (chtype *)NULL;
+   graph->graphChar = 0;
 
    /* Register this baby. */
    registerCDKObject (cdkscreen, vGRAPH, graph);
@@ -251,7 +251,7 @@ int getCDKGraphValue (CDKGRAPH *graph, int Index)
 int setCDKGraphCharacters (CDKGRAPH *graph, char *characters)
 {
    /* Declare local variables. */
-   chtype *newTokens = (chtype *)NULL;
+   chtype *newTokens = 0;
    int charCount, junk;
 
    /* Convert the string given to us. */
@@ -283,7 +283,7 @@ chtype *getCDKGraphCharacters (CDKGRAPH *graph)
 int setCDKGraphCharacter (CDKGRAPH *graph, int Index, char *character)
 {
    /* Declare local variables. */
-   chtype *newTokens = (chtype *)NULL;
+   chtype *newTokens = 0;
    int charCount, junk;
 
    /* Make sure the index is within range. */
@@ -364,11 +364,11 @@ void setCDKGraphBoxAttribute (CDKGRAPH *graph, chtype character)
  */
 void setCDKGraphBackgroundColor (CDKGRAPH *graph, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -452,7 +452,7 @@ boolean getCDKGraphBox (CDKGRAPH *graph)
 static void _drawCDKGraph (CDKOBJS *object, boolean Box)
 {
    CDKGRAPH *graph = (CDKGRAPH *)object;
-   int adj		= 2 + (graph->xtitle == (chtype *)NULL ? 0 : 1);
+   int adj		= 2 + (graph->xtitle == 0 ? 0 : 1);
    int spacing		= 0;
    chtype attrib	= ' '|A_REVERSE;
    char temp[100];
@@ -479,7 +479,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < graph->titleLines; x++)
       {
-         writeChtype (graph->win,
+	 writeChtype (graph->win,
 			graph->titlePos[x],
 			x + 1,
 			graph->title[x],
@@ -489,7 +489,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the X axis title. */
-   if (graph->xtitle != (chtype *)NULL)
+   if (graph->xtitle != 0)
    {
       writeChtype (graph->win, 0, graph->xtitlePos, graph->xtitle, VERTICAL, 0, graph->xtitleLen);
       attrib	= graph->xtitle[0] & A_ATTRIBUTES;
@@ -506,7 +506,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    writeCharAttrib (graph->win, 1, graph->boxHeight-2-len, temp, attrib, VERTICAL, 0, len);
 
    /* Draw in the Y axis title. */
-   if (graph->ytitle != (chtype *)NULL)
+   if (graph->ytitle != 0)
    {
       writeChtype (graph->win, graph->ytitlePos, graph->boxHeight-1, graph->ytitle, HORIZONTAL, 0, graph->ytitleLen);
       attrib	= graph->ytitle[0] & A_ATTRIBUTES;
@@ -540,18 +540,18 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
        /* If this is a plot graph, all we do is draw a dot. */
        if (graph->displayType == vPLOT)
        {
-          xpos = graph->boxHeight-4-colheight;
-          ypos = (y + 1)*spacing + adj;
-          mvwaddch (graph->win, xpos, ypos, graph->graphChar[y]);
+	  xpos = graph->boxHeight-4-colheight;
+	  ypos = (y + 1)*spacing + adj;
+	  mvwaddch (graph->win, xpos, ypos, graph->graphChar[y]);
        }
        else
        {
-          for (x=0; x <= graph->yscale; x++)
-          {
-             xpos = graph->boxHeight-3;
-             ypos = (y + 1)*spacing + adj;
-             drawLine (graph->win, ypos, xpos-colheight, ypos, xpos, graph->graphChar[y]);
-          }
+	  for (x=0; x <= graph->yscale; x++)
+	  {
+	     xpos = graph->boxHeight-3;
+	     ypos = (y + 1)*spacing + adj;
+	     drawLine (graph->win, ypos, xpos-colheight, ypos, xpos, graph->graphChar[y]);
+	  }
        }
    }
 

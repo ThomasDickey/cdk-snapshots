@@ -1,7 +1,7 @@
 #include "cdk.h"
 
 /*
- * This demonstrates how to create four different Cdk 
+ * This demonstrates how to create four different Cdk
  * screens and flip between them.
  */
 
@@ -15,7 +15,7 @@ int main (void)
    WINDOW	*cursesWindow;
    CDKSCREEN	*cdkScreen1, *cdkScreen2;
    CDKSCREEN	*cdkScreen3, *cdkScreen4;
-   CDKSCREEN 	*cdkScreen5;
+   CDKSCREEN	*cdkScreen5;
    CDKLABEL	*label1, *label2;
    CDKLABEL	*label3, *label4;
    CDKDIALOG	*dialog;
@@ -99,23 +99,23 @@ int main (void)
 
       /* Draw the fourth screen. */
       drawCDKScreen (cdkScreen5);
-      answer = activateCDKDialog (dialog, NULL);
+      answer = activateCDKDialog (dialog, 0);
 
       /* Check the users answer. */
       if (answer == 1)
       {
-         destroyCDKLabel (label1);
-         destroyCDKLabel (label2);
-         destroyCDKLabel (label3);
-         destroyCDKLabel (label4);
-         destroyCDKDialog (dialog);
-         destroyCDKScreen (cdkScreen1);
-         destroyCDKScreen (cdkScreen2);
-         destroyCDKScreen (cdkScreen3);
-         destroyCDKScreen (cdkScreen4);
-         destroyCDKScreen (cdkScreen5);
-         endCDK();
-         exit (0);
+	 destroyCDKLabel (label1);
+	 destroyCDKLabel (label2);
+	 destroyCDKLabel (label3);
+	 destroyCDKLabel (label4);
+	 destroyCDKDialog (dialog);
+	 destroyCDKScreen (cdkScreen1);
+	 destroyCDKScreen (cdkScreen2);
+	 destroyCDKScreen (cdkScreen3);
+	 destroyCDKScreen (cdkScreen4);
+	 destroyCDKScreen (cdkScreen5);
+	 endCDK();
+	 exit (0);
       }
    }
 }
