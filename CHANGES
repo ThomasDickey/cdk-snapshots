@@ -7,6 +7,32 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2001/4/21 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ add an uninstall rule.
+	+ move the installed documentation to /usr/local/doc/cdk (it does not
+	  belong in /usr/local/include/cdk).
+	+ modify install rules so that references to header files such as cdk.h
+	  are transformed to <cdk/cdk.h>, which matches the actual install
+	  location (reports by Pawel Gajda <pawelg@obop.com.pl>, Carlos Alberto
+	  Pereira Gomes <capgomes@usa.net> and Ron Poulton
+	  <thok@technologist.com>, who found that Cdk's menu.h conflicts with
+	  ncurses' menu.h when building the Perl interface).
+	+ correct cli examples' callbacks, which did not return a value.
+	+ update config.guess and config.sub
+	+ modify CF_CURSES_LIBS to allow build with SunOS 4.x 5lib curses.
+	+ split out CF_CURSES_CPPFLAGS from CF_CURSES_LIBS to allow an interim
+	  check if the curses implementation is really ncurses.
+	+ modify some configure script macros to work when the curses header
+	  file is not <curses.h>, e.g., <ncurses.h>.
+	+ modify configure script macros to avoid using changequote(), which
+	  is broken in the current autoconf alpha versions, e.g., 2.49d.
+	+ change configure script macros to use $CPPFLAGS consistently for
+	  preprocessor options, and $CFLAG for other compiler flags.
+	+ modify several configure script macros which checked for $GCC, to
+	  ensure it is not actually the compiler name versus an existence
+	  check.
+
 2001/1/6 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
 	+ reverted part of 1999/6/5 change, allowing callback functions to

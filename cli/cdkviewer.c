@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.3 2000/09/23 15:12:08 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.4 2001/04/20 23:04:35 tom Exp $ */
 
 #include <cdk.h>
 
@@ -11,7 +11,7 @@ char *XCursesProgramName="cdkviewer";
  */
 void saveInformation (CDKVIEWER *widget);
 int dumpViewer (CDKVIEWER *widget, char *filename);
-void widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
@@ -400,8 +400,9 @@ int dumpViewer (CDKVIEWER *widget, char *filename)
    return widget->infoSize;
 }
 
-void widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+int widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKVIEWER *widget = (CDKVIEWER *)object;
    saveInformation (widget);
+   return (TRUE);
 }
