@@ -27,9 +27,29 @@ dnl
 dnl Checks for libraries.
 dnl
 
+AC_MSG_CHECKING(if you want to link with dbmalloc for testing)
+AC_ARG_WITH(dbmalloc,
+	[  --with-dbmalloc         test: use Conor Cahill's dbmalloc library],
+	[with_dbmalloc=$withval],
+	[with_dbmalloc=no])
+AC_MSG_RESULT($with_dbmalloc)
+if test $with_dbmalloc = yes ; then
+	AC_CHECK_LIB(dbmalloc,debug_malloc)
+fi
+
+AC_MSG_CHECKING(if you want to link with dmalloc for testing)
+AC_ARG_WITH(dmalloc,
+	[  --with-dmalloc          test: use Gray Watson's dmalloc library],
+	[with_dmalloc=$withval],
+	[with_dmalloc=no])
+AC_MSG_RESULT($with_dmalloc)
+if test $with_dmalloc = yes ; then
+	AC_CHECK_LIB(dmalloc,dmalloc_debug)
+fi
+
 AC_ARG_WITH(ncurses,
-[  --with-ncurses          compile/link with ncurses library],
-[	
+	[  --with-ncurses          compile/link with ncurses library],
+	[	
 	CF_NCURSES_CPPFLAGS
 	CF_NCURSES_LIBS
 	],[
@@ -55,7 +75,13 @@ dnl
 dnl Checks for library functions.
 dnl
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(getcwd mktime strdup strerror usleep)
+AC_CHECK_FUNCS(\
+getcwd \
+mktime \
+strdup \
+strerror \
+usleep \
+)
 
 dnl
 dnl Set pre-processor compile time variables.
