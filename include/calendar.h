@@ -1,12 +1,15 @@
+/*
+ * $Id: calendar.h,v 1.15 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKCALENDAR_H
 #define CDKCALENDAR_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -303,5 +306,9 @@ void setCDKCalendarPostProcess (
 		CDKCALENDAR *	/* calendar */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKCALENDAR_H */

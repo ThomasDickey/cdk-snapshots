@@ -1,12 +1,15 @@
+/*
+ * $Id: scroll.h,v 1.14 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKSCROLL_H
 #define CDKSCROLL_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -270,5 +273,9 @@ void setCDKScrollPostProcess (
 		CDKSCROLL *	/* scroll */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKSCROLL_H */

@@ -1,12 +1,15 @@
+/*
+ * $Id: graph.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKGRAPH_H
 #define CDKGRAPH_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -240,5 +243,9 @@ void setCDKGraphBackgroundColor (
  */
 void destroyCDKGraph (
 		CDKGRAPH *	/* graph */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKGRAPH_H */

@@ -1,5 +1,13 @@
+/*
+ * $Id: binding.h,v 1.8 2002/02/25 23:38:29 tom Exp $
+ */
+
 #ifndef CDKBINDING_H
 #define CDKBINDING_H	1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <cdk.h>
 
@@ -93,5 +101,9 @@ int checkCDKObjectBind (
 void cleanCDKObjectBindings (
 		EObjectType	/* cdktype */,
 		void *		/* object */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKBINDING_H */

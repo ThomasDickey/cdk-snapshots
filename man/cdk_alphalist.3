@@ -1,9 +1,8 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.12 2000/09/15 02:07:52 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.13 2002/02/26 00:31:05 tom Exp $"
 .TH cdk_alphalist 3
 .SH NAME
 activateCDKAlphalist,
-bindCDKObject,
 destroyCDKAlphalist,
 drawCDKAlphalist,
 eraseCDKAlphalist,
@@ -43,13 +42,6 @@ setCDKAlphalistVerticalChar \- curses sorted list widget.
 .B "char *activateCDKAlphalist ("
 .BI "CDKALPHALIST *" "alphalist",
 .BI "chtype *" "actions");
-.TP 15
-.B "void bindCDKObject ("
-.BI "EObjectType " "widgetType",
-.BI "void *" "object",
-.BI "chtype " "key",
-.BI "BINDFN " "function",
-.BI "void *" "data");
 .TP 15
 .B "void destroyCDKAlphalist ("
 .BI "CDKALPHALIST *" "alphalist");
@@ -196,18 +188,6 @@ will be set to \fIvNORMAL\fR.
 If the widget was exited with the \fIESCAPE\fR key
 then the widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR and
 the widget returns \fINULL\fR.
-.TP 5
-.B bindCDKObject
-allows the user to create special key bindings.
-The \fBwidgetType\fR parameter is a defined type which states what Cdk object
-type is being used.
-To learn more about the type \fIEObjectType\fR see \fBcdk_binding (3)\fR.
-The \fBobject\fR parameter is the pointer
-to the widget object.
-The \fBkey\fR is the character to bind.
-The \fBfunction\fR is the function type.
-To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
-The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
 .B destroyCDKAlphalist
 removes the widget from the screen and frees memory the object used.

@@ -1,10 +1,9 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.12 2000/09/15 02:07:52 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.13 2002/02/26 00:31:05 tom Exp $"
 .TH cdk_scroll 3
 .SH NAME
 activateCDKScroll,
 addCDKScrollItem,
-bindCDKObject,
 deleteCDKScrollItem,
 destroyCDKScroll,
 drawCDKScroll,
@@ -47,13 +46,6 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .B "void addCDKScrollItem ("
 .BI "CDKSCROLL *" "scroll",
 .BI "char *" "item");
-.TP 15
-.B "void bindCDKObject ("
-.BI "EObjectType " "widgetType",
-.BI "void *" "object",
-.BI "chtype " "key",
-.BI "BINDFN " "function",
-.BI "void *" "data");
 .TP 15
 .B "void deleteCDKScrollItem ("
 .BI "CDKSCROLL *" "scroll",
@@ -199,19 +191,6 @@ item to.
 The parameter \fBitem\fR is a \fIchar *\fR representing the new item
 to add.
 The item is always added to the end of the list.
-.TP 5
-.B bindCDKObject
-allows the user to create special key bindings.
-The \fBwidgetType\fR parameter is a defined type which states what Cdk object
-type is being used.
-To learn more about the type \fIEObjectType\fR see \fIcdk_binding (3)\fR.
-The \fBobject\fR parameter is the pointer to
-the widget object.
-The \fBkey\fR is the character to bind.
-The \fBfunction\fR
-is the function type.
-To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
-The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
 .B deleteCDKScrollItem
 allows the user to add an item into an existing scrolling list.

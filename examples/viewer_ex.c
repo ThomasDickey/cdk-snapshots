@@ -32,7 +32,8 @@ int main (int argc, char **argv)
       switch (ret)
       {
 	 case 'd' :
-	      directory = strdup (optarg);
+	    directory = strdup (optarg);
+	    break;
       }
    }
 
@@ -53,7 +54,7 @@ int main (int argc, char **argv)
 				"</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
 
    /*
-    * Set the starting directory. This is not neccessary because when
+    * Set the starting directory. This is not necessary because when
     * the file selector starts it uses the present directory as a default.
     */
    setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,

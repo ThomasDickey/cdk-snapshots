@@ -1,9 +1,8 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.10 2000/09/15 02:03:01 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.11 2002/02/26 00:31:05 tom Exp $"
 .TH cdk_selection 3
 .SH NAME
 activateCDKSelection,
-bindCDKObject,
 destroyCDKSelection,
 drawCDKSelection,
 eraseCDKSelection,
@@ -47,13 +46,6 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .B "int activateCDKSelection ("
 .BI "CDKSELECTION *" "selection",
 .BI "chtype * " "actions");
-.TP 15
-.B "void bindCDKObject ("
-.BI "EObjectType " "widgetType",
-.BI "void *" "object",
-.BI "chtype " "key",
-.BI "BINDFN " "function",
-.BI "void *" "data");
 .TP 15
 .B "void destroyCDKSelection ("
 .BI "CDKSELECTION *" "selection");
@@ -208,18 +200,6 @@ If the
 character entered into this widget was \fIESCAPE\fR then the widget will return
 a value of -1 and the widget data \fIexitType\fR will be set to
 \fIvESCAPE_HIT\fR.
-.TP 5
-.B bindCDKObject
-allows the user to create special key bindings.
-The \fBwidgetType\fR parameter is a defined type which states what Cdk object
-type is being used.
-To learn more about the type \fIEObjectType\fR see \fIcdk_binding (3)\fR.
-The \fBobject\fR parameter is the
-pointer to the widget object.
-The \fBkey\fR is the character to bind.
-The \fBfunction\fR is the callback function.
-To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
-The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
 .B destroyCDKSelection
 removes the widget from the screen and frees memory the object used.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.86 $
+ * $Date: 2002/02/25 22:37:10 $
+ * $Revision: 1.87 $
  */
 
 /*
@@ -715,7 +715,7 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
  */
 static void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction)
 {
-   while (isPlateChar(cdktemplate->plate[cdktemplate->platePos])
+   while (!isPlateChar(cdktemplate->plate[cdktemplate->platePos])
       &&  cdktemplate->platePos < cdktemplate->fieldWidth)
    {
       cdktemplate->platePos += direction;

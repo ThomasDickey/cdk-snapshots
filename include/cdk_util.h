@@ -1,5 +1,13 @@
+/*
+ * $Id: cdk_util.h,v 1.15 2002/02/25 23:35:19 tom Exp $
+ */
+
 #ifndef CDKUTIL_H
 #define CDKUTIL_H	1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <cdk.h>
 
@@ -340,5 +348,9 @@ int floorCDK(double);
  * Return an integer like 'ceil()', which returns a double.
  */
 int ceilCDK(double);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKUTIL_H */

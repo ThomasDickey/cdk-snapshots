@@ -1,12 +1,15 @@
+/*
+ * $Id: swindow.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKSWINDOW_H
 #define CDKSWINDOW_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -279,5 +282,9 @@ void setCDKSwindowPostProcess (
 		CDKSWINDOW *	/* swindow */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKSWINDOW_H */

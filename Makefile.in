@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.25 2001/12/05 00:10:07 tom Exp $
+# $Id: Makefile.in,v 1.26 2002/02/26 01:32:02 tom Exp $
 #
 #  Copyright 2001, Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -165,6 +165,7 @@ CDKMAN		= \
 		cdk_menu.3 \
 		cdk_misc.3 \
 		cdk_position.3 \
+		cdk_process.3 \
 		cdk_radio.3 \
 		cdk_scale.3 \
 		cdk_screen.3 \

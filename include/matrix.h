@@ -1,12 +1,15 @@
+/*
+ * $Id: matrix.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKMATRIX_H
 #define CDKMATRIX_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -289,5 +292,9 @@ void setCDKMatrixPostProcess (
 		CDKMATRIX *	/* matrix */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKMATRIX_H */

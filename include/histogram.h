@@ -1,12 +1,15 @@
+/*
+ * $Id: histogram.h,v 1.11 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKHISTOGRAM_H
 #define CDKHISTOGRAM_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -255,5 +258,9 @@ void setCDKHistogramBackgroundColor (
  */
 void destroyCDKHistogram (
 		CDKHISTOGRAM *	/* histogram */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKHISTOGRAM_H */

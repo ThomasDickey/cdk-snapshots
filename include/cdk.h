@@ -1,5 +1,13 @@
+/*
+ * $Id: cdk.h,v 1.16 2002/02/25 23:35:19 tom Exp $
+ */
+
 #ifndef CDK_H
 #define CDK_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -282,5 +290,9 @@ void stopCDKDebug (FILE *fd);
  * Low-level object drawing
  */
 #include <draw.h>
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDK_H */
