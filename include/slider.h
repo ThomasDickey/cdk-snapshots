@@ -83,8 +83,6 @@ struct SSlider {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -207,35 +205,22 @@ void setCDKSliderBackgroundColor (
 /*
  * This draws the slider widget on the screen.
  */
-void _drawCDKSlider (
-		CDKOBJS *	/* slider */,
-		boolean		/* Box */);
-
-#define drawCDKSlider(slider,Box) _drawCDKSlider(ObjOf(slider),Box)
+#define drawCDKSlider(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the slider widget from the screen.
  */
-void _eraseCDKSlider (
-		CDKOBJS *	/* slider */);
-
-#define eraseCDKSlider(slider) _eraseCDKSlider(ObjOf(slider))
+#define eraseCDKSlider(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the location dictated by the given location.
  */
-void moveCDKSlider (
-		CDKSLIDER *	/* slider */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKSlider(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the widget on the screen.
  */
-void positionCDKSlider (
-		CDKSLIDER *	/* slider */);
+#define positionCDKSlider(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the slider widget and associated memory.

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.76 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.79 $
  */
 
 /*
@@ -12,10 +12,7 @@
  */
 static void drawCDKScaleField (CDKSCALE *scale);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKScale,
-    _eraseCDKScale,
-};
+DeclareCDKObjects(my_funcs,Scale)
 
 /*
  * This function creates a scale widget.
@@ -351,8 +348,9 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
 /*
  * This moves the scale field to the given location.
  */
-void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKScale (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKSCALE *scale = (CDKSCALE *)object;
    /* Declare local variables. */
    int currentX = getbegx(scale->win);
    int currentY = getbegy(scale->win);
@@ -364,7 +362,7 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(scale->win) + xplace;
@@ -403,160 +401,10 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
    }
 }
 
-
-/*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKScale (CDKSCALE *scale)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(scale->win);
-   int origY	= getbegy(scale->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (scale->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(scale->win) > 0)
-         {
-            moveCDKScale (scale, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(scale->win) < getmaxy(WindowOf(scale))-1)
-         {
-            moveCDKScale (scale, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(scale->win) > 0)
-         {
-            moveCDKScale (scale, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1)
-         {
-            moveCDKScale (scale, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(scale->win) > 0 && getbegx(scale->win) > 0)
-         {
-            moveCDKScale (scale, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1
-	  && getbegy(scale->win) > 0)
-         {
-            moveCDKScale (scale, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(scale->win) > 0 && getendx(scale->win) < getmaxx(WindowOf(scale))-1)
-         {
-            moveCDKScale (scale, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1
-	  && getendy(scale->win) < getmaxy(WindowOf(scale))-1)
-         {
-            moveCDKScale (scale, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKScale (scale, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKScale (scale, getbegx(scale->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKScale (scale, getbegx(scale->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKScale (scale, LEFT, getbegy(scale->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKScale (scale, RIGHT, getbegy(scale->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKScale (scale, CENTER, getbegy(scale->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKScale (scale, getbegx(scale->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(scale));
-         refreshCDKScreen (ScreenOf(scale));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKScale (scale, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
 /*
  * This function draws the scale widget.
  */
-void _drawCDKScale (CDKOBJS *object, boolean Box)
+static void _drawCDKScale (CDKOBJS *object, boolean Box)
 {
    CDKSCALE *scale = (CDKSCALE *)object;
    int x;
@@ -724,7 +572,7 @@ void destroyCDKScale (CDKSCALE *scale)
 /*
  * This function erases the scale widget from the screen.
  */
-void _eraseCDKScale (CDKOBJS *object)
+static void _eraseCDKScale (CDKOBJS *object)
 {
    CDKSCALE *scale = (CDKSCALE *)object;
 

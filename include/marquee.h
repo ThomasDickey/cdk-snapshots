@@ -94,35 +94,22 @@ void deactivateCDKMarquee (
 /*
  * This draws the marquee on the screen.
  */
-void _drawCDKMarquee (
-		CDKOBJS *	/* marquee */,
-		boolean		/* Box */);
-
-#define drawCDKMarquee(marquee,Box) _drawCDKMarquee(ObjOf(marquee),Box)
+#define drawCDKMarquee(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKMarquee (
-		CDKOBJS *	/* marquee */);
-
-#define eraseCDKMarquee(marquee) _eraseCDKMarquee(ObjOf(marquee))
+#define eraseCDKMarquee(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKMarquee (
-		CDKMARQUEE *	/* marquee */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKMarquee(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively positions the widget on the screen.
  */
-void positionCDKMarquee (
-		CDKMARQUEE *	/* marquee */);
+#define positionCDKMarquee(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the marquee widget.

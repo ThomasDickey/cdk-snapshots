@@ -2,14 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 01:24:33 $
- * $Revision: 1.56 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.59 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKDialog,
-    _eraseCDKDialog,
-};
+DeclareCDKObjects(my_funcs,Dialog)
 
 /*
  * This function creates a dialog widget.
@@ -283,8 +280,9 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
 /*
  * This moves the dialog field to the given location.
  */
-void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
    /* Declare local variables. */
    int currentX = getbegx(dialog->win);
    int currentY = getbegy(dialog->win);
@@ -331,158 +329,9 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKDialog (CDKDIALOG *dialog)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(dialog->win);
-   int origY	= getbegy(dialog->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (dialog->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(dialog->win) > 0)
-         {
-            moveCDKDialog (dialog, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(dialog->win) < getmaxy(WindowOf(dialog))-1)
-         {
-            moveCDKDialog (dialog, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(dialog->win) > 0)
-         {
-            moveCDKDialog (dialog, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1)
-         {
-            moveCDKDialog (dialog, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(dialog->win) > 0 && getbegx(dialog->win) > 0)
-         {
-            moveCDKDialog (dialog, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1
-	  && getbegy(dialog->win) > 0)
-         {
-            moveCDKDialog (dialog, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(dialog->win) > 0 && getendx(dialog->win) < getmaxx(WindowOf(dialog))-1)
-         {
-            moveCDKDialog (dialog, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1
-	  && getendy(dialog->win) < getmaxy(WindowOf(dialog))-1)
-         {
-            moveCDKDialog (dialog, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKDialog (dialog, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKDialog (dialog, getbegx(dialog->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKDialog (dialog, getbegx(dialog->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKDialog (dialog, LEFT, getbegy(dialog->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKDialog (dialog, RIGHT, getbegy(dialog->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKDialog (dialog, CENTER, getbegy(dialog->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKDialog (dialog, getbegx(dialog->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(dialog));
-         refreshCDKScreen (ScreenOf(dialog));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKDialog (dialog, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the dialog widget.
  */
-void _drawCDKDialog (CDKOBJS *object, boolean Box)
+static void _drawCDKDialog (CDKOBJS *object, boolean Box)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    int x = 0;
@@ -556,7 +405,7 @@ void destroyCDKDialog (CDKDIALOG *dialog)
 /*
  * This function erases the dialog widget from the screen.
  */
-void _eraseCDKDialog (CDKOBJS *object)
+static void _eraseCDKDialog (CDKOBJS *object)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    eraseCursesWindow (dialog->win);

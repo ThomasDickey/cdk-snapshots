@@ -3,14 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.33 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.36 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKItemlist,
-    _eraseCDKItemlist,
-};
+DeclareCDKObjects(my_funcs,Itemlist)
 
 /*
  * This creates a pointer to an itemlist widget.
@@ -346,8 +343,9 @@ int injectCDKItemlist (CDKITEMLIST *itemlist, chtype input)
 /*
  * This moves the itemlist field to the given location.
  */
-void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKItemlist (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
    /* Declare local variables. */
    int currentX = getbegx(itemlist->win);
    int currentY = getbegy(itemlist->win);
@@ -359,7 +357,7 @@ void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean rel
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(itemlist->win) + xplace;
@@ -399,159 +397,9 @@ void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean rel
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKItemlist (CDKITEMLIST *itemlist)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(itemlist->win);
-   int origY	= getbegy(itemlist->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (itemlist->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(itemlist->win) > 0)
-         {
-            moveCDKItemlist (itemlist, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(itemlist->win) < getmaxy(WindowOf(itemlist))-1)
-         {
-            moveCDKItemlist (itemlist, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(itemlist->win) > 0)
-         {
-            moveCDKItemlist (itemlist, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1)
-         {
-            moveCDKItemlist (itemlist, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(itemlist->win) > 0 && getbegx(itemlist->win) > 0)
-         {
-            moveCDKItemlist (itemlist, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1
-	  && getbegy(itemlist->win) > 0)
-         {
-            moveCDKItemlist (itemlist, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(itemlist->win) > 0 && getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1)
-         {
-            moveCDKItemlist (itemlist, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1
-	  && getendy(itemlist->win) < getmaxy(WindowOf(itemlist))-1)
-         {
-            moveCDKItemlist (itemlist, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKItemlist (itemlist, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKItemlist (itemlist, getbegx(itemlist->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKItemlist (itemlist, getbegx(itemlist->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKItemlist (itemlist, LEFT, getbegy(itemlist->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKItemlist (itemlist, RIGHT, getbegy(itemlist->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKItemlist (itemlist, CENTER, getbegy(itemlist->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKItemlist (itemlist, getbegx(itemlist->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(itemlist));
-         refreshCDKScreen (ScreenOf(itemlist));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKItemlist (itemlist, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-
-/*
  * This draws the widget on the screen.
  */
-void _drawCDKItemlist (CDKOBJS *object, int Box)
+static void _drawCDKItemlist (CDKOBJS *object, int Box)
 {
    CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
    int x;
@@ -701,7 +549,7 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist)
 /*
  * This function removes the widget from the screen.
  */
-void _eraseCDKItemlist (CDKOBJS *object)
+static void _eraseCDKItemlist (CDKOBJS *object)
 {
    CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
 

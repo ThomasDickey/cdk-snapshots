@@ -84,8 +84,6 @@ struct SViewer {
    boolean	interpret;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
 };
 typedef struct SViewer CDKVIEWER;
 
@@ -219,35 +217,22 @@ void setCDKViewerBackgroundColor (
 /*
  * This draws the viewer field on the screen.
  */
-void _drawCDKViewer (
-		CDKOBJS *	/* viewer */,
-		int		/* boolean */);
-
-#define drawCDKViewer(viewer,box) _drawCDKViewer(ObjOf(viewer),box)
+#define drawCDKViewer(obj,box) drawCDKObject(obj,box)
 
 /*
  * This erases the widget from the screen.
  */
-void _eraseCDKViewer (
-		CDKOBJS *	/* viewer */);
-
-#define eraseCDKViewer(viewer) _eraseCDKViewer(ObjOf(viewer))
+#define eraseCDKViewer(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKViewer (
-		CDKVIEWER *	/* viewer */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKViewer(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This is an interactive method of moving the widget.
  */
-void positionCDKViewer (
-		CDKVIEWER *	/* viewer */);
+#define positionCDKViewer(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the memory associated with the widget.

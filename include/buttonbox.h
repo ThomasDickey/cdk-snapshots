@@ -77,8 +77,6 @@ struct SButtonBox {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -206,11 +204,7 @@ void drawCDKButtonboxButton (
 /*
  * This draws the buttonbox box widget.
  */
-void _drawCDKButtonbox (
-		CDKOBJS *	/* buttonbox */,
-		boolean		/* Box */);
-
-#define drawCDKButtonbox(buttonbox,box) _drawCDKButtonbox(ObjOf(buttonbox),box)
+#define drawCDKButtonbox(obj,box) drawCDKObject(obj,box)
 
 void drawCDKButtonboxButtons (
 		CDKBUTTONBOX *	/* buttonbox */);
@@ -218,26 +212,17 @@ void drawCDKButtonboxButtons (
 /*
  * This erases the buttonbox box from the screen.
  */
-void _eraseCDKButtonbox (
-		CDKOBJS *	/* buttonbox */);
-
-#define eraseCDKButtonbox(buttonbox) _eraseCDKButtonbox(ObjOf(buttonbox))
+#define eraseCDKButtonbox(obj) eraseCDKObject(obj)
 
 /*
  * This moves the buttonbox box to a new screen location.
  */
-void moveCDKButtonbox (
-		CDKBUTTONBOX *	/* buttonbox */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKButtonbox(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to position the widget on the screen interactively.
  */
-void positionCDKButtonbox (
-		CDKBUTTONBOX *	/* buttonbox */);
+#define positionCDKButtonbox(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the memory associated with it.

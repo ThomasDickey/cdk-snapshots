@@ -6,6 +6,14 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/5/29 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ remove bindFunction and bindData arrays from individual widgets
+	+ make draw, erase, move methods accessed only via the CDKFUNCS table
+	  in each widget.
+	+ add move method for menu.c
+	+ split-out positionCDKObject function from widget code.
+
 1999/5/23 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ remove WIN_WIDTH and related macros, use the more common getmaxx,
@@ -77,7 +85,7 @@ were fixed from release to release.
 	  the corner characters of the widget as well as the vertical,
 	  horizontal, and attributes of the box.
 	* Added the function setCDKXXXBackgroundColor. This sets the
- 	  background color of the widget's window. 
+ 	  background color of the widget's window.
 	* Added makefile for the SGI
 	* Created the buttonbox widget.
 	* Added in Ctrl-N and Ctrl-P to switch between buttons on the
@@ -88,15 +96,15 @@ were fixed from release to release.
 
 4.8.3 -> 4.9.0
 ==========================================
-	* Added a parameter to the setCDKViewer function to turn on/off the 
+	* Added a parameter to the setCDKViewer function to turn on/off the
 	  line X of Y in the top left corner.
-	* Removed the eraseCDKXXX in each of the drawCDKXXX functions. This 
-	  results in a quicker refresh and less overhead when using the 
-	  widgets. This should make things A LOT faster. (I suppose it's about 
+	* Removed the eraseCDKXXX in each of the drawCDKXXX functions. This
+	  results in a quicker refresh and less overhead when using the
+	  widgets. This should make things A LOT faster. (I suppose it's about
 	  time I had complete faith in curses optimized screen refreshing. :) )
-	  The side effect is that you might have to change some programs to 
+	  The side effect is that you might have to change some programs to
 	  force an eraseCDKXXX/drawCDKXXX when you think the screen is garbled.
-	* Added a little bit of logic in char2Chtype when a terminal cannot 
+	* Added a little bit of logic in char2Chtype when a terminal cannot
 	  display color, bold will be used instead.
 	* Cleaned up the way filename completion works in the file selector.
 	  You may now type in a path and hit tab and that directory tree
@@ -106,7 +114,7 @@ were fixed from release to release.
 	* Changed the setCDKXXX functions. Made many different setCDKXXX
 	  functions, one for each item being set. This reduces the overhead
 	  of all the setCDKXXX functions.
-	* Drastically changed cdk.h. Split the widget definitions and 
+	* Drastically changed cdk.h. Split the widget definitions and
 	  functions into their own header files. This makes it easier
 	  to expand CDK.
 	* Added the ability to have multiple line titles on most of the widgets.
@@ -121,7 +129,7 @@ were fixed from release to release.
 	  (type in make vinstall once the library has been made)
 	* Added the ability to set the width of the widget respective to the
 	  screen size. If you pass in a negative value, the widget will
-	  adjust to the width of the window the widget sits in minus the 
+	  adjust to the width of the window the widget sits in minus the
 	  given value. If zero is given, then the widget will be the full
 	  width of the window. This removes the need to know how wide the
 	  window is when the widget is created.
@@ -133,7 +141,7 @@ were fixed from release to release.
 	  some of you speed freaks. :)
 	* Added the functions get/setCDKTemplateMin. This allows you to
 	  set the minimum number of characters to type in before the
-	  widget wil accept the typed in value.
+	  widget will accept the typed in value.
 	* Changed the documentation to reflect all the changes.
 
 4.8.1 -> 4.8.2 -> 4.8.3
@@ -158,10 +166,10 @@ were fixed from release to release.
 4.7.0 -> 4.8.0
 ==========================================
 	* Fixed bugs documented by Miguel Marques (miguel@apex.cos.yorku.ca)
-	  in the entry and mentry widgets. The bug displays itself when you 
-	  use vHINT or vINT display types. The vHINT actually showed the 
-	  numbers being typed in (which goes against the hidden element of 
-	  this display type) and in certain cases vINT allowed non-alph 
+	  in the entry and mentry widgets. The bug displays itself when you
+	  use vHINT or vINT display types. The vHINT actually showed the
+	  numbers being typed in (which goes against the hidden element of
+	  this display type) and in certain cases vINT allowed non-alpha
 	  characters to be entered.
 	* Added compile support for Free BSD.
 	* Cleaned up the behavior of the entry field.
@@ -194,9 +202,9 @@ were fixed from release to release.
 	* Added injectCDKXXX class of functions. This allows you to inject a
 	  single character into the widget.
 	* Changed the activateCDKXXX to take an array of chtype to send in a
-	  set of predefined characters. This is very useful for performming
+	  set of predefined characters. This is very useful for performing
 	  automated tests of your programs.
-	* Added functions setCDKXXXPreProcess and setCDKXXXPosProcess to 
+	* Added functions setCDKXXXPreProcess and setCDKXXXPosProcess to
 	  perform actions before and after a character has been hit.
 	* Made the use of CTRL-N consistent.
 	* Fixed manual page errors.
@@ -207,7 +215,7 @@ were fixed from release to release.
 	* Added the ability to paste text into the entry, mentry, and template
 	  widgets. (uses a global buffer)
 	* Added the use of the escape key to exit a widget early.
-	* Added the functions addCDKScroll/deleteCDKScroll to insert and 
+	* Added the functions addCDKScroll/deleteCDKScroll to insert and
 	  delete items in an active scrolling list.
 	* Added a parameter to the menu to specify where the menu windows
 	  were to be drawn. (top or bottom)
@@ -221,7 +229,7 @@ were fixed from release to release.
 	  matrix, and template widgets. Added in a function setCDKXXXCB.
 	  The XXX is the name of the widget.
 	* Changed the viewer widget functions around. Moved activateCDKViewer
-	  to setCDKViewer. Moved manageCDKViewer to activateCDKViewer and 
+	  to setCDKViewer. Moved manageCDKViewer to activateCDKViewer and
 	  removed the old setCDKViewer.
 	* Added in special drawing characters.
 	* Added in indent format to indent lines.

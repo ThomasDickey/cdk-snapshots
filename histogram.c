@@ -2,14 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.54 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.57 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKHistogram,
-    _eraseCDKHistogram,
-};
+DeclareCDKObjects(my_funcs,Histogram)
 
 /*
  * This creates a histogram widget.
@@ -562,8 +559,9 @@ void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
 /*
  * This moves the histogram field to the given location.
  */
-void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
    /* Declare local variables. */
    int currentX = getbegx(histogram->win);
    int currentY = getbegy(histogram->win);
@@ -610,158 +608,9 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKHistogram (CDKHISTOGRAM *histogram)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(histogram->win);
-   int origY	= getbegy(histogram->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (histogram->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(histogram->win) > 0)
-         {
-            moveCDKHistogram (histogram, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(histogram->win) < getmaxy(WindowOf(histogram))-1)
-         {
-            moveCDKHistogram (histogram, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(histogram->win) > 0)
-         {
-            moveCDKHistogram (histogram, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1)
-         {
-            moveCDKHistogram (histogram, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(histogram->win) > 0 && getbegx(histogram->win) > 0)
-         {
-            moveCDKHistogram (histogram, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1
-	  && getbegy(histogram->win) > 0)
-         {
-            moveCDKHistogram (histogram, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(histogram->win) > 0 && getendx(histogram->win) < getmaxx(WindowOf(histogram))-1)
-         {
-            moveCDKHistogram (histogram, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1
-	  && getendy(histogram->win) < getmaxy(WindowOf(histogram))-1)
-         {
-            moveCDKHistogram (histogram, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKHistogram (histogram, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKHistogram (histogram, getbegx(histogram->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKHistogram (histogram, getbegx(histogram->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKHistogram (histogram, LEFT, getbegy(histogram->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKHistogram (histogram, RIGHT, getbegy(histogram->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKHistogram (histogram, CENTER, getbegy(histogram->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKHistogram (histogram, getbegx(histogram->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(histogram));
-         refreshCDKScreen (ScreenOf(histogram));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKHistogram (histogram, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the histogram.
  */
-void _drawCDKHistogram (CDKOBJS *object, boolean Box)
+static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 {
    CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
    chtype battr	= (chtype)NULL;
@@ -920,7 +769,7 @@ void destroyCDKHistogram (CDKHISTOGRAM *histogram)
 /*
  * This function erases the histogram from the screen.
  */
-void _eraseCDKHistogram (CDKOBJS *object)
+static void _eraseCDKHistogram (CDKOBJS *object)
 {
    CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
 

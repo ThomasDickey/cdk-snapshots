@@ -77,8 +77,6 @@ struct SScale {
    chtype	VChar;
    chtype	HChar;
    chtype	BoxAttrib;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -204,35 +202,22 @@ void setCDKScaleBackgroundColor (
 /*
  * This draws the scale widget on the screen.
  */
-void _drawCDKScale (
-		CDKOBJS *	/* scale */,
-		boolean		/* Box */);
-
-#define drawCDKScale(scale,Box) _drawCDKScale(ObjOf(scale),Box)
+#define drawCDKScale(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the widget on the screen.
  */
-void _eraseCDKScale (
-		CDKOBJS *	/* scale */);
-
-#define eraseCDKScale(scale) _eraseCDKScale(ObjOf(scale))
+#define eraseCDKScale(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location on the screen.
  */
-void moveCDKScale (
-		CDKSCALE *	/* scale */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKScale(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively positions the widget on the screen.
  */
-void positionCDKScale (
-		CDKSCALE *	/* scale */);
+#define positionCDKScale(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all associated memory.

@@ -231,37 +231,24 @@ void setCDKHistogramBackgroundColor (
 		char *		/* color */);
 
 /*
- * This draw the widget on the screen.
+ * This draws the widget on the screen.
  */
-void _drawCDKHistogram (
-		CDKOBJS *	/* histogram */,
-		boolean		/* Box */);
-
-#define drawCDKHistogram(histogram,Box) _drawCDKHistogram(ObjOf(histogram),Box)
+#define drawCDKHistogram(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKHistogram (
-		CDKOBJS *	/* histogram */);
-
-#define eraseCDKHistogram(histogram) _eraseCDKHistogram(ObjOf(histogram))
+#define eraseCDKHistogram(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKHistogram (
-		CDKHISTOGRAM *	/* histogram */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKHistogram(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the widget on the screen.
  */
-void positionCDKHistogram (
-		CDKHISTOGRAM *	/* histogram */);
+#define positionCDKHistogram(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the histogram and all related pointers.

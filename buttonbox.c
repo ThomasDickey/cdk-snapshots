@@ -3,14 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.18 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.21 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKButtonbox,
-    _eraseCDKButtonbox,
-};
+DeclareCDKObjects(my_funcs,Buttonbox)
 
 /*
  * This returns a CDK buttonbox widget pointer.
@@ -505,8 +502,9 @@ void _eraseCDKButtonbox (CDKOBJS *object)
 /*
  * This moves the buttonbox box to a new screen location.
  */
-void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean relative, boolean refresh_flag)
+void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
    /* Declare local variables. */
    int currentX = getbegx(buttonbox->win);
    int currentY = getbegy(buttonbox->win);
@@ -549,154 +547,6 @@ void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean 
    if (refresh_flag)
    {
       drawCDKButtonbox (buttonbox, ObjOf(buttonbox)->box);
-   }
-}
-
-/*
- * This allows the user to position the widget on the screen interactively.
- */
-void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(buttonbox->win);
-   int origY	= getbegy(buttonbox->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (buttonbox->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(buttonbox->win) > 0)
-         {
-            moveCDKButtonbox (buttonbox, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(buttonbox->win) < getmaxy(WindowOf(buttonbox))-1)
-         {
-            moveCDKButtonbox (buttonbox, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(buttonbox->win) > 0)
-         {
-            moveCDKButtonbox (buttonbox, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1)
-         {
-            moveCDKButtonbox (buttonbox, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(buttonbox->win) > 0 && getbegx(buttonbox->win) > 0)
-         {
-            moveCDKButtonbox (buttonbox, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1
-	  && getbegy(buttonbox->win) > 0)
-         {
-            moveCDKButtonbox (buttonbox, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(buttonbox->win) > 0 && getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1)
-         {
-            moveCDKButtonbox (buttonbox, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1
-	  && getendy(buttonbox->win) < getmaxy(WindowOf(buttonbox))-1)
-         {
-            moveCDKButtonbox (buttonbox, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKButtonbox (buttonbox, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKButtonbox (buttonbox, LEFT, getbegy(buttonbox->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKButtonbox (buttonbox, RIGHT, getbegy(buttonbox->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKButtonbox (buttonbox, CENTER, getbegy(buttonbox->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(buttonbox));
-         refreshCDKScreen (ScreenOf(buttonbox));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKButtonbox (buttonbox, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
    }
 }
 

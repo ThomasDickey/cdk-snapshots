@@ -90,8 +90,6 @@ struct SCalendar {
    chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -270,35 +268,22 @@ void removeCDKCalendarMarker (
 /*
  * This draws the widget on the screen.
  */
-void _drawCDKCalendar (
-		CDKOBJS *	/* calendar */,
-		boolean		/* Box */);
-
-#define drawCDKCalendar(calendar,box) _drawCDKCalendar(ObjOf(calendar),box)
+#define drawCDKCalendar(obj,box) drawCDKObject(obj,box)
 
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKCalendar (
-		CDKOBJS *	/* calendar */);
-
-#define eraseCDKCalendar(calendar) _eraseCDKCalendar(ObjOf(calendar))
+#define eraseCDKCalendar(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKCalendar (
-		CDKCALENDAR *	/* calendar */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKCalendar(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This is an interactive method of moving the widget.
  */
-void positionCDKCalendar (
-		CDKCALENDAR *	/* calendar */);
+#define positionCDKCalendar(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the calendar widget and all associated memory.

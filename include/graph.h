@@ -218,35 +218,22 @@ void setCDKGraphBackgroundColor (
 /*
  * This draws the graph on the screen.
  */
-void _drawCDKGraph (
-		CDKOBJS *	/* graph */,
-		boolean		/* Box */);
-
-#define drawCDKGraph(graph,Box) _drawCDKGraph(ObjOf(graph),Box)
+#define drawCDKGraph(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the graph from the screen.
  */
-void _eraseCDKGraph (
-		CDKOBJS *	/* graph */);
-
-#define eraseCDKGraph(graph) _eraseCDKGraph(ObjOf(graph))
+#define eraseCDKGraph(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKGraph (
-		CDKGRAPH *	/* graph */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKGraph(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively move the widget.
  */
-void positionCDKGraph (
-		CDKGRAPH *	/* graph */);
+#define positionCDKGraph(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the graph and all the associated memory.

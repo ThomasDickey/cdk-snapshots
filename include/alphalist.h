@@ -65,8 +65,6 @@ struct SAlphalist {
    chtype	fillerChar;
    boolean	shadow;
    EExitType	exitType;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -200,35 +198,22 @@ void setCDKAlphalistBackgroundColor (
 /*
  * This draws the widget on the screen.
  */
-void _drawCDKAlphalist (
-		CDKOBJS *	/* alphalist */,
-		boolean		/* Box */);
-
-#define drawCDKAlphalist(alphalist,box) _drawCDKAlphalist(ObjOf(alphalist),box)
+#define drawCDKAlphalist(obj,box) drawCDKObject(obj,box)
 
 /*
  * This removes the widget from the screen.
  */
-void _eraseCDKAlphalist (
-		CDKOBJS *	/* alphalist */);
-
-#define eraseCDKAlphalist(alphalist) _eraseCDKAlphalist(ObjOf(alphalist))
+#define eraseCDKAlphalist(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the location specified.
  */
-void moveCDKAlphalist (
-		CDKALPHALIST *	/* alphalist */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKAlphalist(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the widget.
  */
-void positionCDKAlphalist (
-		CDKALPHALIST *	/* alphalist */);
+#define positionCDKAlphalist(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all the memory associated with it.

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.33 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.36 $
  */
 
 /*
@@ -31,10 +31,7 @@ static void incrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void decrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void drawCDKCalendarField (CDKCALENDAR *calendar);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKCalendar,
-    _eraseCDKCalendar,
-};
+DeclareCDKObjects(my_funcs,Calendar)
 
 /*
  * This creates a calendar widget.
@@ -350,8 +347,9 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
 /*
  * This moves the calendar field to the given location.
  */
-void moveCDKCalendar (CDKCALENDAR *calendar, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKCalendar (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    /* Declare local variables. */
    int currentX = getbegx(calendar->win);
    int currentY = getbegy(calendar->win);
@@ -403,159 +401,9 @@ void moveCDKCalendar (CDKCALENDAR *calendar, int xplace, int yplace, boolean rel
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKCalendar (CDKCALENDAR *calendar)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(calendar->win);
-   int origY	= getbegy(calendar->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (calendar->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(calendar->win) > 0)
-         {
-            moveCDKCalendar (calendar, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(calendar->win) < getmaxy(WindowOf(calendar))-1)
-         {
-            moveCDKCalendar (calendar, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(calendar->win) > 0)
-         {
-            moveCDKCalendar (calendar, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(calendar->win) < getmaxx(WindowOf(calendar))-1)
-         {
-            moveCDKCalendar (calendar, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(calendar->win) > 0 && getbegx(calendar->win) > 0)
-         {
-            moveCDKCalendar (calendar, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(calendar->win) < getmaxx(WindowOf(calendar))-1
-	  && getbegy(calendar->win) > 0)
-         {
-            moveCDKCalendar (calendar, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(calendar->win) > 0
-	  && getendx(calendar->win) < getmaxx(WindowOf(calendar))-1)
-         {
-            moveCDKCalendar (calendar, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(calendar->win) < getmaxx(WindowOf(calendar))-1
-	  && getendy(calendar->win) < getmaxy(WindowOf(calendar))-1)
-         {
-            moveCDKCalendar (calendar, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKCalendar (calendar, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKCalendar (calendar, getbegx(calendar->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKCalendar (calendar, getbegx(calendar->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKCalendar (calendar, LEFT, getbegy(calendar->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKCalendar (calendar, RIGHT, getbegy(calendar->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKCalendar (calendar, CENTER, getbegy(calendar->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKCalendar (calendar, getbegx(calendar->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(calendar));
-         refreshCDKScreen (ScreenOf(calendar));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKCalendar (calendar, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This draws the calendar widget.
  */
-void _drawCDKCalendar (CDKOBJS *object, boolean Box)
+static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    char *header		= "Su Mo Tu We Th Fr Sa";
@@ -880,7 +728,7 @@ void setCDKCalendarBackgroundColor (CDKCALENDAR *calendar, char *color)
 /*
  * This erases the calendar widget.
  */
-void _eraseCDKCalendar (CDKOBJS *object)
+static void _eraseCDKCalendar (CDKOBJS *object)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    eraseCursesWindow (calendar->labelWin);

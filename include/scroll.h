@@ -92,8 +92,6 @@ struct SScroll {
    boolean	numbers;
    chtype	titlehighlight;
    chtype	highlight;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -237,35 +235,22 @@ void deleteCDKScrollItem (
 /*
  * This draws the scrolling list on the screen.
  */
-void _drawCDKScroll (
-		CDKOBJS *	/* scroll */,
-		boolean		/* Box */);
-
-#define drawCDKScroll(scroll,Box) _drawCDKScroll(ObjOf(scroll),Box)
+#define drawCDKScroll(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This removes the scrolling list from the screen.
  */
-void _eraseCDKScroll (
-		CDKOBJS *	/* scroll */);
-
-#define eraseCDKScroll(scroll) _eraseCDKScroll(ObjOf(scroll))
+#define eraseCDKScroll(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKScroll (
-		CDKSCROLL *	/* scroll */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKScroll(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This allows the user to interactively position the widget on the screen.
  */
-void positionCDKScroll (
-		CDKSCROLL *	/* scroll */);
+#define positionCDKScroll(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget and all associated memory.

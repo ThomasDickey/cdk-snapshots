@@ -4,11 +4,6 @@
 #include "cdk.h"
 
 /*
- * Description of the widget:
- *
- */
-
-/*
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -21,7 +16,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  * 	This product includes software developed by Mike Glover
  * 	and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors
@@ -70,8 +65,6 @@ struct SMenu {
    int		lastSubtitle;
    EExitType	exitType;
    int		lastSelection;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -152,11 +145,7 @@ chtype getCDKMenuSubTitleHighlight (
 /*
  * This draws the menu on the screen.
  */
-void _drawCDKMenu (
-    		CDKOBJS *	/* menu */,
-		int		/* box */);
-
-#define drawCDKMenu(menu,box) _drawCDKMenu(ObjOf(menu),box)
+#define drawCDKMenu(obj,box) drawCDKObject(obj,box)
 
 void drawCDKMenuTitles (
     		CDKMENU *	/* menu */);
@@ -167,10 +156,7 @@ void drawCDKMenuSubwin (
 /*
  * This erases the complere menu widget from the screen.
  */
-void _eraseCDKMenu (
-    		CDKOBJS *	/* menu */);
-
-#define eraseCDKMenu(menu) _eraseCDKMenu(ObjOf(menu))
+#define eraseCDKMenu(obj) eraseCDKObject(obj)
 
 void eraseCDKMenuSubwin (
     		CDKMENU *	/* menu */);

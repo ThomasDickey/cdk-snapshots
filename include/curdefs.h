@@ -14,7 +14,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  * 	This product includes software developed by Mike Glover
  * 	and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 01:24:33 $
- * $Revision: 1.59 $
+ * $Date: 1999/05/29 23:26:06 $
+ * $Revision: 1.60 $
  */
 
 /*
@@ -11,22 +11,17 @@
  */
 static void cleanUpMenu (CDKMENU *menu);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKMenu,
-    _eraseCDKMenu,
-};
+DeclareCDKObjects(my_funcs,Menu)
 
 /*
  * This creates a new menu widget.
  */
 CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], int menuItems, int *subsize, int *menuloc, int menuPos, chtype titleAttr, chtype subtitleAttr)
 {
-   /* Declare local variables.  */
    CDKMENU *menu	= newCDKObject(CDKMENU, &my_funcs);
    int rightcount	= menuItems-1;
    int rightloc		= getmaxx((cdkscreen->window)) - 1;
    int leftloc		= 0;
-   int maxwidth[MAX_MENU_ITEMS];
    int x, y, max, junk;
 
    /* Start making a copy of the information. */
@@ -73,7 +68,6 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
          */
          menu->title[x]		= char2Chtype (menulist[x][0], &menu->titleLen[x], &junk);
          menu->subsize[x]	= subsize[x] - 1;
-         maxwidth[x] 		= max+1;
          if (menu->menuPos == BOTTOM)
          {
             menu->titleWin[x]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, LINES-1, leftloc);
@@ -99,7 +93,6 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
          rightloc			-= max + 3;
          menu->title[rightcount]	= char2Chtype (menulist[x][0], &menu->titleLen[rightcount], &junk);
          menu->subsize[rightcount]	= subsize[x] - 1;
-         maxwidth[rightcount] 		= max+1;
          if (menu->menuPos == BOTTOM)
          {
             menu->titleWin[rightcount]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, LINES-1, rightloc);
@@ -133,7 +126,6 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
  */
 int activateCDKMenu (CDKMENU *menu, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input;
    int ret;
 
@@ -187,7 +179,6 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
  */
 int injectCDKMenu (CDKMENU *menu, chtype input)
 {
-   /* Declare local variables. */
    int ppReturn = 1;
 
    /* Set the exit type. */
@@ -346,7 +337,6 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
  */
 void drawCDKMenuSubwin (CDKMENU *menu)
 {
-   /* Declare local variables. */
    int x;
 
    /* Box the window. */
@@ -408,13 +398,10 @@ void eraseCDKMenuSubwin (CDKMENU *menu)
 /*
  * This function draws the menu.
  */
-void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
+static void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKMENU *menu = (CDKMENU *)object;
-   int x = 0;
-
-   /* Erase the old object. */
-   /*eraseCDKMenu (menu);*/
+   int x;
 
    /* Draw in the menu titles. */
    for (x=0; x < menu->menuItems; x++)
@@ -422,6 +409,57 @@ void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
       writeChtype (menu->titleWin[x], 0, 0, menu->title[x], HORIZONTAL, 0, menu->titleLen[x]);
       touchwin (menu->titleWin[x]);
       wrefresh (menu->titleWin[x]);
+   }
+}
+
+/*
+ * This moves the menu to the given location.
+ */
+static void _moveCDKMenu (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
+{
+   CDKMENU *menu = (CDKMENU *)object;
+
+   /* Declare local variables. */
+   int currentX = getbegx(WindowOf(menu));
+   int currentY = getbegy(WindowOf(menu));
+   int xpos	= xplace;
+   int ypos	= yplace;
+   int xdiff	= 0;
+   int ydiff	= 0;
+   int x;
+
+   /*
+    * If this is a relative move, then we will adjust where we want
+    * to move to.
+    */
+   if (relative)
+   {
+      xpos = getbegx(WindowOf(menu)) + xplace;
+      ypos = getbegy(WindowOf(menu)) + yplace;
+   }
+
+   /* Adjust the window if we need to. */
+   alignxy (WindowOf(menu), &xpos, &ypos, getmaxx(WindowOf(menu)), getmaxy(WindowOf(menu)));
+
+   /* Get the difference. */
+   xdiff = currentX - xpos;
+   ydiff = currentY - ypos;
+
+   /* Move the windows to the new location. */
+   moveCursesWindow(WindowOf(menu), -xdiff, -ydiff);
+   for (x=0; x < menu->menuItems; x++)
+   {
+      moveCursesWindow(menu->titleWin[x], -xdiff, -ydiff);
+   }
+
+   /* Touch the windows so they 'move'. */
+   touchwin (WindowOf(menu));
+   wrefresh (WindowOf(menu));
+
+   /* Redraw the window, if they asked for it. */
+   if (refresh_flag)
+   {
+      drawCDKMenu (menu, ObjOf(menu)->box);
    }
 }
 
@@ -488,7 +526,7 @@ void destroyCDKMenu (CDKMENU *menu)
 /*
  * This function erases the menu widget from the screen.
  */
-void _eraseCDKMenu (CDKOBJS *object)
+static void _eraseCDKMenu (CDKOBJS *object)
 {
    CDKMENU *menu = (CDKMENU *)object;
    int x = 0;

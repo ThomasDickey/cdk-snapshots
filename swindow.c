@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:29 $
- * $Revision: 1.61 $
+ * $Date: 1999/05/30 00:28:32 $
+ * $Revision: 1.65 $
  */
 
 /*
@@ -12,10 +12,7 @@
  */
 static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box);
 
-static CDKFUNCS my_funcs = {
-    _drawCDKSwindow,
-    _eraseCDKSwindow,
-};
+DeclareCDKObjects(my_funcs,Swindow)
 
 /*
  * This function creates a scrolling window widget.
@@ -659,8 +656,9 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
 /*
  * This moves the swindow field to the given location.
  */
-void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
    /* Declare local variables. */
    int currentX = getbegx(swindow->win);
    int currentY = getbegy(swindow->win);
@@ -672,7 +670,7 @@ void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relati
    /*
     * If this is a relative move, then we will adjust where we want
     * to move to.
-     */
+    */
    if (relative)
    {
       xpos = getbegx(swindow->win) + xplace;
@@ -707,158 +705,9 @@ void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relati
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKSwindow (CDKSWINDOW *swindow)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(swindow->win);
-   int origY	= getbegy(swindow->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (swindow->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(swindow->win) > 0)
-         {
-            moveCDKSwindow (swindow, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(swindow->win) < getmaxy(WindowOf(swindow))-1)
-         {
-            moveCDKSwindow (swindow, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(swindow->win) > 0)
-         {
-            moveCDKSwindow (swindow, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1)
-         {
-            moveCDKSwindow (swindow, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(swindow->win) > 0 && getbegx(swindow->win) > 0)
-         {
-            moveCDKSwindow (swindow, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1
-	  && getbegy(swindow->win) > 0)
-         {
-            moveCDKSwindow (swindow, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(swindow->win) > 0 && getendx(swindow->win) < getmaxx(WindowOf(swindow))-1)
-         {
-            moveCDKSwindow (swindow, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1
-	  && getendy(swindow->win) < getmaxy(WindowOf(swindow))-1)
-         {
-            moveCDKSwindow (swindow, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKSwindow (swindow, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKSwindow (swindow, getbegx(swindow->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKSwindow (swindow, getbegx(swindow->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKSwindow (swindow, LEFT, getbegy(swindow->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKSwindow (swindow, RIGHT, getbegy(swindow->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKSwindow (swindow, CENTER, getbegy(swindow->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKSwindow (swindow, getbegx(swindow->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(swindow));
-         refreshCDKScreen (ScreenOf(swindow));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKSwindow (swindow, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This function draws the swindow window widget.
  */
-void _drawCDKSwindow (CDKOBJS *object, boolean Box)
+static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
    int x;
@@ -1042,7 +891,7 @@ void destroyCDKSwindow (CDKSWINDOW *swindow)
 /*
  * This function erases the scrolling window widget.
  */
-void _eraseCDKSwindow (CDKOBJS *object)
+static void _eraseCDKSwindow (CDKOBJS *object)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
 
@@ -1057,7 +906,7 @@ int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
 {
    /* Declare local variables. */
    FILE *ps;
-   char temp[513];
+   char temp[BUFSIZ];
    int count = 0;
 
    /* Try to open the command. */
@@ -1067,11 +916,8 @@ int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
    }
 
    /* Start reading. */
-   while ((fgets (temp, 512, ps) != (char *)NULL))
+   while ((fgets (temp, sizeof(temp), ps) != (char *)NULL))
    {
-      int len = (int)strlen (temp);
-      temp[len-1] = '\0';
-
       /* Add the line to the scrolling window. */
       addCDKSwindow  (swindow, temp, insertPos);
       count++;

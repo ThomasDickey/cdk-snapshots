@@ -3,14 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.49 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.52 $
  */
 
-static CDKFUNCS my_funcs = {
-    _drawCDKGraph,
-    _eraseCDKGraph,
-};
+DeclareCDKObjects(my_funcs,Graph)
 
 /*
  * This creates a graph widget.
@@ -388,8 +385,9 @@ void setCDKGraphBackgroundColor (CDKGRAPH *graph, char *color)
 /*
  * This moves the graph field to the given location.
  */
-void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKGraph (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKGRAPH *graph = (CDKGRAPH *)object;
    /* Declare local variables. */
    int currentX = getbegx(graph->win);
    int currentY = getbegy(graph->win);
@@ -436,155 +434,6 @@ void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, bo
 }
 
 /*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKGraph (CDKGRAPH *graph)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(graph->win);
-   int origY	= getbegy(graph->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (graph->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(graph->win) > 0)
-         {
-            moveCDKGraph (graph, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(graph->win) < getmaxy(WindowOf(graph))-1)
-         {
-            moveCDKGraph (graph, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(graph->win) > 0)
-         {
-            moveCDKGraph (graph, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1)
-         {
-            moveCDKGraph (graph, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(graph->win) > 0 && getbegx(graph->win) > 0)
-         {
-            moveCDKGraph (graph, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1
-	  && getbegy(graph->win) > 0)
-         {
-            moveCDKGraph (graph, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(graph->win) > 0 && getendx(graph->win) < getmaxx(WindowOf(graph))-1)
-         {
-            moveCDKGraph (graph, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1
-	  && getendy(graph->win) < getmaxy(WindowOf(graph))-1)
-         {
-            moveCDKGraph (graph, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKGraph (graph, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKGraph (graph, getbegx(graph->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKGraph (graph, getbegx(graph->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKGraph (graph, LEFT, getbegy(graph->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKGraph (graph, RIGHT, getbegy(graph->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKGraph (graph, CENTER, getbegy(graph->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKGraph (graph, getbegx(graph->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(graph));
-         refreshCDKScreen (ScreenOf(graph));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKGraph (graph, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
-   }
-}
-
-/*
  * This sets whether or not the graph will be boxed.
  */
 void setCDKGraphBox (CDKGRAPH *graph, boolean Box)
@@ -599,7 +448,7 @@ boolean getCDKGraphBox (CDKGRAPH *graph)
 /*
  * This function draws the graph widget.
  */
-void _drawCDKGraph (CDKOBJS *object, boolean Box)
+static void _drawCDKGraph (CDKOBJS *object, boolean Box)
 {
    CDKGRAPH *graph = (CDKGRAPH *)object;
    int adj		= 2 + (graph->xtitle == (chtype *)NULL ? 0 : 1);
@@ -747,7 +596,7 @@ void destroyCDKGraph (CDKGRAPH *graph)
 /*
  * This function erases the graph widget from the screen.
  */
-void _eraseCDKGraph (CDKOBJS *object)
+static void _eraseCDKGraph (CDKOBJS *object)
 {
    CDKGRAPH *graph = (CDKGRAPH *)object;
    eraseCursesWindow (graph->win);

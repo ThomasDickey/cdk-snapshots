@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:53:30 $
- * $Revision: 1.148 $
+ * $Date: 1999/05/30 00:16:28 $
+ * $Revision: 1.151 $
  */
 
 /*
@@ -18,10 +18,7 @@ static void drawCDKEntryField (CDKENTRY *entry);
  */
 extern char *GPasteBuffer;
 
-static CDKFUNCS my_funcs = {
-    _drawCDKEntry,
-    _eraseCDKEntry,
-};
+DeclareCDKObjects(my_funcs,Entry)
 
 /*
  * This creates a pointer to an entry widget.
@@ -537,8 +534,9 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
 /*
  * This moves the entry field to the given location.
  */
-void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
+   CDKENTRY *entry = (CDKENTRY *)object;
    /* Declare local variables. */
    int currentX = getbegx(entry->win);
    int currentY = getbegy(entry->win);
@@ -589,155 +587,6 @@ void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, bo
       touchwin (entry->labelWin);
       touchwin (entry->fieldWin);
       drawCDKEntry (entry, ObjOf(entry)->box);
-   }
-}
-
-/*
- * This allows the user to use the cursor keys to adjust the
- * position of the widget.
- */
-void positionCDKEntry (CDKENTRY *entry)
-{
-   /* Declare some variables. */
-   int origX	= getbegx(entry->win);
-   int origY	= getbegy(entry->win);
-   chtype key	= (chtype)NULL;
-
-   /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
-   {
-      key = wgetch (entry->win);
-      if (key == KEY_UP || key == '8')
-      {
-         if (getbegy(entry->win) > 0)
-         {
-            moveCDKEntry (entry, 0, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-         if (getendy(entry->win) < getmaxy(WindowOf(entry))-1)
-         {
-            moveCDKEntry (entry, 0, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-         if (getbegx(entry->win) > 0)
-         {
-            moveCDKEntry (entry, -1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1)
-         {
-            moveCDKEntry (entry, 1, 0, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '7')
-      {
-         if (getbegy(entry->win) > 0 && getbegx(entry->win) > 0)
-         {
-            moveCDKEntry (entry, -1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '9')
-      {
-         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1
-	  && getbegy(entry->win) > 0)
-         {
-            moveCDKEntry (entry, 1, -1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '1')
-      {
-         if (getbegx(entry->win) > 0 && getendx(entry->win) < getmaxx(WindowOf(entry))-1)
-         {
-            moveCDKEntry (entry, -1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '3')
-      {
-         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1
-	  && getendy(entry->win) < getmaxy(WindowOf(entry))-1)
-         {
-            moveCDKEntry (entry, 1, 1, TRUE, TRUE);
-         }
-         else
-         {
-            Beep();
-         }
-      }
-      else if (key == '5')
-      {
-         moveCDKEntry (entry, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
-         moveCDKEntry (entry, getbegx(entry->win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
-         moveCDKEntry (entry, getbegx(entry->win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
-         moveCDKEntry (entry, LEFT, getbegy(entry->win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
-         moveCDKEntry (entry, RIGHT, getbegy(entry->win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
-         moveCDKEntry (entry, CENTER, getbegy(entry->win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
-         moveCDKEntry (entry, getbegx(entry->win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
-         eraseCDKScreen (ScreenOf(entry));
-         refreshCDKScreen (ScreenOf(entry));
-      }
-      else if (key == KEY_ESC)
-      {
-         moveCDKEntry (entry, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
-         Beep();
-      }
    }
 }
 
@@ -855,7 +704,7 @@ void cleanCDKEntry (CDKENTRY *entry)
 /*
  * This draws the entry field.
  */
-void _drawCDKEntry (CDKOBJS *object, boolean Box)
+static void _drawCDKEntry (CDKOBJS *object, boolean Box)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    int x;
@@ -959,7 +808,7 @@ static void drawCDKEntryField (CDKENTRY *entry)
 /*
  * This erases an entry widget from the screen.
  */
-void _eraseCDKEntry (CDKOBJS *object)
+static void _eraseCDKEntry (CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 10:25:01 $
- * $Revision: 1.143 $
+ * $Date: 1999/05/30 00:27:07 $
+ * $Revision: 1.144 $
  */
 
 /*
@@ -271,11 +271,8 @@ chtype *copyChtype (chtype *original)
 int readFile (char *filename, char **array, int maxlines)
 {
    FILE	*fd;
-   char temp[515];
+   char temp[BUFSIZ];
    int	lines	= 0;
-
-   /* Clean out temp.  */
-   cleanChar (temp, 514, '\0');
 
    /* Can we open the file?  */
    if ((fd = fopen (filename, "r")) == NULL)
@@ -284,10 +281,8 @@ int readFile (char *filename, char **array, int maxlines)
    }
                                                                                 
    /* Start reading the file in.  */
-   while ((fgets (temp, 512, fd) != (char *)NULL) && lines < maxlines)
+   while ((fgets (temp, sizeof(temp), fd) != (char *)NULL) && lines < maxlines)
    {
-      int len		= (int)strlen(temp);
-      temp[len-1]	= '\0';
       array[lines]	= copyChar (temp);
       lines++;
    }

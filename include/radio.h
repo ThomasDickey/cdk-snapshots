@@ -90,8 +90,6 @@ struct SRadio {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -242,35 +240,22 @@ void setCDKRadioBackgroundColor (
 /*
  * This draws the widget on the screen.
  */
-void _drawCDKRadio (
-		CDKOBJS *	/* radio */,
-		boolean		/* Box */);
-
-#define drawCDKRadio(radio,Box) _drawCDKRadio(ObjOf(radio),Box)
+#define drawCDKRadio(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the widget from the screen.
  */
-void _eraseCDKRadio (
-		CDKOBJS *	/* radio */);
-
-#define eraseCDKRadio(radio) _eraseCDKRadio(ObjOf(radio))
+#define eraseCDKRadio(obj) eraseCDKObject(obj)
 
 /*
  * This moves the widget to the given screen location.
  */
-void moveCDKRadio (
-		CDKRADIO *	/* radio */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKRadio(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively moves the widget to a new location on the screen.
  */
-void positionCDKRadio (
-		CDKRADIO *	/* radio */);
+#define positionCDKRadio(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys a widget pointer.

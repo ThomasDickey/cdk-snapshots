@@ -83,8 +83,6 @@ struct SMentry {
    chtype	BoxAttrib;
    chtype	filler;
    chtype	hidden;
-   BINDFN	bindFunction[MAX_BINDINGS];
-   void *	bindData[MAX_BINDINGS];
    void *	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
@@ -227,19 +225,12 @@ void setCDKMentryBackgroundColor (
 /*
  * This draws the widget on the screen.
  */
-void _drawCDKMentry (
-		CDKOBJS *	/* mentry */,
-		boolean		/* Box */);
-
-#define drawCDKMentry(mentry,Box) _drawCDKMentry (ObjOf(mentry),Box)
+#define drawCDKMentry(obj,Box) drawCDKObject(obj,Box)
 
 /*
  * This erases the widget from the screen.
  */
-void _eraseCDKMentry (
-		CDKOBJS *	/* mentry */);
-
-#define eraseCDKMentry(mentry) _eraseCDKMentry(ObjOf(mentry))
+#define eraseCDKMentry(obj) eraseCDKObject(obj)
 
 /*
  * This cleans out the information in the widget.
@@ -250,18 +241,12 @@ void cleanCDKMentry (
 /*
  * This moves the widget to the given location.
  */
-void moveCDKMentry (
-		CDKMENTRY *	/* mentry */,
-		int		/* xpos */,
-		int		/* ypos */,
-		boolean		/* relative */,
-		boolean		/* refresh */);
+#define moveCDKMentry(obj,xpos,ypos,relative,refresh) moveCDKObject(obj,xpos,ypos,relative,refresh)
 
 /*
  * This interactively moves the widget on the screen.
  */
-void positionCDKMentry (
-		CDKMENTRY *	/* mentry */);
+#define positionCDKMentry(widget) positionCDKObject(ObjOf(widget),widget->win)
 
 /*
  * This destroys the widget pointer.
