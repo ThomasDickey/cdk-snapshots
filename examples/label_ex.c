@@ -9,10 +9,10 @@ int main (void)
    /* Declare variables. */
    CDKSCREEN	*cdkscreen;
    CDKLABEL	*demo;
-   WINDOW 	*cursesWin;
+   WINDOW	*cursesWin;
    char		*mesg[10];
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -26,10 +26,10 @@ int main (void)
    mesg[3] = "<C>This line should be set to whatever the screen default is.";
 
    /* Declare the labels. */
-   demo	= newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
+   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
 
-   /* Is the label NULL? */
-   if (demo == (CDKLABEL *)NULL)
+   /* Is the label null? */
+   if (demo == 0)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);

@@ -4,7 +4,7 @@
 char *XCursesProgramName="viewer_ex";
 #endif
 
-#define	MAXINFOLINES	10000
+#define MAXINFOLINES	10000
 
 /*
  * This program demonstrates the file selector and the viewer widget.
@@ -12,10 +12,10 @@ char *XCursesProgramName="viewer_ex";
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKVIEWER *example	= (CDKVIEWER *)NULL;
-   CDKFSELECT *fSelect	= (CDKFSELECT *)NULL;	
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKVIEWER *example	= 0;
+   CDKFSELECT *fSelect	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C>Pick\n<C>A\n<C>File";
    char *label		= "File: ";
    char *directory	= ".";
@@ -29,12 +29,12 @@ int main (int argc, char **argv)
       ret = getopt (argc, argv, "d:");
       if (ret == -1)
       {
-         break;
+	 break;
       }
       switch (ret)
       {
-         case 'd' :
-              directory = strdup (optarg);
+	 case 'd' :
+	      directory = strdup (optarg);
       }
    }
 
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
    button[0]	= "</5><OK><!5>";
    button[1]	= "</5><Cancel><!5>";
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -53,16 +53,16 @@ int main (int argc, char **argv)
    fSelect = newCDKFselect (cdkscreen, CENTER, CENTER, 20, 65,
 				title, label, A_NORMAL, '_', A_REVERSE,
 				"</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
- 
+
    /*
     * Set the starting directory. This is not neccessary because when
     * the file selector starts it uses the present directory as a default.
     */
-   setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE, 
+   setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,
 			"</5>", "</48>", "</N>", "</N>", ObjOf(fSelect)->box);
 
    /* Activate the file selector. */
-   filename = activateCDKFselect (fSelect, NULL);
+   filename = activateCDKFselect (fSelect, 0);
 
    /* Check how the person exited from the widget. */
    if (fSelect->exitType == vESCAPE_HIT)
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
 				button, 2, A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
-   if (example == (CDKVIEWER *)NULL)
+   if (example == 0)
    {
       /* Exit CDK. */
       destroyCDKFselect (fSelect);
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
    destroyCDKFselect (fSelect);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (example, (chtype *)NULL);
+   selected = activateCDKViewer (example, 0);
 
    /* Check how the person exited from the widget.*/
    if (example->exitType == vESCAPE_HIT)

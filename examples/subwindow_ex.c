@@ -23,7 +23,7 @@ int main (void)
 
    /* Create a basic window. */
    subWindow = newwin (20, 40, 5, 5);
-  
+
    /* Start Cdk. */
    cdkscreen = initCDKScreen (subWindow);
 
@@ -47,7 +47,7 @@ int main (void)
    refreshCDKScreen (cdkscreen);
 
    /* Let the user play. */
-   pick = activateCDKScroll (dowList, NULL);
+   pick = activateCDKScroll (dowList, 0);
 
    /* Clean up. */
    destroyCDKScroll (dowList);

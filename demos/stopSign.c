@@ -7,10 +7,10 @@ char *XCursesProgramName="sillyness_ex";
 int main(void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKLABEL *stopSign	= (CDKLABEL *)NULL;
-   CDKLABEL *title	= (CDKLABEL *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKLABEL *stopSign	= 0;
+   CDKLABEL *title	= 0;
+   WINDOW *cursesWin	= 0;
    int currentLight	= 0;
    char *mesg[5], *sign[4];
    chtype key;
@@ -46,28 +46,28 @@ int main(void)
       key = wgetch (cursesWin);
       if (key == KEY_ESC || key == 'q' || key == 'Q')
       {
-         break;
+	 break;
       }
       else if (key == 'r' || key == 'R')
       {
-         sign[0] = " </B/16><#DI> ";
-         sign[1] = " o ";
-         sign[2] = " o ";
-         currentLight = 0;
+	 sign[0] = " </B/16><#DI> ";
+	 sign[1] = " o ";
+	 sign[2] = " o ";
+	 currentLight = 0;
       }
       else if (key == 'y' || key == 'Y')
       {
-         sign[0] = " o ";
-         sign[1] = " </B/32><#DI> ";
-         sign[2] = " o ";
-         currentLight = 1;
+	 sign[0] = " o ";
+	 sign[1] = " </B/32><#DI> ";
+	 sign[2] = " o ";
+	 currentLight = 1;
       }
       else if (key == 'g' || key == 'G')
       {
-         sign[0] = " o ";
-         sign[1] = " o ";
-         sign[2] = " </B/24><#DI> ";
-         currentLight = 2;
+	 sign[0] = " o ";
+	 sign[1] = " o ";
+	 sign[2] = " </B/24><#DI> ";
+	 currentLight = 2;
       }
 
       /* Set the contents of the label and re-draw it. */

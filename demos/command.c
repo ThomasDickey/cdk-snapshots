@@ -34,13 +34,13 @@ static BINDFN_PROTO(jumpWindowCB);
 int main(int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKSWINDOW *commandOutput	= (CDKSWINDOW *)NULL;
-   CDKENTRY *commandEntry	= (CDKENTRY *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
-   chtype *convert		= (chtype *)NULL;
-   char *command		= (char *)NULL;
-   char *upper			= (char *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKSWINDOW *commandOutput	= 0;
+   CDKENTRY *commandEntry	= 0;
+   WINDOW *cursesWin		= 0;
+   chtype *convert		= 0;
+   char *command		= 0;
+   char *upper			= 0;
    char *prompt			= "</B/24>Command >";
    char *title			= "<C></B/5>Command Output Window";
    int promptLen		= 0;
@@ -59,20 +59,20 @@ int main(int argc, char **argv)
       /* Are there any more command line options to parse. */
       if ((ret = getopt (argc, argv, "t:p:")) == -1)
       {
-         break;
+	 break;
       }
       switch (ret)
       {
-         case 'p':
-              prompt = copyChar (optarg);
-              break;
+	 case 'p':
+	      prompt = copyChar (optarg);
+	      break;
 
-         case 't':
-              title = copyChar (optarg);
-              break;
+	 case 't':
+	      title = copyChar (optarg);
+	      break;
 
-         default:
-              break;
+	 default:
+	      break;
       }
    }
 
@@ -94,15 +94,15 @@ int main(int argc, char **argv)
 
    /* Create the entry field. */
    commandEntry = newCDKEntry (cdkscreen, CENTER, BOTTOM,
-				NULL, prompt, A_BOLD|COLOR_PAIR(8), COLOR_PAIR(24)|'_',
+				0, prompt, A_BOLD|COLOR_PAIR(8), COLOR_PAIR(24)|'_',
 				vMIXED, commandFieldWidth, 1, 512, FALSE, FALSE);
 
    /* Create the key bindings. */
    bindCDKObject (vENTRY, commandEntry, KEY_UP, historyUpCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_DOWN, historyDownCB, &history);
    bindCDKObject (vENTRY, commandEntry, TAB, viewHistoryCB, commandOutput);
-   bindCDKObject (vENTRY, commandEntry, '', listHistoryCB, &history);
-   bindCDKObject (vENTRY, commandEntry, '', jumpWindowCB, commandOutput);
+   bindCDKObject (vENTRY, commandEntry, CONTROL('^'), listHistoryCB, &history);
+   bindCDKObject (vENTRY, commandEntry, CONTROL('G'), jumpWindowCB, commandOutput);
 
    /* Draw the screen. */
    refreshCDKScreen (cdkscreen);
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
    {
       /* Get the command. */
       drawCDKEntry (commandEntry, ObjOf(commandEntry)->box);
-      command	= activateCDKEntry (commandEntry, NULL);
+      command	= activateCDKEntry (commandEntry, 0);
       upper	= uc (command);
 
       /* Check the output of the command. */
@@ -126,66 +126,66 @@ int main(int argc, char **argv)
 		strcmp (upper, "E") == 0 ||
 		commandEntry->exitType == vESCAPE_HIT)
       {
-         /* All done. */
-         destroyCDKEntry (commandEntry);
-         destroyCDKSwindow (commandOutput);
-         delwin (cursesWin);
-         freeChar (upper);
-         endCDK();
-         exit (0);
+	 /* All done. */
+	 destroyCDKEntry (commandEntry);
+	 destroyCDKSwindow (commandOutput);
+	 delwin (cursesWin);
+	 freeChar (upper);
+	 endCDK();
+	 exit (0);
       }
       else if (strcmp (command, "clear") == 0)
       {
-         /* Keep the history. */
-         history.command[history.count] = copyChar (command);
-         history.count++;
-         history.current = history.count;
-         cleanCDKSwindow (commandOutput);
-         cleanCDKEntry (commandEntry);
+	 /* Keep the history. */
+	 history.command[history.count] = copyChar (command);
+	 history.count++;
+	 history.current = history.count;
+	 cleanCDKSwindow (commandOutput);
+	 cleanCDKEntry (commandEntry);
       }
       else if (strcmp (command, "history") == 0)
       {
-         /* Display the history list. */
-         listHistoryCB (vENTRY, commandEntry, &history, (chtype)NULL);
+	 /* Display the history list. */
+	 listHistoryCB (vENTRY, commandEntry, &history, 0);
 
-         /* Keep the history. */
-         history.command[history.count] = copyChar (command);
-         history.count++;
-         history.current = history.count;
+	 /* Keep the history. */
+	 history.command[history.count] = copyChar (command);
+	 history.count++;
+	 history.current = history.count;
       }
       else if (strcmp (command, "help") == 0)
       {
-         /* Keep the history. */
-         history.command[history.count] = copyChar (command);
-         history.count++;
-         history.current = history.count;
+	 /* Keep the history. */
+	 history.command[history.count] = copyChar (command);
+	 history.count++;
+	 history.current = history.count;
 
-         /* Display the help. */
-         help (commandEntry);
+	 /* Display the help. */
+	 help (commandEntry);
 
-         /* Clean the entry field. */
-         cleanCDKEntry (commandEntry);
-         eraseCDKEntry (commandEntry);
+	 /* Clean the entry field. */
+	 cleanCDKEntry (commandEntry);
+	 eraseCDKEntry (commandEntry);
       }
       else
       {
-         /* Keep the history. */
-         history.command[history.count] = copyChar (command);
-         history.count++;
-         history.current = history.count;
+	 /* Keep the history. */
+	 history.command[history.count] = copyChar (command);
+	 history.count++;
+	 history.current = history.count;
 
-         /* Jump to the bottom of the scrolling window. */
-         jumpToLineCDKSwindow (commandOutput, BOTTOM);
+	 /* Jump to the bottom of the scrolling window. */
+	 jumpToLineCDKSwindow (commandOutput, BOTTOM);
 
-         /* Insert a line providing the command. */
-         sprintf (temp, "Command: </R>%s", command);
-         addCDKSwindow (commandOutput, temp, BOTTOM);
+	 /* Insert a line providing the command. */
+	 sprintf (temp, "Command: </R>%s", command);
+	 addCDKSwindow (commandOutput, temp, BOTTOM);
 
-         /* Run the command. */
-         execCDKSwindow (commandOutput, command, BOTTOM);
+	 /* Run the command. */
+	 execCDKSwindow (commandOutput, command, BOTTOM);
 
-         /* Clean out the entry field. */
-         cleanCDKEntry (commandEntry);
+	 /* Clean out the entry field. */
+	 cleanCDKEntry (commandEntry);
       }
 
       /* Clean up a little. */
@@ -255,7 +255,7 @@ static void viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
    CDKENTRY *entry	= (CDKENTRY *)object;
 
    /* Let them play... */
-   activateCDKSwindow (swindow, NULL);
+   activateCDKSwindow (swindow, 0);
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf(entry)->box);
@@ -268,7 +268,7 @@ static void jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
-   CDKSCALE *scale	= (CDKSCALE *)NULL;
+   CDKSCALE *scale	= 0;
    int line;
 
    /* Ask them which line they want to jump to. */
@@ -279,7 +279,7 @@ static void jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
 			0, 0, swindow->itemCount, 1, 2, TRUE, FALSE);
 
    /* Get the line. */
-   line = activateCDKScale (scale, NULL);
+   line = activateCDKScale (scale, 0);
 
    /* Clean up. */
    destroyCDKScale (scale);
@@ -325,7 +325,7 @@ static void listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
 				NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
-   selection = activateCDKScroll (scrollList, NULL);
+   selection = activateCDKScroll (scrollList, 0);
    destroyCDKScroll (scrollList);
 
    /* Check the results of the selection. */
@@ -376,20 +376,20 @@ void help (CDKENTRY *entry)
  */
 char *uc (char *word)
 {
-   char *upper	= (char *)NULL;
+   char *upper	= 0;
    int length	= 0;
    int x;
 
-   /* Make sure the word is not NULL. */
-   if (word == (char *)NULL)
+   /* Make sure the word is not null. */
+   if (word == 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    length = strlen (word);
 
    /* Get the memory for the new word. */
    upper = (char *)malloc (sizeof (char *) * (length+2));
-   if (upper == (char *)NULL)
+   if (upper == 0)
    {
       return (word);
    }
@@ -399,11 +399,11 @@ char *uc (char *word)
    {
       if (isalpha ((int)word[x]))
       {
-         upper[x] = toupper(word[x]);
+	 upper[x] = toupper(word[x]);
       }
       else
       {
-         upper[x] = word[x];
+	 upper[x] = word[x];
       }
    }
    upper[length] = '\0';

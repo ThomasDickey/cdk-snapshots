@@ -12,12 +12,12 @@ static BINDFN_PROTO(XXXCB);
 int main (int argc GCC_UNUSED, char **argv)
 {
    /* Declare local variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKENTRY *directory	= (CDKENTRY *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKENTRY *directory	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C>Enter a\n<C>directory name.";
    char *label		= "</U/5>Directory:<!U!5>";
-   char	*info, *mesg[10], temp[256];
+   char *info, *mesg[10], temp[256];
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -28,12 +28,12 @@ int main (int argc GCC_UNUSED, char **argv)
 
    /* Create the entry field widget. */
    directory = newCDKEntry (cdkscreen, CENTER, CENTER,
-				title, label, A_NORMAL, '.', vMIXED, 
+				title, label, A_NORMAL, '.', vMIXED,
 				40, 0, 256, TRUE, FALSE);
-   bindCDKObject (vENTRY, directory, '?', XXXCB, NULL);
+   bindCDKObject (vENTRY, directory, '?', XXXCB, 0);
 
-   /* Is the widget NULL? */
-   if (directory == (CDKENTRY *)NULL)
+   /* Is the widget null? */
+   if (directory == 0)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -49,14 +49,14 @@ int main (int argc GCC_UNUSED, char **argv)
 
   /*
    * Pass in whatever was given off of the command line. Notice we
-   * don't check if argv[1] is NULL or not. The function setCDKEntry
+   * don't check if argv[1] is null or not. The function setCDKEntry
    * already performs any needed checks.
    */
    setCDKEntry (directory, argv[1], 0, 256, TRUE);
 
    /* Activate the entry field. */
-   info	= activateCDKEntry (directory, (chtype *)NULL);
-   
+   info = activateCDKEntry (directory, 0);
+
    /* Tell them what they typed. */
    if (directory->exitType == vESCAPE_HIT)
    {

@@ -22,23 +22,23 @@ int verifyDirectory (CDKSCREEN *screen, char *directory);
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   WINDOW	*cursesWin	= (WINDOW *)NULL;
-   CDKSCREEN	*cdkScreen	= (CDKSCREEN *)NULL;
-   CDKSWINDOW	*installOutput	= (CDKSWINDOW *)NULL;
-   CDKENTRY	*sourceEntry	= (CDKENTRY *)NULL;
-   CDKENTRY	*destEntry	= (CDKENTRY *)NULL;
-   CDKLABEL	*titleWin	= (CDKLABEL *)NULL;
-   CDKHISTOGRAM	*progressBar	= (CDKHISTOGRAM *)NULL;
-   char		*sourcePath	= (char *)NULL;
-   char		*destPath	= (char *)NULL;
-   char		*sourceDir	= (char *)NULL;
-   char		*destDir	= (char *)NULL;
-   char		*filename	= (char *)NULL;
-   char		*title		= (char *)NULL;
-   char		*output		= (char *)NULL;
+   WINDOW	*cursesWin	= 0;
+   CDKSCREEN	*cdkScreen	= 0;
+   CDKSWINDOW	*installOutput	= 0;
+   CDKENTRY	*sourceEntry	= 0;
+   CDKENTRY	*destEntry	= 0;
+   CDKLABEL	*titleWin	= 0;
+   CDKHISTOGRAM *progressBar	= 0;
+   char		*sourcePath	= 0;
+   char		*destPath	= 0;
+   char		*sourceDir	= 0;
+   char		*destDir	= 0;
+   char		*filename	= 0;
+   char		*title		= 0;
+   char		*output		= 0;
    int		quiet		= FALSE;
    int		errors		= 0;
-   int 		sWindowHeight	= 0;
+   int		sWindowHeight	= 0;
    char		*titleMessage[10], *fileList[2000], *mesg[20];
    char		oldPath[512], newPath[512], temp[2000];
    char		**files;
@@ -50,38 +50,38 @@ int main (int argc, char **argv)
       ret = getopt (argc, argv, "d:s:f:t:o:q");
       if (ret == -1)
       {
-         break;
+	 break;
       }
       switch (ret)
       {
-         case 's' :
-              sourcePath = strdup (optarg);
-              break;
+	 case 's' :
+	      sourcePath = strdup (optarg);
+	      break;
 
-         case 'd' :
-              destPath = strdup (optarg);
-              break;
+	 case 'd' :
+	      destPath = strdup (optarg);
+	      break;
 
-         case 'f' :
-              filename = strdup (optarg);
-              break;
+	 case 'f' :
+	      filename = strdup (optarg);
+	      break;
 
-         case 't' :
-              title = strdup (optarg);
-              break;
+	 case 't' :
+	      title = strdup (optarg);
+	      break;
 
-         case 'o' :
-              output = strdup (optarg);
-              break;
+	 case 'o' :
+	      output = strdup (optarg);
+	      break;
 
-         case 'q' :
-              quiet = TRUE;
-              break;
+	 case 'q' :
+	      quiet = TRUE;
+	      break;
       }
    }
 
    /* Make sure have everything we need. */
-   if (filename == (char *)NULL)
+   if (filename == 0)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
       exit (-1);
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
    
    /* Create the title label. */
    titleMessage[0] = "<C></32/B><#HL(30)>";
-   if (title == (char *)NULL)
+   if (title == 0)
    {
       sprintf (temp, "<C></32/B>CDK Installer");
    }
@@ -128,25 +128,25 @@ int main (int argc, char **argv)
    freeChar (titleMessage[1]);
 
    /* Allow them to change the install directory. */
-   if (sourcePath == (char *)NULL)
+   if (sourcePath == 0)
    {
       sourceEntry = newCDKEntry (cdkScreen, CENTER, 8,
-					NULL, "Source Directory     :",
+					0, "Source Directory        :",
 					A_NORMAL, '.', vMIXED, 
 					40, 0, 256, TRUE, FALSE);
    }
-   if (destPath == (char *)NULL)
+   if (destPath == 0)
    {
       destEntry = newCDKEntry (cdkScreen, CENTER, 11,
-				NULL, "Destination Directory:", A_NORMAL, 
+				0, "Destination Directory:", A_NORMAL, 
 				'.', vMIXED, 40, 0, 256, TRUE, FALSE);
    }
 
    /* Get the source install path. */
-   if (sourceEntry != (CDKENTRY *)NULL)
+   if (sourceEntry != 0)
    {
       drawCDKScreen (cdkScreen);
-      sourceDir = copyChar (activateCDKEntry (sourceEntry, NULL));
+      sourceDir = copyChar (activateCDKEntry (sourceEntry, 0));
    }
    else
    {
@@ -154,10 +154,10 @@ int main (int argc, char **argv)
    }
 
    /* Get the destination install path. */
-   if (destEntry != (CDKENTRY *)NULL)
+   if (destEntry != 0)
    {
       drawCDKScreen (cdkScreen);
-      destDir = copyChar (activateCDKEntry (destEntry, NULL));
+      destDir = copyChar (activateCDKEntry (destEntry, 0));
    }
    else
    {
@@ -165,11 +165,11 @@ int main (int argc, char **argv)
    }
 
    /* Destroy the path entry fields. */
-   if (sourceEntry != (CDKENTRY *)NULL)
+   if (sourceEntry != 0)
    {
       destroyCDKEntry (sourceEntry);
    }
-   if (destEntry != (CDKENTRY *)NULL)
+   if (destEntry != 0)
    {
       destroyCDKEntry (destEntry);
    }
@@ -189,7 +189,7 @@ int main (int argc, char **argv)
       /* Clean up the file list information. */
       for (x=0; x < count; x++)
       {
-         freeChar (fileList[x]);
+	 freeChar (fileList[x]);
       }
       exit (-1);
    }
@@ -209,14 +209,14 @@ int main (int argc, char **argv)
       /* Clean up the file list information */
       for (x=0; x < count; x++)
       {
-         freeChar (fileList[x]);
+	 freeChar (fileList[x]);
       }
       exit (-2);
    }
 
    /* Create the histogram. */
    progressBar = newCDKHistogram (cdkScreen, CENTER, 5,
-				 	3, 0, HORIZONTAL,
+					3, 0, HORIZONTAL,
 					"<C></56/B>Install Progress",
 					TRUE, FALSE);
 
@@ -265,15 +265,15 @@ int main (int argc, char **argv)
       chunks = CDKcountStrings (files);
       if (chunks == 2)
       {
-         /* Create the correct paths. */
-         sprintf (oldPath, "%s/%s", sourceDir, files[0]);
-         sprintf (newPath, "%s/%s", destDir, files[1]);
+	 /* Create the correct paths. */
+	 sprintf (oldPath, "%s/%s", sourceDir, files[0]);
+	 sprintf (newPath, "%s/%s", destDir, files[1]);
       }
       else
       {
-         /* Create the correct paths. */
-         sprintf (oldPath, "%s/%s", sourceDir, fileList[x]);
-         sprintf (newPath, "%s/%s", destDir, fileList[x]);
+	 /* Create the correct paths. */
+	 sprintf (oldPath, "%s/%s", sourceDir, fileList[x]);
+	 sprintf (newPath, "%s/%s", destDir, fileList[x]);
       }
       CDKfreeStrings(files);
 
@@ -281,17 +281,17 @@ int main (int argc, char **argv)
       ret = copyFile (cdkScreen, oldPath, newPath);
       if (ret == vCanNotOpenSource)
       {
-         sprintf (temp, "</16>Error: Can not open source file %s<!16>", oldPath);
-         errors++;
+	 sprintf (temp, "</16>Error: Can not open source file %s<!16>", oldPath);
+	 errors++;
       }
       else if (ret == vCanNotOpenDest)
       {
-         sprintf (temp, "</16>Error: Can not open destination file %s<!16>", newPath);
-         errors++;
+	 sprintf (temp, "</16>Error: Can not open destination file %s<!16>", newPath);
+	 errors++;
       }
       else
       {
-         sprintf (temp, "</24>%s -> %s", oldPath, newPath);
+	 sprintf (temp, "</24>%s -> %s", oldPath, newPath);
       }
 
       /* Add the message to the scrolling window. */
@@ -329,11 +329,11 @@ int main (int argc, char **argv)
       ret = popupDialog (cdkScreen, mesg, 8, buttons, 3);
       if (ret == 0)
       {
-         activateCDKSwindow (installOutput, NULL);
+	 activateCDKSwindow (installOutput, 0);
       }
       else if (ret == 1)
       {
-         injectCDKSwindow (installOutput, 's');
+	 injectCDKSwindow (installOutput, 's');
       }
    }
    else
@@ -342,24 +342,24 @@ int main (int argc, char **argv)
       * If they specified the name of an output file, then save the
       * results of the installation to that file.
       */
-      if (output != (char *)NULL)
+      if (output != 0)
       {
-          dumpCDKSwindow (installOutput, output);
+	  dumpCDKSwindow (installOutput, output);
       }
       else
       {
-         /* Ask them if they want to save the output of the scrolling window. */
-         if (quiet == FALSE)
-         {
-            char *buttons[] = {"No", "Yes"};
-            mesg[0] = "<C>Do you want to save the output of the";
-            mesg[1] = "<C>scrolling window to a file?";
+	 /* Ask them if they want to save the output of the scrolling window. */
+	 if (quiet == FALSE)
+	 {
+	    char *buttons[] = {"No", "Yes"};
+	    mesg[0] = "<C>Do you want to save the output of the";
+	    mesg[1] = "<C>scrolling window to a file?";
 
-            if (popupDialog (cdkScreen, mesg, 2, buttons, 2) == 1)
-            {
-               injectCDKSwindow (installOutput, 's');
-            }
-         }
+	    if (popupDialog (cdkScreen, mesg, 2, buttons, 2) == 1)
+	    {
+	       injectCDKSwindow (installOutput, 's');
+	    }
+	 }
       }
    }
    
@@ -388,7 +388,7 @@ ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *dest)
    FILE *fd;
 
    /* Make sure we can open the source file. */
-   if ((fd = fopen (src, "r")) == NULL)
+   if ((fd = fopen (src, "r")) == 0)
    {
       return vCanNotOpenSource;
    }
@@ -402,7 +402,7 @@ ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *dest)
    system (command);
 
    /* Try to open the destination. */
-   if ((fd = fopen (dest, "w")) == NULL)
+   if ((fd = fopen (dest, "w")) == 0)
    {
       return vCanNotOpenDest;
    }
@@ -440,54 +440,54 @@ int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
       /* The directory does not exist. */
       if (errno == ENOENT)
       {
-         /* Create the question. */
-         mesg[0] = "<C>The directory ";
-         sprintf (temp, "<C>%s", directory);
-         mesg[1] = copyChar (temp);
-         mesg[2] = "<C>Does not exist. Do you want to";
-         mesg[3] = "<C>create it?";
+	 /* Create the question. */
+	 mesg[0] = "<C>The directory ";
+	 sprintf (temp, "<C>%s", directory);
+	 mesg[1] = copyChar (temp);
+	 mesg[2] = "<C>Does not exist. Do you want to";
+	 mesg[3] = "<C>create it?";
 
-         /* Ask them if they want to create the directory. */
-         if (popupDialog (cdkScreen, mesg, 4, buttons, 2) == 0)
-         {
-            /* Create the directory. */
-            if (mkdir (directory, dirMode) != 0)
-            {
-               /* Create the error message. */
-               error[0] = "<C>Could not create the directory";
-               sprintf (temp, "<C>%s", directory);
-               error[1] = copyChar (temp);
+	 /* Ask them if they want to create the directory. */
+	 if (popupDialog (cdkScreen, mesg, 4, buttons, 2) == 0)
+	 {
+	    /* Create the directory. */
+	    if (mkdir (directory, dirMode) != 0)
+	    {
+	       /* Create the error message. */
+	       error[0] = "<C>Could not create the directory";
+	       sprintf (temp, "<C>%s", directory);
+	       error[1] = copyChar (temp);
 
 #ifdef HAVE_STRERROR
-               sprintf (temp, "<C>%s", strerror (errno));
+	       sprintf (temp, "<C>%s", strerror (errno));
 #else
-               sprintf (temp, "<C>Check the permissions and try again.");
+	       sprintf (temp, "<C>Check the permissions and try again.");
 #endif
-               error[2] = copyChar (temp);
+	       error[2] = copyChar (temp);
 
-               /* Pop up the error message. */
-               popupLabel (cdkScreen, error, 3);
+	       /* Pop up the error message. */
+	       popupLabel (cdkScreen, error, 3);
 
-               /* Clean up and set the error status. */
-               freeChar (error[1]);
-               freeChar (error[2]);
-               status = -1;
-            }
-         }
-         else
-         {
-            /* Create the message. */
-            error[0] = "<C>Installation aborted.";
-            
-            /* Pop up the error message. */
-            popupLabel (cdkScreen, error, 1);
+	       /* Clean up and set the error status. */
+	       freeChar (error[1]);
+	       freeChar (error[2]);
+	       status = -1;
+	    }
+	 }
+	 else
+	 {
+	    /* Create the message. */
+	    error[0] = "<C>Installation aborted.";
+	    
+	    /* Pop up the error message. */
+	    popupLabel (cdkScreen, error, 1);
 
-            /* Set the exit status. */
-            status = -1;
-         }
+	    /* Set the exit status. */
+	    status = -1;
+	 }
  
-         /* Clean up. */
-         freeChar (mesg[1]);
+	 /* Clean up. */
+	 freeChar (mesg[1]);
       }
    }
    return status;

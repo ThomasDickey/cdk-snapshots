@@ -3,15 +3,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define	MAXGROUPS	100
-#define	GLINETYPECOUNT	9
+#define MAXGROUPS	100
+#define GLINETYPECOUNT	9
 
 /*
  * Declare some global variables.
  */
-char *GCurrentGroup	= (char *)NULL;
-char *GRCFile		= (char *)NULL;
-char *GDBMDir		= (char *)NULL;
+char *GCurrentGroup	= 0;
+char *GRCFile		= 0;
+char *GDBMDir		= 0;
 int GGroupModified	= FALSE;
 int GPhoneListModified	= FALSE;
 char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third FAX", "First Data Line", "Second Data Line", "Third Data Line"};
@@ -19,7 +19,7 @@ char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third
 /*
  * Create some definitions.
  */
-typedef enum {vVoice, vCell, vPager, vFAX1, vFAX2, vFAX3, vData1, vData2, vData3} ELineType;
+typedef enum {vUnknown = -1, vVoice = 0, vCell, vPager, vFAX1, vFAX2, vFAX3, vData1, vData2, vData3} ELineType;
 
 /*
  * Define the group record structure.
@@ -52,7 +52,7 @@ struct _phone_data_st {
 };
 typedef struct _phone_data_st SPhoneData;
 
-/* 
+/*
  * Define the callback prototypes.
  */
 BINDFN_PROTO(helpCB);
@@ -62,7 +62,7 @@ BINDFN_PROTO(deletePhoneEntryCB);
 BINDFN_PROTO(phoneEntryHelpCB);
 int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chtype input);
 
-/* 
+/*
  * These functions use/modify the rolodex RC file.
  */
 int readRCFile (char *filename, SRolodex *groupInfo);
@@ -95,7 +95,7 @@ int deletePhoneRecord (CDKSCREEN *screen, SPhoneData *phoneData);
 int getLargePhoneRecord (CDKSCREEN *screen, SPhoneRecord *phoneRecord);
 int getSmallPhoneRecord (CDKSCREEN *screen, SPhoneRecord *phoneRecord);
 
-/* 
+/*
  * These functions allow us to print out phone numbers.
  */
 void printGroupNumbers (CDKSCREEN *screen, SRolodex *groups, int count);

@@ -10,9 +10,9 @@ char *XCursesProgramName="scroll_ex";
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKSCROLL *scrollList	= (CDKSCROLL *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKSCROLL *scrollList	= 0;
+   WINDOW *cursesWin		= 0;
    char *title			= "<C></5>Pick a file";
    char *item[200], *mesg[5], temp[256];
    int selection, count;
@@ -32,8 +32,8 @@ int main (void)
 				10, 50, title, item, count,
 				NUMBERS, A_REVERSE, TRUE, FALSE);
 
-   /* Is the scrolling list NULL? */
-   if (scrollList == (CDKSCROLL *)NULL)
+   /* Is the scrolling list null? */
+   if (scrollList == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -65,7 +65,7 @@ int main (void)
 #endif
 
    /* Activate the scrolling list. */
-   selection = activateCDKScroll (scrollList, (chtype *)NULL);
+   selection = activateCDKScroll (scrollList, 0);
 
    /* Determine how the widget was exited. */
    if (scrollList->exitType == vESCAPE_HIT)

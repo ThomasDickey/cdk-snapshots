@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:14:35 $
- * $Revision: 1.58 $
+ * $Date: 2000/01/16 23:04:45 $
+ * $Revision: 1.59 $
  */
 
-DeclareCDKObjects(my_funcs,Histogram)
+DeclareCDKObjects(my_funcs,Histogram);
 
 /*
  * This creates a histogram widget.
@@ -43,7 +43,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    oldWidth = boxWidth;
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
@@ -52,8 +52,8 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < histogram->titleLines; x++)
       {
-         histogram->title[x]	= char2Chtype (temp[x], &histogram->titleLen[x], &histogram->titlePos[x]);
-         histogram->titlePos[x]	= justifyString (boxWidth, histogram->titleLen[x], histogram->titlePos[x]);
+	 histogram->title[x]	= char2Chtype (temp[x], &histogram->titleLen[x], &histogram->titlePos[x]);
+	 histogram->titlePos[x] = justifyString (boxWidth, histogram->titleLen[x], histogram->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -79,7 +79,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    ScreenOf(histogram)		= cdkscreen;
    histogram->parent		= cdkscreen->window;
    histogram->win		= newwin (boxHeight, boxWidth, ypos, xpos);
-   histogram->shadowWin		= (WINDOW *)NULL;
+   histogram->shadowWin		= 0;
    histogram->boxWidth		= boxWidth;
    histogram->boxHeight		= boxHeight;
    histogram->fieldWidth	= boxWidth-2;
@@ -94,20 +94,20 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->VChar		= ACS_VLINE;
    histogram->BoxAttrib		= A_NORMAL;
 
-   /* Is the window NULL. */
-   if (histogram->win == (WINDOW *)NULL)
+   /* Is the window null. */
+   if (histogram->win == 0)
    {
       /* Clean up any memory used. */
       free (histogram);
 
-      /* Return a NULL pointer. */
-      return ((CDKHISTOGRAM *)NULL);
+      /* Return a null pointer. */
+      return (0);
    }
    keypad (histogram->win, TRUE);
 
    /* Set up some default values. */
    histogram->filler	= '#' | A_REVERSE;
-   histogram->statsAttr	= A_NORMAL;
+   histogram->statsAttr = A_NORMAL;
    histogram->statsPos	= TOP;
    histogram->viewType	= vREAL;
    histogram->high	= 0;
@@ -119,10 +119,10 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->highy	= 0;
    histogram->curx	= 0;
    histogram->cury	= 0;
-   histogram->lowString	= (char *)NULL;
-   histogram->highString	= (char *)NULL;
-   histogram->curString	= (char *)NULL;
-   ObjOf(histogram)->box	= Box;
+   histogram->lowString = 0;
+   histogram->highString = 0;
+   histogram->curString = 0;
+   ObjOf(histogram)->box = Box;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -194,237 +194,237 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
    {
       if (histogram->orient == VERTICAL)
       {
-         if (histogram->statsPos == LEFT || histogram->statsPos == BOTTOM)
-         {
-            /* Free the space used by the character strings. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	 if (histogram->statsPos == LEFT || histogram->statsPos == BOTTOM)
+	 {
+	    /* Free the space used by the character strings. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            len				= (int)strlen (string);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= 1;
-            histogram->lowy		= histogram->boxHeight - len - 1;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    len				= (int)strlen (string);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= 1;
+	    histogram->lowy		= histogram->boxHeight - len - 1;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= 1;
-            histogram->highy		= histogram->titleLines + 1;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= 1;
+	    histogram->highy		= histogram->titleLines + 1;
 
-            /* Set the current value attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            len				= (int)strlen (string);
-            histogram->curString	= copyChar (string);
-            histogram->curx		= 1;
-            histogram->cury		= ((histogram->fieldHeight - len) / 2) + histogram->titleLines + 1;
-         }
-         else if (histogram->statsPos == CENTER)
-         {
-            /* Set the character strings correctly. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	    /* Set the current value attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    len				= (int)strlen (string);
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= 1;
+	    histogram->cury		= ((histogram->fieldHeight - len) / 2) + histogram->titleLines + 1;
+	 }
+	 else if (histogram->statsPos == CENTER)
+	 {
+	    /* Set the character strings correctly. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            len				= (int)strlen (string);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= (histogram->fieldWidth/2) + 1;
-            histogram->lowy		= histogram->boxHeight - len - 1;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    len				= (int)strlen (string);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= (histogram->fieldWidth/2) + 1;
+	    histogram->lowy		= histogram->boxHeight - len - 1;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= (histogram->fieldWidth/2) + 1;
-            histogram->highy		= histogram->titleLines + 1;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= (histogram->fieldWidth/2) + 1;
+	    histogram->highy		= histogram->titleLines + 1;
 
-            /* Set the stats label attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.2f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            len				= (int)strlen (string);
-            histogram->curString	= copyChar (string);
-            histogram->curx		= (histogram->fieldWidth/2) + 1;
-            histogram->cury		= ((histogram->fieldHeight - len)/2) + histogram->titleLines + 1;
-         }
-         else if (histogram->statsPos == RIGHT || histogram->statsPos == TOP)
-         {
-            /* Set the character strings correctly. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	    /* Set the stats label attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.2f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    len				= (int)strlen (string);
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= (histogram->fieldWidth/2) + 1;
+	    histogram->cury		= ((histogram->fieldHeight - len)/2) + histogram->titleLines + 1;
+	 }
+	 else if (histogram->statsPos == RIGHT || histogram->statsPos == TOP)
+	 {
+	    /* Set the character strings correctly. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            len				= (int)strlen (string);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= histogram->fieldWidth;
-            histogram->lowy		= histogram->boxHeight - len - 1;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    len				= (int)strlen (string);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= histogram->fieldWidth;
+	    histogram->lowy		= histogram->boxHeight - len - 1;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= histogram->fieldWidth;
-            histogram->highy		= histogram->titleLines + 1;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= histogram->fieldWidth;
+	    histogram->highy		= histogram->titleLines + 1;
 
-            /* Set the stats label attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.2f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            len				= (int)strlen (string);
-            histogram->curString	= copyChar (string);
-            histogram->curx		= histogram->fieldWidth;
-            histogram->cury		= ((histogram->fieldHeight - len)/2) + histogram->titleLines + 1;
-         }
+	    /* Set the stats label attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.2f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    len				= (int)strlen (string);
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= histogram->fieldWidth;
+	    histogram->cury		= ((histogram->fieldHeight - len)/2) + histogram->titleLines + 1;
+	 }
       }
       else
       {
-         /* Alignment is HORIZONTAL. */
-         if (histogram->statsPos == TOP || histogram->statsPos == RIGHT)
-         {
-            /* Set the character strings correctly. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	 /* Alignment is HORIZONTAL. */
+	 if (histogram->statsPos == TOP || histogram->statsPos == RIGHT)
+	 {
+	    /* Set the character strings correctly. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= 1;
-            histogram->lowy		= histogram->titleLines + 1;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= 1;
+	    histogram->lowy		= histogram->titleLines + 1;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            len				= (int)strlen(string);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= histogram->boxWidth - len - 1;
-            histogram->highy		= histogram->titleLines + 1;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    len				= (int)strlen(string);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= histogram->boxWidth - len - 1;
+	    histogram->highy		= histogram->titleLines + 1;
 
-            /* Set the stats label attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            len				= (int)strlen(string);
-            histogram->curString	= copyChar (string);
-            histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
-            histogram->cury		= histogram->titleLines + 1;
-         }
-         else if (histogram->statsPos == CENTER)
-         {
-            /* Set the character strings correctly. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	    /* Set the stats label attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    len				= (int)strlen(string);
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
+	    histogram->cury		= histogram->titleLines + 1;
+	 }
+	 else if (histogram->statsPos == CENTER)
+	 {
+	    /* Set the character strings correctly. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= 1;
-            histogram->lowy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= 1;
+	    histogram->lowy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            len				= (int)strlen (string);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= histogram->boxWidth - len - 1;
-            histogram->highy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    len				= (int)strlen (string);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= histogram->boxWidth - len - 1;
+	    histogram->highy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
 
-            /* Set the stats label attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            len				= (int)strlen (string);
-            histogram->curString	= copyChar (string);
-            histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
-            histogram->cury		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
-         }
-         else if (histogram->statsPos == BOTTOM || histogram->statsPos == LEFT)
-         {
-            /* Set the character strings correctly. */
-            freeChar (histogram->lowString);
-            freeChar (histogram->highString);
-            freeChar (histogram->curString);
+	    /* Set the stats label attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    len				= (int)strlen (string);
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
+	    histogram->cury		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
+	 }
+	 else if (histogram->statsPos == BOTTOM || histogram->statsPos == LEFT)
+	 {
+	    /* Set the character strings correctly. */
+	    freeChar (histogram->lowString);
+	    freeChar (histogram->highString);
+	    freeChar (histogram->curString);
 
-            /* Set the low label attributes. */
-            sprintf (string, "%d", histogram->low);
-            histogram->lowString	= copyChar (string);
-            histogram->lowx		= 1;
-            histogram->lowy		= histogram->boxHeight - 2;
+	    /* Set the low label attributes. */
+	    sprintf (string, "%d", histogram->low);
+	    histogram->lowString	= copyChar (string);
+	    histogram->lowx		= 1;
+	    histogram->lowy		= histogram->boxHeight - 2;
 
-            /* Set the high label attributes. */
-            sprintf (string, "%d", histogram->high);
-            len				= (int)strlen (string);
-            histogram->highString	= copyChar (string);
-            histogram->highx		= histogram->boxWidth - len - 1;
-            histogram->highy		= histogram->boxHeight - 2;
+	    /* Set the high label attributes. */
+	    sprintf (string, "%d", histogram->high);
+	    len				= (int)strlen (string);
+	    histogram->highString	= copyChar (string);
+	    histogram->highx		= histogram->boxWidth - len - 1;
+	    histogram->highy		= histogram->boxHeight - 2;
 
-            /* Set the stats label attributes. */
-            if (histogram->viewType == vPERCENT)
-            {
-               sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
-            }
-            else if (histogram->viewType == vFRACTION)
-            {
-               sprintf (string, "%d/%d", histogram->value, histogram->high);
-            }
-            else
-            {
-               sprintf (string, "%d", histogram->value);
-            }
-            histogram->curString	= copyChar (string);
-            histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
-            histogram->cury		= histogram->boxHeight - 2;
-         }
+	    /* Set the stats label attributes. */
+	    if (histogram->viewType == vPERCENT)
+	    {
+	       sprintf (string, "%3.1f%%", (float) (histogram->percent * 100));
+	    }
+	    else if (histogram->viewType == vFRACTION)
+	    {
+	       sprintf (string, "%d/%d", histogram->value, histogram->high);
+	    }
+	    else
+	    {
+	       sprintf (string, "%d", histogram->value);
+	    }
+	    histogram->curString	= copyChar (string);
+	    histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
+	    histogram->cury		= histogram->boxHeight - 2;
+	 }
       }
    }
 }
@@ -538,11 +538,11 @@ void setCDKHistogramBoxAttribute (CDKHISTOGRAM *histogram, chtype character)
  */
 void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -592,7 +592,7 @@ static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean 
    moveCursesWindow(histogram->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (histogram->shadowWin != (WINDOW *)NULL)
+   if (histogram->shadowWin != 0)
    {
       moveCursesWindow(histogram->shadowWin, -xdiff, -ydiff);
    }
@@ -614,10 +614,10 @@ static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean 
 static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 {
    CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
-   chtype battr	= (chtype)NULL;
-   chtype bchar	= (chtype)NULL;
-   chtype fattr	= histogram->filler & A_ATTRIBUTES;
-   chtype fchar	= histogram->filler & A_CHARTEXT;
+   chtype battr = 0;
+   chtype bchar = 0;
+   chtype fattr = histogram->filler & A_ATTRIBUTES;
+   chtype fchar = histogram->filler & A_CHARTEXT;
    int histX	= histogram->titleLines + 1;
    int histY	= histogram->barSize;
    int len, x, y;
@@ -636,7 +636,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    }
 
    /* Do we have a shadow to draw? */
-   if (histogram->shadowWin != (WINDOW *)NULL)
+   if (histogram->shadowWin != 0)
    {
       drawShadow (histogram->shadowWin);
    }
@@ -646,7 +646,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < histogram->titleLines; x++)
       {
-         writeChtype (histogram->win,
+	 writeChtype (histogram->win,
 			histogram->titlePos[x],
 			x + 1,
 			histogram->title[x],
@@ -659,10 +659,10 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    if (histogram->viewType != vNONE)
    {
       /* Draw in the low label. */
-      if (histogram->lowString != (char *)NULL)
+      if (histogram->lowString != 0)
       {
-         len = (int)strlen (histogram->lowString);
-         writeCharAttrib (histogram->win,
+	 len = (int)strlen (histogram->lowString);
+	 writeCharAttrib (histogram->win,
 				histogram->lowx,
 				histogram->lowy,
 				histogram->lowString,
@@ -672,10 +672,10 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       }
 
       /* Draw in the current value label. */
-      if (histogram->curString != (char *)NULL)
+      if (histogram->curString != 0)
       {
-         len = (int)strlen (histogram->curString);
-         writeCharAttrib (histogram->win,
+	 len = (int)strlen (histogram->curString);
+	 writeCharAttrib (histogram->win,
 				histogram->curx,
 				histogram->cury,
 				histogram->curString,
@@ -685,10 +685,10 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       }
 
       /* Draw in the high label. */
-      if (histogram->highString != (char *)NULL)
+      if (histogram->highString != 0)
       {
-         len = (int)strlen (histogram->highString);
-         writeCharAttrib (histogram->win,
+	 len = (int)strlen (histogram->highString);
+	 writeCharAttrib (histogram->win,
 				histogram->highx,
 				histogram->highy,
 				histogram->highString,
@@ -714,21 +714,21 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       for (y=1; y <= histY; y++)
       {
 #ifdef HAVE_WINCHBUG
-         battr	= ' ' | A_REVERSE;
+	 battr	= ' ' | A_REVERSE;
 #else
-         battr	= mvwinch (histogram->win, x, y);
+	 battr	= mvwinch (histogram->win, x, y);
 #endif
-         fchar	= battr & A_ATTRIBUTES;
-         bchar	= battr & A_CHARTEXT;
+	 fchar	= battr & A_ATTRIBUTES;
+	 bchar	= battr & A_CHARTEXT;
 
-         if (bchar == ' ')
-         {
-            mvwaddch (histogram->win, x, y, histogram->filler);
-         }
-         else
-         {
-            mvwaddch (histogram->win, x, y, battr | fattr);
-         }
+	 if (bchar == ' ')
+	 {
+	    mvwaddch (histogram->win, x, y, histogram->filler);
+	 }
+	 else
+	 {
+	    mvwaddch (histogram->win, x, y, battr | fattr);
+	 }
       }
    }
 

@@ -10,14 +10,14 @@ char *XCursesProgramName="radio_ex";
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKRADIO *radio	= (CDKRADIO *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKRADIO *radio	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C></5>Select a filename";
    char *item[200], *mesg[5], temp[100];
-   int selection, count, x;
+   int selection, count;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -33,8 +33,8 @@ int main (void)
 			'#'|A_REVERSE, 1,
 			A_REVERSE, TRUE, FALSE);
 
-   /* Check if the radio list is NULL. */
-   if (radio == (CDKRADIO *)NULL)
+   /* Check if the radio list is null. */
+   if (radio == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -46,7 +46,7 @@ int main (void)
    }
 
    /* Activate the radio list. */
-   selection = activateCDKRadio (radio, (chtype *)NULL);
+   selection = activateCDKRadio (radio, 0);
 
    /* Check the exit status of the widget. */
    if (radio->exitType == vESCAPE_HIT)
@@ -68,10 +68,7 @@ int main (void)
    }
 
    /* Clean up. */
-   for (x=0; x < count; x++)
-   {
-      freeChar (item[x]);
-   }
+   freeCharList (item, count);
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:16:56 $
- * $Revision: 1.120 $
+ * $Date: 2000/01/16 22:30:51 $
+ * $Revision: 1.121 $
  */
 
 /*
@@ -23,7 +23,7 @@ static void redrawTitles (CDKMATRIX *matrix, int row, int col);
  */
 extern char *GPasteBuffer;
 
-DeclareCDKObjects(my_funcs,Matrix)
+DeclareCDKObjects(my_funcs,Matrix);
 
 /*
  * This function creates the matrix widget.
@@ -34,13 +34,13 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    CDKMATRIX *matrix	= newCDKObject(CDKMATRIX, &my_funcs);
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
-   chtype *junk		= (chtype *)NULL;
+   chtype *junk		= 0;
    int boxHeight	= 0;
    int boxWidth		= 0;
    int xpos		= xplace;
    int ypos		= yplace;
    int maxWidth		= INT_MIN;
-   int maxRowTitleWidth	= 0;
+   int maxRowTitleWidth = 0;
    int rowSpace		= MAXIMUM (0, rspace);
    int colSpace		= MAXIMUM (0, cspace);
    int begx		= 0;
@@ -55,8 +55,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       /* Free up any used memory. */
       free (matrix);
 
-      /* Return a NULL pointer. */
-      return ((CDKMATRIX *)NULL);
+      return (0);
    }
 
   /*
@@ -67,15 +66,15 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    vcols = (vcols > cols ? cols : vcols);
 
    /* We need to determine the width of the matrix box. */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       temp = CDKsplitString (title, '\n');
       matrix->titleLines = CDKcountStrings (temp);
       for (x=0; x < matrix->titleLines; x++)
       {
-         junk = char2Chtype (temp[x], &len, &junk2);
-         maxWidth = MAXIMUM (maxWidth, len);
-         freeChtype (junk);
+	 junk = char2Chtype (temp[x], &len, &junk2);
+	 maxWidth = MAXIMUM (maxWidth, len);
+	 freeChtype (junk);
       }
       CDKfreeStrings(temp);
    }
@@ -95,11 +94,11 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    {
       if (rowSpace == 0)
       {
-         boxHeight = 6 + matrix->titleLines + ((vrows - 1) * 2);
+	 boxHeight = 6 + matrix->titleLines + ((vrows - 1) * 2);
       }
       else
       {
-         boxHeight = 3 + matrix->titleLines + (vrows * 3) + ((vrows-1) * (rowSpace-1));
+	 boxHeight = 3 + matrix->titleLines + (vrows * 3) + ((vrows-1) * (rowSpace-1));
       }
    }
 
@@ -135,8 +134,8 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < matrix->titleLines; x++)
       {
-         matrix->title[x]	= char2Chtype (temp[x], &matrix->titleLen[x], &matrix->titlePos[x]);
-         matrix->titlePos[x]	= justifyString (boxWidth, matrix->titleLen[x], matrix->titlePos[x]);
+	 matrix->title[x]	= char2Chtype (temp[x], &matrix->titleLen[x], &matrix->titlePos[x]);
+	 matrix->titlePos[x]	= justifyString (boxWidth, matrix->titleLen[x], matrix->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -154,18 +153,16 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    /* Make the pop-up window. */
    matrix->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
-   /* Check if the new window is NULL or not. */
-   if (matrix->win == (WINDOW *)NULL)
+   if (matrix->win == 0)
    {
       /* Free up any used memory. */
       for (z=1; z <= rows; z++)
       {
-         freeChtype (matrix->rowtitle[z]);
+	 freeChtype (matrix->rowtitle[z]);
       }
       free (matrix);
 
-      /* Return a NULL pointer. */
-      return ((CDKMATRIX *)NULL);
+      return (0);
    }
 
    /* Make the subwindows in the pop-up. */
@@ -182,24 +179,22 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       cellWidth = colwidths[x] + 3;
       matrix->cell[0][x] = subwin (matrix->win, 1, cellWidth, begy, begx);
 
-      /* Is the subwindow NULL */
-      if (matrix->cell[0][x] == (WINDOW *)NULL)
+      if (matrix->cell[0][x] == 0)
       {
-         /* Free up any used memory. */
-         for (z=1; z <= rows; z++)
-         {
-            freeChtype (matrix->rowtitle[z]);
-         }
+	 /* Free up any used memory. */
+	 for (z=1; z <= rows; z++)
+	 {
+	    freeChtype (matrix->rowtitle[z]);
+	 }
 
-         /* We have to delete any windows created so far. */
-         for (z=1; z < x; z++)
-         {
-            deleteCursesWindow (matrix->cell[0][z]);
-         }
-         free (matrix);
+	 /* We have to delete any windows created so far. */
+	 for (z=1; z < x; z++)
+	 {
+	    deleteCursesWindow (matrix->cell[0][z]);
+	 }
+	 free (matrix);
 
-         /* Return a NULL pointer. */
-         return ((CDKMATRIX *)NULL);
+	 return (0);
       }
       begx +=  cellWidth + colSpace - 1;
    }
@@ -211,28 +206,26 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       /* Make the row titles */
       matrix->cell[x][0] = subwin (matrix->win, 3, matrix->maxrt, begy, xpos+1);
 
-      /* Is the window NULL */
-      if (matrix->cell[x][0] == (WINDOW *)NULL)
+      if (matrix->cell[x][0] == 0)
       {
-         /* Free up any used memory. */
-         for (z=1; z <= rows; z++)
-         {
-            freeChtype (matrix->rowtitle[z]);
-         }
+	 /* Free up any used memory. */
+	 for (z=1; z <= rows; z++)
+	 {
+	    freeChtype (matrix->rowtitle[z]);
+	 }
 
-         /* We have to delete any windows created so far. */
-         for (z=1; z <= vcols; z++)
-         {
-            deleteCursesWindow (matrix->cell[0][z]);
-         }
-         for (z=1; z < x ; z++)
-         {
-            deleteCursesWindow (matrix->cell[z][0]);
-         }
-         free (matrix);
+	 /* We have to delete any windows created so far. */
+	 for (z=1; z <= vcols; z++)
+	 {
+	    deleteCursesWindow (matrix->cell[0][z]);
+	 }
+	 for (z=1; z < x ; z++)
+	 {
+	    deleteCursesWindow (matrix->cell[z][0]);
+	 }
+	 free (matrix);
 
-         /* Return a NULL pointer. */
-         return ((CDKMATRIX *)NULL);
+	 return (0);
       }
 
       /* Set the start of the x position. */
@@ -241,41 +234,39 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       /* Make the cells */
       for (y=1; y <= vcols; y++)
       {
-         cellWidth = colwidths[y] + 3;
-         matrix->cell[x][y] = subwin (matrix->win, 3, cellWidth, begy, begx);
+	 cellWidth = colwidths[y] + 3;
+	 matrix->cell[x][y] = subwin (matrix->win, 3, cellWidth, begy, begx);
 
-         /* Is the cell NULL??? */
-         if (matrix->cell[x][y] == (WINDOW *)NULL)
-         {
-            /* Free up any used memory. */
-            for (y=1; y <= rows; y++)
-            {
-               freeChtype (matrix->rowtitle[y]);
-            }
+	 if (matrix->cell[x][y] == 0)
+	 {
+	    /* Free up any used memory. */
+	    for (y=1; y <= rows; y++)
+	    {
+	       freeChtype (matrix->rowtitle[y]);
+	    }
 
-            /* We have to delete any windows created so far. */
-            for (y=1; y <= vcols; y++)
-            {
-               deleteCursesWindow (matrix->cell[0][y]);
-            }
-            for (y=1; y < vrows ; y++)
-            {
-               deleteCursesWindow (matrix->cell[y][0]);
-            }
-            for (w=1; w <= vrows; w++)
-            {
-               for (z=1; z <= y; z++)
-               {
-                  deleteCursesWindow (matrix->cell[w][z]);
-               }
-            }
-            free (matrix);
+	    /* We have to delete any windows created so far. */
+	    for (y=1; y <= vcols; y++)
+	    {
+	       deleteCursesWindow (matrix->cell[0][y]);
+	    }
+	    for (y=1; y < vrows ; y++)
+	    {
+	       deleteCursesWindow (matrix->cell[y][0]);
+	    }
+	    for (w=1; w <= vrows; w++)
+	    {
+	       for (z=1; z <= y; z++)
+	       {
+		  deleteCursesWindow (matrix->cell[w][z]);
+	       }
+	    }
+	    free (matrix);
 
-            /* Return a NULL pointer. */
-            return ((CDKMATRIX *)NULL);
-         }
-         begx += cellWidth + colSpace - 1;
-         keypad (matrix->cell[x][y], TRUE);
+	    return (0);
+	 }
+	 begx += cellWidth + colSpace - 1;
+	 keypad (matrix->cell[x][y], TRUE);
       }
       begy += rowSpace + 2;
    }
@@ -294,10 +285,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    {
       for (y=1; y <= cols; y++)
       {
-         matrix->info[x][y]	= (char *)malloc (sizeof (char) * 256);
-         matrix->colvalues[y]	= colvalues[y];
-         matrix->colwidths[y]	= colwidths[y];
-         cleanChar (matrix->info[x][y], colwidths[y]+1, '\0');
+	 matrix->info[x][y]	= (char *)malloc (sizeof (char) * 256);
+	 matrix->colvalues[y]	= colvalues[y];
+	 matrix->colwidths[y]	= colwidths[y];
+	 cleanChar (matrix->info[x][y], colwidths[y]+1, '\0');
       }
    }
 
@@ -337,11 +328,11 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    matrix->VChar		= ACS_VLINE;
    matrix->BoxAttrib		= A_NORMAL;
    matrix->callbackfn		= (void *)&CDKMatrixCallBack;
-   matrix->preProcessFunction	= (PROCESSFN)NULL;
-   matrix->preProcessData	= (void *)NULL;
-   matrix->postProcessFunction	= (PROCESSFN)NULL;
-   matrix->postProcessData	= (void *)NULL;
-   matrix->shadowWin		= (WINDOW *)NULL;
+   matrix->preProcessFunction	= 0;
+   matrix->preProcessData	= 0;
+   matrix->postProcessFunction	= 0;
+   matrix->postProcessData	= 0;
+   matrix->shadowWin		= 0;
 
    /* Do we want a shadow??? */
    if (shadow)
@@ -370,21 +361,20 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
    /* Draw the matrix */
    drawCDKMatrix (matrix, ObjOf(matrix)->box);
 
-   /* Check if actions is NULL. */
-   if (actions == (chtype *)NULL)
+   if (actions == 0)
    {
-      chtype input = (chtype)NULL;
+      chtype input = 0;
       for (;;)
       {
-         /* Get the input. */
-         input = wgetch (matrix->cell[matrix->crow][matrix->ccol]);
+	 /* Get the input. */
+	 input = wgetch (matrix->cell[matrix->crow][matrix->ccol]);
 
-         /* Inject the character into the widget. */
-         ret = injectCDKMatrix (matrix, input);
-         if (matrix->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 /* Inject the character into the widget. */
+	 ret = injectCDKMatrix (matrix, input);
+	 if (matrix->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
    else
@@ -395,11 +385,11 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
-         ret = injectCDKMatrix (matrix, actions[x]);
-         if (matrix->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 ret = injectCDKMatrix (matrix, actions[x]);
+	 if (matrix->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
 
@@ -437,15 +427,15 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 
    /* Put the focus on the current cell */
    attrbox (matrix->cell[matrix->crow][matrix->ccol],
-   		ACS_ULCORNER,	ACS_URCORNER,
-   		ACS_LLCORNER,	ACS_LRCORNER,
-   		ACS_HLINE,	ACS_VLINE,
-   		A_BOLD);
+		ACS_ULCORNER,	ACS_URCORNER,
+		ACS_LLCORNER,	ACS_LRCORNER,
+		ACS_HLINE,	ACS_VLINE,
+		A_BOLD);
    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
    highlightCDKMatrixCell (matrix);
 
    /* Check if there is a pre-process function to be called. */
-   if (matrix->preProcessFunction != (PROCESSFN)NULL)
+   if (matrix->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
       ppReturn = ((PROCESSFN)(matrix->preProcessFunction)) (vMATRIX, matrix, matrix->preProcessData, input);
@@ -457,432 +447,431 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
       /* Check the key bindings. */
       if (checkCDKObjectBind (vMATRIX, matrix, input) != 0)
       {
-         matrix->exitType = vESCAPE_HIT;
-         return -1;
+	 matrix->exitType = vESCAPE_HIT;
+	 return -1;
       }
       else
       {
-         switch (input)
-         {
-            case CDK_TRANSPOSE :
-                 break;
+	 switch (input)
+	 {
+	    case CDK_TRANSPOSE :
+		 break;
 
-            case CDK_BEGOFLINE :
-                 break;
+	    case CDK_BEGOFLINE :
+		 break;
 
-            case CDK_ENDOFLINE :
-                 break;
+	    case CDK_ENDOFLINE :
+		 break;
 
-            case KEY_BACKSPACE : case DELETE : case '' : case KEY_DC :
-                 if (matrix->colvalues[matrix->col] == vVIEWONLY)
-                 {
-                   Beep();
-                 }
-                 else
-                 {
-                    if (charcount > 0)
-                    {
-                       charcount--;
-                       mvwdelch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1);
-                       mvwinsch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1, matrix->filler);
-                       wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-                       matrix->info[matrix->row][matrix->col][charcount] = '\0';
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 break;
+	    case KEY_BACKSPACE : case DELETE : case CONTROL('H') : case KEY_DC :
+		 if (matrix->colvalues[matrix->col] == vVIEWONLY)
+		 {
+		   Beep();
+		 }
+		 else
+		 {
+		    if (charcount > 0)
+		    {
+		       charcount--;
+		       mvwdelch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1);
+		       mvwinsch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1, matrix->filler);
+		       wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+		       matrix->info[matrix->row][matrix->col][charcount] = '\0';
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 break;
 
-            case KEY_RIGHT : case KEY_TAB :
-                 if (matrix->ccol != matrix->vcols)
-                 {
-                    /* We are moving to the right... */
-                    matrix->col++;
-                    matrix->ccol++;
-                    movedCell = TRUE;
-                 }
-                 else
-                 {
-                    /* We have to shift the columns to the right. */
-                    if (matrix->col != matrix->cols)
-                    {
-                       matrix->lcol++;
-                       matrix->col++;
+	    case KEY_RIGHT : case KEY_TAB :
+		 if (matrix->ccol != matrix->vcols)
+		 {
+		    /* We are moving to the right... */
+		    matrix->col++;
+		    matrix->ccol++;
+		    movedCell = TRUE;
+		 }
+		 else
+		 {
+		    /* We have to shift the columns to the right. */
+		    if (matrix->col != matrix->cols)
+		    {
+		       matrix->lcol++;
+		       matrix->col++;
 
-                       /* Redraw the column titles. */
-                       if (matrix->rows > matrix->vrows)
-                       {
-                          redrawTitles (matrix, FALSE, TRUE);
-                       }
-                       refreshCells = TRUE;
-                       movedCell = TRUE;
-                    }
-                    else
-                    {
-                       /* We are at the far right column, we need  */
-                       /* shift down one row, if we can. */
-                       if (matrix->row == matrix->rows)
-                       {
-                          Beep();
-                       }
-                       else
-                       {
-                          /* Set up the columns info. */
-                          matrix->col	= 1;
-                          matrix->lcol	= 1;
-                          matrix->ccol	= 1;
+		       /* Redraw the column titles. */
+		       if (matrix->rows > matrix->vrows)
+		       {
+			  redrawTitles (matrix, FALSE, TRUE);
+		       }
+		       refreshCells = TRUE;
+		       movedCell = TRUE;
+		    }
+		    else
+		    {
+		       /* We are at the far right column, we need  */
+		       /* shift down one row, if we can. */
+		       if (matrix->row == matrix->rows)
+		       {
+			  Beep();
+		       }
+		       else
+		       {
+			  /* Set up the columns info. */
+			  matrix->col	= 1;
+			  matrix->lcol	= 1;
+			  matrix->ccol	= 1;
 
-                          /* Shift the rows... */
-                          if (matrix->crow != matrix->vrows)
-                          {
-                             matrix->row++;
-                             matrix->crow++;
-                          }
-                          else
-                          {
-                             matrix->row++;
-                             matrix->trow++;
-                          }
-                          redrawTitles (matrix, TRUE, TRUE);
-                          refreshCells	= TRUE;
-                          movedCell	= TRUE;
-                       }
-                    }
-                 }
-                 break;
+			  /* Shift the rows... */
+			  if (matrix->crow != matrix->vrows)
+			  {
+			     matrix->row++;
+			     matrix->crow++;
+			  }
+			  else
+			  {
+			     matrix->row++;
+			     matrix->trow++;
+			  }
+			  redrawTitles (matrix, TRUE, TRUE);
+			  refreshCells	= TRUE;
+			  movedCell	= TRUE;
+		       }
+		    }
+		 }
+		 break;
 
-            case KEY_LEFT :
-                 if (matrix->ccol != 1)
-                 {
-                    /* We are moving to the left... */
-                    matrix->col--;
-                    matrix->ccol--;
-                    movedCell = TRUE;
-                 }
-                 else
-                 {
-                    /* Are we at the far left??? */
-                    if (matrix->lcol != 1)
-                    {
-                       matrix->lcol--;
-                       matrix->col--;
+	    case KEY_LEFT :
+		 if (matrix->ccol != 1)
+		 {
+		    /* We are moving to the left... */
+		    matrix->col--;
+		    matrix->ccol--;
+		    movedCell = TRUE;
+		 }
+		 else
+		 {
+		    /* Are we at the far left??? */
+		    if (matrix->lcol != 1)
+		    {
+		       matrix->lcol--;
+		       matrix->col--;
 
-                       /* Redraw the column titles. */
-                       if (matrix->cols > matrix->vcols)
-                       {
-                          redrawTitles (matrix, FALSE, TRUE);
-                       }
-                       refreshCells = TRUE;
-                       movedCell = TRUE;
-                    }
-                    else
-                    {
-                       /* Shift up one line if we can... */
-                       if (matrix->row == 1)
-                       {
-                          Beep();
-                       }
-                       else
-                       {
-                          /* Set up the columns info. */
-                          matrix->col	= matrix->cols;
-                          matrix->lcol	= matrix->cols - matrix->vcols + 1;
-                          matrix->ccol	= matrix->vcols;
+		       /* Redraw the column titles. */
+		       if (matrix->cols > matrix->vcols)
+		       {
+			  redrawTitles (matrix, FALSE, TRUE);
+		       }
+		       refreshCells = TRUE;
+		       movedCell = TRUE;
+		    }
+		    else
+		    {
+		       /* Shift up one line if we can... */
+		       if (matrix->row == 1)
+		       {
+			  Beep();
+		       }
+		       else
+		       {
+			  /* Set up the columns info. */
+			  matrix->col	= matrix->cols;
+			  matrix->lcol	= matrix->cols - matrix->vcols + 1;
+			  matrix->ccol	= matrix->vcols;
 
-                          /* Shift the rows... */
-                          if (matrix->crow != 1)
-                          {
-                             matrix->row--;
-                             matrix->crow--;
-                          }
-                          else
-                          {
-                             matrix->row--;
-                             matrix->trow--;
-                          }
-                          redrawTitles (matrix, TRUE, TRUE);
-                          refreshCells	= TRUE;
-                          movedCell	= TRUE;
-                       }
-                    }
-                 }
-                 break;
+			  /* Shift the rows... */
+			  if (matrix->crow != 1)
+			  {
+			     matrix->row--;
+			     matrix->crow--;
+			  }
+			  else
+			  {
+			     matrix->row--;
+			     matrix->trow--;
+			  }
+			  redrawTitles (matrix, TRUE, TRUE);
+			  refreshCells	= TRUE;
+			  movedCell	= TRUE;
+		       }
+		    }
+		 }
+		 break;
 
-            case KEY_UP :
-                 if (matrix->crow != 1)
-                 {
-                    matrix->row--;
-                    matrix->crow--;
-                    movedCell	= TRUE;
-                 }
-                 else
-                 {
-                    if (matrix->trow != 1)
-                    {
-                       matrix->trow--;
-                       matrix->row--;
+	    case KEY_UP :
+		 if (matrix->crow != 1)
+		 {
+		    matrix->row--;
+		    matrix->crow--;
+		    movedCell	= TRUE;
+		 }
+		 else
+		 {
+		    if (matrix->trow != 1)
+		    {
+		       matrix->trow--;
+		       matrix->row--;
 
-                       /* Redraw the row titles. */
-                       if (matrix->rows > matrix->vrows)
-                       {
-                          redrawTitles (matrix, TRUE, FALSE);
-                       }
-                       refreshCells	= TRUE;
-                       movedCell	= TRUE;
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 break;
+		       /* Redraw the row titles. */
+		       if (matrix->rows > matrix->vrows)
+		       {
+			  redrawTitles (matrix, TRUE, FALSE);
+		       }
+		       refreshCells	= TRUE;
+		       movedCell	= TRUE;
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 break;
 
-            case KEY_DOWN :
-                 if (matrix->crow != matrix->vrows)
-                 {
-                    matrix->row ++;
-                    matrix->crow ++;
-                    movedCell	= TRUE;
-                 }
-                 else
-                 {
-                    if ((matrix->trow + matrix->vrows - 1) != matrix->rows)
-                    {
-                       matrix->trow++;
-                       matrix->row++;
+	    case KEY_DOWN :
+		 if (matrix->crow != matrix->vrows)
+		 {
+		    matrix->row ++;
+		    matrix->crow ++;
+		    movedCell	= TRUE;
+		 }
+		 else
+		 {
+		    if ((matrix->trow + matrix->vrows - 1) != matrix->rows)
+		    {
+		       matrix->trow++;
+		       matrix->row++;
 
-                       /* Redraw the titles. */
-                       if (matrix->rows > matrix->vrows)
-                       {
-                          redrawTitles (matrix, TRUE, FALSE);
-                       }
-                       refreshCells	= TRUE;
-                       movedCell	= TRUE;
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 break;
+		       /* Redraw the titles. */
+		       if (matrix->rows > matrix->vrows)
+		       {
+			  redrawTitles (matrix, TRUE, FALSE);
+		       }
+		       refreshCells	= TRUE;
+		       movedCell	= TRUE;
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 break;
 
-            case KEY_NPAGE : case '' :
-                 if (matrix->rows > matrix->vrows)
-                 {
-                    if ((matrix->trow + ((matrix->vrows - 1) * 2)) <= matrix->rows)
-                    {
-                       matrix->trow	+= matrix->vrows - 1;
-                       matrix->row	+= matrix->vrows - 1;
-                       redrawTitles (matrix, TRUE, FALSE);
-                       refreshCells	= TRUE;
-                       movedCell	= TRUE;
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	    case KEY_NPAGE : case CONTROL('F') :
+		 if (matrix->rows > matrix->vrows)
+		 {
+		    if ((matrix->trow + ((matrix->vrows - 1) * 2)) <= matrix->rows)
+		    {
+		       matrix->trow	+= matrix->vrows - 1;
+		       matrix->row	+= matrix->vrows - 1;
+		       redrawTitles (matrix, TRUE, FALSE);
+		       refreshCells	= TRUE;
+		       movedCell	= TRUE;
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-            case KEY_PPAGE : case '' :
-                 if (matrix->rows > matrix->vrows)
-                 {
-                    if ((matrix->trow - ((matrix->vrows - 1) * 2)) >= 1)
-                    {
-                       matrix->trow	-= matrix->vrows - 1;
-                       matrix->row	-= matrix->vrows - 1;
-                       redrawTitles (matrix, TRUE, FALSE);
-                       refreshCells	= TRUE;
-                       movedCell	= TRUE;
-                    }
-                    else
-                    {
-                       Beep();
-                    }
-                 }
-                 else
-                 {
-                    Beep();
-                 }
-                 break;
+	    case KEY_PPAGE : case CONTROL('B') :
+		 if (matrix->rows > matrix->vrows)
+		 {
+		    if ((matrix->trow - ((matrix->vrows - 1) * 2)) >= 1)
+		    {
+		       matrix->trow	-= matrix->vrows - 1;
+		       matrix->row	-= matrix->vrows - 1;
+		       redrawTitles (matrix, TRUE, FALSE);
+		       refreshCells	= TRUE;
+		       movedCell	= TRUE;
+		    }
+		    else
+		    {
+		       Beep();
+		    }
+		 }
+		 else
+		 {
+		    Beep();
+		 }
+		 break;
 
-   	 case '' :
-              jumpToCell (matrix, -1, -1);
-              drawCDKMatrix (matrix, ObjOf(matrix)->box);
-              break;
+	 case CONTROL('G') :
+	      jumpToCell (matrix, -1, -1);
+	      drawCDKMatrix (matrix, ObjOf(matrix)->box);
+	      break;
 
-   	 case CDK_PASTE :
-              if (GPasteBuffer == (char *)NULL || (int)strlen (GPasteBuffer) > matrix->colwidths[matrix->ccol])
-              {
-                 Beep();
-              }
-              else
-              {
-                 strcpy (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], GPasteBuffer);
-                 drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
-              }
-              break;
+	 case CDK_PASTE :
+	      if (GPasteBuffer == 0 || (int)strlen (GPasteBuffer) > matrix->colwidths[matrix->ccol])
+	      {
+		 Beep();
+	      }
+	      else
+	      {
+		 strcpy (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], GPasteBuffer);
+		 drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
+	      }
+	      break;
 
-   	 case CDK_COPY :
-              freeChar (GPasteBuffer);
-              GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-              break;
+	 case CDK_COPY :
+	      freeChar (GPasteBuffer);
+	      GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
+	      break;
 
-   	 case CDK_CUT :
-              freeChar (GPasteBuffer);
-              GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-              cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
-              drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
-              break;
+	 case CDK_CUT :
+	      freeChar (GPasteBuffer);
+	      GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
+	      cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
+	      drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
+	      break;
 
-   	 case CDK_ERASE :
-              cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
-              drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
-              break;
+	 case CDK_ERASE :
+	      cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
+	      drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
+	      break;
 
-   	 case KEY_RETURN : case KEY_ENTER :
-              if (!matrix->boxCell)
-              {
-                 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
-              			' ',	' ',
-              			' ',	' ',
-              			' ',	' ',
-              			A_NORMAL);
-              }
-              else
-              {
-                 drawCDKMatrixCell (matrix,
-              			matrix->oldcrow,
-              			matrix->oldccol,
-              			matrix->oldvrow,
-              			matrix->oldvcol,
-              			A_NORMAL,
-              			matrix->boxCell);
-              }
-              wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-              matrix->exitType = vNORMAL;
-              return 0;
-   	   break;
+	 case KEY_RETURN : case KEY_ENTER :
+	      if (!matrix->boxCell)
+	      {
+		 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+				' ',	' ',
+				' ',	' ',
+				' ',	' ',
+				A_NORMAL);
+	      }
+	      else
+	      {
+		 drawCDKMatrixCell (matrix,
+				matrix->oldcrow,
+				matrix->oldccol,
+				matrix->oldvrow,
+				matrix->oldvcol,
+				A_NORMAL,
+				matrix->boxCell);
+	      }
+	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	      matrix->exitType = vNORMAL;
+	      return 0;
 
-   	 case KEY_ESC :
-              if (!matrix->boxCell)
-              {
-                 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
-              			' ',	' ',
-              			' ',	' ',
-              			' ',	' ',
-              			A_NORMAL);
-              }
-              else
-              {
-                 drawCDKMatrixCell (matrix,
-              			matrix->oldcrow,
-              			matrix->oldccol,
-              			matrix->oldvrow,
-              			matrix->oldvcol,
-              			A_NORMAL,
-              			matrix->boxCell);
-              }
-              wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-              matrix->exitType = vESCAPE_HIT;
-              return -1;
+	 case KEY_ESC :
+	      if (!matrix->boxCell)
+	      {
+		 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+				' ',	' ',
+				' ',	' ',
+				' ',	' ',
+				A_NORMAL);
+	      }
+	      else
+	      {
+		 drawCDKMatrixCell (matrix,
+				matrix->oldcrow,
+				matrix->oldccol,
+				matrix->oldvrow,
+				matrix->oldvcol,
+				A_NORMAL,
+				matrix->boxCell);
+	      }
+	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	      matrix->exitType = vESCAPE_HIT;
+	      return -1;
 
-         case CDK_REFRESH :
-              eraseCDKScreen (ScreenOf(matrix));
-              refreshCDKScreen (ScreenOf(matrix));
-              break;
+	 case CDK_REFRESH :
+	      eraseCDKScreen (ScreenOf(matrix));
+	      refreshCDKScreen (ScreenOf(matrix));
+	      break;
 
-         default :
-              ((MATRIXCB)matrix->callbackfn)(matrix, input);
-              break;
-         }
+	 default :
+	      ((MATRIXCB)matrix->callbackfn)(matrix, input);
+	      break;
+	 }
       }
 
       /* Did we change cells? */
       if (movedCell)
       {
-         /* un-highlight the old box  */
-         if (!matrix->boxCell)
-         {
-            attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
-   			' ',	' ',
-   			' ',	' ',
-   			' ',	' ',
-   			A_NORMAL);
-         }
-         else
-         {
-            drawCDKMatrixCell (matrix,
-   				matrix->oldcrow,
-   				matrix->oldccol,
-   				matrix->oldvrow,
-   				matrix->oldvcol,
-   				(chtype)NULL,
-   				matrix->boxCell);
-         }
-         wrefresh (matrix->cell[matrix->oldcrow][matrix->oldccol]);
+	 /* un-highlight the old box  */
+	 if (!matrix->boxCell)
+	 {
+	    attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+			' ',	' ',
+			' ',	' ',
+			' ',	' ',
+			A_NORMAL);
+	 }
+	 else
+	 {
+	    drawCDKMatrixCell (matrix,
+				matrix->oldcrow,
+				matrix->oldccol,
+				matrix->oldvrow,
+				matrix->oldvcol,
+				0,
+				matrix->boxCell);
+	 }
+	 wrefresh (matrix->cell[matrix->oldcrow][matrix->oldccol]);
 
-         /* Highlight the new cell. */
-         attrbox (matrix->cell[matrix->crow][matrix->ccol],
-   			ACS_ULCORNER,	ACS_URCORNER,
-   			ACS_LLCORNER,	ACS_LRCORNER,
-   			ACS_HLINE,	ACS_VLINE,
-   			A_BOLD);
-         wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-         highlightCDKMatrixCell (matrix);
+	 /* Highlight the new cell. */
+	 attrbox (matrix->cell[matrix->crow][matrix->ccol],
+			ACS_ULCORNER,	ACS_URCORNER,
+			ACS_LLCORNER,	ACS_LRCORNER,
+			ACS_HLINE,	ACS_VLINE,
+			A_BOLD);
+	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	 highlightCDKMatrixCell (matrix);
       }
 
       /* Redraw each cell. */
       if (refreshCells)
       {
-         /* Fill in the cells. */
-         for (x=1; x <= matrix->vrows; x++)
-         {
-            for (y=1; y <= matrix->vcols; y++)
-            {
-               drawCDKMatrixCell (matrix, x, y,
-   					matrix->trow+x-1,
-   					matrix->lcol+y-1,
-   					(chtype)NULL,
-   					matrix->boxCell);
-            }
-         }
+	 /* Fill in the cells. */
+	 for (x=1; x <= matrix->vrows; x++)
+	 {
+	    for (y=1; y <= matrix->vcols; y++)
+	    {
+	       drawCDKMatrixCell (matrix, x, y,
+					matrix->trow+x-1,
+					matrix->lcol+y-1,
+					0,
+					matrix->boxCell);
+	    }
+	 }
 
-         /* Highlight the current cell. */
-         attrbox (matrix->cell[matrix->crow][matrix->ccol],
-   			ACS_ULCORNER,	ACS_URCORNER,
-   			ACS_LLCORNER,	ACS_LRCORNER,
-   			ACS_HLINE,	ACS_VLINE,
-   			A_BOLD);
-         wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-         highlightCDKMatrixCell (matrix);
+	 /* Highlight the current cell. */
+	 attrbox (matrix->cell[matrix->crow][matrix->ccol],
+			ACS_ULCORNER,	ACS_URCORNER,
+			ACS_LLCORNER,	ACS_LRCORNER,
+			ACS_HLINE,	ACS_VLINE,
+			A_BOLD);
+	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	 highlightCDKMatrixCell (matrix);
       }
 
       /* Move to the correct position in the cell. */
       if (refreshCells || movedCell)
       {
-         if (matrix->colwidths[matrix->ccol] == 1)
-         {
-            wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
-         }
-         else
-         {
-            infolen = (int)strlen (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-            wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
-         }
-         wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	 if (matrix->colwidths[matrix->ccol] == 1)
+	 {
+	    wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
+	 }
+	 else
+	 {
+	    infolen = (int)strlen (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
+	    wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
+	 }
+	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
       }
 
       /* Should we call a post-process? */
-      if (matrix->postProcessFunction != (PROCESSFN)NULL)
+      if (matrix->postProcessFunction != 0)
       {
-         ((PROCESSFN)(matrix->postProcessFunction)) (vMATRIX, matrix, matrix->postProcessData, input);
+	 ((PROCESSFN)(matrix->postProcessFunction)) (vMATRIX, matrix, matrix->postProcessData, input);
       }
    }
 
@@ -905,15 +894,15 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
    /* Declare local variables. */
    EDisplayType disptype	= (EDisplayType)matrix->colvalues[matrix->col];
    int charcount		= (int)strlen (matrix->info[matrix->row][matrix->col]);
-   chtype newchar		= (chtype)NULL;
+   chtype newchar		= 0;
 
    /* Check the types */
    if (disptype == vINT && !isdigit((int)input))
    {
       Beep();
    }
-   else if ((disptype == vCHAR || disptype == vUCHAR || \
-		disptype == vLCHAR || disptype == vUHCHAR || \
+   else if ((disptype == vCHAR || disptype == vUCHAR ||
+		disptype == vLCHAR || disptype == vUHCHAR ||
 		disptype == vLHCHAR) && isdigit((int)input))
    {
       Beep();
@@ -927,33 +916,33 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
       /* Check the width of the string. */
       if (charcount == matrix->colwidths[matrix->col])
       {
-         Beep();
+	 Beep();
       }
       else
       {
-         /* We will make any needed adjustments to the case of the character. */
-         newchar = input;
-         if ((disptype == vUCHAR || disptype == vUCHAR || \
-		disptype == vUMIXED || disptype == vUHMIXED) \
+	 /* We will make any needed adjustments to the case of the character. */
+	 newchar = input;
+	 if ((disptype == vUCHAR || disptype == vUCHAR ||
+		disptype == vUMIXED || disptype == vUHMIXED)
 		&& !isdigit((int)input))
-         {
-            newchar = toupper(input);
-         }
-         else if ((disptype == vUCHAR || disptype == vUCHAR || \
-			disptype == vUMIXED || disptype == vUHMIXED) && \
+	 {
+	    newchar = toupper(input);
+	 }
+	 else if ((disptype == vUCHAR || disptype == vUCHAR ||
+			disptype == vUMIXED || disptype == vUHMIXED) &&
 			!isdigit((int)input))
-         {
-            newchar = tolower(input);
-         }
+	 {
+	    newchar = tolower(input);
+	 }
 
-         /* Update the screen. */
-         wmove (matrix->cell[matrix->crow][matrix->ccol], 1, (int)strlen (matrix->info[matrix->row][matrix->col])+1);
-         waddch (matrix->cell[matrix->crow][matrix->ccol], newchar);
-         wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	 /* Update the screen. */
+	 wmove (matrix->cell[matrix->crow][matrix->ccol], 1, (int)strlen (matrix->info[matrix->row][matrix->col])+1);
+	 waddch (matrix->cell[matrix->crow][matrix->ccol], newchar);
+	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
 
-         /* Update the character pointer. */
-         matrix->info[matrix->row][matrix->col][charcount++] = newchar;
-         matrix->info[matrix->row][matrix->col][charcount] = '\0';
+	 /* Update the character pointer. */
+	 matrix->info[matrix->row][matrix->col][charcount++] = newchar;
+	 matrix->info[matrix->row][matrix->col][charcount] = '\0';
       }
    }
 }
@@ -974,11 +963,11 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
    */
    if (matrix->dominant == ROW)
    {
-      highlight	= matrix->rowtitle[matrix->crow][0] & A_ATTRIBUTES;
+      highlight = matrix->rowtitle[matrix->crow][0] & A_ATTRIBUTES;
    }
    else if (matrix->dominant == COL)
    {
-      highlight	= matrix->coltitle[matrix->ccol][0] & A_ATTRIBUTES;
+      highlight = matrix->coltitle[matrix->ccol][0] & A_ATTRIBUTES;
    }
 
    /* If the column is only one char. */
@@ -986,12 +975,12 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
    {
       if (x <= infolen)
       {
-        mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
+	mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
 			matrix->info[matrix->row][matrix->col][x-1]|highlight);
       }
       else
       {
-        mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
+	mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
 			matrix->filler | highlight);
       }
    }
@@ -1038,12 +1027,12 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-         moveCursesWindow(matrix->cell[x][y], -xdiff, -ydiff);
+	 moveCursesWindow(matrix->cell[x][y], -xdiff, -ydiff);
       }
    }
 
    /* If there is a shadow box we have to move it too. */
-   if (matrix->shadowWin != (WINDOW *)NULL)
+   if (matrix->shadowWin != 0)
    {
       moveCursesWindow(matrix->shadowWin, -xdiff, -ydiff);
    }
@@ -1078,11 +1067,11 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
     */
    if (matrix->dominant == ROW)
    {
-      highlight	= matrix->rowtitle[row][0] & A_ATTRIBUTES;
+      highlight = matrix->rowtitle[row][0] & A_ATTRIBUTES;
    }
    else if (matrix->dominant == COL)
    {
-      highlight	= matrix->coltitle[col][0] & A_ATTRIBUTES;
+      highlight = matrix->coltitle[col][0] & A_ATTRIBUTES;
    }
 
    /* Draw in the cell info. */
@@ -1090,11 +1079,11 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    {
       if (x <= infolen)
       {
-         mvwaddch (cell, 1, x, matrix->info[vrow][vcol][x-1]|highlight);
+	 mvwaddch (cell, 1, x, matrix->info[vrow][vcol][x-1]|highlight);
       }
       else
       {
-         mvwaddch (cell, 1, x, matrix->filler|highlight);
+	 mvwaddch (cell, 1, x, matrix->filler|highlight);
       }
    }
    wmove (cell, 1, infolen + 1);
@@ -1113,8 +1102,8 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    if (matrix->colSpace != 0 && matrix->rowSpace != 0)
    {
       attrbox (cell, ACS_ULCORNER, ACS_URCORNER,
-      		ACS_LLCORNER, ACS_LRCORNER,
-      		ACS_HLINE, ACS_VLINE,
+		ACS_LLCORNER, ACS_LRCORNER,
+		ACS_HLINE, ACS_VLINE,
 		attr);
       return;
    }
@@ -1122,54 +1111,54 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    {
       if (row == 1)
       {
-         attrbox (cell,	ACS_ULCORNER, ACS_URCORNER,
-      			ACS_LTEE, ACS_RTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_ULCORNER, ACS_URCORNER,
+			ACS_LTEE, ACS_RTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
       else if (row > 1 && row < rows)
       {
-         attrbox (cell,	ACS_LTEE, ACS_RTEE,
-      			ACS_LTEE, ACS_RTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_LTEE, ACS_RTEE,
+			ACS_LTEE, ACS_RTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
       else if (row == rows)
       {
-         attrbox (cell,	ACS_LTEE, ACS_RTEE,
-      			ACS_LLCORNER, ACS_LRCORNER,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_LTEE, ACS_RTEE,
+			ACS_LLCORNER, ACS_LRCORNER,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
    }
    if (matrix->colSpace == 0 && matrix->rowSpace != 0)
    {
       if (col == 1)
       {
-         attrbox (cell,	ACS_ULCORNER, ACS_TTEE,
-      			ACS_LLCORNER, ACS_BTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_ULCORNER, ACS_TTEE,
+			ACS_LLCORNER, ACS_BTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
       else if (col > 1 && col < cols)
       {
-         attrbox (cell,	ACS_TTEE, ACS_TTEE,
-      			ACS_BTEE, ACS_BTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_TTEE, ACS_TTEE,
+			ACS_BTEE, ACS_BTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
       else if (col == cols)
       {
-         attrbox (cell,	ACS_TTEE, ACS_URCORNER,
-      			ACS_BTEE, ACS_LRCORNER,
-      			ACS_HLINE, ACS_VLINE,
+	 attrbox (cell, ACS_TTEE, ACS_URCORNER,
+			ACS_BTEE, ACS_LRCORNER,
+			ACS_HLINE, ACS_VLINE,
 			attr);
-         return;
+	 return;
       }
    }
 
@@ -1178,26 +1167,26 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    {
       if (col == 1)
       {
-         /* Draw the top left corner */
-         attrbox (cell,	ACS_ULCORNER, ACS_TTEE,
+	 /* Draw the top left corner */
+	 attrbox (cell, ACS_ULCORNER, ACS_TTEE,
 			ACS_LTEE, ACS_PLUS,
-      			ACS_HLINE, ACS_VLINE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col > 1 && col < cols)
       {
-         /* Draw the top middle box */
-         attrbox (cell,	ACS_TTEE, ACS_TTEE,
-      			ACS_PLUS, ACS_PLUS,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the top middle box */
+	 attrbox (cell, ACS_TTEE, ACS_TTEE,
+			ACS_PLUS, ACS_PLUS,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col == cols)
       {
-         /* Draw the top right corner */
-         attrbox (cell,	ACS_TTEE, ACS_URCORNER,
-      			ACS_PLUS, ACS_LTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the top right corner */
+	 attrbox (cell, ACS_TTEE, ACS_URCORNER,
+			ACS_PLUS, ACS_LTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
    }
@@ -1205,26 +1194,26 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    {
       if (col == 1)
       {
-         /* Draw the middle left box */
-         attrbox (cell,	ACS_LTEE, ACS_PLUS,
-     			ACS_LTEE, ACS_PLUS,
-     			ACS_HLINE, ACS_VLINE,
+	 /* Draw the middle left box */
+	 attrbox (cell, ACS_LTEE, ACS_PLUS,
+			ACS_LTEE, ACS_PLUS,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col > 1 && col < cols)
       {
-         /* Draw the middle box */
-         attrbox (cell,	ACS_PLUS, ACS_PLUS,
-      			ACS_PLUS, ACS_PLUS,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the middle box */
+	 attrbox (cell, ACS_PLUS, ACS_PLUS,
+			ACS_PLUS, ACS_PLUS,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col == cols)
       {
-         /* Draw the middle right box */
-         attrbox (cell,	ACS_PLUS, ACS_RTEE,
-      			ACS_PLUS, ACS_RTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the middle right box */
+	 attrbox (cell, ACS_PLUS, ACS_RTEE,
+			ACS_PLUS, ACS_RTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
    }
@@ -1232,26 +1221,26 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    {
       if (col == 1)
       {
-         /* Draw the bottom left corner */
-         attrbox (cell,	ACS_LTEE, ACS_PLUS,
-      			ACS_LLCORNER, ACS_BTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the bottom left corner */
+	 attrbox (cell, ACS_LTEE, ACS_PLUS,
+			ACS_LLCORNER, ACS_BTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col > 1 && col < cols)
       {
-         /* Draw the bottom middle box */
-         attrbox (cell,	ACS_PLUS, ACS_PLUS,
-      			ACS_BTEE, ACS_BTEE,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the bottom middle box */
+	 attrbox (cell, ACS_PLUS, ACS_PLUS,
+			ACS_BTEE, ACS_BTEE,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
       else if (col == cols)
       {
-         /* Draw the bottom right corner */
-         attrbox (cell,	ACS_PLUS, ACS_RTEE,
-      			ACS_BTEE, ACS_LRCORNER,
-      			ACS_HLINE, ACS_VLINE,
+	 /* Draw the bottom right corner */
+	 attrbox (cell, ACS_PLUS, ACS_RTEE,
+			ACS_BTEE, ACS_LRCORNER,
+			ACS_HLINE, ACS_VLINE,
 			attr);
       }
    }
@@ -1259,9 +1248,9 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    /* Highlight the current cell. */
    attrbox (matrix->cell[matrix->crow][matrix->ccol],
 		ACS_ULCORNER,	ACS_URCORNER,
-   		ACS_LLCORNER,	ACS_LRCORNER,
-   		ACS_HLINE,	ACS_VLINE,
-   		A_BOLD);
+		ACS_LLCORNER,	ACS_LRCORNER,
+		ACS_HLINE,	ACS_VLINE,
+		A_BOLD);
    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
    highlightCDKMatrixCell (matrix);
 }
@@ -1275,7 +1264,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    int x, y;
 
    /* Did we ask for a shadow??? */
-   if (matrix->shadowWin != (WINDOW *)NULL)
+   if (matrix->shadowWin != 0)
    {
       drawShadow (matrix->shadowWin);
    }
@@ -1286,7 +1275,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
       attrbox (matrix->win,
 		matrix->ULChar, matrix->URChar,
 		matrix->LLChar, matrix->LRChar,
-		matrix->HChar,  matrix->VChar,
+		matrix->HChar,	matrix->VChar,
 		matrix->BoxAttrib);
       wrefresh (matrix->win);
    }
@@ -1296,7 +1285,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    {
       for (x=0; x < matrix->titleLines; x++)
       {
-         writeChtype (matrix->win,
+	 writeChtype (matrix->win,
 			matrix->titlePos[x],
 			x + 1,
 			matrix->title[x],
@@ -1332,7 +1321,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
       /* Draw in the cells.. */
       for (y=1; y <= matrix->vcols; y++)
       {
-         drawCDKMatrixCell (matrix, x, y,
+	 drawCDKMatrixCell (matrix, x, y,
 				matrix->trow + x-1,
 				matrix->lcol + y-1,
 				A_NORMAL,
@@ -1342,10 +1331,10 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
 
    /* Highlight the current cell. */
    attrbox (matrix->cell[matrix->crow][matrix->ccol],
-   		ACS_ULCORNER,	ACS_URCORNER,
-   		ACS_LLCORNER,	ACS_LRCORNER,
-   		ACS_HLINE,	ACS_VLINE,
-   		A_BOLD);
+		ACS_ULCORNER,	ACS_URCORNER,
+		ACS_LLCORNER,	ACS_LRCORNER,
+		ACS_HLINE,	ACS_VLINE,
+		A_BOLD);
    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
    highlightCDKMatrixCell (matrix);
 }
@@ -1367,7 +1356,7 @@ void destroyCDKMatrix (CDKMATRIX *matrix)
    {
       for (x=0; x < matrix->titleLines; x++)
       {
-         freeChtype (matrix->title[x]);
+	 freeChtype (matrix->title[x]);
       }
    }
 
@@ -1388,7 +1377,7 @@ void destroyCDKMatrix (CDKMATRIX *matrix)
    {
       for (y=1; y <= matrix->cols; y++)
       {
-         freeChar (matrix->info[x][y]);
+	 freeChar (matrix->info[x][y]);
       }
    }
 
@@ -1406,7 +1395,7 @@ void destroyCDKMatrix (CDKMATRIX *matrix)
    {
       for (y=1; y <= matrix->vcols; y++)
       {
-         deleteCursesWindow (matrix->cell[x][y]);
+	 deleteCursesWindow (matrix->cell[x][y]);
       }
    }
    deleteCursesWindow (matrix->shadowWin);
@@ -1442,7 +1431,7 @@ static void _eraseCDKMatrix (CDKOBJS *object)
    {
       for (y=1; y <= matrix->vcols; y++)
       {
-         eraseCursesWindow (matrix->cell[x][y]);
+	 eraseCursesWindow (matrix->cell[x][y]);
       }
    }
    eraseCursesWindow (matrix->shadowWin);
@@ -1463,12 +1452,12 @@ void setCDKMatrix (CDKMATRIX *matrix, char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COL
    {
       for (y=1; y <= matrix->cols; y++)
       {
-         /* Clean the old info, and copy in the new. */
-         if (matrix->info[x][y] != (char *)NULL)
-         {
-            /* Clean the cell information. */
-            cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
-         }
+	 /* Clean the old info, and copy in the new. */
+	 if (matrix->info[x][y] != 0)
+	 {
+	    /* Clean the cell information. */
+	    cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
+	 }
       }
    }
 
@@ -1477,11 +1466,11 @@ void setCDKMatrix (CDKMATRIX *matrix, char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COL
    {
       for (y=1; y <= subSize[x]; y++)
       {
-         /* Copy in the new information. */
-         if (info[x][y] != (char *)NULL)
-         {
-            strncpy (matrix->info[x][y], info[x][y], matrix->colwidths[y]);
-         }
+	 /* Copy in the new information. */
+	 if (info[x][y] != 0)
+	 {
+	    strncpy (matrix->info[x][y], info[x][y], matrix->colwidths[y]);
+	 }
       }
    }
 }
@@ -1499,7 +1488,7 @@ void cleanCDKMatrix (CDKMATRIX *matrix)
    {
       for (y=1; y <= matrix->cols; y++)
       {
-         cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
+	 cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
       }
    }
 }
@@ -1510,7 +1499,7 @@ void cleanCDKMatrix (CDKMATRIX *matrix)
 int jumpToCell (CDKMATRIX *matrix, int row, int col)
 {
    /* Declare local variables. */
-   CDKSCALE *scale	= (CDKSCALE *)NULL;
+   CDKSCALE *scale	= 0;
    int newRow		= row;
    int newCol		= col;
 
@@ -1527,7 +1516,7 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
 				1, 1, matrix->rows, 1, 1, TRUE, FALSE);
 
       /* Activate the scale and get the row. */
-      newRow = activateCDKScale (scale, (chtype *)NULL);
+      newRow = activateCDKScale (scale, 0);
       destroyCDKScale (scale);
    }
 
@@ -1544,7 +1533,7 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
 				1, 1, matrix->cols, 1, 1, TRUE, FALSE);
 
       /* Activate the scale and get the column. */
-      newCol = activateCDKScale (scale, (chtype *)NULL);
+      newCol = activateCDKScale (scale, 0);
       destroyCDKScale (scale);
    }
 
@@ -1565,8 +1554,8 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
 int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
 {
    /* Declare local variables. */
-   int rowShift	= newrow - matrix->row;
-   int colShift	= newcol - matrix->col;
+   int rowShift = newrow - matrix->row;
+   int colShift = newcol - matrix->col;
 
    /* Make sure we arent asking to move out of the matrix. */
    if (newrow > matrix->rows || newcol > matrix->cols || newrow <= 0 || newcol <= 0)
@@ -1580,26 +1569,26 @@ int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
       /* We are moving down. */
       if (matrix->vrows == matrix->cols)
       {
-         matrix->trow	= 1;
-         matrix->crow	= newrow;
-         matrix->row	= newrow;
+	 matrix->trow	= 1;
+	 matrix->crow	= newrow;
+	 matrix->row	= newrow;
       }
       else
       {
-         if ((rowShift + matrix->vrows) < matrix->rows)
-         {
-            /* Just shift down by rowShift... */
-            matrix->trow	+= rowShift;
-            matrix->crow	= 1;
-            matrix->row		+= rowShift;
-         }
-         else
-         {
-            /* We need to munge with the values... */
-            matrix->trow	= matrix->rows - matrix->vrows + 1;
-            matrix->crow	= ((rowShift + matrix->vrows) - matrix->rows) + 1;
-            matrix->row		= newrow;
-         }
+	 if ((rowShift + matrix->vrows) < matrix->rows)
+	 {
+	    /* Just shift down by rowShift... */
+	    matrix->trow	+= rowShift;
+	    matrix->crow	= 1;
+	    matrix->row		+= rowShift;
+	 }
+	 else
+	 {
+	    /* We need to munge with the values... */
+	    matrix->trow	= matrix->rows - matrix->vrows + 1;
+	    matrix->crow	= ((rowShift + matrix->vrows) - matrix->rows) + 1;
+	    matrix->row		= newrow;
+	 }
       }
    }
    else if (rowShift < 0)
@@ -1607,26 +1596,26 @@ int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
       /* We are moving up. */
       if (matrix->vrows == matrix->rows)
       {
-         matrix->trow	= 1;
-         matrix->row	= newrow;
-         matrix->crow	= newrow;
+	 matrix->trow	= 1;
+	 matrix->row	= newrow;
+	 matrix->crow	= newrow;
       }
       else
       {
-         if ((rowShift + matrix->vrows) > 1)
-         {
-            /* Just shift up by rowShift... */
-            matrix->trow	+= rowShift;
-            matrix->row		+= rowShift;
-            matrix->crow	= 1;
-         }
-         else
-         {
-            /* We need to munge with the values... */
-            matrix->trow	= 1;
-            matrix->crow	= 1;
-            matrix->row		= 1;
-         }
+	 if ((rowShift + matrix->vrows) > 1)
+	 {
+	    /* Just shift up by rowShift... */
+	    matrix->trow	+= rowShift;
+	    matrix->row		+= rowShift;
+	    matrix->crow	= 1;
+	 }
+	 else
+	 {
+	    /* We need to munge with the values... */
+	    matrix->trow	= 1;
+	    matrix->crow	= 1;
+	    matrix->row		= 1;
+	 }
       }
    }
 
@@ -1636,25 +1625,25 @@ int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
       /* We are moving right. */
       if (matrix->vcols == matrix->cols)
       {
-         matrix->lcol	= 1;
-         matrix->ccol	= newcol;
-         matrix->col	= newcol;
+	 matrix->lcol	= 1;
+	 matrix->ccol	= newcol;
+	 matrix->col	= newcol;
       }
       else
       {
-         if ((colShift + matrix->vcols) < matrix->cols)
-         {
-            matrix->lcol	+= colShift;
-            matrix->ccol	= 1;
-            matrix->col		+= colShift;
-         }
-         else
-         {
-            /* We need to munge with the values... */
-            matrix->lcol	= matrix->cols - matrix->vcols + 1;
-            matrix->ccol	= ((colShift + matrix->vcols) - matrix->cols) + 1;
-            matrix->col		= newcol;
-         }
+	 if ((colShift + matrix->vcols) < matrix->cols)
+	 {
+	    matrix->lcol	+= colShift;
+	    matrix->ccol	= 1;
+	    matrix->col		+= colShift;
+	 }
+	 else
+	 {
+	    /* We need to munge with the values... */
+	    matrix->lcol	= matrix->cols - matrix->vcols + 1;
+	    matrix->ccol	= ((colShift + matrix->vcols) - matrix->cols) + 1;
+	    matrix->col		= newcol;
+	 }
       }
    }
    else if (colShift < 0)
@@ -1662,25 +1651,25 @@ int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
       /* We are moving left. */
       if (matrix->vcols == matrix->cols)
       {
-            matrix->lcol	= 1;
-            matrix->col		= newcol;
-            matrix->ccol	= newcol;
+	    matrix->lcol	= 1;
+	    matrix->col		= newcol;
+	    matrix->ccol	= newcol;
       }
       else
       {
-         if ((colShift + matrix->vcols) > 1)
-         {
-            /* Just shift left by colShift... */
-            matrix->lcol	+= colShift;
-            matrix->col		+= colShift;
-            matrix->ccol	= 1;
-         }
-         else
-         {
-            matrix->lcol	= 1;
-            matrix->col		= 1;
-            matrix->ccol	= 1;
-         }
+	 if ((colShift + matrix->vcols) > 1)
+	 {
+	    /* Just shift left by colShift... */
+	    matrix->lcol	+= colShift;
+	    matrix->col		+= colShift;
+	    matrix->ccol	= 1;
+	 }
+	 else
+	 {
+	    matrix->lcol	= 1;
+	    matrix->col		= 1;
+	    matrix->ccol	= 1;
+	 }
       }
    }
 
@@ -1707,13 +1696,13 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
    {
       for (x=1; x <= matrix->vrows; x++)
       {
-         werase (matrix->cell[x][0]);
-         writeChtype (matrix->cell[x][0],
+	 werase (matrix->cell[x][0]);
+	 writeChtype (matrix->cell[x][0],
 			matrix->rowtitlePos[matrix->trow+x-1], 1,
 			matrix->rowtitle[matrix->trow+x-1],
 			HORIZONTAL,
 			0, matrix->rowtitleLen[matrix->trow+x-1]);
-         wrefresh (matrix->cell[x][0]);
+	 wrefresh (matrix->cell[x][0]);
       }
    }
 
@@ -1722,13 +1711,13 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
    {
       for (x=1; x <=matrix->vcols; x++)
       {
-         werase (matrix->cell[0][x]);
-         writeChtype (matrix->cell[0][x],
+	 werase (matrix->cell[0][x]);
+	 writeChtype (matrix->cell[0][x],
 			matrix->coltitlePos[matrix->lcol+x-1], 0,
 			matrix->coltitle[matrix->lcol+x-1],
 			HORIZONTAL,
 			0, matrix->coltitleLen[matrix->lcol+x-1]);
-      			wrefresh (matrix->cell[0][x]);
+			wrefresh (matrix->cell[0][x]);
       }
    }
 }
@@ -1760,7 +1749,7 @@ char *getCDKMatrixCell (CDKMATRIX *matrix, int row, int col)
    /* Make sure the row/col combination is within the matrix. */
    if (row > matrix->rows || col > matrix->cols || row <= 0 || col <= 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    return matrix->info[row][col];
 }
@@ -1814,11 +1803,10 @@ void setCDKMatrixBoxAttribute (CDKMATRIX *matrix, chtype character)
  */
 void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int x, y, junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   if (color == 0)
    {
       return;
    }
@@ -1832,7 +1820,7 @@ void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-         wbkgd (matrix->cell[x][y], holder[0]);
+	 wbkgd (matrix->cell[x][y], holder[0]);
       }
    }
 

@@ -3,11 +3,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/12/20 02:40:48 $
- * $Revision: 1.58 $
+ * $Date: 2000/01/16 23:07:27 $
+ * $Revision: 1.59 $
  */
 
-DeclareCDKObjects(my_funcs,Label)
+DeclareCDKObjects(my_funcs,Label);
 
 /*
  * This creates a label widget.
@@ -36,7 +36,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    /* Create the string alignments. */
    for (x=0; x < rows; x++)
    {
-      label->infoPos[x]	= justifyString (boxWidth, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x] = justifyString (boxWidth, label->infoLen[x], label->infoPos[x]);
    }
 
   /*
@@ -52,7 +52,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    ScreenOf(label)	= cdkscreen;
    label->parent	= cdkscreen->window;
    label->win		= newwin (boxHeight, boxWidth, ypos, xpos);
-   label->shadowWin	= (WINDOW *)NULL;
+   label->shadowWin	= 0;
    label->xpos		= xpos;
    label->ypos		= ypos;
    label->rows		= rows;
@@ -68,18 +68,18 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    label->VChar		= ACS_VLINE;
    label->BoxAttrib	= A_NORMAL;
 
-   /* Is the window NULL? */
-   if (label->win == (WINDOW *)NULL)
+   /* Is the window null? */
+   if (label->win == 0)
    {
       /* Free up any memory used. */
       for (x=0; x < rows; x++)
       {
-         freeChtype (label->info[x]);
+	 freeChtype (label->info[x]);
       }
       free(label);
 
-      /* Return a NULL pointer. */
-      return ( (CDKLABEL *)NULL );
+      /* Return a null pointer. */
+      return ( 0 );
    }
    keypad (label->win, TRUE);
 
@@ -133,7 +133,7 @@ void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
    for (x=0; x < label->rows; x++)
    {
       label->info[x]	= char2Chtype (info[x], &label->infoLen[x], &label->infoPos[x]);
-      label->infoPos[x]	= justifyString (label->boxWidth, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x] = justifyString (label->boxWidth, label->infoLen[x], label->infoPos[x]);
    }
 
    /* Redraw the label widget. */
@@ -195,11 +195,11 @@ void setCDKLabelBoxAttribute (CDKLABEL *label, chtype character)
  */
 void setCDKLabelBackgroundColor (CDKLABEL *label, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -223,7 +223,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    int x = 0;
 
    /* Is there a shadow? */
-   if (label->shadowWin != (WINDOW *)NULL)
+   if (label->shadowWin != 0)
    {
       drawShadow (label->shadowWin);
    }
@@ -294,7 +294,7 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
    moveCursesWindow(label->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (label->shadowWin != (WINDOW *)NULL)
+   if (label->shadowWin != 0)
    {
       moveCursesWindow(label->shadowWin, -xdiff, -ydiff);
    }
@@ -353,11 +353,11 @@ char waitCDKLabel (CDKLABEL *label, char key)
       char newkey;
       for (;;)
       {
-         newkey = wgetch(label->win);
-         if (newkey == key)
-         {
-            return ( newkey );
-         }
+	 newkey = wgetch(label->win);
+	 if (newkey == key)
+	 {
+	    return ( newkey );
+	 }
       }
    }
 }

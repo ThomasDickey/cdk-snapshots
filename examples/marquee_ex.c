@@ -12,23 +12,23 @@ int main (int argc, char **argv)
    CDKSCREEN	*cdkscreen;
    CDKMARQUEE	*scrollMessage;
    WINDOW	*cursesWin;
-   char 	message[1024];
-   char 	startAttr[10];
-   char 	endAttr[10];
+   char		message[1024];
+   char		startAttr[10];
+   char		endAttr[10];
    char		*currentTime;
    char		*mesg;
-   time_t 	clck;
+   time_t	clck;
    int delay, repeat, ret, tmp;
 
    /* Set some variables. */
    repeat	= 3;
    delay	= 5;
-   mesg		= (char *)NULL;
+   mesg		= 0;
 
    /* Clean up the strings. */
-   cleanChar (message, 1024, '\0');
-   cleanChar (startAttr, 10, '\0');
-   cleanChar (endAttr, 10, '\0');
+   cleanChar (message, sizeof(message), '\0');
+   cleanChar (startAttr, sizeof(startAttr), '\0');
+   cleanChar (endAttr, sizeof(endAttr), '\0');
 
    /* Check the command line for options. */
    while (1)
@@ -38,72 +38,72 @@ int main (int argc, char **argv)
       /* Are there any more command line options to parse. */
       if (ret == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'b':
-              if (startAttr[0] == '\0')
-              {
-                 startAttr[0] = '<';
-                 endAttr[0] = '<';
-              }
-              strcat (startAttr, "/B");
-              strcat (endAttr, "!B");
-              break;
+	 case 'b':
+	      if (startAttr[0] == '\0')
+	      {
+		 startAttr[0] = '<';
+		 endAttr[0] = '<';
+	      }
+	      strcat (startAttr, "/B");
+	      strcat (endAttr, "!B");
+	      break;
 
-         case 'r':
-              if (startAttr[0] == '\0')
-              {
-                 startAttr[0] = '<';
-                 endAttr[0] = '<';
-              }
-              strcat (startAttr, "/R");
-              strcat (endAttr, "!R");
-              break;
+	 case 'r':
+	      if (startAttr[0] == '\0')
+	      {
+		 startAttr[0] = '<';
+		 endAttr[0] = '<';
+	      }
+	      strcat (startAttr, "/R");
+	      strcat (endAttr, "!R");
+	      break;
 
-         case 'k':
-              if (startAttr[0] == '\0')
-              {
-                 startAttr[0] = '<';
-                 endAttr[0] = '<';
-              }
-              strcat (startAttr, "/K");
-              strcat (endAttr, "!K");
-              break;
+	 case 'k':
+	      if (startAttr[0] == '\0')
+	      {
+		 startAttr[0] = '<';
+		 endAttr[0] = '<';
+	      }
+	      strcat (startAttr, "/K");
+	      strcat (endAttr, "!K");
+	      break;
 
-         case 'u':
-              if (startAttr[0] == '\0')
-              {
-                 startAttr[0] = '<';
-                 endAttr[0] = '<';
-              }
-              strcat (startAttr, "/U");
-              strcat (endAttr, "!U");
-              break;
+	 case 'u':
+	      if (startAttr[0] == '\0')
+	      {
+		 startAttr[0] = '<';
+		 endAttr[0] = '<';
+	      }
+	      strcat (startAttr, "/U");
+	      strcat (endAttr, "!U");
+	      break;
 
-         case 'R':
-              repeat = atoi (optarg);
-              break;
+	 case 'R':
+	      repeat = atoi (optarg);
+	      break;
 
-         case 'd':
-              tmp = atoi (optarg);
-              if (tmp > 0)
-              {
-                 delay = tmp;
-              }
-              break;
+	 case 'd':
+	      tmp = atoi (optarg);
+	      if (tmp > 0)
+	      {
+		 delay = tmp;
+	      }
+	      break;
 
-         case 'm':
-              mesg = copyChar (optarg);
-              break;
+	 case 'm':
+	      mesg = copyChar (optarg);
+	      break;
 
-         case 'h':
-              help (argv[0]);
-              freeChar (mesg);
-              exit (0);
-              break;
+	 case 'h':
+	      help (argv[0]);
+	      freeChar (mesg);
+	      exit (0);
+	      break;
       }
    }
 
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
       strcat (endAttr, ">");
    }
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -124,8 +124,8 @@ int main (int argc, char **argv)
    /* Create the marquee. */
    scrollMessage = newCDKMarquee (cdkscreen, CENTER, TOP, 30, FALSE, TRUE);
 
-   /* Check if the marquee is NULL. */
-   if (scrollMessage == (CDKMARQUEE *)NULL)
+   /* Check if the marquee is null. */
+   if (scrollMessage == 0)
    {
       /* Exit Cdk. */
       destroyCDKScreen (cdkscreen);
@@ -140,7 +140,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
    /* Create the marquee message. */
-   if (mesg == (char *)NULL)
+   if (mesg == 0)
    {
       /* Get the current time. */
       time (&clck);
@@ -148,23 +148,23 @@ int main (int argc, char **argv)
 
       if (startAttr[0] != '\0')
       {
-         currentTime[strlen(currentTime)-1] = '\0';
-         sprintf (message, "%s%s%s (This Space For Rent) ", startAttr, currentTime, endAttr);
+	 currentTime[strlen(currentTime)-1] = '\0';
+	 sprintf (message, "%s%s%s (This Space For Rent) ", startAttr, currentTime, endAttr);
       }
       else
       {
-         sprintf (message, "%s (This Space For Rent) ", currentTime);
+	 sprintf (message, "%s (This Space For Rent) ", currentTime);
       }
    }
    else
    {
       if (startAttr[0] != '\0')
       {
-         sprintf (message, "%s%s%s ", startAttr, mesg, endAttr);
+	 sprintf (message, "%s%s%s ", startAttr, mesg, endAttr);
       }
       else
       {
-         sprintf (message, "%s ", mesg);
+	 sprintf (message, "%s ", mesg);
       }
    }
 

@@ -13,9 +13,9 @@ static BINDFN_PROTO(removeCalendarMarkCB);
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKCALENDAR *calendar	= (CDKCALENDAR *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKCALENDAR *calendar	= 0;
+   WINDOW *cursesWin		= 0;
    char *title			= "<C></U>CDK Calendar Widget\n<C>Demo";
    int day, month, year, ret;
    char *mesg[5], temp[256];
@@ -25,7 +25,7 @@ int main (int argc, char **argv)
    /*
     * Get the current dates and set the default values for
     * the day/month/year values for the calendar.
-    */ 
+    */
     time (&clck);
     dateInfo	= localtime (&clck);
     day		= dateInfo->tm_mday;
@@ -40,30 +40,30 @@ int main (int argc, char **argv)
       /* Are there any more command line options to parse. */
       if (ret == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'd':
-              day = atoi (optarg);
-              break;
+	 case 'd':
+	      day = atoi (optarg);
+	      break;
 
-         case 'm':
-              month = atoi (optarg);
-              break;
+	 case 'm':
+	      month = atoi (optarg);
+	      break;
 
-         case 'y':
-              year = atoi (optarg);
-              break;
+	 case 'y':
+	      year = atoi (optarg);
+	      break;
 
-         case 't':
-              title = copyChar (optarg);
-              break;
+	 case 't':
+	      title = copyChar (optarg);
+	      break;
       }
    }
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -79,8 +79,8 @@ int main (int argc, char **argv)
 				COLOR_PAIR(40)|A_REVERSE,
 				TRUE, FALSE);
 
-   /* Is the widget NULL? */
-   if (calendar == (CDKCALENDAR *)NULL)
+   /* Is the widget null? */
+   if (calendar == 0)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Let the user play with the widget. */
-   retVal = activateCDKCalendar (calendar, NULL);
+   retVal = activateCDKCalendar (calendar, 0);
 
    /* Check which day they selected. */
    if (calendar->exitType == vESCAPE_HIT)
@@ -140,10 +140,10 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
-   setCDKCalendarMarker (calendar, 
-				calendar->day, 
-				calendar->month, 
-				calendar->year, 
+   setCDKCalendarMarker (calendar,
+				calendar->day,
+				calendar->month,
+				calendar->year,
 				COLOR_PAIR (5) | A_REVERSE);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
@@ -156,9 +156,9 @@ static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
-   removeCDKCalendarMarker (calendar, 
-				calendar->day, 
-				calendar->month, 
+   removeCDKCalendarMarker (calendar,
+				calendar->day,
+				calendar->month,
 				calendar->year);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);

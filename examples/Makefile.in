@@ -18,118 +18,39 @@ BINS	= alphalist_ex bind_ex buttonbox_ex calendar_ex cdkscreen_ex dialog_ex \
 		scroll_ex selection_ex slider_ex subwindow_ex \
 		swindow_ex template_ex viewer_ex vinstall
 
-#
-# Default compile option is stripped.
-#
-default: stripped
+LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
-#
-# Strip each of the binaries then strip them.
-#
-stripped:: $(BINS) stripBinaries
+all : $(BINS)
 
-#
-# Unstripped option for those who want it.
-#
-unstripped:: $(BINS)
-
-#
-# Strip all the binaries.
-#
-stripBinaries::
-	@for i in $(BINS); do \
-	   printf "Stripping %s ... " $$i; \
-	   strip $$i; \
-	   printf "Done.\n"; \
-	done
-
-alphalist_ex: alphalist_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-bind_ex: bind_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-buttonbox_ex: buttonbox_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-calendar_ex: calendar_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-cdkscreen_ex: cdkscreen_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-dialog_ex: dialog_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-entry_ex: entry_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-fselect_ex: fselect_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-graph_ex: graph_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-hello_ex: hello_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-histogram_ex: histogram_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-itemlist_ex: itemlist_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-label_ex: label_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-marquee_ex: marquee_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-matrix_ex: matrix_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-mentry_ex: mentry_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-menu_ex: menu_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-position_ex: position_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-preprocess_ex: preprocess_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-radio_ex: radio_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-scale_ex: scale_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-scroll_ex: scroll_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-selection_ex: selection_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-slider_ex: slider_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-subwindow_ex: subwindow_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-swindow_ex: swindow_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-template_ex: template_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-viewer_ex: viewer_ex.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
-vinstall: vinstall.c
-	@ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
-
+alphalist_ex:	alphalist_ex.c	; $(LINKIT)
+bind_ex:	bind_ex.c	; $(LINKIT)
+buttonbox_ex:	buttonbox_ex.c	; $(LINKIT)
+calendar_ex:	calendar_ex.c	; $(LINKIT)
+cdkscreen_ex:	cdkscreen_ex.c	; $(LINKIT)
+dialog_ex:	dialog_ex.c	; $(LINKIT)
+entry_ex:	entry_ex.c	; $(LINKIT)
+fselect_ex:	fselect_ex.c	; $(LINKIT)
+graph_ex:	graph_ex.c	; $(LINKIT)
+hello_ex:	hello_ex.c	; $(LINKIT)
+histogram_ex:	histogram_ex.c	; $(LINKIT)
+itemlist_ex:	itemlist_ex.c	; $(LINKIT)
+label_ex:	label_ex.c	; $(LINKIT)
+marquee_ex:	marquee_ex.c	; $(LINKIT)
+matrix_ex:	matrix_ex.c	; $(LINKIT)
+mentry_ex:	mentry_ex.c	; $(LINKIT)
+menu_ex:	menu_ex.c	; $(LINKIT)
+position_ex:	position_ex.c	; $(LINKIT)
+preprocess_ex:	preprocess_ex.c	; $(LINKIT)
+radio_ex:	radio_ex.c	; $(LINKIT)
+scale_ex:	scale_ex.c	; $(LINKIT)
+scroll_ex:	scroll_ex.c	; $(LINKIT)
+selection_ex:	selection_ex.c	; $(LINKIT)
+slider_ex:	slider_ex.c	; $(LINKIT)
+subwindow_ex:	subwindow_ex.c	; $(LINKIT)
+swindow_ex:	swindow_ex.c	; $(LINKIT)
+template_ex:	template_ex.c	; $(LINKIT)
+viewer_ex:	viewer_ex.c	; $(LINKIT)
+vinstall:	vinstall.c	; $(LINKIT)
 #
 # Standard clean directives.
 #

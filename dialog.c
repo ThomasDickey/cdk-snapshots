@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.59 $
+ * $Date: 2000/01/16 22:50:37 $
+ * $Revision: 1.61 $
  */
 
-DeclareCDKObjects(my_funcs,Dialog)
+DeclareCDKObjects(my_funcs,Dialog);
 
 /*
  * This function creates a dialog widget.
@@ -52,7 +52,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    ScreenOf(dialog)		= cdkscreen;
    dialog->parent		= cdkscreen->window;
    dialog->win			= newwin (boxHeight, boxWidth, ypos, xpos);
-   dialog->shadowWin		= (WINDOW *)NULL;
+   dialog->shadowWin		= 0;
    dialog->buttonCount		= buttonCount;
    dialog->currentButton	= 0;
    dialog->messageRows		= rows;
@@ -70,29 +70,29 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->HChar		= ACS_HLINE;
    dialog->VChar		= ACS_VLINE;
    dialog->BoxAttrib		= A_NORMAL;
-   dialog->preProcessFunction	= (PROCESSFN)NULL;
-   dialog->preProcessData	= (void *)NULL;
-   dialog->postProcessFunction	= (PROCESSFN)NULL;
-   dialog->postProcessData	= (void *)NULL;
+   dialog->preProcessFunction	= 0;
+   dialog->preProcessData	= 0;
+   dialog->postProcessFunction	= 0;
+   dialog->postProcessData	= 0;
 
-   /* If we couldn't create the window, we should return a NULL value. */
-   if (dialog->win == (WINDOW *)NULL)
+   /* If we couldn't create the window, we should return a null value. */
+   if (dialog->win == 0)
    {
       /* Couldn't create the window. Clean up used memory. */
       for (x=0; x < dialog->messageRows ; x++)
       {
-         freeChtype (dialog->info[x]);
+	 freeChtype (dialog->info[x]);
       }
       for (x=0; x < dialog->buttonCount; x++)
       {
-         freeChtype (dialog->buttonLabel[x]);
+	 freeChtype (dialog->buttonLabel[x]);
       }
 
       /* Remove the memory used by the dialog pointer. */
       free (dialog);
 
-      /* Return a NULL dialog box. */
-      return ((CDKDIALOG *)NULL);
+      /* Return a null dialog box. */
+      return (0);
    }
    keypad (dialog->win, TRUE);
 
@@ -132,7 +132,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
 int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 {
    /* Declare local variables. */
-   chtype input = (chtype)NULL;
+   chtype input = 0;
    int ret;
 
    /* Draw the dialog box. */
@@ -148,20 +148,20 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 			0, dialog->buttonLen[dialog->currentButton]);
    wrefresh (dialog->win);
 
-   /* Check if actions is NULL. */
-   if (actions == (chtype *)NULL)
+   /* Check if actions is null. */
+   if (actions == 0)
    {
       for (;;)
       {
-         /* Get the input. */
-         input = wgetch (dialog->win);
+	 /* Get the input. */
+	 input = wgetch (dialog->win);
 
-         /* Inject the character into the widget. */
-         ret = injectCDKDialog (dialog, input);
-         if (dialog->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 /* Inject the character into the widget. */
+	 ret = injectCDKDialog (dialog, input);
+	 if (dialog->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
    else
@@ -172,11 +172,11 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
-         ret = injectCDKDialog (dialog, actions[x]);
-         if (dialog->exitType != vEARLY_EXIT)
-         {
-            return ret;
-         }
+	 ret = injectCDKDialog (dialog, actions[x]);
+	 if (dialog->exitType != vEARLY_EXIT)
+	 {
+	    return ret;
+	 }
       }
    }
 
@@ -198,7 +198,7 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
    dialog->exitType = vEARLY_EXIT;
 
    /* Check if there is a pre-process function to be called. */
-   if (dialog->preProcessFunction != (PROCESSFN)NULL)
+   if (dialog->preProcessFunction != 0)
    {
       ppReturn = ((PROCESSFN)(dialog->preProcessFunction)) (vDIALOG, dialog, dialog->preProcessData, input);
    }
@@ -209,62 +209,61 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind (vDIALOG, dialog, input) != 0)
       {
-         dialog->exitType = vESCAPE_HIT;
-         return -1;
+	 dialog->exitType = vESCAPE_HIT;
+	 return -1;
       }
       else
       {
-         switch (input)
-         {
-            case KEY_LEFT : case CDK_PREV :
-                 if (dialog->currentButton == firstButton)
-                 {
-                    dialog->currentButton = lastButton;;
-                 }
-                 else
-                 {
-                    dialog->currentButton--;
-                 }
-                 break;
+	 switch (input)
+	 {
+	    case KEY_LEFT : case CDK_PREV :
+		 if (dialog->currentButton == firstButton)
+		 {
+		    dialog->currentButton = lastButton;;
+		 }
+		 else
+		 {
+		    dialog->currentButton--;
+		 }
+		 break;
 
-            case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
-                 if (dialog->currentButton == lastButton)
-                 {
-                    dialog->currentButton = firstButton;
-                 }
-                 else
-                 {
-                    dialog->currentButton++;
-                 }
-                 break;
+	    case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
+		 if (dialog->currentButton == lastButton)
+		 {
+		    dialog->currentButton = firstButton;
+		 }
+		 else
+		 {
+		    dialog->currentButton++;
+		 }
+		 break;
 
-            case KEY_UP : case KEY_DOWN :
-                 Beep();
-                 break;
+	    case KEY_UP : case KEY_DOWN :
+		 Beep();
+		 break;
 
-            case CDK_REFRESH :
-                 eraseCDKScreen (ScreenOf(dialog));
-                 refreshCDKScreen (ScreenOf(dialog));
-                 break;
+	    case CDK_REFRESH :
+		 eraseCDKScreen (ScreenOf(dialog));
+		 refreshCDKScreen (ScreenOf(dialog));
+		 break;
 
-            case KEY_ESC :
-                 dialog->exitType = vESCAPE_HIT;
-                 return -1;
+	    case KEY_ESC :
+		 dialog->exitType = vESCAPE_HIT;
+		 return -1;
 
-            case KEY_RETURN : case KEY_ENTER :
-                 dialog->exitType = vNORMAL;
-                 return dialog->currentButton;
-                 break;
+	    case KEY_RETURN : case KEY_ENTER :
+		 dialog->exitType = vNORMAL;
+		 return dialog->currentButton;
 
-         default :
-            break;
-         }
+	 default :
+	    break;
+	 }
       }
 
       /* Should we call a post-process? */
-      if (dialog->postProcessFunction != (PROCESSFN)NULL)
+      if (dialog->postProcessFunction != 0)
       {
-         ((PROCESSFN)(dialog->postProcessFunction)) (vDIALOG, dialog, dialog->postProcessData, input);
+	 ((PROCESSFN)(dialog->postProcessFunction)) (vDIALOG, dialog, dialog->postProcessData, input);
       }
    }
 
@@ -312,7 +311,7 @@ static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean rel
    moveCursesWindow(dialog->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
-   if (dialog->shadowWin != (WINDOW *)NULL)
+   if (dialog->shadowWin != 0)
    {
       moveCursesWindow(dialog->shadowWin, -xdiff, -ydiff);
    }
@@ -337,7 +336,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    int x = 0;
 
    /* Is there a shadow? */
-   if (dialog->shadowWin != (WINDOW *)NULL)
+   if (dialog->shadowWin != 0)
    {
       drawShadow (dialog->shadowWin);
    }
@@ -348,7 +347,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
       attrbox (dialog->win,
 		dialog->ULChar, dialog->URChar,
 		dialog->LLChar, dialog->LRChar,
-		dialog->HChar,  dialog->VChar,
+		dialog->HChar,	dialog->VChar,
 		dialog->BoxAttrib);
    }
 
@@ -495,11 +494,11 @@ void setCDKDialogBoxAttribute (CDKDIALOG *dialog, chtype character)
  */
 void setCDKDialogBackgroundColor (CDKDIALOG *dialog, char *color)
 {
-   chtype *holder = (chtype *)NULL;
+   chtype *holder = 0;
    int junk1, junk2;
 
-   /* Make sure the color isn't NULL. */
-   if (color == (char *)NULL)
+   /* Make sure the color isn't null. */
+   if (color == 0)
    {
       return;
    }
@@ -544,7 +543,7 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
    {
       for (x=1; x < dialog->boxWidth-1; x++)
       {
-         mvwaddch (dialog->win, dialog->boxHeight-3, x, ACS_HLINE | dialog->BoxAttrib);
+	 mvwaddch (dialog->win, dialog->boxHeight-3, x, ACS_HLINE | dialog->BoxAttrib);
       }
       mvwaddch (dialog->win, dialog->boxHeight-3, 0, ACS_LTEE | dialog->BoxAttrib);
       mvwaddch (dialog->win, dialog->boxHeight-3, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);

@@ -7,13 +7,13 @@ char *XCursesProgramName="swindow_ex";
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKSWINDOW *swindow	= (CDKSWINDOW *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKSWINDOW *swindow	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C></5>Error Log";
    char *mesg[5];
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -24,8 +24,8 @@ int main (void)
    swindow = newCDKSwindow (cdkscreen, CENTER, CENTER, 6, 65,
 				title, 100, TRUE, FALSE);
 
-   /* Is the window NULL. */
-   if (swindow == (CDKSWINDOW *)NULL)
+   /* Is the window null. */
+   if (swindow == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -73,7 +73,7 @@ int main (void)
    addCDKSwindow (swindow, "<C>This is being added to the top.", TOP);
 
    /* Activate the scrolling window. */
-   activateCDKSwindow (swindow, (chtype *)NULL);
+   activateCDKSwindow (swindow, 0);
 
    /* Check how the user exited this widget. */
    if (swindow->exitType == vESCAPE_HIT)

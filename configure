@@ -2766,16 +2766,15 @@ getcwd \
 mktime \
 strdup \
 strerror \
-usleep \
 
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
-echo "configure:2774: checking for $ac_func" >&5
+echo "configure:2773: checking for $ac_func" >&5
 if eval "test \"`echo '$''{'ac_cv_func_$ac_func'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2779 "configure"
+#line 2778 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char $ac_func(); below.  */
@@ -2798,7 +2797,7 @@ $ac_func();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2802: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:2801: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_$ac_func=yes"
 else
@@ -2824,12 +2823,12 @@ done
 
 
 echo $ac_n "checking for XCursesExit""... $ac_c" 1>&6
-echo "configure:2828: checking for XCursesExit" >&5
+echo "configure:2827: checking for XCursesExit" >&5
 if eval "test \"`echo '$''{'ac_cv_func_XCursesExit'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 2833 "configure"
+#line 2832 "configure"
 #include "confdefs.h"
 /* System header to define __stub macros and hopefully few prototypes,
     which can conflict with char XCursesExit(); below.  */
@@ -2852,7 +2851,7 @@ XCursesExit();
 
 ; return 0; }
 EOF
-if { (eval echo configure:2856: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:2855: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_func_XCursesExit=yes"
 else

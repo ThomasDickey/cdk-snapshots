@@ -83,7 +83,7 @@ static CDKFUNCS table = { \
     _drawCDK ## module, \
     _eraseCDK ## module, \
     _moveCDK ## module, \
-};
+}
 
 void positionCDKObject (CDKOBJS *, WINDOW *);
 

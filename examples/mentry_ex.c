@@ -7,10 +7,10 @@ char *XCursesProgramName="mentry_ex";
 int main (int argc GCC_UNUSED, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKMENTRY *filename	= (CDKMENTRY *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
-   char *info		= (char *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKMENTRY *filename	= 0;
+   WINDOW *cursesWin	= 0;
+   char *info		= 0;
    char *label		= "</R>Message";
    char *title		= "<C></5>Enter a message.<!5>";
 
@@ -26,8 +26,8 @@ int main (int argc GCC_UNUSED, char **argv)
 			title, label, A_BOLD, '.', vMIXED,
 			20, 5, 20, 0, TRUE, FALSE);
 
-   /* Is the object NULL? */
-   if (filename == (CDKMENTRY *)NULL)
+   /* Is the object null? */
+   if (filename == 0)
    {
       /* Shut down CDK. */
       destroyCDKScreen (cdkscreen);
@@ -45,10 +45,10 @@ int main (int argc GCC_UNUSED, char **argv)
    setCDKMentry (filename, argv[1], 0, TRUE);
 
    /* Activate this thing. */
-   activateCDKMentry (filename, (chtype *)NULL);
-   info	= strdup (filename->info);
+   activateCDKMentry (filename, 0);
+   info = strdup (filename->info);
 
-   /* Clean up.	*/
+   /* Clean up. */
    destroyCDKMentry (filename);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);

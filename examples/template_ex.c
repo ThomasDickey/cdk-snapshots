@@ -10,16 +10,16 @@ char *XCursesProgramName="template_ex";
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
-   CDKTEMPLATE *phoneNumber	= (CDKTEMPLATE *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen		= 0;
+   CDKTEMPLATE *phoneNumber	= 0;
+   WINDOW *cursesWin		= 0;
    char *title			= "<C>Title";
    char *label			= "</5>Phone Number:<!5>";
    char *Overlay		= "</B/6>(___)<!6> </5>___-____";
    char *plate			= "(###) ###-####";
    char *info, *mixed, temp[256], *mesg[5];
 
-   /* Set up CDK*/ 
+   /* Set up CDK*/
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -32,8 +32,8 @@ int main (void)
 					plate, Overlay,
 					TRUE, TRUE);
 
-   /* Is the template pointer NULL? */
-   if (phoneNumber == (CDKTEMPLATE *)NULL)
+   /* Is the template pointer null? */
+   if (phoneNumber == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -45,7 +45,7 @@ int main (void)
    }
 
    /* Activate the template. */
-   info = activateCDKTemplate (phoneNumber, (chtype *)NULL);
+   info = activateCDKTemplate (phoneNumber, 0);
 
    /* Tell them what they typed. */
    if (phoneNumber->exitType == vESCAPE_HIT)
@@ -70,7 +70,7 @@ int main (void)
       popupLabel (cdkscreen, mesg, 4);
       freeChar (mesg[1]);
    }
-   
+
    /* Clean up. */
    destroyCDKTemplate (phoneNumber);
    destroyCDKScreen (cdkscreen);

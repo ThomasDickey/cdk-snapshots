@@ -10,9 +10,9 @@ char *XCursesProgramName="scale_ex";
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKSCALE *scale	= (CDKSCALE *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKSCALE *scale	= 0;
+   WINDOW *cursesWin	= 0;
    char *title		= "<C>Select a value";
    char *label		= "</5>Current value";
    int low		= 0;
@@ -29,26 +29,26 @@ int main (int argc, char **argv)
       /* Are there any more command line options to parse. */
       if (ret == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'l':
-              low = atoi (optarg);
-              break;
+	 case 'l':
+	      low = atoi (optarg);
+	      break;
 
-         case 'h':
-              high = atoi (optarg);
-              break;
+	 case 'h':
+	      high = atoi (optarg);
+	      break;
 
-         case 'i':
-              inc = atoi (optarg);
-              break;
+	 case 'i':
+	      inc = atoi (optarg);
+	      break;
       }
    }
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -61,20 +61,20 @@ int main (int argc, char **argv)
 			5, low, low, high,
 			inc, (inc*2), TRUE, FALSE);
 
-   /* Is the scale NULL? */
-   if (scale == (CDKSCALE *)NULL)
+   /* Is the scale null? */
+   if (scale == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
       endCDK();
-      
+
       /* Print out a message. */
       printf ("Oops. Can't make the scale widget. Is the window too small?\n");
       exit (1);
    }
 
    /* Activate the scale. */
-   selection = activateCDKScale (scale, (chtype *)NULL);
+   selection = activateCDKScale (scale, 0);
 
    /* Check the exit value of the scale widget. */
    if (scale->exitType == vESCAPE_HIT)

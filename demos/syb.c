@@ -23,14 +23,14 @@ struct history_st {
  * Define some global variables.
  */
 char *GPUsage		= "[-p Command Prompt] [-U User] [-P Password] [-S Server] [-h help]";
-char *GPCurrentDatabase	= (char *)NULL;
+char *GPCurrentDatabase = 0;
 extern char *dberrstr;
 
 /*
  * Because the error/message callback do not allow you to pass in
  * data of your own, we have to make the screen pointer global. :(
  */
-CDKSCREEN *GPCdkScreen = (CDKSCREEN *)NULL;
+CDKSCREEN *GPCdkScreen = 0;
 
 /*
  * Define function prototypes.
@@ -73,17 +73,17 @@ int msg_handler (DBPROCESS *dbProcess, DBINT mesgNumber, int mesgState,
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSWINDOW *commandOutput	= (CDKSWINDOW *)NULL;
-   CDKENTRY *commandEntry	= (CDKENTRY *)NULL;
-   DBPROCESS *dbProcess		= (DBPROCESS *)NULL;
-   WINDOW *cursesWin		= (WINDOW *)NULL;
-   char *dsquery		= (char *)NULL;
-   char *command		= (char *)NULL;
-   char *prompt			= (char *)NULL;
-   char *upper			= (char *)NULL;
-   char *login			= (char *)NULL;
-   char *password		= (char *)NULL;
-   char *server			= (char *)NULL;
+   CDKSWINDOW *commandOutput	= 0;
+   CDKENTRY *commandEntry	= 0;
+   DBPROCESS *dbProcess		= 0;
+   WINDOW *cursesWin		= 0;
+   char *dsquery		= 0;
+   char *command		= 0;
+   char *prompt			= 0;
+   char *upper			= 0;
+   char *login			= 0;
+   char *password		= 0;
+   char *server			= 0;
    int count			= 0;
    int width			= 0;
    int ret			= 0;
@@ -101,57 +101,57 @@ int main (int argc, char **argv)
       /* Are there any more command line options to parse. */
       if ((ret = getopt (argc, argv, "p:U:P:S:h")) == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'p':
-              prompt = copyChar (optarg);
-              break;
+	 case 'p':
+	      prompt = copyChar (optarg);
+	      break;
 
-         case 'U':
-              login = copyChar (optarg);
-              break;
+	 case 'U':
+	      login = copyChar (optarg);
+	      break;
 
-         case 'P':
-              password = copyChar (optarg);
-              break;
+	 case 'P':
+	      password = copyChar (optarg);
+	      break;
 
-         case 'S':
-              server = copyChar (optarg);
-              break;
+	 case 'S':
+	      server = copyChar (optarg);
+	      break;
 
-         case 'h':
-              printf ("Usage: %s %s\n", argv[0], GPUsage);
-              exit (0);
-              break;
+	 case 'h':
+	      printf ("Usage: %s %s\n", argv[0], GPUsage);
+	      exit (0);
+	      break;
       }
    }
 
    /* Set up the command prompt. */
-   if (prompt == (char *)NULL)
+   if (prompt == 0)
    {
-      if (server == (char *)NULL)
+      if (server == 0)
       {
-         if ((dsquery = getenv ("DSQUERY")) != NULL)
-         {
-            sprintf (temp, "</B/24>[%s] Command >", dsquery);
-            prompt = copyChar (temp);
-         }
-         else
-         {
-            prompt = copyChar ("</B/24>Command >");
-         }
+	 if ((dsquery = getenv ("DSQUERY")) != 0)
+	 {
+	    sprintf (temp, "</B/24>[%s] Command >", dsquery);
+	    prompt = copyChar (temp);
+	 }
+	 else
+	 {
+	    prompt = copyChar ("</B/24>Command >");
+	 }
       }
       else
       {
-         sprintf (temp, "</B/24>[%s] Command >", server);
-         prompt = copyChar (temp);
+	 sprintf (temp, "</B/24>[%s] Command >", server);
+	 prompt = copyChar (temp);
       }
    }
-   
-   /* Set up CDK. */ 
+
+   /* Set up CDK. */
    cursesWin = initscr();
    GPCdkScreen = initCDKScreen (cursesWin);
 
@@ -178,14 +178,14 @@ int main (int argc, char **argv)
    /* Create the entry field. */
    width	= COLS - strlen (prompt) - 1;
    commandEntry = newCDKEntry (GPCdkScreen, CENTER, BOTTOM,
-				NULL, prompt, A_BOLD|COLOR_PAIR(8),
+				0, prompt, A_BOLD|COLOR_PAIR(8),
 				COLOR_PAIR(24)|'_', vMIXED,
 				width, 1, 512, FALSE, FALSE);
 
    /* Create the key bindings. */
    bindCDKObject (vENTRY, commandEntry, KEY_UP, &historyUpCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_DOWN, &historyDownCB, &history);
-   bindCDKObject (vENTRY, commandEntry, '', &listHistoryCB, &history);
+   bindCDKObject (vENTRY, commandEntry, CONTROL('^'), &listHistoryCB, &history);
    bindCDKObject (vENTRY, commandEntry, TAB, &viewHistoryCB, commandOutput);
    bindCDKObject (vSWINDOW, commandOutput, '?', swindowHelpCB, commandEntry);
 
@@ -197,7 +197,7 @@ int main (int argc, char **argv)
 
    /* Make them login first. */
    dbProcess = sybaseLogin (GPCdkScreen, login, password, 3);
-   if (dbProcess == (DBPROCESS *)NULL)
+   if (dbProcess == 0)
    {
       destroyCDKScreen (GPCdkScreen);
       endCDK ();
@@ -208,7 +208,7 @@ int main (int argc, char **argv)
    for (;;)
    {
       /* Get the command. */
-      command = activateCDKEntry (commandEntry, NULL);
+      command = activateCDKEntry (commandEntry, 0);
 
       /* Strip off leading and trailing white space. */
       stripWhiteSpace (vBOTH, command);
@@ -223,131 +223,131 @@ int main (int argc, char **argv)
 		strcmp (upper, "E") == 0 ||
 		commandEntry->exitType == vESCAPE_HIT)
       {
-         /* Save the history. */
-         saveHistory (&history, 100);
+	 /* Save the history. */
+	 saveHistory (&history, 100);
 
-         /* Exit. */
-         dbclose (dbProcess);
-         dbexit();
+	 /* Exit. */
+	 dbclose (dbProcess);
+	 dbexit();
 
-         /* All done. */
-         destroyCDKEntry (commandEntry);
-         destroyCDKSwindow (commandOutput);
-         delwin (cursesWin);
-         freeChar (upper);
-         endCDK();
-         exit (0);
+	 /* All done. */
+	 destroyCDKEntry (commandEntry);
+	 destroyCDKSwindow (commandOutput);
+	 delwin (cursesWin);
+	 freeChar (upper);
+	 endCDK();
+	 exit (0);
       }
       else if (strcmp (command, "login") == 0)
       {
-         DBPROCESS *newLogin = sybaseLogin (GPCdkScreen, NULL, NULL, 3);
-         if (newLogin == (DBPROCESS *)NULL)
-         {
-            addCDKSwindow (commandOutput, "Login Error: Could not switch to new user.", BOTTOM);
-         }
-         else 
-         {
-            /* Close the old connection. */
-            dbclose (dbProcess);
-            dbProcess = newLogin;
+	 DBPROCESS *newLogin = sybaseLogin (GPCdkScreen, 0, 0, 3);
+	 if (newLogin == 0)
+	 {
+	    addCDKSwindow (commandOutput, "Login Error: Could not switch to new user.", BOTTOM);
+	 }
+	 else
+	 {
+	    /* Close the old connection. */
+	    dbclose (dbProcess);
+	    dbProcess = newLogin;
 
-            /* Add a message to the scrolling window. */
-            addCDKSwindow (commandOutput,
+	    /* Add a message to the scrolling window. */
+	    addCDKSwindow (commandOutput,
 				"Logged into database as new user.",
 				BOTTOM);
-            count = 0;
-         }
+	    count = 0;
+	 }
       }
       else if (strcmp (command, "logout") == 0)
       {
-         /* Close the old connection. */
-         dbclose (dbProcess);
-         dbProcess = (DBPROCESS *)NULL;
+	 /* Close the old connection. */
+	 dbclose (dbProcess);
+	 dbProcess = 0;
 
-         /* Add a message to the scrolling window. */
-         addCDKSwindow (commandOutput, "Logged out.", BOTTOM);
-         count = 0;
+	 /* Add a message to the scrolling window. */
+	 addCDKSwindow (commandOutput, "Logged out.", BOTTOM);
+	 count = 0;
       }
       else if (strcmp (command, "clear") == 0)
       {
-         /* Clear the scrolling window. */
-         cleanCDKSwindow (commandOutput);
+	 /* Clear the scrolling window. */
+	 cleanCDKSwindow (commandOutput);
       }
       else if (strcmp (command, "history") == 0)
       {
-         listHistoryCB (vENTRY, (void *)commandEntry, (void *)&history, NULL);
+	 listHistoryCB (vENTRY, (void *)commandEntry, (void *)&history, 0);
       }
       else if (strcmp (command, "tables") == 0)
       {
-         /* Check if we are logged in. */
-         if (dbProcess == (DBPROCESS *)NULL)
-         {
-            addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
-         }
-         else
-         {
-            sprintf (command, "select * from sysobjects where type = 'U'");
+	 /* Check if we are logged in. */
+	 if (dbProcess == 0)
+	 {
+	    addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
+	 }
+	 else
+	 {
+	    sprintf (command, "select * from sysobjects where type = 'U'");
 
-            /* Put the command into the ISQL buffer. */
-            dbcmd (dbProcess, command);
- 
-            /* Put the command into the scrolling window. */
-            sprintf (temp, "</R>%d><!R> %s", count+1, command);
-            addCDKSwindow (commandOutput, temp, BOTTOM);
- 
-            /* Increment the counter. */
-            count++;
-         }
+	    /* Put the command into the ISQL buffer. */
+	    dbcmd (dbProcess, command);
+
+	    /* Put the command into the scrolling window. */
+	    sprintf (temp, "</R>%d><!R> %s", count+1, command);
+	    addCDKSwindow (commandOutput, temp, BOTTOM);
+
+	    /* Increment the counter. */
+	    count++;
+	 }
       }
       else if (strcmp (command, "help") == 0)
       {
-         /* Display the help. */
-         help(commandEntry);
+	 /* Display the help. */
+	 help(commandEntry);
       }
       else if (command[0] == 'u' && command[1] == 's' &&
 		command[2] == 'e' && command[3] == ' ')
       {
-         /* They want to use a database. */
-         useDatabase (commandOutput, dbProcess, command);
-         count = 0;
+	 /* They want to use a database. */
+	 useDatabase (commandOutput, dbProcess, command);
+	 count = 0;
       }
       else if (strcmp (command, "go") == 0)
       {
-         /* Check if we are logged in. */
-         if (dbProcess == (DBPROCESS *)NULL)
-         {
-            addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
-         }
-         else
-         {
-            /* Put the command into the scrolling window. */
-            sprintf (temp, "</R>%d><!R> %s", count+1, command);
-            addCDKSwindow (commandOutput, temp, BOTTOM);
-            count = 0;
+	 /* Check if we are logged in. */
+	 if (dbProcess == 0)
+	 {
+	    addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
+	 }
+	 else
+	 {
+	    /* Put the command into the scrolling window. */
+	    sprintf (temp, "</R>%d><!R> %s", count+1, command);
+	    addCDKSwindow (commandOutput, temp, BOTTOM);
+	    count = 0;
 
-            /* Run the command. */
-            runIsqlCommand (GPCdkScreen, commandOutput, dbProcess);
-         }
+	    /* Run the command. */
+	    runIsqlCommand (GPCdkScreen, commandOutput, dbProcess);
+	 }
       }
       else
       {
-         /* Check if we are logged in. */
-         if (dbProcess == (DBPROCESS *)NULL)
-         {
-            addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
-         }
-         else
-         {
-            /* Put the command into the ISQL buffer. */
-            dbcmd (dbProcess, command);
+	 /* Check if we are logged in. */
+	 if (dbProcess == 0)
+	 {
+	    addCDKSwindow (commandOutput, "You must login first.", BOTTOM);
+	 }
+	 else
+	 {
+	    /* Put the command into the ISQL buffer. */
+	    dbcmd (dbProcess, command);
 
-            /* Put the command into the scrolling window. */
-            sprintf (temp, "</R>%d><!R> %s", count+1, command);
-            addCDKSwindow (commandOutput, temp, BOTTOM);
+	    /* Put the command into the scrolling window. */
+	    sprintf (temp, "</R>%d><!R> %s", count+1, command);
+	    addCDKSwindow (commandOutput, temp, BOTTOM);
 
-            /* Increment the counter. */
-            count++;
-         }
+	    /* Increment the counter. */
+	    count++;
+	 }
       }
 
       /* Keep the history. */
@@ -363,12 +363,12 @@ int main (int argc, char **argv)
    }
 }
 
-/* 
+/*
  * This lets a person 'use' a database.
  */
 void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
 {
-   char *database = (char *)NULL;
+   char *database = 0;
    char temp[256];
    char **words;
    int wordCount, x;
@@ -382,7 +382,7 @@ void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
    {
       if (strlen (words[x]) != 0)
       {
-         database = copyChar (words[x]);
+	 database = copyChar (words[x]);
       }
    }
    CDKfreeStrings(words);
@@ -398,7 +398,7 @@ void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
    }
 
    /* Set the global database name. */
-   if (database == (char *)NULL)
+   if (database == 0)
    {
       /* Put a syntax error in the scrolling window. */
       sprintf (temp, "Command: %s", command);
@@ -410,7 +410,7 @@ void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
    /* Clear out the old database name and set the new one. */
    freeChar (GPCurrentDatabase);
    GPCurrentDatabase = database;
-  
+
    /* Add a message into the scrolling window. */
    sprintf (temp, "Command: %s", command);
    addCDKSwindow (swindow, temp, BOTTOM);
@@ -423,7 +423,7 @@ void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
  */
 DBPROCESS *sybaseLogin (CDKSCREEN *screen, char *accountName, char *accountPassword, int attemptCount)
 {
-   DBPROCESS *dbProcess = (DBPROCESS *)NULL;
+   DBPROCESS *dbProcess = 0;
    char *login		= accountName;
    char *password	= accountPassword;
    int count		= 0;
@@ -437,36 +437,36 @@ DBPROCESS *sybaseLogin (CDKSCREEN *screen, char *accountName, char *accountPassw
       dbProcess = loginToSybase (GPCdkScreen, login, password);
 
       /*
-       * If the dbprocess is NULL the account/password
+       * If the dbprocess is null the account/password
        * pair does not exist.
        */
-       if (dbProcess == (DBPROCESS *)NULL)
+       if (dbProcess == 0)
        {
-          /*
-           * If the login and account names were provided,
-           * set them to NULL and allow the user to enter
-           * the name and password by hand.
-           */
-           login = (char *)NULL;
-           password = (char *)NULL;
+	  /*
+	   * If the login and account names were provided,
+	   * set them to null and allow the user to enter
+	   * the name and password by hand.
+	   */
+	   login = 0;
+	   password = 0;
 
-          /* Spit out the login error message. */
-          lines = 0;
-          mesg[lines++] = "<C></B/5>Login Error";
-          mesg[lines++] = " ";
-          mesg[lines++] = "<C>The login/password pair does not exist.";
-          mesg[lines++] = " ";
-          mesg[lines++] = "<C>Please try again.";
+	  /* Spit out the login error message. */
+	  lines = 0;
+	  mesg[lines++] = "<C></B/5>Login Error";
+	  mesg[lines++] = " ";
+	  mesg[lines++] = "<C>The login/password pair does not exist.";
+	  mesg[lines++] = " ";
+	  mesg[lines++] = "<C>Please try again.";
 
-          popupLabel (GPCdkScreen, mesg, lines);
+	  popupLabel (GPCdkScreen, mesg, lines);
 
-          eraseCDKScreen (GPCdkScreen);
-          refreshCDKScreen (GPCdkScreen);
-          count++;
+	  eraseCDKScreen (GPCdkScreen);
+	  refreshCDKScreen (GPCdkScreen);
+	  count++;
        }
        else
        {
-          break;
+	  break;
        }
    }
 
@@ -481,7 +481,7 @@ DBPROCESS *sybaseLogin (CDKSCREEN *screen, char *accountName, char *accountPassw
 
       popupLabel (GPCdkScreen, mesg, lines);
 
-      return (DBPROCESS *)NULL;
+      return 0;
    }
    return dbProcess;
 }
@@ -491,10 +491,10 @@ DBPROCESS *sybaseLogin (CDKSCREEN *screen, char *accountName, char *accountPassw
  */
 DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPassword)
 {
-   CDKENTRY *loginEntry		= (CDKENTRY *)NULL;
-   CDKENTRY *passwordEntry	= (CDKENTRY *)NULL;
-   LOGINREC *dbLogin		= (LOGINREC *)NULL;
-   char *hostAccount		= (char *)NULL;
+   CDKENTRY *loginEntry		= 0;
+   CDKENTRY *passwordEntry	= 0;
+   LOGINREC *dbLogin		= 0;
+   char *hostAccount		= 0;
    char *login			= accountName;
    char *password		= accountPassword;
    char *mesg[10], temp[256];
@@ -503,7 +503,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
    refreshCDKScreen (screen);
 
    /* Define the login entry field. */
-   if (login == (char *)NULL)
+   if (login == 0)
    {
       loginEntry = newCDKEntry (screen, CENTER, CENTER,
 				"\n<C></B/5>Sybase Login\n",
@@ -519,24 +519,24 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       /* Get the login. */
       while (1)
       {
-         /* Redraw the screen. */
-         eraseCDKScreen (loginEntry->screen);
-         refreshCDKScreen (loginEntry->screen);
-   
-         /* Get the login to the sybase account. */
-         login = copyChar (activateCDKEntry (loginEntry, NULL));
+	 /* Redraw the screen. */
+	 eraseCDKScreen (loginEntry->screen);
+	 refreshCDKScreen (loginEntry->screen);
 
-         /* Check if they hit escape. */
-         if (loginEntry->exitType == vESCAPE_HIT)
-         {
-            mesg[0] = "<C></U>Error";
-            mesg[1] = "A user name must be provided.";
-            popupLabel (screen, mesg, 2);
-         }
-         else
-         {
-            break;
-         }
+	 /* Get the login to the sybase account. */
+	 login = copyChar (activateCDKEntry (loginEntry, 0));
+
+	 /* Check if they hit escape. */
+	 if (loginEntry->exitType == vESCAPE_HIT)
+	 {
+	    mesg[0] = "<C></U>Error";
+	    mesg[1] = "A user name must be provided.";
+	    popupLabel (screen, mesg, 2);
+	 }
+	 else
+	 {
+	    break;
+	 }
       }
 
       /* Destroy the widget. */
@@ -544,7 +544,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
    }
 
    /* Get the password if we need too. */
-   if (password == (char *)NULL)
+   if (password == 0)
    {
       sprintf (temp, "\n<C></B/5>%s's Password\n", login);
       passwordEntry = newCDKEntry (screen, CENTER, CENTER,
@@ -555,11 +555,11 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       setCDKEntryHiddenChar (passwordEntry, '*');
 
       /* Get the password. (the account may not have a password.) */
-      password = copyChar (activateCDKEntry (passwordEntry, NULL));
+      password = copyChar (activateCDKEntry (passwordEntry, 0));
       if ((passwordEntry->exitType == vESCAPE_HIT) ||
 	((int)strlen(password) == 0))
       {
-         password = "";
+	 password = "";
       }
 
       /* Destroy the widget. */
@@ -569,7 +569,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
    /*
     * Try to connect to the database and get a LOGINREC structre.
     */
-   if ((dbLogin = dblogin()) == (LOGINREC *)NULL)
+   if ((dbLogin = dblogin()) == 0)
    {
       mesg[0] = "<C></U>Fatal Error";
       mesg[1] = "<C>Could not connect to the Sybase database.";
@@ -586,7 +586,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
    DBSETLAPP (dbLogin, "cdk_syb");
 
    /* Create a dbprocess structure to communicate with the database. */
-   return dbopen (dbLogin, NULL);
+   return dbopen (dbLogin, 0);
 }
 
 /*
@@ -609,34 +609,34 @@ void runIsqlCommand (CDKSCREEN *screen, CDKSWINDOW *swindow, DBPROCESS *dbProces
    {
       if (returnCode == FAIL)
       {
-         /* Oops, the command bombed. */
-         addCDKSwindow (swindow, "</5/16>Command failed.", BOTTOM);
+	 /* Oops, the command bombed. */
+	 addCDKSwindow (swindow, "</5/16>Command failed.", BOTTOM);
       }
       else
       {
-         if (!(DBCMDROW (dbProcess)))
-         {
-            /* The command could not return any rows. */
-            addCDKSwindow (swindow, "</5/16>Command could not return rows.", BOTTOM);
-         }
-         else
-         {
-            /*
-             * The command returned some rows, print out the title.
-             */
-            char *row = assembleTitle (dbProcess);
-            addCDKSwindow (swindow, row, BOTTOM);
-            freeChar (row);
+	 if (!(DBCMDROW (dbProcess)))
+	 {
+	    /* The command could not return any rows. */
+	    addCDKSwindow (swindow, "</5/16>Command could not return rows.", BOTTOM);
+	 }
+	 else
+	 {
+	    /*
+	     * The command returned some rows, print out the title.
+	     */
+	    char *row = assembleTitle (dbProcess);
+	    addCDKSwindow (swindow, row, BOTTOM);
+	    freeChar (row);
 
-            /* For each row returned, assemble the info. */
-            rowCount = 0;
-            while (dbnextrow (dbProcess) != NO_MORE_ROWS)
-            {
-               row = assembleRow (dbProcess);
-               addCDKSwindow (swindow, row, BOTTOM);
-               freeChar (row);
-            }
-         }
+	    /* For each row returned, assemble the info. */
+	    rowCount = 0;
+	    while (dbnextrow (dbProcess) != NO_MORE_ROWS)
+	    {
+	       row = assembleRow (dbProcess);
+	       addCDKSwindow (swindow, row, BOTTOM);
+	       freeChar (row);
+	    }
+	 }
       }
    }
 
@@ -653,7 +653,7 @@ void runIsqlCommand (CDKSCREEN *screen, CDKSWINDOW *swindow, DBPROCESS *dbProces
  */
 char *assembleTitle (DBPROCESS *dbProc)
 {
-   char *colName	= (char *)NULL;
+   char *colName	= 0;
    int colWidth		= 0;
    int colNameLen	= 0;
    int colCount		= dbnumcols (dbProc);
@@ -674,17 +674,17 @@ char *assembleTitle (DBPROCESS *dbProc)
       /* If we need to pad, then pad. */
       if (colNameLen < colWidth)
       {
-         /* Create a string the same length as the col width. */
-         memset (temp, '\0', MAXWIDTH);
-         memset (temp, ' ', (colWidth-colNameLen));
+	 /* Create a string the same length as the col width. */
+	 memset (temp, '\0', MAXWIDTH);
+	 memset (temp, ' ', (colWidth-colNameLen));
 
-         /* Copy the name. */
-         sprintf (row, "%s %s%s", row, colName, temp);
+	 /* Copy the name. */
+	 sprintf (row, "%s %s%s", row, colName, temp);
       }
       else
       {
-         /* Copy the name. */
-         sprintf (row, "%s %s", row, colName);
+	 /* Copy the name. */
+	 sprintf (row, "%s %s", row, colName);
       }
    }
    return (char *)strdup (row);
@@ -695,7 +695,7 @@ char *assembleTitle (DBPROCESS *dbProc)
  */
 char *assembleRow (DBPROCESS *dbProcess)
 {
-   char *dataValue	= (char *)NULL;
+   char *dataValue	= 0;
    int colCount		= dbnumcols (dbProcess);
    int columnType	= 0;
    int colWidth		= 0;
@@ -719,59 +719,59 @@ char *assembleRow (DBPROCESS *dbProcess)
       /* Check the column type. */
       if (columnType == SYBINT1)
       {
-         DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
-         sprintf (format, "%%-%dd", colWidth);
-         sprintf (value, format, (int)object_id);
+	 DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
+	 sprintf (format, "%%-%dd", colWidth);
+	 sprintf (value, format, (int)object_id);
       }
       else if (columnType == SYBINT2)
       {
-         DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
-         sprintf (format, "%%-%dd", colWidth);
-         sprintf (value, format, (int)object_id);
+	 DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
+	 sprintf (format, "%%-%dd", colWidth);
+	 sprintf (value, format, (int)object_id);
       }
       else if (columnType == SYBINT4)
       {
-         DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
-         sprintf (format, "%%-%dd", colWidth);
-         sprintf (value, format, (int)object_id);
+	 DBINT object_id = *((DBINT *)dbdata(dbProcess, x));
+	 sprintf (format, "%%-%dd", colWidth);
+	 sprintf (value, format, (int)object_id);
       }
       else if (columnType == SYBREAL)
       {
-         DBREAL object_id = *((DBREAL *)dbdata(dbProcess, x));
-         sprintf (format, "%%-%d.2f", colWidth);
-         sprintf (value, format, object_id);
+	 DBREAL object_id = *((DBREAL *)dbdata(dbProcess, x));
+	 sprintf (format, "%%-%d.2f", colWidth);
+	 sprintf (value, format, object_id);
       }
       else if (columnType == SYBFLT8)
       {
-         DBFLT8 object_id = *((DBFLT8 *)dbdata(dbProcess, x));
-         sprintf (format, "%%-%d.2f", colWidth);
-         sprintf (value, format, object_id);
+	 DBFLT8 object_id = *((DBFLT8 *)dbdata(dbProcess, x));
+	 sprintf (format, "%%-%d.2f", colWidth);
+	 sprintf (value, format, object_id);
       }
       else
       {
-         if (valueLen <= 0)
-         {
-            strcpy (value, " ");
-         }
-         else
-         {
-            memset (value, '\0', MAXWIDTH);
-            dataValue = (DBCHAR *)dbdata (dbProcess, x);
-            strncpy (value, dataValue, valueLen);
-         }
+	 if (valueLen <= 0)
+	 {
+	    strcpy (value, " ");
+	 }
+	 else
+	 {
+	    memset (value, '\0', MAXWIDTH);
+	    dataValue = (DBCHAR *)dbdata (dbProcess, x);
+	    strncpy (value, dataValue, valueLen);
+	 }
       }
 
       /* If we need to pad, then pad. */
       if (valueLen < colWidth)
       {
-         /* Copy the value into the string. */
-         memset (temp, '\0', MAXWIDTH);
-         memset (temp, ' ', (colWidth-valueLen));
-         sprintf  (row, "%s %s%s", row, value, temp);
+	 /* Copy the value into the string. */
+	 memset (temp, '\0', MAXWIDTH);
+	 memset (temp, ' ', (colWidth-valueLen));
+	 sprintf  (row, "%s %s%s", row, value, temp);
       }
       else
       {
-         sprintf  (row, "%s %s", row, value);
+	 sprintf  (row, "%s %s", row, value);
       }
    }
    return copyChar (row);
@@ -790,7 +790,7 @@ int getColWidth (DBPROCESS *dbProcess, int col)
    int columnType	= (int)dbcoltype (dbProcess, col);
 
    /* If the colType is int/real/float adjust accordingly. */
-   if (columnType == SYBINT1 || columnType == SYBINT2 || \
+   if (columnType == SYBINT1 || columnType == SYBINT2 ||
 	columnType == SYBINT4)
    {
       colWidth = 5;
@@ -817,7 +817,7 @@ void viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    CDKENTRY *entry	= (CDKENTRY *)object;
 
    /* Let them play... */
-   activateCDKSwindow (swindow, NULL);
+   activateCDKSwindow (swindow, 0);
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf(entry)->box);
@@ -889,11 +889,11 @@ char *uc (char *word)
    {
       if (isalpha ((int)word[x]))
       {
-         upper[x] = toupper(word[x]);
+	 upper[x] = toupper(word[x]);
       }
       else
       {
-         upper[x] = word[x];
+	 upper[x] = word[x];
       }
    }
    upper[length] = '\0';
@@ -911,7 +911,7 @@ int err_handler (DBPROCESS *dbProcess, DBINT mesgNumber, int mesgState, int seve
    int errorCount = 0;
 
    /* Check if the process is dead. */
-   if ((dbProcess == (DBPROCESS*)NULL) || (DBDEAD(dbProcess)))
+   if ((dbProcess == 0) || (DBDEAD(dbProcess)))
    {
       mesg[0] = "</B/32>Database Process Error";
       mesg[1] = "<C>The database process seems to have died.";
@@ -1032,7 +1032,7 @@ void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype 
  */
 void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
-   CDKSCROLL *scrollList	= (CDKSCROLL *)NULL;
+   CDKSCROLL *scrollList	= 0;
    CDKENTRY *entry		= (CDKENTRY *)object;
    struct history_st *history	= (struct history_st *) clientData;
    int height			= (history->count < 10 ? history->count+3 : 13);
@@ -1060,7 +1060,7 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
 				NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
-   selection = activateCDKScroll (scrollList, NULL);
+   selection = activateCDKScroll (scrollList, 0);
    destroyCDKScroll (scrollList);
 
    /* Check the results of the selection. */
@@ -1080,11 +1080,11 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
  */
 void loadHistory (struct history_st *history)
 {
-   char *home	= (char *)NULL;
+   char *home	= 0;
    char filename[1000];
 
    /* Create the RC filename. */
-   if ((home = getenv ("HOME")) == (char *)NULL)
+   if ((home = getenv ("HOME")) == 0)
    {
       home = ".";
    }
@@ -1107,20 +1107,20 @@ void loadHistory (struct history_st *history)
  */
 void saveHistory (struct history_st *history, int count)
 {
-   FILE *fd	= (FILE *)NULL;
-   char *home	= (char *)NULL;
+   FILE *fd	= 0;
+   char *home	= 0;
    char filename[1000];
    int x;
 
    /* Create the RC filename. */
-   if ((home = getenv ("HOME")) == (char *)NULL)
+   if ((home = getenv ("HOME")) == 0)
    {
       home = ".";
    }
    sprintf (filename, "%s/.sybrc", home);
 
    /* Open the file for writing. */
-   if ((fd = fopen (filename, "w")) == NULL)
+   if ((fd = fopen (filename, "w")) == 0)
    {
       return;
    }

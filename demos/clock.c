@@ -7,9 +7,9 @@ char *XCursesProgramName="label_ex";
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKLABEL *demo	= (CDKLABEL *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen = 0;
+   CDKLABEL *demo	= 0;
+   WINDOW *cursesWin	= 0;
    int boxLabel		= 0;
    char *mesg[4], temp[256];
    struct tm *currentTime;
@@ -22,13 +22,13 @@ int main (int argc, char **argv)
       ret = getopt (argc, argv, "b");
       if (ret == -1)
       {
-         break;
+	 break;
       }
 
       switch (ret)
       {
-         case 'b' :
-              boxLabel = 1;
+	 case 'b' :
+	      boxLabel = 1;
       }
    }
 
@@ -43,10 +43,10 @@ int main (int argc, char **argv)
    mesg[0] = "</1/B>HH:MM:SS";
 
    /* Declare the labels. */
-   demo	= newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 1, boxLabel, FALSE);
+   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 1, boxLabel, FALSE);
 
-   /* Is the label NULL??? */
-   if (demo == (CDKLABEL *)NULL)
+   /* Is the label null??? */
+   if (demo == 0)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);

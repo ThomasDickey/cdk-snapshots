@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 00:05:44 $
- * $Revision: 1.34 $
+ * $Date: 2000/01/16 22:53:17 $
+ * $Revision: 1.36 $
  */
 
 /*
@@ -30,7 +30,7 @@ void initCDKColor (void)
    {
       for (y=0; y < 8; y++)
       {
-         init_pair (pair++, color[x], color[y]);
+	 init_pair (pair++, color[x], color[y]);
       }
    }
 #endif
@@ -85,89 +85,89 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
    int x, y;
 
    /* Draw horizontal lines. */
-   if (horz != (chtype)NULL)
+   if (horz != 0)
    {
       for (x=x1; x<=x2; x++)
       {
-         if (attr != (chtype)NULL)
-         {
-            mvwaddch (win, y1, x, horz | attr);
-            mvwaddch (win, y2, x, horz | attr);
-         }
-         else
-         {
-            mvwaddch (win, y1, x, horz);
-            mvwaddch (win, y2, x, horz);
-         }
+	 if (attr != 0)
+	 {
+	    mvwaddch (win, y1, x, horz | attr);
+	    mvwaddch (win, y2, x, horz | attr);
+	 }
+	 else
+	 {
+	    mvwaddch (win, y1, x, horz);
+	    mvwaddch (win, y2, x, horz);
+	 }
       }
       count++;
    }
 
    /* Draw vertical lines. */
-   if (vert != (chtype)NULL)
+   if (vert != 0)
    {
       for (y=y1; y<=y2; y++)
       {
-         if (attr != (chtype)NULL)
-         {
-            mvwaddch (win, y, x1, vert | attr);
-            mvwaddch (win, y, x2, vert | attr);
-         }
-         else
-         {
-            mvwaddch (win, y, x1, vert);
-            mvwaddch (win, y, x2, vert);
-         }
+	 if (attr != 0)
+	 {
+	    mvwaddch (win, y, x1, vert | attr);
+	    mvwaddch (win, y, x2, vert | attr);
+	 }
+	 else
+	 {
+	    mvwaddch (win, y, x1, vert);
+	    mvwaddch (win, y, x2, vert);
+	 }
       }
       count++;
    }
 
    /* Draw in the corners. */
-   if (tlc != (chtype)NULL)
+   if (tlc != 0)
    {
-      if (attr != (chtype)NULL)
+      if (attr != 0)
       {
-         mvwaddch (win, y1, x1, tlc | attr);
+	 mvwaddch (win, y1, x1, tlc | attr);
       }
       else
       {
-         mvwaddch (win, y1, x1, tlc);
+	 mvwaddch (win, y1, x1, tlc);
       }
       count++;
    }
-   if (trc != (chtype)NULL)
+   if (trc != 0)
    {
-      if (attr != (chtype)NULL)
+      if (attr != 0)
       {
-         mvwaddch (win, y1, x2, trc | attr);
+	 mvwaddch (win, y1, x2, trc | attr);
       }
       else
       {
-         mvwaddch (win, y1, x2, trc);
+	 mvwaddch (win, y1, x2, trc);
       }
       count++;
    }
-   if (blc != (chtype)NULL)
+   if (blc != 0)
    {
-      if (attr != (chtype)NULL)
+      if (attr != 0)
       {
-         mvwaddch (win, y2, x1, blc | attr);
+	 mvwaddch (win, y2, x1, blc | attr);
       }
       else
       {
-         mvwaddch (win, y2, x1, blc);
+	 mvwaddch (win, y2, x1, blc);
       }
       count++;
    }
-   if (brc != (chtype)NULL)
+   if (brc != 0)
    {
-      if (attr != (chtype)NULL)
+      if (attr != 0)
       {
-         mvwaddch (win, y2, x2, brc | attr);
+	 mvwaddch (win, y2, x2, brc | attr);
       }
       else
       {
-         mvwaddch (win, y2, x2, brc);
+	 mvwaddch (win, y2, x2, brc);
       }
       count++;
    }
@@ -182,7 +182,7 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
  */
 void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chtype line)
 {
-   /* De=clare some local vars.	*/
+   /* De=clare some local vars. */
    int xdiff	= endx - startx;
    int ydiff	= endy - starty;
    int x	= 0;
@@ -194,7 +194,7 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
       /* Horizontal line.      <--------- X --------> */
       for (x=0; x < xdiff; x++)
       {
-         mvwaddch (window, starty, startx + x, line);
+	 mvwaddch (window, starty, startx + x, line);
       }
    }
    else if (xdiff == 0)
@@ -202,7 +202,7 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
       /* Vertical line. */
       for (y=0; y < ydiff; y++)
       {
-         mvwaddch (window, starty + y, startx, line);
+	 mvwaddch (window, starty + y, startx, line);
       }
    }
    else
@@ -216,32 +216,32 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
       int yadj		= 0;
 
       /* Set the vars. */
-      x	= startx;
-      y	= starty;
+      x = startx;
+      y = starty;
       while (x != endx && y != endy)
       {
-         /* Add the char to the window. */
-         mvwaddch (window, y, x, line);
+	 /* Add the char to the window. */
+	 mvwaddch (window, y, x, line);
 
-         /* Make the x and y adjustments. */
-         if (xadj != xratio)
-         {
-            x	= (xdiff < 0 ? x-1 : x+1);
-            xadj++;
-         }
-         else
-         {
-            xadj	= 0;
-         }
-         if (yadj != yratio)
-         {
-            y	= (ydiff < 0 ? y-1 : y+1);
-            yadj++;
-         }
-         else
-         {
-            yadj = 0;
-         }
+	 /* Make the x and y adjustments. */
+	 if (xadj != xratio)
+	 {
+	    x	= (xdiff < 0 ? x-1 : x+1);
+	    xadj++;
+	 }
+	 else
+	 {
+	    xadj	= 0;
+	 }
+	 if (yadj != yratio)
+	 {
+	    y	= (ydiff < 0 ? y-1 : y+1);
+	    yadj++;
+	 }
+	 else
+	 {
+	    yadj = 0;
+	 }
       }
    }
 }
@@ -268,7 +268,7 @@ void drawShadow (WINDOW *shadowWin)
       {
 	 mvwaddch (shadowWin, x, x_hi, ACS_VLINE    | A_DIM);
       }
-      mvwaddch (shadowWin, 0,    x_hi, ACS_URCORNER | A_DIM);
+      mvwaddch (shadowWin, 0,	 x_hi, ACS_URCORNER | A_DIM);
       mvwaddch (shadowWin, y_hi, 0,    ACS_LLCORNER | A_DIM);
       mvwaddch (shadowWin, y_hi, x_hi, ACS_LRCORNER | A_DIM);
       wrefresh (shadowWin);
@@ -290,8 +290,8 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
       display = MINIMUM(display,getmaxx(window)-1);
       for (x=0; x < display ; x++)
       {
-         /* Draw the message on a horizontal axis. */
-         mvwaddch (window, ypos, xpos+x, string[x+start] | A_NORMAL);
+	 /* Draw the message on a horizontal axis. */
+	 mvwaddch (window, ypos, xpos+x, string[x+start] | A_NORMAL);
       }
    }
    else
@@ -300,7 +300,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-         mvwaddch (window, ypos+x, xpos, string[x+start] | A_NORMAL);
+	 mvwaddch (window, ypos+x, xpos, string[x+start] | A_NORMAL);
       }
    }
 }
@@ -321,7 +321,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
       display = MINIMUM(display,getmaxx(window)-1);
       for (x=0; x < display ; x++)
       {
-         mvwaddch (window, ypos, xpos+x, (string[x+start] & A_CHARTEXT) | attr);
+	 mvwaddch (window, ypos, xpos+x, (string[x+start] & A_CHARTEXT) | attr);
       }
    }
    else
@@ -330,7 +330,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-         mvwaddch (window, ypos+x, xpos, (string[x+start] & A_CHARTEXT) | attr);
+	 mvwaddch (window, ypos+x, xpos, (string[x+start] & A_CHARTEXT) | attr);
       }
    }
 }
@@ -358,7 +358,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
       display = MINIMUM(diff,getmaxx(window)-1);
       for (x=0; x < display; x++)
       {
-         mvwaddch (window, ypos, xpos+x, string[x+start]);
+	 mvwaddch (window, ypos, xpos+x, string[x+start]);
       }
    }
    else
@@ -367,7 +367,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
       display = MINIMUM(diff,getmaxy(window)-1);
       for (x=0; x < display; x++)
       {
-         mvwaddch (window, ypos+x, xpos, string[x+start]);
+	 mvwaddch (window, ypos+x, xpos, string[x+start]);
       }
    }
 }
@@ -397,8 +397,8 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff,getmaxx(window)-1);
       for (x=0; x < display; x++)
       {
-         plain = string[x+start] & A_CHARTEXT;
-         mvwaddch (window, ypos, xpos+x, plain | attr);
+	 plain = string[x+start] & A_CHARTEXT;
+	 mvwaddch (window, ypos, xpos+x, plain | attr);
       }
    }
    else
@@ -407,8 +407,8 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff,getmaxy(window)-1);
       for (x=0; x < display; x++)
       {
-         plain = string[x+start] & A_CHARTEXT;
-         mvwaddch (window, ypos+x, xpos, plain | attr);
+	 plain = string[x+start] & A_CHARTEXT;
+	 mvwaddch (window, ypos+x, xpos, plain | attr);
       }
    }
 }
@@ -419,7 +419,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
 void popupLabel (CDKSCREEN *screen, char **mesg, int count)
 {
    /* Declare local variables. */
-   CDKLABEL *popup = (CDKLABEL *)NULL;
+   CDKLABEL *popup = 0;
 
    /* Create the label. */
    popup = newCDKLabel (screen, CENTER, CENTER, mesg, count, TRUE, FALSE);
@@ -445,7 +445,7 @@ void popupLabel (CDKSCREEN *screen, char **mesg, int count)
 int popupDialog (CDKSCREEN *screen, char **mesg, int mesgCount, char **buttons, int buttonCount)
 {
    /* Declare local variables. */
-   CDKDIALOG *popup	= (CDKDIALOG *)NULL;
+   CDKDIALOG *popup	= 0;
    int choice;
 
    /* Create the dialog box. */
@@ -459,7 +459,7 @@ int popupDialog (CDKSCREEN *screen, char **mesg, int mesgCount, char **buttons, 
    drawCDKDialog (popup, TRUE);
 
    /* Get the choice. */
-   choice = activateCDKDialog (popup, NULL);
+   choice = activateCDKDialog (popup, 0);
 
    /* Destroy the dialog box. */
    destroyCDKDialog (popup);
@@ -477,7 +477,7 @@ int popupDialog (CDKSCREEN *screen, char **mesg, int mesgCount, char **buttons, 
  */
 int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boolean numbers)
 {
-   CDKSCROLL *scrollp	= (CDKSCROLL *)NULL;
+   CDKSCROLL *scrollp	= 0;
    int selected		= -1;
    int height		= 10;
    int width		= -1;
@@ -487,7 +487,7 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
    /* Determine the height of the list. */
    if (listSize < 10)
    {
-      height = listSize + (title == NULL ? 2 : 3);
+      height = listSize + (title == 0 ? 2 : 3);
    }
 
    /* Determine the width of the list. */
@@ -496,7 +496,7 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
       int temp = strlen (list[x]) + 10;
       width = MAXIMUM (width, temp);
    }
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       len = strlen (title);
    }
@@ -510,14 +510,14 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
 				A_REVERSE, TRUE, FALSE);
 
    /* Check if we made the list. */
-   if (scrollp == (CDKSCROLL *)NULL)
+   if (scrollp == 0)
    {
       refreshCDKScreen (screen);
       return -1;
    }
 
    /* Let the user play. */
-   selected = activateCDKScroll (scrollp, (chtype)NULL);
+   selected = activateCDKScroll (scrollp, 0);
 
    /* Check how they exited. */
    if (scrollp->exitType != vNORMAL)
@@ -536,8 +536,8 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
  */
 char *getString (CDKSCREEN *screen, char *title, char *label, char *initValue)
 {
-   CDKENTRY *widget	= (CDKENTRY *)NULL;
-   char *value		= (char *)NULL;
+   CDKENTRY *widget	= 0;
+   char *value		= 0;
 
    /* Create the widget. */
    widget = newCDKEntry (screen, CENTER, CENTER, title, label,
@@ -548,13 +548,13 @@ char *getString (CDKSCREEN *screen, char *title, char *label, char *initValue)
    setCDKEntryValue (widget, initValue);
 
    /* Get the string. */
-   value = activateCDKEntry (widget, NULL);
+   value = activateCDKEntry (widget, 0);
 
    /* Make sure they exited normally. */
    if (widget->exitType != vNORMAL)
    {
       destroyCDKEntry (widget);
-      return (char *)NULL;
+      return 0;
    }
 
    /* Return a copy of the string typed in. */
@@ -568,11 +568,10 @@ char *getString (CDKSCREEN *screen, char *title, char *label, char *initValue)
  */
 int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, int buttonCount)
 {
-   CDKVIEWER *viewer	= (CDKVIEWER *)NULL;
+   CDKVIEWER *viewer	= 0;
    int selected		= -1;
    int lines		= 0;
    char *info[MAX_LINES];
-   int x;
 
    /* Open the file and read the contents. */
    lines = readFile (filename, info, MAX_LINES);
@@ -592,13 +591,10 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    setCDKViewer (viewer, title, info, lines, A_REVERSE, TRUE, TRUE, TRUE);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (viewer, (chtype *)NULL);
+   selected = activateCDKViewer (viewer, 0);
 
    /* Clean up. */
-   for (x=0; x < lines; x++)
-   {
-      freeChar (info[x]);
-   }
+   freeCharList (info, lines);
 
    /* Make sure they exited normally. */
    if (viewer->exitType != vNORMAL)
@@ -617,7 +613,7 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
  */
 int viewInfo (CDKSCREEN *screen, char *title, char **info, int count, char **buttons, int buttonCount, boolean interpret)
 {
-   CDKVIEWER *viewer	= (CDKVIEWER *)NULL;
+   CDKVIEWER *viewer	= 0;
    int selected		= -1;
 
    /* Create the file viewer to view the file selected.*/
@@ -629,7 +625,7 @@ int viewInfo (CDKSCREEN *screen, char *title, char **info, int count, char **but
    setCDKViewer (viewer, title, info, count, A_REVERSE, interpret, TRUE, TRUE);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (viewer, (chtype *)NULL);
+   selected = activateCDKViewer (viewer, 0);
 
    /* Make sure they exited normally. */
    if (viewer->exitType != vNORMAL)
@@ -648,9 +644,9 @@ int viewInfo (CDKSCREEN *screen, char *title, char **info, int count, char **but
  */
 char *selectFile (CDKSCREEN *screen, char *title)
 {
-   CDKFSELECT *fselect	= (CDKFSELECT *)NULL;
-   char *filename	= (char *)NULL;
-   char *holder		= (char *)NULL;
+   CDKFSELECT *fselect	= 0;
+   char *filename	= 0;
+   char *holder		= 0;
 
    /* Create the file selector. */
    fselect = newCDKFselect (screen, CENTER, CENTER, -4, -20,
@@ -660,14 +656,14 @@ char *selectFile (CDKSCREEN *screen, char *title)
 				TRUE, FALSE);
 
    /* Let the user play. */
-   holder = activateCDKFselect (fselect, (chtype)NULL);
+   holder = activateCDKFselect (fselect, 0);
 
    /* Check the way the user exited the selector. */
    if (fselect->exitType != vNORMAL)
    {
       destroyCDKFselect (fselect);
       refreshCDKScreen (screen);
-      return ((char *)NULL);
+      return (0);
    }
 
    /* Otherwise... */

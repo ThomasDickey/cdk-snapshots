@@ -10,9 +10,9 @@ char *XCursesProgramName="dialog_ex";
 int main (void)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
-   CDKDIALOG *question	= (CDKDIALOG *)NULL;
-   WINDOW *cursesWin	= (WINDOW *)NULL;
+   CDKSCREEN *cdkscreen	= 0;
+   CDKDIALOG *question	= 0;
+   WINDOW *cursesWin	= 0;
    char *buttons[]	= {"</B/24>Ok", "</B16>Cancel"};
    char *message[10], *mesg[3], temp[100];
    int selection;
@@ -40,7 +40,7 @@ int main (void)
 				TRUE, TRUE, FALSE);
 
    /* Check if we got a null value back. */
-   if (question == (CDKDIALOG *)NULL)
+   if (question == 0)
    {
       /* Shut down Cdk. */
       destroyCDKScreen (cdkscreen);
@@ -52,7 +52,7 @@ int main (void)
    }
 
    /* Activate the dialog box. */
-   selection = activateCDKDialog (question, (chtype *)NULL);
+   selection = activateCDKDialog (question, 0);
 
    /* Tell them what was selected. */
    if (question->exitType == vESCAPE_HIT)
