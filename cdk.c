@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/12/05 01:08:18 $
- * $Revision: 1.170 $
+ * $Date: 2001/12/30 23:03:46 $
+ * $Revision: 1.171 $
  */
 
 char *GPasteBuffer = 0;
@@ -232,6 +232,9 @@ int CDKreadFile (char *filename, char ***array)
 
    while ((fgets (temp, sizeof(temp), fd) != 0))
    {
+      size_t len = strlen(temp);
+      if (len != 0 && temp[len-1] == '\n')
+	 temp[--len] = '\0';
       used = CDKallocStrings(array, temp, lines++, used);
    }
    fclose (fd);

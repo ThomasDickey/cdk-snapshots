@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.123 $
+ * $Date: 2001/12/30 23:21:10 $
+ * $Revision: 1.124 $
  */
 
 /*
@@ -422,7 +422,6 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
       wmove (matrix->cell[matrix->crow][matrix->ccol], 1,
 		(int)strlen (matrix->info[matrix->row][matrix->col])+1);
    }
-   wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
 
    /* Put the focus on the current cell */
    attrbox (matrix->cell[matrix->crow][matrix->ccol],
@@ -1276,7 +1275,6 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
 		matrix->LLChar, matrix->LRChar,
 		matrix->HChar,	matrix->VChar,
 		matrix->BoxAttrib);
-      wrefresh (matrix->win);
    }
 
    /* Draw in the title. */
@@ -1716,7 +1714,7 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
 			matrix->coltitle[matrix->lcol+x-1],
 			HORIZONTAL,
 			0, matrix->coltitleLen[matrix->lcol+x-1]);
-			wrefresh (matrix->cell[0][x]);
+	 wrefresh (matrix->cell[0][x]);
       }
    }
 }

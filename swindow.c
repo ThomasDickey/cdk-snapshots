@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.71 $
+ * $Date: 2001/12/20 01:43:06 $
+ * $Revision: 1.72 $
  */
 
 /*
@@ -725,7 +725,6 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 		swindow->LLChar, swindow->LRChar,
 		swindow->HChar,	 swindow->VChar,
 		swindow->BoxAttrib);
-      wrefresh (swindow->win);
    }
 
    /* Draw in the title if there is one */

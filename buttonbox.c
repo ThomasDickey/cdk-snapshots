@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:38:19 $
- * $Revision: 1.25 $
+ * $Date: 2001/12/30 23:42:43 $
+ * $Revision: 1.26 $
  */
 
 DeclareCDKObjects(my_funcs,Buttonbox);
@@ -336,7 +336,6 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
 
    /* Redraw the buttons. */
    drawCDKButtonboxButtons (buttonbox);
-   wrefresh (buttonbox->win);
 
    /* Exit the buttonbox box. */
    buttonbox->exitType = vEARLY_EXIT;
@@ -422,7 +421,6 @@ void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
 		buttonbox->LLChar, buttonbox->LRChar,
 		buttonbox->HChar,  buttonbox->VChar,
 		buttonbox->BoxAttrib);
-      wrefresh (buttonbox->win);
    }
 
    /* Draw in the title if there is one. */
