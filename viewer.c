@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/19 22:31:10 $
- * $Revision: 1.128 $
+ * $Date: 2003/11/25 01:12:22 $
+ * $Revision: 1.130 $
  */
 
 /*
@@ -283,23 +283,59 @@ static void freeLine (CDKVIEWER *viewer, int x)
  */
 int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean interpret)
 {
-   char filename[512];
+   char filename[CDK_PATHMAX + 2];
    int currentLine	= 0;
    int x		= 0;
+   int viewerSize	= listSize;
 
-   ++listSize;		/* add a line for links */
+   /*
+    * If the list-size is negative, count the length of the null-terminated
+    * list of strings.
+    */
+   if (listSize < 0)
+   {
+      /*
+       * FIXME: this should be a function, like chlen()
+       */
+      listSize = 0;
+      if (list != 0)
+      {
+	 for (x = 0; list[x] != 0; ++x)
+	 {
+	    ;
+	 }
+	 listSize = x;
+      }
+   }
+
+   /* compute the size of the resulting display */
+   viewerSize = listSize;
+   if (list != 0 && interpret)
+   {
+      for (x = 0; x < listSize; ++x)
+      {
+	 if (checkForLink (list[x], filename) == 1)
+	 {
+	    char **fileContents = 0;
+	    int fileLen = CDKreadFile (filename, &fileContents);
+
+	    if (fileLen >= 0)
+	       viewerSize += (fileLen - 1);
+	    CDKfreeStrings (fileContents);
+	 }
+      }
+   }
 
    /* Clean out the old viewer info. (if there is any) */
+   viewer->inProgress = TRUE;
    cleanCDKViewer(viewer);
-   createList(viewer, listSize);
-   memset (filename, '\0', 512);
+   createList(viewer, viewerSize);
 
    /* Keep some semi-permanent info. */
    viewer->interpret = interpret;
 
    /* Copy the information given. */
-   currentLine = 0;
-   for (x=0; x < listSize; x++)
+   for (x = currentLine = 0; x < listSize && currentLine < viewerSize; x++)
    {
       if (list[x] == 0)
       {
@@ -314,7 +350,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
 	 if (checkForLink (list[x], filename) == 1)
 	 {
 	    /* We have a link, open the file. */
-	    char temp[256];
+	    char temp[80 + CDK_PATHMAX];
 	    char **fileContents = 0;
 	    int fileLen		= 0;
 	    int fileLine	= 0;
@@ -334,9 +370,11 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
 	    else
 	    {
 	       /* For each line read, copy it into the viewer. */
-	       fileLen = MINIMUM(fileLen, (listSize - (currentLine + 1)));
+	       fileLen = MINIMUM(fileLen, (viewerSize - currentLine));
 	       for (fileLine=0; fileLine < fileLen ; fileLine++)
 	       {
+		  if (currentLine >= viewerSize)
+		     break;
 		  setupLine(viewer, FALSE, fileContents[fileLine], currentLine);
 		  viewer->characters += viewer->listLen[currentLine];
 		  currentLine++;
@@ -344,7 +382,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
 	       CDKfreeStrings (fileContents);
 	    }
 	 }
-	 else
+	 else if (currentLine < viewerSize)
 	 {
 	    setupLine(viewer, viewer->interpret, list[x], currentLine);
 	    viewer->characters += viewer->listLen[currentLine];
@@ -367,7 +405,8 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
    }
 
    /* Set up the needed vars for the viewer list. */
-   viewer->listSize = currentLine-1;
+   viewer->inProgress = FALSE;
+   viewer->listSize = viewerSize;
    if (viewer->listSize <= viewer->viewSize)
    {
       viewer->maxTopLine = 0;
@@ -1107,7 +1146,11 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
    if (viewer->showLineInfo == TRUE)
    {
       /* Set up the info line and draw it. */
-      if (viewer->listSize != 0)
+      if (viewer->inProgress)
+      {
+	 strcpy (temp, "processing...");
+      }
+      else if (viewer->listSize != 0)
       {
 	 sprintf (temp, "%d/%d %2.0f%%",
 			(viewer->currentTop + 1),

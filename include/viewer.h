@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.17 2003/11/19 00:25:02 tom Exp $
+ * $Id: viewer.h,v 1.18 2003/11/25 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -87,6 +87,7 @@ struct SViewer {
    int		maxTopLine;
    int		widestLine;
    long		characters;
+   boolean	inProgress;
    boolean	showLineInfo;
    boolean	interpret;
    EExitType	exitType;

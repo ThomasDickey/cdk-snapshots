@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 15:17:55 $
- * $Revision: 1.185 $
+ * $Date: 2003/11/25 00:28:07 $
+ * $Revision: 1.186 $
  */
 
 #define L_MARKER '<'
@@ -1211,12 +1211,13 @@ int checkForLink (char *line, char *filename)
 	 {
 	    break;
 	 }
-	 filename[fPos++] = line[x++];
+	 if (fPos < CDK_PATHMAX)
+	    filename[fPos++] = line[x];
+	 ++x;
       }
-      filename[fPos] = '\0';
-      return 1;
    }
-   return 0;
+   filename[fPos] = '\0';
+   return (fPos != 0);
 }
 
 /*

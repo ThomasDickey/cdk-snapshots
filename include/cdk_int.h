@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.3 2003/11/19 01:21:21 tom Exp $
+ * $Id: cdk_int.h,v 1.4 2003/11/25 00:23:58 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -49,6 +49,8 @@ extern "C" {
 #define typeCalloc(type)        typeCallocN(type,1)
 
 #define CharOf(c)               ((unsigned char)(c))
+
+#define CDK_PATHMAX		256
 
 extern char *GPasteBuffer;
 
