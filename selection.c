@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:04:44 $
- * $Revision: 1.97 $
+ * $Date: 2003/04/17 22:18:10 $
+ * $Revision: 1.98 $
  */
 
 /*
@@ -603,7 +603,7 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
 /*
  * This function draws the selection list window.
  */
-static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box)
+static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSED)
 {
    /* Declare local variables. */
    int scrollbarAdj	= 0;

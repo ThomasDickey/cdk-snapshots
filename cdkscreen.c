@@ -1,10 +1,14 @@
 #include <cdk.h>
 #include <signal.h>
 
+#ifdef HAVE_SETLOCALE
+#include <locale.h>
+#endif
+
 /*
  * $Author: tom $
- * $Date: 2002/07/27 12:21:39 $
- * $Revision: 1.67 $
+ * $Date: 2003/04/18 21:30:20 $
+ * $Revision: 1.69 $
  */
 
 typedef struct _all_screens
@@ -90,7 +94,6 @@ bool validCDKObject (CDKOBJS * obj)
    if (obj != 0)
    {
       ALL_OBJECTS *ptr;
-      int item;
 
       for (ptr = all_objects; ptr != 0; ptr = ptr->link)
       {
@@ -167,6 +170,9 @@ CDKSCREEN *initCDKScreen (WINDOW *window)
       signal (SIGBUS, segvTrap);
 
       /* Set up basic curses settings. */
+#ifdef HAVE_SETLOCALE
+      setlocale(LC_ALL, "");
+#endif
       noecho ();
       cbreak ();
    }

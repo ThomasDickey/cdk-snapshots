@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.14 2002/07/09 00:54:35 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.15 2003/04/18 00:22:05 tom Exp $"
 .TH cdk_scroll 3
 .SH NAME
 activateCDKScroll,
@@ -65,7 +65,8 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .BI "CDKSCROLL *" "scroll");
 .TP 15
 .B "chtype getCDKScrollHighlight ("
-.BI "CDKSCROLL *" "scroll");
+.BI "CDKSCROLL *" "scroll",
+.BI "chtype " "highlight");
 .TP 15
 .B "int getCDKScrollItems ("
 .BI "CDKSCROLL *" "scroll",
@@ -77,8 +78,8 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .TP 15
 .B "void moveCDKScroll ("
 .BI "CDKSCROLL *" "scroll",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15

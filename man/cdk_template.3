@@ -1,4 +1,4 @@
-.\" $Id: cdk_template.3,v 1.16 2002/08/10 00:40:49 tom Exp $
+.\" $Id: cdk_template.3,v 1.17 2003/04/18 00:18:02 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -79,8 +79,8 @@ unmixCDKTemplate \- a curses template widget.
 .TP 15
 .B "void moveCDKTemplate ("
 .BI "CDKTEMPLATE *" "template",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -162,7 +162,8 @@ unmixCDKTemplate \- a curses template widget.
 .BI "chtype " "character");
 .TP 15
 .B "char *unmixCDKTemplate ("
-.BI "CDKTEMPLATE *" "template");
+.BI "CDKTEMPLATE *" "template",
+.BI "char *" "string");
 .fi
 .SH DESCRIPTION
 The Cdk template widget creates a template widget which allows a user to type

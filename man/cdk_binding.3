@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.9 2001/01/06 21:40:24 tom Exp $
+.\" $Id: cdk_binding.3,v 1.10 2003/04/17 23:25:52 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -30,7 +30,7 @@ unbindCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .BI "BINDFN " "function",
 .BI "void *" "data");
 .TP 15
-.B "void checkCDKObjectBind ("
+.B "int checkCDKObjectBind ("
 .BI "EObjectType " "cdkType",
 .BI "void *" "object",
 .BI "chtype " "key");

@@ -1,4 +1,4 @@
-.\" $Id: cdk_graph.3,v 1.8 2000/09/15 01:26:21 tom Exp $
+.\" $Id: cdk_graph.3,v 1.9 2003/04/18 00:22:08 tom Exp $
 .TH cdk_graph 3
 .SH NAME
 destroyCDKGraph,
@@ -51,11 +51,11 @@ setCDKGraphVerticalChar \- curses graph widget
 .B "boolean getCDKGraphBox ("
 .BI "CDKGRAPH *" "graph");
 .TP 15
-.B "char *getCDKGraphCharacter ("
+.B "chtype getCDKGraphCharacter ("
 .BI "CDKGRAPH *" "graph",
 .BI "int " "index");
 .TP 15
-.B "char *getCDKGraphCharacters ("
+.B "chtype *getCDKGraphCharacters ("
 .BI "CDKGRAPH *" "graph");
 .TP 15
 .B "EGraphDisplayType getCDKGraphDisplayType ("
@@ -66,12 +66,13 @@ setCDKGraphVerticalChar \- curses graph widget
 .BI "int " "index");
 .TP 15
 .B "int *getCDKGraphValues ("
-.BI "CDKGRAPH *" "graph");
+.BI "CDKGRAPH *" "graph",
+.BI "int *, "size");
 .TP 15
 .B "void moveCDKGraph ("
 .BI "CDKGRAPH *" "graph",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -88,7 +89,7 @@ setCDKGraphVerticalChar \- curses graph widget
 .B "void positionCDKGraph ("
 .BI "CDKGRAPH *" "graph");
 .TP 15
-.B "void setCDKGraph ("
+.B "int setCDKGraph ("
 .BI "CDKGRAPH *" "graph",
 .BI "int *" "values",
 .BI "int " "valueCount",
@@ -108,12 +109,12 @@ setCDKGraphVerticalChar \- curses graph widget
 .BI "CDKGRAPH *" "graph",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKGraphCharacter ("
+.B "int setCDKGraphCharacter ("
 .BI "CDKGRAPH *" "graph",
 .BI "int " "index",
 .BI "char *" "graphCharacter");
 .TP 15
-.B "void setCDKGraphCharacters ("
+.B "int setCDKGraphCharacters ("
 .BI "CDKGRAPH *" "graph",
 .BI "char *" "graphCharacters");
 .TP 15
@@ -141,13 +142,13 @@ setCDKGraphVerticalChar \- curses graph widget
 .BI "CDKGRAPH *" "graph",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKGraphValue ("
+.B "int setCDKGraphValue ("
 .BI "CDKGRAPH *" "graph",
 .BI "int " "index",
 .BI "int " "value",
 .BI "boolean " "startAtZero");
 .TP 15
-.B "void setCDKGraphValues ("
+.B "int setCDKGraphValues ("
 .BI "CDKGRAPH *" "graph",
 .BI "int *" "values",
 .BI "int " "valueCount",

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 15:35:16 $
- * $Revision: 1.8 $
+ * $Date: 2003/04/18 17:44:36 $
+ * $Revision: 1.10 $
  */
 
 /*
@@ -358,7 +358,8 @@ static int _injectCDKFScale (CDKOBJS *object, chtype input)
       scale->exitType = vEARLY_EXIT;
    }
 
-   return 0.;
+   ResultOf(scale).valueFloat = ret;
+   return ret != 0.0;
 }
 
 /*

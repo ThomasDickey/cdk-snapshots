@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_fselect.3,v 1.15 2002/07/17 09:54:27 tom Exp $
+.\" $Id: cdk_fselect.3,v 1.16 2003/04/18 00:06:33 tom Exp $
 .TH cdk_fselect 3
 .SH NAME
 activateCDKFselect,
@@ -65,7 +65,7 @@ setCDKFselectVerticalChar \- curses file selector widget.
 .B "char *getCDKFselectDirAttribute ("
 .BI "CDKFSELECT *" "fselect");
 .TP 15
-.B "char **getCDKFselectDirectory ("
+.B "char *getCDKFselectDirectory ("
 .BI "CDKFSELECT *" "fselect");
 .TP 15
 .B "char *getCDKFselectFileAttribute ("
@@ -89,8 +89,8 @@ setCDKFselectVerticalChar \- curses file selector widget.
 .TP 15
 .B "void moveCDKFselect ("
 .BI "CDKFSELECT *" "fselect",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -117,6 +117,7 @@ setCDKFselectVerticalChar \- curses file selector widget.
 .TP 15
 .B "void setCDKFselect ("
 .BI "CDKFSELECT *" "fselect",
+.BI "char *" "directory",
 .BI "chtype " "fieldAttribute",
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
@@ -142,7 +143,7 @@ setCDKFselectVerticalChar \- curses file selector widget.
 .BI "CDKFSELECT *" "fselect",
 .BI "char *" "attribute");
 .TP 15
-.B "void setCDKFselectDirectory ("
+.B "int setCDKFselectDirectory ("
 .BI "CDKFSELECT *" "fselect",
 .BI "char *" "directory");
 .TP 15

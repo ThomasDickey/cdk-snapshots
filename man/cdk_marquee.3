@@ -1,4 +1,4 @@
-.\" $Id: cdk_marquee.3,v 1.9 2000/09/15 01:43:41 tom Exp $
+.\" $Id: cdk_marquee.3,v 1.10 2003/04/17 23:17:52 tom Exp $
 .TH cdk_marquee 3
 .SH NAME
 activateCDKMarquee,
@@ -45,8 +45,8 @@ setCDKMarqueeVerticalChar \- curses marquee widget
 .TP 15
 .B "void moveCDKMarquee ("
 .BI "CDKMARQUEE *" "marquee",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -55,6 +55,7 @@ setCDKMarqueeVerticalChar \- curses marquee widget
 .BI "int " "xpos",
 .BI "int " "ypos",
 .BI "int " "fieldWidth",
+.BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
 .B "void positionCDKMarquee ("

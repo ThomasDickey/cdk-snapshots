@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.20 2002/07/20 00:20:56 tom Exp $
+ * $Id: cdk.h,v 1.23 2003/04/18 23:05:04 tom Exp $
  */
 
 #ifndef CDK_H
@@ -51,6 +51,16 @@ extern "C" {
 
 #ifdef HAVE_XCURSES
 #include <xcurses.h>
+#ifndef mvwhline
+#define mvwhline(win,y,x,c,n)     	(wmove(win,y,x) == ERR ? ERR : whline(win,c,n))
+#endif
+#ifndef mvwvline
+#define mvwvline(win,y,x,c,n)     	(wmove(win,y,x) == ERR ? ERR : wvline(win,c,n))
+#endif
+#elif defined(HAVE_NCURSESW_NCURSES_H)
+#include <ncursesw/ncurses.h>
+#elif defined(HAVE_NCURSES_NCURSES_H)
+#include <ncurses/ncurses.h>
 #elif defined(HAVE_NCURSES_H)
 #include <ncurses.h>
 #else

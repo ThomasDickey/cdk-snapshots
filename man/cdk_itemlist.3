@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_itemlist.3,v 1.10 2002/02/26 00:31:05 tom Exp $
+.\" $Id: cdk_itemlist.3,v 1.11 2003/04/18 00:22:08 tom Exp $
 .TH cdk_itemlist 3
 .SH NAME
 activateCDKItemlist,
@@ -62,7 +62,7 @@ setCDKItemlistVerticalChar \- curses itemlist widget.
 .B "int getCDKItemlistDefaultItem ("
 .BI "CDKITEMLIST *" "itemlist");
 .TP 15
-.B "char **getCDKItemlistValues ("
+.B "chtype **getCDKItemlistValues ("
 .BI "CDKITEMLIST *" "itemlist",
 .BI "int *" "listSize");
 .TP 15
@@ -72,8 +72,8 @@ setCDKItemlistVerticalChar \- curses itemlist widget.
 .TP 15
 .B "void moveCDKItemlist ("
 .BI "CDKITEMLIST *" "itemlist",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/08/10 00:16:55 $
- * $Revision: 1.137 $
+ * $Date: 2003/04/17 22:18:01 $
+ * $Revision: 1.138 $
  */
 
 /*
@@ -1083,7 +1083,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    for (x=1; x <= matrix->colwidths[col]; x++)
    {
       chtype ch = (x <= infolen)
-      		? (A_CHARTEXT & matrix->info[vrow][vcol][x-1]|highlight)
+      		? ((A_CHARTEXT & matrix->info[vrow][vcol][x-1])|highlight)
 		: matrix->filler;
 
       mvwaddch (cell, 1, x, ch | highlight);
