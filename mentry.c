@@ -2,27 +2,30 @@
 #include <limits.h>
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.93 $
+ * $Author: tom $
+ * $Date: 1999/05/16 01:51:15 $
+ * $Revision: 1.98 $
  */
 
 /*
  * Declare file local prototypes.
  */
-void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
-void drawCDKMentryField (CDKMENTRY *mentry);
-void setCDKMentryCB (CDKMENTRY *mentry, MENTRYCB callback);
+static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
 
 /*
  * Declare file local variables.
  */
 extern char *GPasteBuffer;
 
+static CDKFUNCS my_funcs = {
+    _drawCDKMentry,
+    _eraseCDKMentry,
+};
+
 /*
  * This creates a pointer to a muliple line entry widget.
  */
-CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean box, boolean shadow)
+CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
 {
    /* Set up some variables */
    CDKMENTRY *mentry	= (CDKMENTRY *)malloc (sizeof (CDKMENTRY));
@@ -160,6 +163,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    cleanChar (mentry->info, mentry->totalWidth+3, '\0');
 
    /* Set up the rest of the widget information. */
+   ScreenOf(mentry)		= cdkscreen;
+   ObjOf(mentry)->fn		= &my_funcs;
    mentry->shadowWin		= (WINDOW *)NULL;
    mentry->fieldAttr		= fieldAttr;
    mentry->fieldWidth		= fieldWidth;
@@ -168,7 +173,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->boxWidth		= boxWidth;
    mentry->filler		= filler;
    mentry->hidden		= filler;
-   mentry->box			= box;
+   ObjOf(mentry)->box		= Box;
    mentry->currentRow		= 0;
    mentry->currentCol		= 0;
    mentry->topRow		= 0;
@@ -216,7 +221,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
    char *ret	= (char *)NULL;
 
    /* Draw the mentry widget. */
-   drawCDKMentry (mentry, mentry->box);
+   drawCDKMentry (mentry, ObjOf(mentry)->box);
 
    /* Check if 'actions' is NULL. */
    if (actions == (chtype *)NULL)
@@ -585,7 +590,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
                  if (GPasteBuffer != (char *)NULL)
                  {
                     setCDKMentryValue (mentry, GPasteBuffer);
-                    drawCDKMentry (mentry, mentry->box);
+                    drawCDKMentry (mentry, ObjOf(mentry)->box);
                  }
                  else
                  {
@@ -609,11 +614,10 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
             case KEY_ESC :
                  mentry->exitType = vESCAPE_HIT;
                  return (char *)NULL;
-                 break;
 
             case CDK_REFRESH :
-                 eraseCDKScreen (mentry->screen);
-                 refreshCDKScreen (mentry->screen);
+                 eraseCDKScreen (ScreenOf(mentry));
+                 refreshCDKScreen (ScreenOf(mentry));
                  break;
    
             default :
@@ -652,7 +656,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
 /*
  * This moves the mentry field to the given location.
  */
-void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = mentry->win->_begx;
@@ -673,7 +677,7 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
    }
 
    /* Adjust the window if we need to. */
-   alignxy (mentry->screen->window, &xpos, &ypos, mentry->boxWidth, mentry->boxHeight);
+   alignxy (WindowOf(mentry), &xpos, &ypos, mentry->boxWidth, mentry->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -696,13 +700,13 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (mentry->screen->window);
-   wrefresh (mentry->screen->window);
+   touchwin (WindowOf(mentry));
+   wrefresh (WindowOf(mentry));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKMentry (mentry, mentry->box);
+      drawCDKMentry (mentry, ObjOf(mentry)->box);
    }
 }
 
@@ -735,7 +739,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (mentry->win->_begy+mentry->win->_maxy < mentry->screen->window->_maxy-1)
+         if (mentry->win->_begy+mentry->win->_maxy < WindowOf(mentry)->_maxy-1)
          {
             moveCDKMentry (mentry, 0, 1, TRUE, TRUE);
          }
@@ -757,7 +761,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < mentry->screen->window->_maxx-1)
+         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1)
          {
             moveCDKMentry (mentry, 1, 0, TRUE, TRUE);
          }
@@ -779,7 +783,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '9')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < mentry->screen->window->_maxx-1 &&
+         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1 &&
 		mentry->win->_begy > 0)
          {
             moveCDKMentry (mentry, 1, -1, TRUE, TRUE);
@@ -791,7 +795,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '1')
       {
-         if (mentry->win->_begx > 0 && mentry->win->_begx+mentry->win->_maxx < mentry->screen->window->_maxx-1)
+         if (mentry->win->_begx > 0 && mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1)
          {
             moveCDKMentry (mentry, -1, 1, TRUE, TRUE);
          }
@@ -802,8 +806,8 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '3')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < mentry->screen->window->_maxx-1 &&
-		mentry->win->_begy+mentry->win->_maxy < mentry->screen->window->_maxy-1)
+         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1
+	  && mentry->win->_begy+mentry->win->_maxy < WindowOf(mentry)->_maxy-1)
          {
             moveCDKMentry (mentry, 1, 1, TRUE, TRUE);
          }
@@ -842,8 +846,8 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (mentry->screen);
-         refreshCDKScreen (mentry->screen);
+         eraseCDKScreen (ScreenOf(mentry));
+         refreshCDKScreen (ScreenOf(mentry));
       }
       else if (key == KEY_ESC)
       {
@@ -934,7 +938,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
  * callback function, so any personal modifications can be made by creating
  * a new function and calling that one the mentry activation.
  */
-void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
+static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 {
    /* Declare local variables. */
    int cursorPos = ((mentry->currentRow + mentry->topRow) * \
@@ -1054,8 +1058,10 @@ void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 /*
  * This function draws the multiple line entry field.
  */
-void drawCDKMentry (CDKMENTRY *mentry, boolean Box)
+void _drawCDKMentry (CDKOBJS *object, boolean Box)
 {
+   CDKMENTRY *mentry = (CDKMENTRY *)object;
+
    /* Box the widget if asked. */
    if (Box)
    {
@@ -1151,8 +1157,10 @@ void setCDKMentryBackgroundColor (CDKMENTRY *mentry, char *color)
 /*
  * This function erases the multiple line entry field from the screen.
  */
-void eraseCDKMentry (CDKMENTRY *mentry)
+void _eraseCDKMentry (CDKOBJS *object)
 {
+   CDKMENTRY *mentry = (CDKMENTRY *)object;
+
    eraseCursesWindow (mentry->fieldWin);
    eraseCursesWindow (mentry->labelWin);
    eraseCursesWindow (mentry->win);
@@ -1292,11 +1300,11 @@ int getCDKMentryMin (CDKMENTRY *mentry)
  */
 void setCDKMentryBox (CDKMENTRY *mentry, boolean Box)
 {
-   mentry->box = Box;
+   ObjOf(mentry)->box = Box;
 }
 boolean getCDKMentryBox (CDKMENTRY *mentry)
 {
-   return mentry->box;
+   return ObjOf(mentry)->box;
 }
 
 /*

@@ -1,9 +1,9 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.133 $
+ * $Author: tom $
+ * $Date: 1999/05/15 13:21:10 $
+ * $Revision: 1.135 $
  */
 
 /*
@@ -21,7 +21,7 @@ char *GPasteBuffer = (char *)NULL;
 /*
  * This beeps then flushes the stdout stream.
  */
-void Beep()
+void Beep(void)
 {
    beep();
    fflush (stdout);
@@ -39,6 +39,7 @@ void cleanChar (char *s, int len, char character)
    }
    s[--x] = '\0';
 }
+
 void cleanChtype (chtype *s, int len, chtype character)
 {
    int x;
@@ -210,6 +211,7 @@ void freeChar (char *string)
       string = (char *)NULL;
    }
 }
+
 void freeChtype (chtype *string)
 {
    if (string != (chtype *)NULL)
@@ -241,6 +243,7 @@ char *copyChar (char *original)
    /* Return the new string.  */
    return (newstring);
 }
+
 chtype *copyChtype (chtype *original)
 {
    /* Declare local variables.  */
@@ -1225,13 +1228,13 @@ int searchList (char **list, int listSize, char *pattern)
 {
    /* Declare local variables.  */
    int len	= 0;
-   int index	= -1;
+   int Index	= -1;
    int x, ret;
 
    /* Make sure the pattern isn't NULL. */
    if (pattern == (char *)NULL)
    {
-      return index;
+      return Index;
    }
    len = (int)strlen (pattern);
 
@@ -1252,11 +1255,11 @@ int searchList (char **list, int listSize, char *pattern)
       */
       if (ret < 0)
       {
-         index = ret;
+         Index = ret;
       }
       else if (ret > 0)
       {
-         return index;
+         return Index;
       }
       else
       {
@@ -1310,7 +1313,7 @@ char *baseName (char *pathname)
    char *base		= (char *)NULL;
    int pathLen		= 0;
    int pos		= 0;
-   int index		= -1;
+   int Index		= -1;
    int x		= 0;
 
    /* Check if the string is NULL.  */
@@ -1323,11 +1326,11 @@ char *baseName (char *pathname)
 
    /* Find the last '/' in the pathname. */
    x = pathLen - 1;
-   while ((pathname[x] != '\0') && (index == -1) && (x > 0))
+   while ((pathname[x] != '\0') && (Index == -1) && (x > 0))
    {
       if (pathname[x] == '/')
       {
-         index = x;
+         Index = x;
          break;
       }
       x--;
@@ -1337,7 +1340,7 @@ char *baseName (char *pathname)
    * If the index is -1, we never found one. Return a pointer
    * to the string given to us.
    */
-   if (index == -1)
+   if (Index == -1)
    {
       return base;
    }
@@ -1349,7 +1352,7 @@ char *baseName (char *pathname)
    * We have found an index. Copy from the index to the
    * end of the string into a new string.
    */
-   for (x=index+1; x < pathLen; x++)
+   for (x=Index+1; x < pathLen; x++)
    {
       base[pos++] = pathname[x];
    }

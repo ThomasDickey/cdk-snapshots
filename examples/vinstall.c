@@ -300,7 +300,7 @@ int main (int argc, char **argv)
 
       /* Add the message to the scrolling window. */
       addCDKSwindow (installOutput, temp, BOTTOM);
-      drawCDKSwindow (installOutput, installOutput->box);
+      drawCDKSwindow (installOutput, ObjOf(installOutput)->box);
 
       /* Update the histogram. */
       setCDKHistogram (progressBar, vPERCENT, TOP, A_BOLD,
@@ -462,10 +462,10 @@ int verifyDirectory (CDKSCREEN *cdkScreen, char *directory, int quiet)
                sprintf (temp, "<C>%s", directory);
                error[1] = copyChar (temp);
 
-#ifdef NOSTRERR
-               sprintf (temp, "<C>Check the permissions and try again.");
-#else
+#ifdef HAVE_STRERROR
                sprintf (temp, "<C>%s", strerror (errno));
+#else
+               sprintf (temp, "<C>Check the permissions and try again.");
 #endif
                error[2] = copyChar (temp);
 

@@ -48,7 +48,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
   /*
-   * Pass in what ever was given off of the command line. Notice we
+   * Pass in whatever was given off of the command line. Notice we
    * don't check if argv[1] is NULL or not. The function setCDKEntry
    * already performs any needed checks.
    */

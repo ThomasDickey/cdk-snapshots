@@ -4,7 +4,7 @@
 char *XCursesProgramName="label_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN	*cdkscreen;

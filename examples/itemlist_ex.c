@@ -7,7 +7,7 @@ char *XCursesProgramName="itemlist_ex";
 /*
  * This program demonstrates the Cdk itemlist widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 
    /* Create the choice list. */
    info[0]	= "<C></5>January";
-   info[1]	= "<C></5>Feburary";
+   info[1]	= "<C></5>February";
    info[2]	= "<C></B/19>March";
    info[3]	= "<C></5>April";
    info[4]	= "<C></5>May";
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No item selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (monthlist->screen, mesg, 3);
+      popupLabel (ScreenOf(monthlist), mesg, 3);
    }
    else if (monthlist->exitType == vNORMAL)
    {
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
       mesg[1] = info[choice];
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (monthlist->screen, mesg, 4);
+      popupLabel (ScreenOf(monthlist), mesg, 4);
       freeChar (mesg[0]);
    }
 

@@ -823,7 +823,7 @@ void viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    activateCDKSwindow (swindow, NULL);
 
    /* Redraw the entry field. */
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
 }
 
 /*
@@ -995,7 +995,7 @@ void historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype ke
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
 }
 
 /*
@@ -1020,13 +1020,13 @@ void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype 
    if (history->current == history->count)
    {
       cleanCDKEntry (entry);
-      drawCDKEntry (entry, entry->box);
+      drawCDKEntry (entry, ObjOf(entry)->box);
       return;
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
 }
 
 /*
@@ -1049,7 +1049,7 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
       popupLabel (entry->screen, mesg, 2);
 
       /* Redraw the screen. */
-      eraseCDKEntry (entry);
+      eraseCDKEntry (ObjOf(entry));
       drawCDKScreen (entry->screen);
 
       /* And leave... */
@@ -1074,8 +1074,8 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    }
 
    /* Redraw the screen. */
-   eraseCDKEntry (entry);
-   drawCDKScreen (entry->screen);
+   eraseCDKEntry (ObjOf(entry));
+   drawCDKScreen (ScreenOf(entry));
 }
 
 /*

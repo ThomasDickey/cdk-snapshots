@@ -7,7 +7,7 @@ char *XCursesProgramName="dialog_ex";
 /*
  * This program demonstrates the Cdk dialog widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
    char *message[10], *mesg[3], temp[100];
    int selection;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -35,7 +35,7 @@ int main (int argc, char **argv)
 
    /* Create the dialog box. */
    question = newCDKDialog (cdkscreen, CENTER, CENTER,
-				message, 7, buttons, 2, 
+				message, 7, buttons, 2,
 				COLOR_PAIR(2)|A_REVERSE,
 				TRUE, TRUE, FALSE);
 
@@ -74,7 +74,7 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
-   endCDK();
    delwin (cursesWin);
+   endCDK();
    exit (0);
 }

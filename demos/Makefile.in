@@ -1,12 +1,17 @@
 #
 # Makefile for the examples directory.
 #
-CC	= @CC@
-LIBS	= -lcdk @LIBS@
-CFLAGS	= @CFLAGS@ @DEFS@
-INCDIR	= -I../include -I.. -I. 
-LIBDIR	= -L.. @LDFLAGS@
-BINS	= fileview rolodex command clock stopSign \
+SHELL		= /bin/sh
+
+CC		= @CC@
+
+LIBS		= -lcdk @LIBS@
+
+CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
+CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I.. -I. 
+
+LIBDIR		= -L.. @LDFLAGS@
+BINS		= fileview rolodex command clock stopSign \
 		appointment serial vinstall
 
 #
@@ -47,61 +52,61 @@ stripBinaries::
 # Basic file selector/file viewer combination.
 #
 fileview: fileview.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A fairly robust rolodex.
 #
 rolodex: rolodex.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A basic command interface with command history.
 #
 command: command.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A simple little clock.
 #
 clock: clock.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A simple demo I wrote after a couple of pints. :)
 #
 stopSign: stopSign.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A basic appointment book/date keeper.
 #
 appointment: appointment.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # This probes the serial port.
 #
 serial: serial.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # This prints out the keys ASCII and Octal values.
 #
 keycheck: keycheck.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # CDK based installer.
 #
 vinstall: vinstall.c
-	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
 
 #
 # A Sybase interface.
 #
 syb: syb.c
-	$(CC) $(CFLAGS) -o $@ $? $(INCDIR) $(SYBINCDIR) $(LIBDIR) $(SYBLIBDIR) $(LIBS) $(SYBLIBS)
+	$(CC) $(CFLAGS) -o $@ $? $(CPPFLAGS) $(SYBINCDIR) $(LIBDIR) $(SYBLIBDIR) $(LIBS) $(SYBLIBS)
 
 #
 # Standard clean directives.

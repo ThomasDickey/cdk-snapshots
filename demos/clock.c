@@ -71,13 +71,13 @@ int main (int argc, char **argv)
       mesg[0] = copyChar (temp);
 
       /* Set the label contents. */
-      setCDKLabel (demo, mesg, 1, demo->box);
+      setCDKLabel (demo, mesg, 1, ObjOf(demo)->box);
 
       /* Clean up the memory used. */
       freeChar (mesg[0]);
 
       /* Draw the label, and sleep. */
-      drawCDKLabel (demo, demo->box);
+      drawCDKLabel (demo, ObjOf(demo)->box);
       sleep (1);
    }
 

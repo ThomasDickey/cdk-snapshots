@@ -11,7 +11,7 @@ char *XCursesProgramName="alphalist_ex";
 
 int getUserList (char **list, int maxItems);
 
-int main(int argc, char **argv)
+int main(void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;

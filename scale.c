@@ -2,20 +2,25 @@
 #include <limits.h>
 
 /*
- * $Author: glovem $
- * $Date: 1997/07/28 21:01:21 $
- * $Revision: 1.64 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:43:28 $
+ * $Revision: 1.69 $
  */
 
 /*
  * Declare file local prototypes.
  */
-void drawCDKScaleField (CDKSCALE *scale);
+static void drawCDKScaleField (CDKSCALE *scale);
+
+static CDKFUNCS my_funcs = {
+    _drawCDKScale,
+    _eraseCDKScale,
+};
 
 /*
  * This function creates a scale widget.
  */
-CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, int start, int low, int high, int inc, int fastinc, boolean box, boolean shadow)
+CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, int start, int low, int high, int inc, int fastinc, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
    CDKSCALE *scale	= (CDKSCALE *) malloc (sizeof (CDKSCALE));
@@ -57,7 +62,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    {
       /* We need to split the title on \n. */
       scale->titleLines = splitString (title, temp, '\n');
- 
+
       /* We need to determine the widest title line. */
       for (x=0; x < scale->titleLines; x++)
       {
@@ -65,7 +70,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
          maxWidth = MAXIMUM (maxWidth, len);
          freeChtype (holder);
       }
- 
+
       /*
        * If one of the title lines is wider than the field and the label,
        * the box width will expand to accomodate.
@@ -109,7 +114,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    {
       freeChtype (scale->label);
       free (scale);
-      
+
       /* Return a NULL pointer. */
       return ((CDKSCALE *) NULL);
    }
@@ -117,7 +122,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Create the scale label window. */
    if (scale->label != (chtype *)NULL)
    {
-      scale->labelWin = subwin (scale->win, 1, 
+      scale->labelWin = subwin (scale->win, 1,
 				scale->labelLen+2,
 				ypos+scale->titleLines+1,
 				xpos+horizontalAdjust+1);
@@ -125,12 +130,15 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
 
    /* Create the scale field window. */
    scale->fieldWin = subwin (scale->win, 1, fieldWidth,
-				ypos+scale->titleLines+1, 
+				ypos+scale->titleLines+1,
 				xpos+scale->labelLen+horizontalAdjust+1);
    keypad (scale->fieldWin, TRUE);
    keypad (scale->win, TRUE);
 
    /* Create the scale field. */
+   ScreenOf(scale)		= cdkscreen;
+   ObjOf(scale)->fn		= &my_funcs;
+   ObjOf(scale)->box			= Box;
    scale->parent		= cdkscreen->window;
    scale->shadowWin		= (WINDOW *)NULL;
    scale->boxWidth		= boxWidth;
@@ -143,7 +151,6 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    scale->current		= start;
    scale->inc			= inc;
    scale->fastinc		= fastinc;
-   scale->box			= box;
    scale->exitType		= vNEVER_ACTIVATED;
    scale->shadow		= shadow;
    scale->preProcessFunction	= (PROCESSFN)NULL;
@@ -183,7 +190,7 @@ int activateCDKScale (CDKSCALE *scale, chtype *actions)
    int ret;
 
    /* Draw the scale widget. */
-   drawCDKScale (scale, scale->box);
+   drawCDKScale (scale, ObjOf(scale)->box);
 
    /* Check if actions is NULL. */
    if (actions == (chtype *)NULL)
@@ -267,7 +274,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
                     Beep();
                  }
                  break;
-            
+
             case KEY_RIGHT : case 'u' : case '+' : case KEY_UP :
                  if (scale->current < scale->high)
                  {
@@ -278,7 +285,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
                     Beep();
                  }
                  break;
-   
+
             case KEY_PPAGE : case 'U' : case '' :
                  if ((scale->current + scale->fastinc) <= scale->high)
                  {
@@ -289,7 +296,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
                     Beep();
                  }
                  break;
-   
+
                case KEY_NPAGE : case 'D' : case '' :
                  if ((scale->current - scale->fastinc) >= scale->low)
                  {
@@ -300,30 +307,28 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
                     Beep();
                  }
                  break;
-   
+
             case KEY_HOME : case 'g' : case '0' :
                  scale->current = scale->low;
                  break;
-   
+
             case KEY_END : case 'G' : case '$' :
                  scale->current = scale->high;
                  break;
-   
+
             case KEY_RETURN : case TAB : case KEY_ENTER :
                  scale->exitType = vNORMAL;
                  return (scale->current);
-                 break;
-   
+
             case KEY_ESC :
                  scale->exitType = vESCAPE_HIT;
                  return (scale->current);
-                 break;
-   
+
             case CDK_REFRESH :
-                eraseCDKScreen (scale->screen);
-                refreshCDKScreen (scale->screen);
+                eraseCDKScreen (ScreenOf(scale));
+                refreshCDKScreen (ScreenOf(scale));
                 break;
-   
+
             default :
                  break;
          }
@@ -347,7 +352,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
 /*
  * This moves the scale field to the given location.
  */
-void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = scale->win->_begx;
@@ -368,7 +373,7 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
    }
 
    /* Adjust the window if we need to. */
-   alignxy (scale->screen->window, &xpos, &ypos, scale->boxWidth, scale->boxHeight);
+   alignxy (WindowOf(scale), &xpos, &ypos, scale->boxWidth, scale->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -393,13 +398,13 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (scale->screen->window);
-   wrefresh (scale->screen->window);
+   touchwin (WindowOf(scale));
+   wrefresh (WindowOf(scale));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKScale (scale, scale->box);
+      drawCDKScale (scale, ObjOf(scale)->box);
    }
 }
 
@@ -432,7 +437,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (scale->win->_begy+scale->win->_maxy < scale->screen->window->_maxy-1)
+         if (scale->win->_begy+scale->win->_maxy < WindowOf(scale)->_maxy-1)
          {
             moveCDKScale (scale, 0, 1, TRUE, TRUE);
          }
@@ -454,7 +459,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (scale->win->_begx+scale->win->_maxx < scale->screen->window->_maxx-1)
+         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1)
          {
             moveCDKScale (scale, 1, 0, TRUE, TRUE);
          }
@@ -476,7 +481,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '9')
       {
-         if (scale->win->_begx+scale->win->_maxx < scale->screen->window->_maxx-1 &&
+         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1 &&
 		scale->win->_begy > 0)
          {
             moveCDKScale (scale, 1, -1, TRUE, TRUE);
@@ -488,7 +493,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '1')
       {
-         if (scale->win->_begx > 0 && scale->win->_begx+scale->win->_maxx < scale->screen->window->_maxx-1)
+         if (scale->win->_begx > 0 && scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1)
          {
             moveCDKScale (scale, -1, 1, TRUE, TRUE);
          }
@@ -499,8 +504,8 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '3')
       {
-         if (scale->win->_begx+scale->win->_maxx < scale->screen->window->_maxx-1 &&
-		scale->win->_begy+scale->win->_maxy < scale->screen->window->_maxy-1)
+         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1
+	  && scale->win->_begy+scale->win->_maxy < WindowOf(scale)->_maxy-1)
          {
             moveCDKScale (scale, 1, 1, TRUE, TRUE);
          }
@@ -539,8 +544,8 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (scale->screen);
-         refreshCDKScreen (scale->screen);
+         eraseCDKScreen (ScreenOf(scale));
+         refreshCDKScreen (ScreenOf(scale));
       }
       else if (key == KEY_ESC)
       {
@@ -556,8 +561,9 @@ void positionCDKScale (CDKSCALE *scale)
 /*
  * This function draws the scale widget.
  */
-void drawCDKScale (CDKSCALE *scale, boolean Box)
+void _drawCDKScale (CDKOBJS *object, boolean Box)
 {
+   CDKSCALE *scale = (CDKSCALE *)object;
    int x;
 
    /* Draw the shadow. */
@@ -593,7 +599,7 @@ void drawCDKScale (CDKSCALE *scale, boolean Box)
    /* Draw the label. */
    if (scale->labelWin != (WINDOW *)NULL)
    {
-      writeChtype (scale->labelWin, 0, 0, 
+      writeChtype (scale->labelWin, 0, 0,
 			scale->label,
 			HORIZONTAL, 0,
 			scale->labelLen);
@@ -608,7 +614,7 @@ void drawCDKScale (CDKSCALE *scale, boolean Box)
 /*
  * This draws the scale widget.
  */
-void drawCDKScaleField (CDKSCALE *scale)
+static void drawCDKScaleField (CDKSCALE *scale)
 {
    /* Declare the local variables. */
    char temp[256];
@@ -663,7 +669,7 @@ void setCDKScaleBoxAttribute (CDKSCALE *scale, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKScaleBackgroundColor (CDKSCALE *scale, char *color)
 {
    chtype *holder = (chtype *)NULL;
@@ -723,8 +729,10 @@ void destroyCDKScale (CDKSCALE *scale)
 /*
  * This function erases the scale widget from the screen.
  */
-void eraseCDKScale (CDKSCALE *scale)
+void _eraseCDKScale (CDKOBJS *object)
 {
+   CDKSCALE *scale = (CDKSCALE *)object;
+
    eraseCursesWindow (scale->labelWin);
    eraseCursesWindow (scale->fieldWin);
    eraseCursesWindow (scale->win);
@@ -787,11 +795,11 @@ int getCDKScaleValue (CDKSCALE *scale)
  */
 void setCDKScaleBox (CDKSCALE *scale, boolean Box)
 {
-   scale->box = Box;
+   ObjOf(scale)->box = Box;
 }
 boolean getCDKScaleBox (CDKSCALE *scale)
 {
-   return scale->box;
+   return ObjOf(scale)->box;
 }
 
 /*
@@ -802,7 +810,7 @@ void setCDKScalePreProcess (CDKSCALE *scale, PROCESSFN callback, void *data)
    scale->preProcessFunction = callback;
    scale->preProcessData = data;
 }
- 
+
 /*
  * This function sets the post-process function.
  */

@@ -177,7 +177,7 @@ int main (int argc, char **argv)
    }
 
    /* Draw the calendar widget. */
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Let the user play with the widget. */
    retVal = activateCDKCalendar (calendar, NULL);
@@ -295,7 +295,7 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    int selection;
 
    /* Create the itemlist widget. */
-   itemlist = newCDKItemlist (calendar->screen,
+   itemlist = newCDKItemlist (ScreenOf(calendar),
 				CENTER, CENTER, NULL,
 				"Select Appointment Type: ",
 				items, 4, 0,
@@ -308,17 +308,17 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    if (selection == -1)
    {
       destroyCDKItemlist (itemlist);
-      drawCDKCalendar (calendar, calendar->box);
+      drawCDKCalendar (calendar, ObjOf(calendar)->box);
       return 0;
    }
 
    /* Destroy the itemlist and set the marker. */
    destroyCDKItemlist (itemlist);
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    marker = GPAppointmentAttributes[selection];
 
    /* Create the entry field for the description. */
-   entry = newCDKEntry (calendar->screen,
+   entry = newCDKEntry (ScreenOf(calendar),
 			CENTER, CENTER,
 			"<C>Enter a description of the appointment.",
 			"Description: ", 
@@ -331,14 +331,14 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    if (description == (char *)NULL)
    {
       destroyCDKEntry (entry);
-      drawCDKCalendar (calendar, calendar->box);
+      drawCDKCalendar (calendar, ObjOf(calendar)->box);
       return 0;
    }
 
    /* Destroy the entry and set the marker. */
    description = copyChar (entry->info);
    destroyCDKEntry (entry);
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Set the marker. */
    setCDKCalendarMarker (calendar, 
@@ -356,7 +356,7 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    appointmentInfo->appointmentCount++;
 
    /* Redraw the calendar. */
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    return 0;
 }
 
@@ -389,7 +389,7 @@ int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData
 				calendar->year);
 
    /* Redraw the calendar. */
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    return 0;
 }
 
@@ -475,9 +475,9 @@ int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientDat
    }
 
    /* Create the label widget. */
-   label = newCDKLabel (calendar->screen, CENTER, CENTER,
+   label = newCDKLabel (ScreenOf(calendar), CENTER, CENTER,
 			mesg, mesgLines, TRUE, FALSE);
-   drawCDKLabel (label, label->box);
+   drawCDKLabel (label, ObjOf(label)->box);
    waitCDKLabel (label, ' ');
    destroyCDKLabel (label);
 
@@ -488,7 +488,7 @@ int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientDat
    }
 
    /* Redraw the calendar widget. */
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    return 0;
 }
 

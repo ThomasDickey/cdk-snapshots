@@ -1,15 +1,20 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1997/04/25 12:50:55 $
- * $Revision: 1.34 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:41:30 $
+ * $Revision: 1.38 $
  */
+
+static CDKFUNCS my_funcs = {
+    _drawCDKMarquee,
+    _eraseCDKMarquee,
+};
 
 /*
  * This creates a marquee widget.
  */
-CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean box, boolean shadow)
+CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean Box, boolean shadow)
 {
    CDKMARQUEE *marquee	= (CDKMARQUEE *)malloc (sizeof (CDKMARQUEE));
    int parentWidth	= WIN_WIDTH (cdkscreen->window);
@@ -29,6 +34,9 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the marquee pointer. */
+   ScreenOf(marquee)	= cdkscreen;
+   ObjOf(marquee)->fn	= &my_funcs;
+   ObjOf(marquee)->box	= Box;
    marquee->parent	= cdkscreen->window;
    marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    marquee->boxHeight	= boxHeight;
@@ -36,7 +44,6 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    marquee->shadowWin	= (WINDOW *)NULL;
    marquee->active	= TRUE;
    marquee->width	= width;
-   marquee->box		= box;
    marquee->shadow	= shadow;
    marquee->ULChar	= ACS_ULCORNER;
    marquee->URChar	= ACS_URCORNER;
@@ -64,10 +71,10 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    return(marquee);
 }
 
-/* 
+/*
  * This activates the marquee.
  */
-int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, boolean box)
+int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, boolean Box)
 {
    /* Declear local variables. */
    chtype *message;
@@ -80,24 +87,24 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
    int x, y, junk;
 
    /* Keep the box info. */
-   marquee->box = box;
+   ObjOf(marquee)->box = Box;
 
    /* Make sure the message has some content. */
    if (mesg == (char *)NULL)
    {
       return (-1);
    }
-   
+
    /* Translate the char * to a chtype * */
    message = char2Chtype (mesg, &mesgLength, &junk);
 
    /* Draw in the marquee. */
-   drawCDKMarquee (marquee, marquee->box);
+   drawCDKMarquee (marquee, ObjOf(marquee)->box);
 
    /* Set up the variables. */
    viewSize = lastChar - firstChar;
    startPos = marquee->width - viewSize;
-   if (marquee->box == TRUE)
+   if (ObjOf(marquee)->box == TRUE)
    {
       startPos--;
    }
@@ -115,7 +122,7 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
             y++;
          }
          wrefresh (marquee->win);
-   
+
          /* Set my variables. */
          if (mesgLength < (marquee->width-2))
          {
@@ -186,12 +193,12 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
             lastChar = 1;
             viewSize = lastChar - firstChar;
             startPos = marquee->width - viewSize;
-            if (marquee->box)
+            if (ObjOf(marquee)->box)
             {
                startPos--;
             }
          }
-   
+
          /* Now sleep */
          usleep ((delay * 10000));
       }
@@ -209,7 +216,7 @@ void deactivateCDKMarquee (CDKMARQUEE *marquee)
 /*
  * This moves the marquee field to the given location.
  */
-void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = marquee->win->_begx;
@@ -230,7 +237,7 @@ void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relati
    }
 
    /* Adjust the window if we need to. */
-   alignxy (marquee->screen->window, &xpos, &ypos, marquee->boxWidth, marquee->boxHeight);
+   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -248,13 +255,13 @@ void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relati
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (marquee->screen->window);
-   wrefresh (marquee->screen->window);
+   touchwin (WindowOf(marquee));
+   wrefresh (WindowOf(marquee));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKMarquee (marquee, marquee->box);
+      drawCDKMarquee (marquee, ObjOf(marquee)->box);
    }
 }
 
@@ -286,7 +293,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (marquee->win->_begy+marquee->win->_maxy < marquee->screen->window->_maxy-1)
+         if (marquee->win->_begy+marquee->win->_maxy < WindowOf(marquee)->_maxy-1)
          {
             moveCDKMarquee (marquee, 0, 1, TRUE, TRUE);
          }
@@ -308,7 +315,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < marquee->screen->window->_maxx-1)
+         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1)
          {
             moveCDKMarquee (marquee, 1, 0, TRUE, TRUE);
          }
@@ -330,7 +337,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '9')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < marquee->screen->window->_maxx-1 &&
+         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1 &&
 		marquee->win->_begy > 0)
          {
             moveCDKMarquee (marquee, 1, -1, TRUE, TRUE);
@@ -342,7 +349,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '1')
       {
-         if (marquee->win->_begx > 0 && marquee->win->_begx+marquee->win->_maxx < marquee->screen->window->_maxx-1)
+         if (marquee->win->_begx > 0 && marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1)
          {
             moveCDKMarquee (marquee, -1, 1, TRUE, TRUE);
          }
@@ -353,8 +360,8 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '3')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < marquee->screen->window->_maxx-1 &&
-		marquee->win->_begy+marquee->win->_maxy < marquee->screen->window->_maxy-1)
+         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1
+	  && marquee->win->_begy+marquee->win->_maxy < WindowOf(marquee)->_maxy-1)
          {
             moveCDKMarquee (marquee, 1, 1, TRUE, TRUE);
          }
@@ -393,8 +400,8 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (marquee->screen);
-         refreshCDKScreen (marquee->screen);
+         eraseCDKScreen (ScreenOf(marquee));
+         refreshCDKScreen (ScreenOf(marquee));
       }
       else if (key == KEY_ESC)
       {
@@ -410,10 +417,12 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
 /*
  * This draws the marquee widget on the screen.
  */
-void drawCDKMarquee (CDKMARQUEE *marquee, boolean Box)
+void _drawCDKMarquee (CDKOBJS *object, boolean Box)
 {
+   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+
    /* Keep the box information. */
-   marquee->box	= Box;
+   ObjOf(marquee)->box	= Box;
 
    /* Do we need to draw a shadow??? */
    if (marquee->shadowWin != (WINDOW *)NULL)
@@ -450,7 +459,7 @@ void destroyCDKMarquee (CDKMARQUEE *marquee)
 
    /* Unregister this object. */
    unregisterCDKObject (vMARQUEE, marquee);
-   
+
    /* Finish cleaning up. */
    free (marquee);
 }
@@ -458,8 +467,10 @@ void destroyCDKMarquee (CDKMARQUEE *marquee)
 /*
  * This erases the marquee.
  */
-void eraseCDKMarquee (CDKMARQUEE *marquee)
+void _eraseCDKMarquee (CDKOBJS *object)
 {
+   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+
    eraseCursesWindow (marquee->win);
    eraseCursesWindow (marquee->shadowWin);
 }
@@ -498,7 +509,7 @@ void setCDKMarqueeBoxAttribute (CDKMARQUEE *marquee, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKMarqueeBackgroundColor (CDKMARQUEE *marquee, char *color)
 {
    chtype *holder = (chtype *)NULL;

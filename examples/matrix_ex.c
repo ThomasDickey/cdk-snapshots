@@ -7,7 +7,7 @@ char *XCursesProgramName="matrix_ex";
 /*
  * This program demonstrates the Cdk matrix widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;

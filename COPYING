@@ -16,26 +16,27 @@ should remove the version of Cdk you have and go get a proper copy. I hate
 virus writers as much as anyone else!
 
 Instead of writing my own license (I'm a programmer, not a lawyer!) I'm going
-to borrow the BSD public license on public software. If you do not agree to
+to adapt the BSD public license on public software. If you do not agree to
 this license then remove the Cdk distribution and we all will be happier in
-the end. Here is the complete BSD public license in it's true form. I have not
-made any modifications to it.
+the end. Here is the complete BSD public license in its true form, for
+reference.
 
-I will say one thing, Cdk is my copyright. I will continue to support any released
-versions out there as long as they are in their released form. I am releasing
-this into the "public" because I feel I have benefited from other people's
-hard work, I'd like to chip into the pot as well. This does NOT make Cdk
-public domain though. Cdk is still my copyright, and owned by me, I am merely
-stating this so I don't see 40 different versions of my code floating around
-with other people's names attached.
+I will say one thing, Cdk is my copyright.  I will continue to support any
+released versions out there as long as they are in their released form.  I am
+releasing this into the "public" because I feel I have benefited from other
+people's hard work, I'd like to chip into the pot as well.  This does NOT make
+Cdk public domain though.  Cdk is still my copyright, and owned by me, I am
+merely stating this so I don't see 40 different versions of my code floating
+around with other people's names attached.
 
 With that ugly stuff said, I will happily take any comments or questions about
-Cdk. Input is more than welcomed. In fact I encourage it. Feel free to mail
-me and ask questions you think the supplied documents don't cover. If I get enough
-I may build a FAQ to help newcomers. (we'll see how Cdk is accepted though)
+Cdk.  Input is more than welcomed.  In fact I encourage it.  Feel free to mail
+me and ask questions you think the supplied documents don't cover.  If I get
+enough I may build a FAQ to help newcomers.  (We'll see how Cdk is accepted
+though).
 
-For you Perl programmers, there is a Perl5 extension to Cdk. Look at your closest
-CPAN site under authors/id/GLOVER.
+For you Perl programmers, there is a Perl5 extension to Cdk. Look at your
+closest CPAN site under authors/id/GLOVER.
 
 If you want to get a hold of me mail me at one of the following:
         glover@credit.erin.utoronto.ca
@@ -43,7 +44,7 @@ If you want to get a hold of me mail me at one of the following:
 
 The CDK Web page has several homes. They are:
         http://members.home.net/vexus/CDK.html (official)
-        http://www.datasoft.on.ca/~cdk (Sponsered by the nice folks at Datasoft)
+        http://www.datasoft.on.ca/~cdk (Sponsored by the nice folks at Datasoft)
 
 ttfn,
 	Mike
@@ -62,7 +63,7 @@ ttfn,
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  *	This product includes software developed by the University of
  *	California, Berkeley and its contributors.
  * 4. Neither the name of the University nor the names of its contributors

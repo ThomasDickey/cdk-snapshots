@@ -4,7 +4,6 @@
 char *XCursesProgramName="marquee_ex";
 #endif
 
-char *USAGE = "[-m Message] [-R repeat value] [-d delay value] [-b|r|u|k] [-h]";
 void help (char *programName);
 
 int main (int argc, char **argv)

@@ -59,7 +59,7 @@ int main (int argc, char **argv)
     * the file selector starts it uses the present directory as a default.
     */
    setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE, 
-			"</5>", "</48>", "</N>", "</N>", fSelect->box);
+			"</5>", "</48>", "</N>", "</N>", ObjOf(fSelect)->box);
 
    /* Activate the file selector. */
    filename = activateCDKFselect (fSelect, NULL);

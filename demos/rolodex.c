@@ -7,7 +7,7 @@ char *XCursesProgramName="rolodex";
 /*
  * This is the main part of the loop.
  */
-int main(int argc, char **argv)
+int main(void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen;
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
       }
       else if (selection == 301)
       {
-         displayRolodexStats (rolodexMenu->screen, groupCount);
+         displayRolodexStats (ScreenOf(rolodexMenu), groupCount);
       }
    }
 }
@@ -272,10 +272,10 @@ int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex *groupList, int gro
       /* Pop up a message. */
       sprintf (temp, "</B/16>The file <%s> could not be opened.", filename);
       mesg[0] = copyChar (temp);
-#ifdef NOSTRERR
-      sprintf (temp, "<C></B/16>Unknown reason.");
-#else
+#ifdef HAVE_STRERROR
       sprintf (temp, "<C></B/16>%s", strerror(errno));
+#else
+      sprintf (temp, "<C></B/16>Unknown reason.");
 #endif
       mesg[1] = copyChar (temp);
       mesg[2] = "<C>Press any key to continue.";
@@ -670,7 +670,7 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc, char 
    CDKLABEL *helpWindow = (CDKLABEL *)NULL;
    SPhoneData phoneData;
    SPhoneRecord *phoneRecord;
-   char *index[MAX_ITEMS], *title[3], *mesg[3], temp[256];
+   char *Index[MAX_ITEMS], *title[3], *mesg[3], temp[256];
    int phoneCount, selection, height, x;
 
    /* Set up the help window at the bottom of the screen. */
@@ -719,21 +719,21 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc, char 
    {
       phoneRecord = &phoneData.record[x];
       sprintf (temp, "</B/29>%s (%s)", phoneRecord->name, GLineType[phoneRecord->lineType]);
-      index[x] = copyChar (temp);
+      Index[x] = copyChar (temp);
    }
    sprintf (temp, "<C>Listing of Group </U>%s", groupName);
    height = (phoneData.recordCount > 5 ? 8 : phoneData.recordCount+3);
 
    /* Create the scrolling list. */
    nameList = newCDKScroll (screen, CENTER, CENTER, RIGHT,
-				height, 50, temp, index,
+				height, 50, temp, Index,
 				phoneData.recordCount,
 				NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Clean up. */
    for (x=0; x < phoneData.recordCount; x++)
    {
-      freeChar (index[x]);
+      freeChar (Index[x]);
    }
 
    /* Create key bindings. */
@@ -1208,13 +1208,13 @@ int getLargePhoneRecord (CDKSCREEN *screen, SPhoneRecord *phoneRecord)
    for (;;)
    {
       /* Draw the widgets on the screen. */
-      drawCDKEntry (nameEntry, nameEntry->box);
-      drawCDKEntry (addressEntry, addressEntry->box);
-      drawCDKEntry (cityEntry, cityEntry->box);
-      drawCDKEntry (provEntry, provEntry->box);
-      drawCDKEntry (postalEntry, postalEntry->box);
-      drawCDKTemplate (phoneTemplate, phoneTemplate->box);
-      drawCDKEntry (descEntry, descEntry->box);
+      drawCDKEntry (nameEntry,    ObjOf(nameEntry)->box);
+      drawCDKEntry (addressEntry, ObjOf(addressEntry)->box);
+      drawCDKEntry (cityEntry,    ObjOf(cityEntry)->box);
+      drawCDKEntry (provEntry,    ObjOf(provEntry)->box);
+      drawCDKEntry (postalEntry,  ObjOf(postalEntry)->box);
+      drawCDKTemplate (phoneTemplate, ObjOf(phoneTemplate)->box);
+      drawCDKEntry (descEntry,    ObjOf(descEntry)->box);
 
       /* Activate the entries to get the information. */
       phoneRecord->name		= copyChar (activateCDKEntry (nameEntry, NULL));
@@ -1312,9 +1312,9 @@ int getSmallPhoneRecord (CDKSCREEN *screen, SPhoneRecord *phoneRecord)
    for (;;)
    {
       /* Draw the widgets on the screen. */
-      drawCDKEntry (nameEntry, nameEntry->box);
-      drawCDKTemplate (phoneTemplate, phoneTemplate->box);
-      drawCDKEntry (descEntry, descEntry->box);
+      drawCDKEntry (nameEntry, ObjOf(nameEntry)->box);
+      drawCDKTemplate (phoneTemplate, ObjOf(phoneTemplate)->box);
+      drawCDKEntry (descEntry, ObjOf(descEntry)->box);
 
       /* Activate the entries to get the information. */
       phoneRecord->name		= copyChar (activateCDKEntry (nameEntry, NULL));
@@ -1617,23 +1617,23 @@ int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chty
 int insertPhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 {
    /* Declare local variables. */
-   CDKSCROLL *scroll= (CDKSCROLL *)object;
+   CDKSCROLL *scrollp= (CDKSCROLL *)object;
    SPhoneData *phoneData= (SPhoneData *)clientData;
    SPhoneRecord *phoneRecord= &phoneData->record[phoneData->recordCount];
    char temp[256];
 
    /* Make the scrolling list disappear. */
-   eraseCDKScroll (scroll);
+   eraseCDKScroll (scrollp);
 
    /* Call the function which gets phone record information. */
-   if (addPhoneRecord (scroll->screen, phoneData) == 0)
+   if (addPhoneRecord (ScreenOf(scrollp), phoneData) == 0)
    {
       sprintf (temp, "%s (%s)", phoneRecord->name, GLineType[phoneRecord->lineType]);
-      addCDKScrollItem (scroll, temp);
+      addCDKScrollItem (scrollp, temp);
    }
 
    /* Redraw the scrolling list. */
-   drawCDKScroll (scroll, scroll->box);
+   drawCDKScroll (scrollp, ObjOf(scrollp)->box);
    return 0;
 }
 
@@ -1643,31 +1643,31 @@ int insertPhoneEntryCB (EObjectType cdkType, void *object, void *clientData, cht
 int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 {
    /* Declare local variables. */
-   CDKSCROLL *scroll = (CDKSCROLL *)object;
+   CDKSCROLL *scrollp = (CDKSCROLL *)object;
    SPhoneData *phoneData = (SPhoneData *)clientData;
    char *mesg[3], temp[256], *hold;
    char *buttons[] = {"</B/16><No>", "</B/24><Yes>"};
-   int position = scroll->currentItem;
+   int position = scrollp->currentItem;
    int x;
 
    /* Make the scrolling list disappear. */
-   eraseCDKScroll (scroll);
+   eraseCDKScroll (scrollp);
 
    /* Check the number of entries left in the list. */
-   if (scroll->listSize == 0)
+   if (scrollp->listSize == 0)
    {
       mesg[0] = "There are no more numbers to delete.";
-      popupLabel (scroll->screen, mesg, 1);
+      popupLabel (ScreenOf(scrollp), mesg, 1);
       return 0;
    }
 
    /* Ask the user if they really want to delete the listing. */
    mesg[0] = "<C>Do you really want to delete the phone entry";
-   hold = chtype2Char (scroll->item[scroll->currentItem]);
+   hold = chtype2Char (scrollp->item[scrollp->currentItem]);
    sprintf (temp, "<C></B/16>%s", hold);
    freeChar (hold);
    mesg[1] = copyChar (temp);
-   if (popupDialog (scroll->screen, mesg, 2, buttons, 2) == 1)
+   if (popupDialog (ScreenOf(scrollp), mesg, 2, buttons, 2) == 1)
    {
       /* Remove the item from the phone data record. */
       for (x=position; x < phoneData->recordCount-1; x++)
@@ -1684,12 +1684,12 @@ int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, cht
       phoneData->recordCount--;
 
       /* Nuke the entry. */
-      deleteCDKScrollItem (scroll, position);
+      deleteCDKScrollItem (scrollp, position);
    }
    freeChar (mesg[1]);
 
    /* Redraw the scrolling list. */
-   drawCDKScroll (scroll, scroll->box);
+   drawCDKScroll (scrollp, ObjOf(scrollp)->box);
    return 0;
 }
 
@@ -1699,7 +1699,7 @@ int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, cht
 int phoneEntryHelpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 {
    /* Declare local variables. */
-   CDKSCROLL *scroll = (CDKSCROLL *)object;
+   CDKSCROLL *scrollp = (CDKSCROLL *)object;
    char *mesg[10], temp[100];
 
    /* Create the help title. */
@@ -1719,7 +1719,7 @@ int phoneEntryHelpCB (EObjectType cdkType, void *object, void *clientData, chtyp
    mesg[4] = copyChar (temp);
 
    /* Pop up the message. */
-   popupLabel (scroll->screen, mesg, 5);
+   popupLabel (ScreenOf(scrollp), mesg, 5);
 
    /* Clean up. */
    freeChar (mesg[0]); freeChar (mesg[1]);
@@ -1794,7 +1794,7 @@ int helpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
    }
 
    /* Pop up the message. */
-   popupLabel (menu->screen, mesg, 2);
+   popupLabel (ScreenOf(menu), mesg, 2);
    freeChar (mesg[0]);
 
    /* Redraw the submenu window. */
@@ -1808,9 +1808,9 @@ int helpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 int groupInfoCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 {
    /* Declare local variables. */
-   CDKSCROLL *scroll= (CDKSCROLL *)object;
+   CDKSCROLL *scrollp= (CDKSCROLL *)object;
    SRolodex *groupList= (SRolodex *)clientData;
-   int selection= scroll->currentItem;
+   int selection= scrollp->currentItem;
    char *mesg[5], temp[100];
 
    /* Create the message to be displayed. */
@@ -1825,12 +1825,12 @@ int groupInfoCB (EObjectType cdkType, void *object, void *clientData, chtype key
    sprintf (temp, "</R>Group Database File<!R> %s", groupList[selection].dbm);
    mesg[3] = copyChar (temp);
 
-   /* Displaye the message. */
-   popupLabel (scroll->screen, mesg, 4);
+   /* Display the message. */
+   popupLabel (ScreenOf(scrollp), mesg, 4);
    freeChar (mesg[1]); freeChar (mesg[2]);
    freeChar (mesg[3]);
 
    /* Redraw the scrolling list. */
-   drawCDKScroll (scroll, scroll->box);
+   drawCDKScroll (scrollp, ObjOf(scrollp)->box);
    return 0;
 }

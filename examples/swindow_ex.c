@@ -4,7 +4,7 @@
 char *XCursesProgramName="swindow_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
    }
 
    /* Draw the scrolling window. */
-   drawCDKSwindow (swindow, swindow->box);
+   drawCDKSwindow (swindow, ObjOf(swindow)->box);
 
    /* Load up the scrolling window. */
    addCDKSwindow (swindow, "<C></11>TOP: This is the first line.", BOTTOM);

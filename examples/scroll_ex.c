@@ -7,7 +7,7 @@ char *XCursesProgramName="scroll_ex";
 /*
  * This program demonstrates the Cdk scrolling list widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
@@ -17,7 +17,7 @@ int main (int argc, char **argv)
    char *item[200], *mesg[5], temp[256];
    int selection, count;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -38,25 +38,31 @@ int main (int argc, char **argv)
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
       endCDK();
-      
+
       /* Print out a message and exit. */
       printf ("Oops. Could not make scrolling list. Is the window too small?\n");
       exit (1);
    }
 
-drawCDKScroll (scrollList, 1);
-setCDKScrollPosition (scrollList, 10);
-drawCDKScroll (scrollList, 1);
-sleep (3);
-setCDKScrollPosition (scrollList, 20);
-drawCDKScroll (scrollList, 1);
-sleep (3);
-setCDKScrollPosition (scrollList, 30);
-drawCDKScroll (scrollList, 1);
-sleep (3);
-setCDKScrollPosition (scrollList, 70);
-drawCDKScroll (scrollList, 1);
-sleep (3);
+#if 0
+   drawCDKScroll (scrollList, 1);
+
+   setCDKScrollPosition (scrollList, 10);
+   drawCDKScroll (scrollList, 1);
+   sleep (3);
+
+   setCDKScrollPosition (scrollList, 20);
+   drawCDKScroll (scrollList, 1);
+   sleep (3);
+
+   setCDKScrollPosition (scrollList, 30);
+   drawCDKScroll (scrollList, 1);
+   sleep (3);
+
+   setCDKScrollPosition (scrollList, 70);
+   drawCDKScroll (scrollList, 1);
+   sleep (3);
+#endif
 
    /* Activate the scrolling list. */
    selection = activateCDKScroll (scrollList, (chtype *)NULL);

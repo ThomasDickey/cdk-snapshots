@@ -1,15 +1,20 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1997/04/25 12:50:55 $
- * $Revision: 1.51 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:42:26 $
+ * $Revision: 1.56 $
  */
 
 /*
  * Declare file local prototypes.
  */
-void cleanUpMenu (CDKMENU *menu);
+static void cleanUpMenu (CDKMENU *menu);
+
+static CDKFUNCS my_funcs = {
+    _drawCDKMenu,
+    _eraseCDKMenu,
+};
 
 /*
  * This creates a new menu widget.
@@ -25,6 +30,9 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
    int x, y, max, junk;
 
    /* Start making a copy of the information. */
+   ScreenOf(menu)		= cdkscreen;
+   ObjOf(menu)->fn		= &my_funcs;
+   ObjOf(menu)->box		= FALSE;
    rightcount			= menuItems-1;
    menu->parent			= cdkscreen->window;
    menu->menuItems		= menuItems;
@@ -131,10 +139,10 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
    int ret;
 
    /* Draw in the screen. */
-   refreshCDKScreen (menu->screen);
+   refreshCDKScreen (ScreenOf(menu));
 
    /* Display the menu titles. */
-   drawCDKMenu(menu);
+   drawCDKMenu(menu, ObjOf(menu)->box);
 
    /* Highlight the current title and window. */
    drawCDKMenuSubwin (menu);
@@ -209,7 +217,7 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
             case KEY_LEFT :
                  /* Erase the menu sub-window */
                  eraseCDKMenuSubwin (menu);
-                 refreshCDKScreen (menu->screen);
+                 refreshCDKScreen (ScreenOf(menu));
    
                  /* Set the values. */
                  menu->currentSubtitle = 0;
@@ -229,7 +237,7 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
             case KEY_RIGHT : case KEY_TAB :
                  /* Erase the menu sub-window. */
                  eraseCDKMenuSubwin (menu);
-                 refreshCDKScreen (menu->screen);
+                 refreshCDKScreen (ScreenOf(menu));
    
                  /* Set the values. */
                  menu->currentSubtitle = 0;
@@ -308,18 +316,16 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
                  menu->exitType = vNORMAL;
                  menu->lastSelection = ((menu->currentTitle * 100) + menu->currentSubtitle);
                  return menu->lastSelection;
-                 break;
    
             case KEY_ESC :
                  cleanUpMenu (menu);
                  menu->exitType = vESCAPE_HIT;
                  menu->lastSelection = -1;
                  return menu->lastSelection;
-                 break;
         
             case CDK_REFRESH :
-                 eraseCDKScreen (menu->screen);
-                 refreshCDKScreen (menu->screen);
+                 eraseCDKScreen (ScreenOf(menu));
+                 refreshCDKScreen (ScreenOf(menu));
                  break;
          }
       }
@@ -403,9 +409,9 @@ void eraseCDKMenuSubwin (CDKMENU *menu)
 /*
  * This function draws the menu.
  */
-void drawCDKMenu (CDKMENU *menu)
+void _drawCDKMenu (CDKOBJS *object, boolean Box)
 {
-   /* Declare local variables. */
+   CDKMENU *menu = (CDKMENU *)object;
    int x = 0;
 
    /* Erase the old object. */
@@ -483,9 +489,9 @@ void destroyCDKMenu (CDKMENU *menu)
 /*
  * This function erases the menu widget from the screen.
  */
-void eraseCDKMenu (CDKMENU *menu)
+void _eraseCDKMenu (CDKOBJS *object)
 {
-   /* Declare local variables. */
+   CDKMENU *menu = (CDKMENU *)object;
    int x = 0;
 
    /* Erase the menu items. */
@@ -572,14 +578,14 @@ chtype getCDKMenuSubTitleHighlight (CDKMENU *menu)
 /* 
  * This exits the menu.
  */
-void cleanUpMenu (CDKMENU *menu)
+static void cleanUpMenu (CDKMENU *menu)
 {
    /* Erase the sub-menu. */
    eraseCDKMenuSubwin (menu);
    wrefresh (menu->pullWin[menu->currentTitle]);
 
    /* Refresh the screen. */
-   refreshCDKScreen (menu->screen);
+   refreshCDKScreen (ScreenOf(menu));
 }
 
 /*

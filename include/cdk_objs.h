@@ -1,9 +1,8 @@
-#ifndef CDKBINDING_H
-#define CDKBINDING_H	1
-#include "cdk.h"
+#ifndef CDK_OBJS_H
+#define CDK_OBJS_H
 
 /*
- * Copyright 1999, Mike Glover
+ * Copyright 1999, Thomas Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,10 +21,10 @@
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY THOMAS DICKEY AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THOMAS DICKEY OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -36,38 +35,27 @@
  */
 
 /*
- * Create definitions for the key bindings.
+ * Methods common to all widgets.
  */
-#define	MAX_ARGS	100
+typedef struct CDKFUNCS {
+   void		(*drawObj)(struct CDKOBJS *, boolean);
+   void		(*eraseObj)(struct CDKOBJS *);
+} CDKFUNCS;
 
 /*
- * This is the key binding prototype.
+ * Data common to all objects (widget instances).  This appears first in
+ * each widget's struct to allow us to use generic functions in binding.c
+ * and cdkscreen.c
  */
-typedef int (*BINDFN) (EObjectType cdktype, void *object, void *clientData, chtype input);
+typedef struct CDKOBJS {
+   int		screenIndex;
+   CDKSCREEN *	screen;
+   CDKFUNCS	*fn;
+   boolean	box;
+} CDKOBJS;
 
-/*
- * This is the prototype for the process callback functions.
- */
-typedef int (*PROCESSFN) (EObjectType cdktype, void *object, void *clientData, chtype input);
+#define ObjOf(ptr)    (&(ptr)->obj)
+#define ScreenOf(ptr) (ObjOf(ptr)->screen)
+#define WindowOf(ptr) (ScreenOf(ptr)->window)
 
-/*
- * This binds the key to the event.
- */
-void bindCDKObject (EObjectType cdktype, void *object,
-			chtype key, BINDFN function, void *data);
-
-/*
- * This unbinds the key from the event.
- */
-void unbindCDKObject (EObjectType cdktype, void *object, chtype key);
-
-/*
- * This checks if the given key has an event 'attached' to it.
- */
-int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key);
-
-/*
- * This cleans out all of the key bindings.
- */
-void cleanCDKObjectBindings (EObjectType cdktype, void *object);
-#endif
+#endif /* CDK_OBJS_H */

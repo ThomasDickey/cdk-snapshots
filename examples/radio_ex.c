@@ -7,7 +7,7 @@ char *XCursesProgramName="radio_ex";
 /*
  * This program demonstrates the Cdk radio widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;

@@ -115,7 +115,7 @@ int main(int argc, char **argv)
    for (;;)
    {
       /* Get the command. */
-      drawCDKEntry (commandEntry, commandEntry->box);
+      drawCDKEntry (commandEntry, ObjOf(commandEntry)->box);
       command	= activateCDKEntry (commandEntry, NULL);
       upper	= uc (command);
 
@@ -213,7 +213,7 @@ int historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
    return 0;
 }
 
@@ -239,13 +239,13 @@ int historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype k
    if (history->current == history->count)
    {
       cleanCDKEntry (entry);
-      drawCDKEntry (entry, entry->box);
+      drawCDKEntry (entry, ObjOf(entry)->box);
       return 0;
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
    return 0;
 }
 
@@ -261,7 +261,7 @@ int viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype k
    activateCDKSwindow (swindow, NULL);
 
    /* Redraw the entry field. */
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
    return 0;
 }
 
@@ -276,7 +276,7 @@ int jumpWindowCB (EObjectType cdktype, void *object, void *clientData, chtype ke
    int line;
    
    /* Ask them which line they want to jump to. */
-   scale = newCDKScale (entry->screen, CENTER, CENTER,
+   scale = newCDKScale (ScreenOf(entry), CENTER, CENTER,
 			"<C>Jump To Which Line",
 			"Line",
 			A_NORMAL, 5, 
@@ -292,7 +292,7 @@ int jumpWindowCB (EObjectType cdktype, void *object, void *clientData, chtype ke
    jumpToLineCDKSwindow (swindow, line);
 
    /* Redraw the widgets. */
-   drawCDKEntry (entry, entry->box);
+   drawCDKEntry (entry, ObjOf(entry)->box);
    return 0;
 }
 
@@ -313,18 +313,18 @@ int listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype k
    {
       /* Popup a little window telling the user there are no commands. */
       char *mesg[] = {"<C></B/16>No Commands Entered", "<C>No History"};
-      popupLabel (entry->screen, mesg, 2);
+      popupLabel (ScreenOf(entry), mesg, 2);
 
       /* Redraw the screen. */
       eraseCDKEntry (entry);
-      drawCDKScreen (entry->screen);
+      drawCDKScreen (ScreenOf(entry));
 
       /* And leave... */
       return 0;
    }
 
    /* Create the scrolling list of previous commands. */
-   scrollList = newCDKScroll (entry->screen, CENTER, CENTER, RIGHT,
+   scrollList = newCDKScroll (ScreenOf(entry), CENTER, CENTER, RIGHT,
 				height, 20, "<C></B/29>Command History",
 				history->command, history->count,
 				NUMBERS, A_REVERSE, TRUE, FALSE);
@@ -342,7 +342,7 @@ int listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype k
 
    /* Redraw the screen. */
    eraseCDKEntry (entry);
-   drawCDKScreen (entry->screen);
+   drawCDKScreen (ScreenOf(entry));
    return 0;
 }
 
@@ -374,7 +374,7 @@ void help (CDKENTRY *entry)
    mesg[17] = "<B=Tab/Escape> Returns to the command line.";
    mesg[18] = "";
    mesg[19] = "<C> (</B/24>Refer to the scrolling window online manual for more help<!B!24>.)";
-   popupLabel (entry->screen, mesg, 20);
+   popupLabel (ScreenOf(entry), mesg, 20);
 }
 
 /*

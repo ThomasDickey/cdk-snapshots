@@ -4,7 +4,7 @@
 char *XCursesProgramName="selection_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
@@ -74,7 +74,7 @@ int main (int argc, char **argv)
       popupLabel (cdkscreen, mesg, y);
 
       /* Clean up. */
-      for (x=1; x <= y; x++)
+      for (x=1; x < y; x++)
       {
           freeChar (mesg[x]);
       }

@@ -2,27 +2,32 @@
 #include <limits.h>
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.66 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:45:58 $
+ * $Revision: 1.71 $
  */
 
 /*
  * Declare file local prototypes.
  */
-void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input);
-void drawCDKTemplateField (CDKTEMPLATE *cdktemplate);
-void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction);
+static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input);
+static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate);
+static void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction);
 
 /*
  * Declare file local variables.
  */
 extern char *GPasteBuffer;
 
+static CDKFUNCS my_funcs = {
+    _drawCDKTemplate,
+    _eraseCDKTemplate,
+};
+
 /*
  * This creates a cdktemplate widget.
  */
-CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, char *plate, char *overlay, boolean box, boolean shadow)
+CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, char *plate, char *Overlay, boolean Box, boolean shadow)
 {
    /* Set up some variables */
    CDKTEMPLATE *cdktemplate	= (CDKTEMPLATE *)malloc (sizeof (CDKTEMPLATE));
@@ -40,7 +45,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    int junk			= 0;
    char *temp[256];
    int x, len, junk2;
-   
+
    /* Make sure the plate is not NULL. */
    if (plate == (char *)NULL)
    {
@@ -61,28 +66,28 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       cdktemplate->label	= char2Chtype (label, &cdktemplate->labelLen, &junk);
    }
 
-   /* Translate the char * overlay to a chtype * */
-   if (overlay != (char *)NULL)
+   /* Translate the char * Overlay to a chtype * */
+   if (Overlay != (char *)NULL)
    {
-      cdktemplate->overlay = char2Chtype (overlay, &cdktemplate->overlayLen, &junk);
+      cdktemplate->overlay = char2Chtype (Overlay, &cdktemplate->overlayLen, &junk);
       cdktemplate->fieldAttr = cdktemplate->overlay[0] & A_ATTRIBUTES;
    }
    else
    {
-      cdktemplate->overlay		= (chtype *)NULL;
+      cdktemplate->overlay	= (chtype *)NULL;
       cdktemplate->overlayLen	= 0;
       cdktemplate->fieldAttr	= A_NORMAL;
    }
 
    /* Set the box width. */
    boxWidth = fieldWidth+ cdktemplate->labelLen + 2;
-   
+
    /* Translate the char * items to chtype * */
    if (title != (char *)NULL)
    {
       /* We need to split the title on \n. */
       cdktemplate->titleLines = splitString (title, temp, '\n');
- 
+
       /* We need to determine the widest title line. */
       for (x=0; x < cdktemplate->titleLines; x++)
       {
@@ -90,7 +95,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
          maxWidth = MAXIMUM (maxWidth, len);
          freeChtype (holder);
       }
- 
+
       /*
        * If one of the title lines is wider than the field and the label,
        * the box width will expand to accomodate.
@@ -128,7 +133,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 
    /* Make the cdktemplate window */
    cdktemplate->win = newwin (boxHeight, boxWidth, ypos, xpos);
-   
+
    /* Is the cdktemplate window NULL?? */
    if (cdktemplate->win == (WINDOW *)NULL)
    {
@@ -145,7 +150,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Make the label window. */
    if (cdktemplate->label != (chtype *)NULL)
    {
-      cdktemplate->labelWin = subwin (cdktemplate->win, 1, 
+      cdktemplate->labelWin = subwin (cdktemplate->win, 1,
 					cdktemplate->labelLen+2,
 					ypos+cdktemplate->titleLines+1,
 					xpos+horizontalAdjust+1);
@@ -169,6 +174,8 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    strcpy (cdktemplate->plate, plate);
 
    /* Set up the rest of the structure  */
+   ScreenOf(cdktemplate)		= cdkscreen;
+   ObjOf(cdktemplate)->fn		= &my_funcs;
    cdktemplate->parent			= cdkscreen->window;
    cdktemplate->shadowWin		= (WINDOW *)NULL;
    cdktemplate->fieldWidth		= fieldWidth;
@@ -179,7 +186,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    cdktemplate->infoPos			= 0;
    cdktemplate->exitType		= vNEVER_ACTIVATED;
    cdktemplate->min			= 0;
-   cdktemplate->box			= box;
+   ObjOf(cdktemplate)->box			= Box;
    cdktemplate->shadow			= shadow;
    cdktemplate->callbackfn		= (void *)&CDKTemplateCallBack;
    cdktemplate->preProcessFunction	= (PROCESSFN)NULL;
@@ -220,7 +227,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
    char *ret	= (char *)NULL;
 
    /* Draw the object. */
-   drawCDKTemplate (cdktemplate, cdktemplate->box);
+   drawCDKTemplate (cdktemplate, ObjOf(cdktemplate)->box);
 
    /* Check if actions is NULL. */
    if (actions == (chtype *)NULL)
@@ -229,7 +236,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
       {
          /* Get the input. */
          input = wgetch (cdktemplate->win);
- 
+
          /* Inject the character into the widget. */
          ret = injectCDKTemplate (cdktemplate, input);
          if (cdktemplate->exitType != vEARLY_EXIT)
@@ -242,7 +249,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
    {
       int length = chlen (actions);
       int x = 0;
- 
+
       /* Inject each character one at a time. */
       for (x=0; x < length; x++)
       {
@@ -371,17 +378,16 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
                     return cdktemplate->info;
                  }
                  break;
-   
+
             case KEY_ESC :
                  cdktemplate->exitType = vESCAPE_HIT;
                  return (char *)NULL;
-                 break;
-   
+
             case CDK_REFRESH :
-                 eraseCDKScreen (cdktemplate->screen);
-                 refreshCDKScreen (cdktemplate->screen);
+                 eraseCDKScreen (ScreenOf(cdktemplate));
+                 refreshCDKScreen (ScreenOf(cdktemplate));
                  break;
-            
+
             default :
                  ((TEMPLATECB)cdktemplate->callbackfn)(cdktemplate, input);
                  break;
@@ -403,7 +409,7 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
 /*
  * This is the standard callback proc for the cdktemplate.
  */
-void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
+static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
 {
    chtype fieldColor;
 
@@ -494,7 +500,7 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
    char *mixedString	= (char *)NULL;
    int platePos		= 0;
    int infoPos		= 0;
-   
+
    /* Check if the string is NULL. */
    if (cdktemplate->info == (char *)NULL ||
 	(int)strlen(cdktemplate->info) == 0)
@@ -571,7 +577,7 @@ char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, char *info)
 /*
  * This moves the cdktemplate field to the given location.
  */
-void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = cdktemplate->win->_begx;
@@ -592,7 +598,7 @@ void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (cdktemplate->screen->window, &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight);
+   alignxy (WindowOf(cdktemplate), &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -617,13 +623,13 @@ void moveCDKTemplate (CDKTEMPLATE *cdktemplate, int xplace, int yplace, boolean 
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (cdktemplate->screen->window);
-   wrefresh (cdktemplate->screen->window);
+   touchwin (WindowOf(cdktemplate));
+   wrefresh (WindowOf(cdktemplate));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKTemplate (cdktemplate, cdktemplate->box);
+      drawCDKTemplate (cdktemplate, ObjOf(cdktemplate)->box);
    }
 }
 
@@ -655,7 +661,7 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (cdktemplate->win->_begy+cdktemplate->win->_maxy < cdktemplate->screen->window->_maxy-1)
+         if (cdktemplate->win->_begy+cdktemplate->win->_maxy < WindowOf(cdktemplate)->_maxy-1)
          {
             moveCDKTemplate (cdktemplate, 0, 1, TRUE, TRUE);
          }
@@ -677,7 +683,7 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < cdktemplate->screen->window->_maxx-1)
+         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < WindowOf(cdktemplate)->_maxx-1)
          {
             moveCDKTemplate (cdktemplate, 1, 0, TRUE, TRUE);
          }
@@ -699,7 +705,7 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == '9')
       {
-         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < cdktemplate->screen->window->_maxx-1 &&
+         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < WindowOf(cdktemplate)->_maxx-1 &&
 		cdktemplate->win->_begy > 0)
          {
             moveCDKTemplate (cdktemplate, 1, -1, TRUE, TRUE);
@@ -711,7 +717,7 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == '1')
       {
-         if (cdktemplate->win->_begx > 0 && cdktemplate->win->_begx+cdktemplate->win->_maxx < cdktemplate->screen->window->_maxx-1)
+         if (cdktemplate->win->_begx > 0 && cdktemplate->win->_begx+cdktemplate->win->_maxx < WindowOf(cdktemplate)->_maxx-1)
          {
             moveCDKTemplate (cdktemplate, -1, 1, TRUE, TRUE);
          }
@@ -722,8 +728,8 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == '3')
       {
-         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < cdktemplate->screen->window->_maxx-1 &&
-		cdktemplate->win->_begy+cdktemplate->win->_maxy < cdktemplate->screen->window->_maxy-1)
+         if (cdktemplate->win->_begx+cdktemplate->win->_maxx < WindowOf(cdktemplate)->_maxx-1
+	  && cdktemplate->win->_begy+cdktemplate->win->_maxy < WindowOf(cdktemplate)->_maxy-1)
          {
             moveCDKTemplate (cdktemplate, 1, 1, TRUE, TRUE);
          }
@@ -762,8 +768,8 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (cdktemplate->screen);
-         refreshCDKScreen (cdktemplate->screen);
+         eraseCDKScreen (ScreenOf(cdktemplate));
+         refreshCDKScreen (ScreenOf(cdktemplate));
       }
       else if (key == KEY_ESC)
       {
@@ -779,8 +785,9 @@ void positionCDKTemplate (CDKTEMPLATE *cdktemplate)
 /*
  * This function draws the tmeplate widget.
  */
-void drawCDKTemplate (CDKTEMPLATE *cdktemplate, boolean Box)
+void _drawCDKTemplate (CDKOBJS *object, boolean Box)
 {
+   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    int x;
 
    /* Do we need to draw the shadow. */
@@ -814,7 +821,7 @@ void drawCDKTemplate (CDKTEMPLATE *cdktemplate, boolean Box)
    }
    touchwin (cdktemplate->win);
    wrefresh (cdktemplate->win);
-   
+
    /* Draw the cdktemplate field. */
    drawCDKTemplateField (cdktemplate);
 }
@@ -822,7 +829,7 @@ void drawCDKTemplate (CDKTEMPLATE *cdktemplate, boolean Box)
 /*
  * This draws the cdktemplate field.
  */
-void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
+static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 {
    /* Declare local variables. */
    chtype fieldColor	= (chtype)NULL;
@@ -832,7 +839,7 @@ void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
    /* Draw in the label and the cdktemplate object. */
    if (cdktemplate->labelWin != (WINDOW *)NULL)
    {
-      writeChtype (cdktemplate->labelWin, 0, 0, 
+      writeChtype (cdktemplate->labelWin, 0, 0,
 			cdktemplate->label,
 			HORIZONTAL, 0,
 			cdktemplate->labelLen);
@@ -881,7 +888,7 @@ void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 /*
  * This function adjusts the cursor for the cdktemplate.
  */
-void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction)
+static void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction)
 {
    while (cdktemplate->plate[cdktemplate->platePos] != '#' &&
 		cdktemplate->plate[cdktemplate->platePos] != 'A' &&
@@ -933,7 +940,7 @@ void setCDKTemplateBoxAttribute (CDKTEMPLATE *cdktemplate, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKTemplateBackgroundColor (CDKTEMPLATE *cdktemplate, char *color)
 {
    chtype *holder = (chtype *)NULL;
@@ -996,8 +1003,10 @@ void destroyCDKTemplate (CDKTEMPLATE *cdktemplate)
 /*
  * This function erases the widget.
  */
-void eraseCDKTemplate (CDKTEMPLATE *cdktemplate)
+void _eraseCDKTemplate (CDKOBJS *object)
 {
+   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
+
    eraseCursesWindow (cdktemplate->fieldWin);
    eraseCursesWindow (cdktemplate->labelWin);
    eraseCursesWindow (cdktemplate->win);
@@ -1025,7 +1034,7 @@ void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
 
    /* Just to be sure, if lets make sure the new value isn't NULL. */
    if (newValue == (char *)NULL)
-   { 
+   {
       /* Then we want to just erase the old value. */
       cleanChar (cdktemplate->info, cdktemplate->fieldWidth, '\0');
 
@@ -1075,11 +1084,11 @@ int getCDKTemplateMin (CDKTEMPLATE *cdktemplate)
  */
 void setCDKTemplateBox (CDKTEMPLATE *cdktemplate, boolean Box)
 {
-   cdktemplate->box = Box;
+   ObjOf(cdktemplate)->box = Box;
 }
 boolean getCDKTemplateBox (CDKTEMPLATE *cdktemplate)
 {
-   return cdktemplate->box;
+   return ObjOf(cdktemplate)->box;
 }
 
 /*
@@ -1106,7 +1115,7 @@ void setCDKTemplatePreProcess (CDKTEMPLATE *cdktemplate, PROCESSFN callback, voi
    cdktemplate->preProcessFunction = callback;
    cdktemplate->preProcessData = data;
 }
- 
+
 /*
  * This function sets the post-process function.
  */

@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (c) 1990 The Regents of the University of California.
+ * Copyright 1999, Mike Glover
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,17 +21,17 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ *    must display the following acknowledgment:
+ *      This product includes software developed by Mike Glover
+ *      and contributors.
+ * 4. Neither the name of Mike Glover, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -45,16 +45,14 @@
  * Define the CDK marquee widget structure.
  */
 struct SMarquee {
-   CDKSCREEN	*screen;
-   WINDOW	*parent;
-   WINDOW	*win;
-   WINDOW	*shadowWin;
+   CDKOBJS	obj;
+   WINDOW *	parent;
+   WINDOW *	win;
+   WINDOW *	shadowWin;
    int		active;
    int		width;
    int		boxWidth;
    int		boxHeight;
-   int		screenIndex;
-   boolean	box;
    boolean	shadow;
    chtype	ULChar;
    chtype	URChar;
@@ -69,59 +67,105 @@ typedef struct SMarquee CDKMARQUEE;
 /*
  * This creates a new marquee widget pointer.
  */
-CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xpos, int ypos,
-				int width, boolean Box, boolean shadow);
+CDKMARQUEE *newCDKMarquee (
+		CDKSCREEN *	/* cdkscreen */,
+		int		/* xpos */,
+		int		/* ypos */,
+		int		/* width */,
+		boolean		/* Box */,
+		boolean		/* shadow */);
 
 /*
  * This turns the marquee 'on'.
  */
-int activateCDKMarquee (CDKMARQUEE *marquee, char *message,
-				int delay, int repeat, boolean Box);
+int activateCDKMarquee (
+		CDKMARQUEE *	/* marquee */,
+		char *		/* message */,
+		int		/* delay */,
+		int		/* repeat */,
+		boolean		/* Box */);
 
 /*
  * This turns 'off' the marquee.
  */
-void deactivateCDKMarquee (CDKMARQUEE *marquee);
+void deactivateCDKMarquee (
+		CDKMARQUEE *	/* marquee */);
 
 /*
  * This draws the marquee on the screen.
  */
-void drawCDKMarquee (CDKMARQUEE *marquee, boolean Box);
+void _drawCDKMarquee (
+		CDKOBJS *	/* marquee */,
+		boolean		/* Box */);
+
+#define drawCDKMarquee(marquee,Box) _drawCDKMarquee(ObjOf(marquee),Box)
 
 /*
  * This removes the widget from the screen.
  */
-void eraseCDKMarquee (CDKMARQUEE *marquee);
+void _eraseCDKMarquee (
+		CDKOBJS *	/* marquee */);
+
+#define eraseCDKMarquee(marquee) _eraseCDKMarquee(ObjOf(marquee))
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKMarquee (CDKMARQUEE *marquee, int xpos, int ypos, boolean relative, boolean refresh);
+void moveCDKMarquee (
+		CDKMARQUEE *	/* marquee */,
+		int		/* xpos */,
+		int		/* ypos */,
+		boolean		/* relative */,
+		boolean		/* refresh */);
 
 /*
  * This interactively positions the widget on the screen.
  */
-void positionCDKMarquee (CDKMARQUEE *marquee);
+void positionCDKMarquee (
+		CDKMARQUEE *	/* marquee */);
 
 /*
  * This destroys the marquee widget.
  */
-void destroyCDKMarquee (CDKMARQUEE *marquee);
+void destroyCDKMarquee (
+		CDKMARQUEE *	/* marquee */);
 
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKMarqueeULChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeURChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeLLChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeLRChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeVerticalChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeHorizontalChar (CDKMARQUEE *marquee, chtype character);
-void setCDKMarqueeBoxAttribute (CDKMARQUEE *marquee, chtype character);
+void setCDKMarqueeULChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeURChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeLLChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeLRChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeVerticalChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeHorizontalChar (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
+
+void setCDKMarqueeBoxAttribute (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* character */);
 
 /*
  * This sets the background color of the widget.
- */ 
-void setCDKMarqueeBackgroundColor (CDKMARQUEE *marquee, char *color);
+ */
+void setCDKMarqueeBackgroundColor (
+		CDKMARQUEE *	/* marquee */,
+		char *		/* color */);
 
-#endif
+#endif /* CDKMARQUEE_H */

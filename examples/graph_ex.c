@@ -4,12 +4,12 @@
 char *XCursesProgramName="graph_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
    CDKGRAPH *graph	= (CDKGRAPH *)NULL;
-   CDKLABEL *pause	= (CDKLABEL *)NULL;
+   CDKLABEL *pausep	= (CDKLABEL *)NULL;
    WINDOW *cursesWin	= (WINDOW *)NULL;
    char	*title		= (char *)NULL;
    char	*xtitle		= (char *)NULL;
@@ -63,8 +63,8 @@ int main (int argc, char **argv)
    }
 
    /* Create the label widget. */
-   pause = newCDKLabel (cdkscreen, CENTER, BOTTOM, mesg, 1, TRUE, FALSE);
-   if (pause == (CDKLABEL *)NULL)
+   pausep = newCDKLabel (cdkscreen, CENTER, BOTTOM, mesg, 1, TRUE, FALSE);
+   if (pausep == (CDKLABEL *)NULL)
    {
       /* Shut down CDK. */
       destroyCDKGraph (graph);
@@ -82,14 +82,14 @@ int main (int argc, char **argv)
    /* Draw the screen. */
    refreshCDKScreen (cdkscreen);
    drawCDKGraph (graph, FALSE);
-   drawCDKLabel (pause, TRUE);
+   drawCDKLabel (pausep, TRUE);
 
    /* Pause until the user says so... */
-   waitCDKLabel (pause, (char)NULL);
+   waitCDKLabel (pausep, (char)NULL);
 
    /* Clean up. */
    destroyCDKGraph (graph);
-   destroyCDKLabel (pause);
+   destroyCDKLabel (pausep);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);
    endCDK();

@@ -4,7 +4,7 @@
 char *XCursesProgramName="histogram_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;

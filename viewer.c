@@ -1,9 +1,9 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.78 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:46:21 $
+ * $Revision: 1.84 $
  */
 
 /*
@@ -15,12 +15,12 @@
 /*
  * Declare file local prototypes.
  */
-int searchForWord (CDKVIEWER *viewer, char *pattern, int direction);
-int jumpToLine (CDKVIEWER *viewer);
-void popUpLabel (CDKVIEWER *viewer, char *mesg);
-void getAndStorePattern (CDKSCREEN *screen);
-void drawCDKViewerButtons (CDKVIEWER *viewer);
-void drawCDKViewerInfo (CDKVIEWER *viewer);
+static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction);
+static int jumpToLine (CDKVIEWER *viewer);
+static void popUpLabel (CDKVIEWER *viewer, char *mesg);
+static void getAndStorePattern (CDKSCREEN *screen);
+static void drawCDKViewerButtons (CDKVIEWER *viewer);
+static void drawCDKViewerInfo (CDKVIEWER *viewer);
 
 /*
  * Declare file local variables.
@@ -28,10 +28,15 @@ void drawCDKViewerInfo (CDKVIEWER *viewer);
 static char *	SearchPattern	= (char *)NULL;
 int		SearchDirection	= DOWN;
 
+static CDKFUNCS my_funcs = {
+    _drawCDKViewer,
+    _eraseCDKViewer,
+};
+
 /*
  * This function creates a new viewer object.
  */
-CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char **buttons, int buttonCount, chtype buttonHighlight, boolean box, boolean shadow)
+CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char **buttons, int buttonCount, chtype buttonHighlight, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
    CDKVIEWER *viewer	= (CDKVIEWER *)malloc (sizeof (CDKVIEWER));
@@ -52,7 +57,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    * given height.
    */
    boxHeight = setWidgetDimension (parentHeight, height, 0);
- 
+
   /*
    * If the width is a negative value, the width will
    * be COLS-width, otherwise, the width will be the
@@ -98,13 +103,15 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    }
 
    /* Set the rest of the variables */
+   ScreenOf(viewer)		= cdkscreen;
+   ObjOf(viewer)->fn		= &my_funcs;
    viewer->parent		= cdkscreen->window;
    viewer->shadowWin		= (WINDOW *)NULL;
    viewer->buttonHighlight	= buttonHighlight;
    viewer->boxHeight		= boxHeight;
    viewer->boxWidth		= boxWidth - 2;
    viewer->viewSize		= height - 2;
-   viewer->box			= box;
+   ObjOf(viewer)->box		= Box;
    viewer->exitType		= vNEVER_ACTIVATED;
    viewer->shadow		= shadow;
    viewer->currentButton	= 0;
@@ -179,7 +186,7 @@ void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
    {
       /* We need to split the title on \n. */
       viewer->titleLines = splitString (title, temp, '\n');
- 
+
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < viewer->titleLines; x++)
       {
@@ -235,22 +242,23 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
          viewer->infoPos[currentLine]	= 0;
          currentLine++;
       }
-      else 
+      else
       {
          /* Check if we have a file link in this line. */
          if (checkForLink (info[x], filename) == 1)
          {
             /* We have a link, open the file. */
             char *fileContents[MAX_LINES], temp[256];
-            int len		= 0;
             int fileLen		= 0;
-            int adj		= 0;
             int fileLine	= 0;
-               
+
             /* Open the file and put it into the viewer. */
             fileLen = readFile (filename, fileContents, MAX_LINES);
             if (fileLen == -1)
             {
+                int adj		= 0;
+                int len		= 0;
+
                /* Could not open the file. */
 #ifdef HAVE_COLOR
                sprintf (temp, "<C></16>Link Failed: Could not open the file %s", filename);
@@ -300,7 +308,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
                /* Init memory and clean it. */
                viewer->info[currentLine] = (chtype *)malloc (sizeof(chtype) * (len+3));
                cleanChtype (viewer->info[currentLine], len+3, '\0');
-   
+
                /* Copy from one to the other. */
                for (y=0; y < len; y++)
                {
@@ -327,7 +335,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
          }
       }
    }
-   
+
   /*
    * Determine how many characters we can shift to the right
    * before all the items have been viewer off the screen.
@@ -388,11 +396,11 @@ boolean getCDKViewerInfoLine (CDKVIEWER *viewer)
  */
 void setCDKViewerBox (CDKVIEWER *viewer, boolean Box)
 {
-   viewer->box = Box;
+   ObjOf(viewer)->box = Box;
 }
 boolean getCDKViewerBox (CDKVIEWER *viewer)
 {
-   return viewer->box;
+   return ObjOf(viewer)->box;
 }
 
 /*
@@ -429,7 +437,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
    viewer->currentButton = 0;
 
    /* Draw the viewer list. */
-   drawCDKViewer (viewer, viewer->box);
+   drawCDKViewer (viewer, ObjOf(viewer)->box);
 
    /* Do this until KEY_RETURN is hit. */
    for (;;)
@@ -459,7 +467,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     drawCDKViewerButtons (viewer);
                  }
                  break;
-   
+
             case CDK_PREV :
 	         if (viewer->buttonCount > 1)
                  {
@@ -488,7 +496,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_DOWN :
                  if (viewer->currentTop < viewer->maxTopLine)
                  {
@@ -500,7 +508,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_RIGHT :
                  if (viewer->leftChar < viewer->maxLeftChar)
                  {
@@ -512,7 +520,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_LEFT :
                  if (viewer->leftChar > 0)
                  {
@@ -524,7 +532,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_PPAGE : case '' : case 'b' : case 'B' :
                  if (viewer->currentTop > 0)
                  {
@@ -543,7 +551,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_NPAGE : case '' : case ' ' : case 'f' : case 'F' :
                  if (viewer->currentTop < viewer->maxTopLine)
                  {
@@ -562,27 +570,27 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case KEY_HOME : case '|' :
                  viewer->leftChar = 0;
                  REFRESH = TRUE;
                  break;
-   
+
             case KEY_END : case '$' :
                  viewer->leftChar = viewer->maxLeftChar;
                  REFRESH = TRUE;
                  break;
-   
+
             case 'g' : case '1' :
                  viewer->currentTop = 0;
                  REFRESH = TRUE;
                  break;
-   
-            case 'G' : 
+
+            case 'G' :
                  viewer->currentTop = viewer->maxTopLine;
                  REFRESH = TRUE;
                  break;
-   
+
             case 'L' :
                  x = (int) ((viewer->infoSize + viewer->currentTop) / 2);
                  if (x < viewer->maxTopLine)
@@ -595,7 +603,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case 'l' :
                  x = (int) (viewer->currentTop / 2);
                  if (x >= 0)
@@ -608,10 +616,10 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                     Beep();
                  }
                  break;
-   
+
             case '?' :
                  SearchDirection = UP;
-                 getAndStorePattern (viewer->screen);
+                 getAndStorePattern (ScreenOf(viewer));
                  if (! searchForWord(viewer, SearchPattern, SearchDirection))
                  {
                     sprintf (temp, "</U/5>Pattern '%s' not found.<!U!5>", SearchPattern);
@@ -619,10 +627,10 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                  }
                  REFRESH = TRUE;
                  break;
-   
+
             case '/' :
                  SearchDirection = DOWN;
-                 getAndStorePattern (viewer->screen);
+                 getAndStorePattern (ScreenOf(viewer));
                  if (! searchForWord(viewer, SearchPattern, SearchDirection))
                  {
                     sprintf (temp, "</U/5>Pattern '%s' not found.<!U!5>", SearchPattern);
@@ -630,7 +638,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                  }
                  REFRESH = TRUE;
                  break;
-   
+
             case 'n' :
                  if (SearchPattern == (char *)NULL)
                  {
@@ -646,20 +654,20 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                  }
                  REFRESH = TRUE;
                  break;
-   
+
             case ':' :
                  viewer->currentTop	= jumpToLine (viewer);
                  REFRESH		= TRUE;
                  break;
-   
+
             case 'i' : case 's' : case 'S' :
-                 fileInfoLabel	= newCDKLabel (viewer->screen, CENTER, CENTER, fileInfo, 6, TRUE, FALSE);
+                 fileInfoLabel	= newCDKLabel (ScreenOf(viewer), CENTER, CENTER, fileInfo, 6, TRUE, FALSE);
                  drawCDKLabel (fileInfoLabel, TRUE);
                  wgetch (fileInfoLabel->win);
                  destroyCDKLabel (fileInfoLabel);
                  REFRESH = TRUE;
                  break;
-   
+
             case KEY_ESC :
                  freeChar (fileInfo[0]);
                  freeChar (fileInfo[1]);
@@ -669,8 +677,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                  freeChar (fileInfo[5]);
                  viewer->exitType = vESCAPE_HIT;
                  return -1;
-                 break;
-   
+
             case KEY_RETURN : case KEY_ENTER :
                  freeChar (fileInfo[0]);
                  freeChar (fileInfo[1]);
@@ -680,18 +687,17 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
                  freeChar (fileInfo[5]);
                  viewer->exitType = vNORMAL;
                  return viewer->currentButton;
-                 break;
-   
+
             case CDK_REFRESH :
-                 eraseCDKScreen (viewer->screen);
-                 refreshCDKScreen (viewer->screen);
+                 eraseCDKScreen (ScreenOf(viewer));
+                 refreshCDKScreen (ScreenOf(viewer));
                  break;
-   
+
             default :
                  break;
          }
       }
-      
+
       /* Do we need to redraw the screen??? */
       if (REFRESH)
       {
@@ -703,7 +709,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions)
 /*
  * This searches the document looking for the given word.
  */
-void getAndStorePattern (CDKSCREEN *screen)
+static void getAndStorePattern (CDKSCREEN *screen)
 {
    /* Declare local variables. */
    CDKENTRY *getPattern	= (CDKENTRY *)NULL;
@@ -724,13 +730,13 @@ void getAndStorePattern (CDKSCREEN *screen)
    getPattern	= newCDKEntry (screen, CENTER, CENTER,
 				NULL, temp,
 				COLOR_PAIR(5)|A_BOLD,
-				'.'|COLOR_PAIR(5)|A_BOLD, 
+				'.'|COLOR_PAIR(5)|A_BOLD,
 				vMIXED, 10, 0, 256, TRUE, FALSE);
 
    /* Is there an old search pattern? */
-   if (SearchPattern != (char *)NULL) 
+   if (SearchPattern != (char *)NULL)
    {
-      setCDKEntry (getPattern, SearchPattern, getPattern->min, getPattern->max, getPattern->box);
+      setCDKEntry (getPattern, SearchPattern, getPattern->min, getPattern->max, ObjOf(getPattern)->box);
    }
    freeChar (SearchPattern);
 
@@ -750,7 +756,7 @@ void getAndStorePattern (CDKSCREEN *screen)
 /*
  * This searches for the word and realigns the value on the screen.
  */
-int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
+static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
 {
    /* Declare local variables. */
    int x, y, pos, len, plen;
@@ -833,11 +839,11 @@ int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
 /*
  * This allows us to 'jump' to a given line in the file.
  */
-int jumpToLine (CDKVIEWER *viewer)
+static int jumpToLine (CDKVIEWER *viewer)
 {
    /* Declare local variables. */
    int line		= 0;
-   CDKSCALE * newline	= newCDKScale (viewer->screen, CENTER, CENTER,
+   CDKSCALE * newline	= newCDKScale (ScreenOf(viewer), CENTER, CENTER,
 				"<C>Jump To Line", "</5>Line :", A_BOLD, 5,
 				0, 0, viewer->maxTopLine+1, 1, 10, TRUE, TRUE);
    line = activateCDKScale (newline, (chtype *)NULL);
@@ -848,7 +854,7 @@ int jumpToLine (CDKVIEWER *viewer)
 /*
  * This pops a little message up on the screen.
  */
-void popUpLabel (CDKVIEWER *viewer, char *mesg)
+static void popUpLabel (CDKVIEWER *viewer, char *mesg)
 {
    /* Declare local variables. */
    char *info[3];
@@ -856,7 +862,7 @@ void popUpLabel (CDKVIEWER *viewer, char *mesg)
 
    /* Set up variables. */
    info[0]	= mesg;
-   label	= newCDKLabel (viewer->screen, CENTER, CENTER, info, 1, TRUE, FALSE);
+   label	= newCDKLabel (ScreenOf(viewer), CENTER, CENTER, info, 1, TRUE, FALSE);
 
    /* Draw the label and wait. */
    drawCDKLabel (label, TRUE);
@@ -869,7 +875,7 @@ void popUpLabel (CDKVIEWER *viewer, char *mesg)
 /*
  * This moves the viewer field to the given location.
  */
-void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = viewer->win->_begx;
@@ -890,7 +896,7 @@ void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative,
    }
 
    /* Adjust the window if we need to. */
-   alignxy (viewer->screen->window, &xpos, &ypos, viewer->boxWidth, viewer->boxHeight);
+   alignxy (WindowOf(viewer), &xpos, &ypos, viewer->boxWidth, viewer->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -908,13 +914,13 @@ void moveCDKViewer (CDKVIEWER *viewer, int xplace, int yplace, boolean relative,
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (viewer->screen->window);
-   wrefresh (viewer->screen->window);
+   touchwin (WindowOf(viewer));
+   wrefresh (WindowOf(viewer));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKViewer (viewer, viewer->box);
+      drawCDKViewer (viewer, ObjOf(viewer)->box);
    }
 }
 
@@ -946,7 +952,7 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (viewer->win->_begy+viewer->win->_maxy < viewer->screen->window->_maxy-1)
+         if (viewer->win->_begy+viewer->win->_maxy < WindowOf(viewer)->_maxy-1)
          {
             moveCDKViewer (viewer, 0, 1, TRUE, TRUE);
          }
@@ -968,7 +974,7 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (viewer->win->_begx+viewer->win->_maxx < viewer->screen->window->_maxx-1)
+         if (viewer->win->_begx+viewer->win->_maxx < WindowOf(viewer)->_maxx-1)
          {
             moveCDKViewer (viewer, 1, 0, TRUE, TRUE);
          }
@@ -990,7 +996,7 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == '9')
       {
-         if (viewer->win->_begx+viewer->win->_maxx < viewer->screen->window->_maxx-1 &&
+         if (viewer->win->_begx+viewer->win->_maxx < WindowOf(viewer)->_maxx-1 &&
 		viewer->win->_begy > 0)
          {
             moveCDKViewer (viewer, 1, -1, TRUE, TRUE);
@@ -1002,7 +1008,7 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == '1')
       {
-         if (viewer->win->_begx > 0 && viewer->win->_begx+viewer->win->_maxx < viewer->screen->window->_maxx-1)
+         if (viewer->win->_begx > 0 && viewer->win->_begx+viewer->win->_maxx < WindowOf(viewer)->_maxx-1)
          {
             moveCDKViewer (viewer, -1, 1, TRUE, TRUE);
          }
@@ -1013,8 +1019,8 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == '3')
       {
-         if (viewer->win->_begx+viewer->win->_maxx < viewer->screen->window->_maxx-1 &&
-		viewer->win->_begy+viewer->win->_maxy < viewer->screen->window->_maxy-1)
+         if (viewer->win->_begx+viewer->win->_maxx < WindowOf(viewer)->_maxx-1
+	  && viewer->win->_begy+viewer->win->_maxy < WindowOf(viewer)->_maxy-1)
          {
             moveCDKViewer (viewer, 1, 1, TRUE, TRUE);
          }
@@ -1053,8 +1059,8 @@ void positionCDKViewer (CDKVIEWER *viewer)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (viewer->screen);
-         refreshCDKScreen (viewer->screen);
+         eraseCDKScreen (ScreenOf(viewer));
+         refreshCDKScreen (ScreenOf(viewer));
       }
       else if (key == KEY_ESC)
       {
@@ -1070,14 +1076,16 @@ void positionCDKViewer (CDKVIEWER *viewer)
 /*
  * This function draws the viewer widget.
  */
-void drawCDKViewer (CDKVIEWER *viewer, boolean Box)
+void _drawCDKViewer (CDKOBJS *object, boolean Box)
 {
+   CDKVIEWER *viewer = (CDKVIEWER *)object;
+
    /* Do we need to draw in the shadow??? */
    if (viewer->shadowWin != (WINDOW *)NULL)
    {
       drawShadow (viewer->shadowWin);
    }
-   
+
    /* Box it if it was asked for. */
    if (Box)
    {
@@ -1096,7 +1104,7 @@ void drawCDKViewer (CDKVIEWER *viewer, boolean Box)
 /*
  * This redraws the viewer buttons.
  */
-void drawCDKViewerButtons (CDKVIEWER *viewer)
+static void drawCDKViewerButtons (CDKVIEWER *viewer)
 {
    /* Declare local variables. */
    char character;
@@ -1167,7 +1175,7 @@ void setCDKViewerBoxAttribute (CDKVIEWER *viewer, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKViewerBackgroundColor (CDKVIEWER *viewer, char *color)
 {
    chtype *holder = (chtype *)NULL;
@@ -1227,8 +1235,10 @@ void destroyCDKViewer (CDKVIEWER *viewer)
 /*
  * This function erases the viewer widget from the screen.
  */
-void eraseCDKViewer (CDKVIEWER *viewer)
+void _eraseCDKViewer (CDKOBJS *object)
 {
+   CDKVIEWER *viewer = (CDKVIEWER *)object;
+
    eraseCursesWindow (viewer->win);
    eraseCursesWindow (viewer->shadowWin);
 }
@@ -1236,7 +1246,7 @@ void eraseCDKViewer (CDKVIEWER *viewer)
 /*
  * This draws the viewer info lines.
  */
-void drawCDKViewerInfo (CDKVIEWER *viewer)
+static void drawCDKViewerInfo (CDKVIEWER *viewer)
 {
    int infoAdjust	= 0;
    int lastLine		= 0;
@@ -1318,9 +1328,9 @@ void drawCDKViewerInfo (CDKVIEWER *viewer)
          }
       }
    }
-     
+
    /* Box it if we have to. */
-   if (viewer->box)
+   if (ObjOf(viewer)->box)
    {
       attrbox (viewer->win,
 		viewer->ULChar, viewer->URChar,
