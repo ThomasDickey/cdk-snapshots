@@ -1,8 +1,15 @@
+#ifndef CDKINCLUDES
 #ifndef CURDEF_H
 #define CURDEF_H
 
+#ifndef CDK_H
+#define CDKINCLUDES
+#include <cdk.h>
+#undef CDKINCLUDES
+#endif
+
 /*
- * $Id: curdefs.h,v 1.5 2000/09/23 15:00:37 tom Exp $
+ * $Id: curdefs.h,v 1.6 2002/04/30 22:04:15 tom Exp $
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -525,3 +532,4 @@ typedef unsigned long chtype;
 #endif
 
 #endif /* CURDEF_H */
+#endif /* CDKINCLUDES */

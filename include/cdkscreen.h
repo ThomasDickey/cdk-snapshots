@@ -1,7 +1,8 @@
 /*
- * $Id: cdkscreen.h,v 1.7 2002/02/25 23:35:19 tom Exp $
+ * $Id: cdkscreen.h,v 1.8 2002/04/30 21:44:34 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKSCREEN_H
 #define CDKSCREEN_H	1
 
@@ -9,7 +10,11 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -178,3 +183,4 @@ void initCDKColor(void);
 #endif
 
 #endif /* CDKSCREEN_H */
+#endif /* CDKINCLUDES */

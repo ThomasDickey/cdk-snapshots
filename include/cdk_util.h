@@ -1,7 +1,8 @@
 /*
- * $Id: cdk_util.h,v 1.15 2002/02/25 23:35:19 tom Exp $
+ * $Id: cdk_util.h,v 1.16 2002/04/30 21:43:48 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKUTIL_H
 #define CDKUTIL_H	1
 
@@ -9,7 +10,13 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -354,3 +361,4 @@ int ceilCDK(double);
 #endif
 
 #endif /* CDKUTIL_H */
+#endif /* CDKINCLUDES */

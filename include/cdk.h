@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.16 2002/02/25 23:35:19 tom Exp $
+ * $Id: cdk.h,v 1.17 2002/04/30 19:54:48 tom Exp $
  */
 
 #ifndef CDK_H
@@ -80,6 +80,21 @@ extern "C" {
 #else
 extern int optind;
 extern char * optarg;
+#endif
+
+/*
+ * Definitions that we do not want if term.h does
+ */
+#ifdef buttons
+#undef buttons
+#endif
+
+#ifdef lines
+#undef lines
+#endif
+
+#ifdef newline
+#undef newline
 #endif
 
 /*

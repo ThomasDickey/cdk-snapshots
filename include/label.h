@@ -1,7 +1,8 @@
 /*
- * $Id: label.h,v 1.11 2002/02/25 23:38:00 tom Exp $
+ * $Id: label.h,v 1.12 2002/04/30 21:47:27 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKLABEL_H
 #define CDKLABEL_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -202,3 +210,4 @@ char waitCDKLabel (
 #endif
 
 #endif /* CDKLABEL_H */
+#endif /* CDKINCLUDES */

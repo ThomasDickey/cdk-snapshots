@@ -1,7 +1,8 @@
 /*
- * $Id: fselect.h,v 1.13 2002/02/25 23:38:00 tom Exp $
+ * $Id: fselect.h,v 1.14 2002/04/30 21:59:59 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKFSELECT_H
 #define CDKFSELECT_H	1
 
@@ -9,7 +10,16 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#include <entry.h>
+#include <scroll.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -43,9 +53,6 @@ extern "C" {
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#include <label.h>
-#include <entry.h>
 
 /*
  * Define the CDK file selector widget structure.
@@ -310,3 +317,4 @@ void setCDKFselectPostProcess (
 #endif
 
 #endif /* CDKFSELECT_H */
+#endif /* CDKINCLUDES */

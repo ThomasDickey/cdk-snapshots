@@ -1,7 +1,8 @@
 /*
- * $Id: scroll.h,v 1.14 2002/02/25 23:38:00 tom Exp $
+ * $Id: scroll.h,v 1.15 2002/04/30 21:40:28 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKSCROLL_H
 #define CDKSCROLL_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -279,3 +287,4 @@ void setCDKScrollPostProcess (
 #endif
 
 #endif /* CDKSCROLL_H */
+#endif /* CDKINCLUDES */

@@ -1,7 +1,8 @@
 /*
- * $Id: mentry.h,v 1.11 2002/02/25 23:38:00 tom Exp $
+ * $Id: mentry.h,v 1.12 2002/04/30 22:02:21 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKMENTRY_H
 #define CDKMENTRY_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -288,3 +296,4 @@ void setCDKMentryPostProcess (
 #endif
 
 #endif /* CDKMENTRY_H */
+#endif /* CDKINCLUDES */

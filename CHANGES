@@ -1,11 +1,26 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas Dickey 1999, 2000, 2001
+Modifications copyright Thomas Dickey 1999, 2000, 2001, 2002
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
+
+2002/04/30 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
+	+ correct parsing of <I=xx> in char2Chtype() where "xx" contains digits
+	  (patch by Robert R Landon <rl180001@exchange.DAYTONOH.NCR.com>).
+	+ updated cdk.spec for RPM (patch by Vladimir Kondratiev
+	  <vladimir.kondratiev@intel.com>).
+	+ introduce CDKINCLUDES ifdef's so that any of the header files may
+	  be included separately.  Previously only <cdk.h> could be included
+	  due to interdependencies among the headers.
+	+ add some #undef's to cdk.h in case curses.h includes term.h producing
+	  a symbol conflict (reported by Kenneth Pronovici
+	  <pronovic@skyjammer.com>).
+	+ miscellaneous updates to configure script, including workarounds for
+	  incompatibilies in autoconf 2.5x.
 
 2002/02/25 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
