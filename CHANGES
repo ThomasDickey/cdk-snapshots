@@ -6,6 +6,22 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/5/23 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ remove WIN_WIDTH and related macros, use the more common getmaxx,
+	  and similar macros.  Provide fallback definitions for those.
+	+ replace log10() call in intlen with simple recursion.
+	+ add getendx() and getendy() macros.
+	+ add moveCursesWindow().
+	+ generate include/cdk_config.h, to simplify ifdef'ing for gcc
+	  features, and to reduce clutter in the makefiles.
+	+ add functions ceilCDK() and floorCDK() to eliminate dependency on
+	  the math library
+	+ simplified, corrected upper-limit checks in alignxy().
+	+ change bindings to be dynamically allocated, part of the CDKOBJS
+	  structure.
+	+ correct overlap between title and percentage in drawCDKViewerInfo()
+
 1999/5/15 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ revised configure script, using autoconf macros which I've written

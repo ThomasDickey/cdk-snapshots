@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:36:17 $
- * $Revision: 1.140 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.148 $
  */
 
 /*
@@ -29,10 +29,10 @@ static CDKFUNCS my_funcs = {
 CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int min, int max, boolean Box, boolean shadow)
 {
    /* Set up some variables. */
-   CDKENTRY *entry	= (CDKENTRY *)malloc (sizeof (CDKENTRY));
+   CDKENTRY *entry	= newCDKObject(CDKENTRY, &my_funcs);
    chtype *holder	= (chtype *)NULL;
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int fieldWidth	= fWidth;
    int boxWidth		= 0;
    int boxHeight	= 3;
@@ -131,26 +131,25 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
 
    /* Make the field window. */
    entry->fieldWin = subwin (entry->win, 1, fieldWidth,
-				ypos+entry->titleLines+1,
-				xpos+entry->labelLen+horizontalAdjust+1);
+				ypos + entry->titleLines + 1,
+				xpos + entry->labelLen + horizontalAdjust + 1);
    keypad (entry->fieldWin, TRUE);
 
    /* Make the label win, if we need to. */
    if (label != (char *)NULL)
    {
-      entry->labelWin = subwin (entry->win, 1, entry->labelLen+2,
-					ypos+entry->titleLines+1,
-					xpos+horizontalAdjust+1);
+      entry->labelWin = subwin (entry->win, 1, entry->labelLen + 2,
+					ypos + entry->titleLines + 1,
+					xpos + horizontalAdjust + 1);
    }
 
    /* Make room for the info char * pointer. */
-   entry->info		= (char *)malloc (sizeof(char) * (max+3));
-   cleanChar (entry->info, max+3, '\0');
-   entry->infoWidth	= max+3;
+   entry->info		= (char *)malloc (sizeof(char) * (max + 3));
+   cleanChar (entry->info, max + 3, '\0');
+   entry->infoWidth	= max + 3;
 
    /* Set up the rest of the structure. */
    ScreenOf(entry)		= cdkscreen;
-   ObjOf(entry)->fn		= &my_funcs;
    entry->parent		= cdkscreen->window;
    entry->shadowWin		= (WINDOW *)NULL;
    entry->fieldAttr		= fieldAttr;
@@ -183,7 +182,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Do we want a shadow? */
    if (shadow)
    {
-      entry->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      entry->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -309,8 +308,8 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
                  else
                  {
                     holder = entry->info[temp];
-                    entry->info[temp] = entry->info[temp+1];
-                    entry->info[temp+1] = holder;
+                    entry->info[temp] = entry->info[temp + 1];
+                    entry->info[temp + 1] = holder;
                     drawCDKEntryField (entry);
                  }
                  break;
@@ -356,7 +355,7 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
                  if (entry->screenCol == entry->fieldWidth-1)
                  {
                     temp = (int)strlen (entry->info);
-                    if ((entry->leftChar + entry->screenCol+1) == temp)
+                    if ((entry->leftChar + entry->screenCol + 1) == temp)
                     {
                        Beep();
                     }
@@ -395,10 +394,10 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
                     if ((entry->leftChar + entry->screenCol) < infoLength)
                     {
                        /* We are deleteing from inside the string. */
-                       int currPos = entry->screenCol+entry->leftChar;
+                       int currPos = entry->screenCol + entry->leftChar;
                        for (x=currPos; x < infoLength; x++)
                        {
-                          entry->info[x] = entry->info[x+1];
+                          entry->info[x] = entry->info[x + 1];
                        }
                        entry->info[infoLength] = '\0';
 
@@ -541,8 +540,8 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
 void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = entry->win->_begx;
-   int currentY = entry->win->_begy;
+   int currentX = getbegx(entry->win);
+   int currentY = getbegy(entry->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -554,8 +553,8 @@ void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, bo
     */
    if (relative)
    {
-      xpos = entry->win->_begx + xplace;
-      ypos = entry->win->_begy + yplace;
+      xpos = getbegx(entry->win) + xplace;
+      ypos = getbegy(entry->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -566,21 +565,17 @@ void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, bo
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   entry->win->_begx = xpos;
-   entry->win->_begy = ypos;
-   entry->fieldWin->_begx -= xdiff;
-   entry->fieldWin->_begy -= ydiff;
+   moveCursesWindow(entry->win, -xdiff, -ydiff);
+   moveCursesWindow(entry->fieldWin, -xdiff, -ydiff);
    if (entry->labelWin != (WINDOW *)NULL)
    {
-      entry->labelWin->_begx -= xdiff;
-      entry->labelWin->_begy -= ydiff;
+      moveCursesWindow(entry->labelWin, -xdiff, -ydiff);
    }
 
    /* If there is a shadow box we have to move it too. */
    if (entry->shadowWin != (WINDOW *)NULL)
    {
-      entry->shadowWin->_begx -= xdiff;
-      entry->shadowWin->_begy -= ydiff;
+      moveCursesWindow(entry->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -604,8 +599,8 @@ void moveCDKEntry (CDKENTRY *entry, int xplace, int yplace, boolean relative, bo
 void positionCDKEntry (CDKENTRY *entry)
 {
    /* Declare some variables. */
-   int origX	= entry->win->_begx;
-   int origY	= entry->win->_begy;
+   int origX	= getbegx(entry->win);
+   int origY	= getbegy(entry->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -614,7 +609,7 @@ void positionCDKEntry (CDKENTRY *entry)
       key = wgetch (entry->win);
       if (key == KEY_UP || key == '8')
       {
-         if (entry->win->_begy > 0)
+         if (getbegy(entry->win) > 0)
          {
             moveCDKEntry (entry, 0, -1, TRUE, TRUE);
          }
@@ -625,7 +620,7 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (entry->win->_begy+entry->win->_maxy < WindowOf(entry)->_maxy-1)
+         if (getendy(entry->win) < getmaxy(WindowOf(entry))-1)
          {
             moveCDKEntry (entry, 0, 1, TRUE, TRUE);
          }
@@ -636,7 +631,7 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (entry->win->_begx > 0)
+         if (getbegx(entry->win) > 0)
          {
             moveCDKEntry (entry, -1, 0, TRUE, TRUE);
          }
@@ -647,7 +642,7 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (entry->win->_begx+entry->win->_maxx < WindowOf(entry)->_maxx-1)
+         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1)
          {
             moveCDKEntry (entry, 1, 0, TRUE, TRUE);
          }
@@ -658,7 +653,7 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == '7')
       {
-         if (entry->win->_begy > 0 && entry->win->_begx > 0)
+         if (getbegy(entry->win) > 0 && getbegx(entry->win) > 0)
          {
             moveCDKEntry (entry, -1, -1, TRUE, TRUE);
          }
@@ -669,8 +664,8 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == '9')
       {
-         if (entry->win->_begx+entry->win->_maxx < WindowOf(entry)->_maxx-1 &&
-		entry->win->_begy > 0)
+         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1
+	  && getbegy(entry->win) > 0)
          {
             moveCDKEntry (entry, 1, -1, TRUE, TRUE);
          }
@@ -681,7 +676,7 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == '1')
       {
-         if (entry->win->_begx > 0 && entry->win->_begx+entry->win->_maxx < WindowOf(entry)->_maxx-1)
+         if (getbegx(entry->win) > 0 && getendx(entry->win) < getmaxx(WindowOf(entry))-1)
          {
             moveCDKEntry (entry, -1, 1, TRUE, TRUE);
          }
@@ -692,8 +687,8 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == '3')
       {
-         if (entry->win->_begx+entry->win->_maxx < WindowOf(entry)->_maxx-1
-	  && entry->win->_begy+entry->win->_maxy < WindowOf(entry)->_maxy-1)
+         if (getendx(entry->win) < getmaxx(WindowOf(entry))-1
+	  && getendy(entry->win) < getmaxy(WindowOf(entry))-1)
          {
             moveCDKEntry (entry, 1, 1, TRUE, TRUE);
          }
@@ -708,27 +703,27 @@ void positionCDKEntry (CDKENTRY *entry)
       }
       else if (key == 't')
       {
-         moveCDKEntry (entry, entry->win->_begx, TOP, FALSE, TRUE);
+         moveCDKEntry (entry, getbegx(entry->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKEntry (entry, entry->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKEntry (entry, getbegx(entry->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKEntry (entry, LEFT, entry->win->_begy, FALSE, TRUE);
+         moveCDKEntry (entry, LEFT, getbegy(entry->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKEntry (entry, RIGHT, entry->win->_begy, FALSE, TRUE);
+         moveCDKEntry (entry, RIGHT, getbegy(entry->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKEntry (entry, CENTER, entry->win->_begy, FALSE, TRUE);
+         moveCDKEntry (entry, CENTER, getbegy(entry->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKEntry (entry, entry->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKEntry (entry, getbegx(entry->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -808,11 +803,11 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
          {
             /* Update the character pointer. */
             temp = (int)strlen (entry->info);
-            for (x=temp; x > entry->screenCol+entry->leftChar; x--)
+            for (x=temp; x > entry->screenCol + entry->leftChar; x--)
             {
                entry->info[x] = entry->info[x-1];
             }
-            entry->info[entry->screenCol+entry->leftChar] = plainchar;
+            entry->info[entry->screenCol + entry->leftChar] = plainchar;
             entry->screenCol++;
          }
          else
@@ -820,7 +815,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
             /* Update the character pointer. */
             temp = (int)strlen (entry->info);
             entry->info[temp]	= plainchar;
-            entry->info[temp+1]	= '\0';
+            entry->info[temp + 1] = '\0';
             entry->leftChar++;
          }
 
@@ -888,7 +883,7 @@ void _drawCDKEntry (CDKOBJS *object, boolean Box)
       {
          writeChtype (entry->win,
 			entry->titlePos[x],
-			x+1,
+			x + 1,
 			entry->title[x],
 			HORIZONTAL, 0,
 			entry->titleLen[x]);

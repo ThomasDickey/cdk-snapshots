@@ -34,8 +34,8 @@ int main (void)
 
    /* Create the button box widget. */
    buttonWidget = newCDKButtonbox (cdkscreen,
-			WIN_XPOS (entry->win),
-			WIN_YPOS (entry->win) + entry->boxHeight - 1,
+			getbegx(entry->win),
+			getbegy(entry->win) + entry->boxHeight - 1,
 			1, entry->boxWidth - 1,
 			NULL, 1, 2,
 			buttons, 2, A_REVERSE,
@@ -70,7 +70,7 @@ int main (void)
    exit (0);
 }
 
-int entryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int entryCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);

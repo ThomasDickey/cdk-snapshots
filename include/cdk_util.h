@@ -228,4 +228,19 @@ void eraseCursesWindow (WINDOW *window);
  */
 void deleteCursesWindow (WINDOW *window);
 
+/*
+ * This moves a given window
+ */
+void moveCursesWindow (WINDOW * /* window */, int /* xdiff */, int /* ydiff */);
+
+/*
+ * Return an integer like 'floor()', which returns a double.
+ */
+int floorCDK(double);
+
+/*
+ * Return an integer like 'ceil()', which returns a double.
+ */
+int ceilCDK(double);
+
 #endif /* CDKUTIL_H */

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:45:33 $
- * $Revision: 1.53 $
+ * $Date: 1999/05/23 02:53:29 $
+ * $Revision: 1.61 $
  */
 
 /*
@@ -23,9 +23,9 @@ static CDKFUNCS my_funcs = {
 CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, int saveLines, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKSWINDOW	*swindow	= (CDKSWINDOW *)malloc (sizeof (CDKSWINDOW));
-   int parentWidth		= WIN_WIDTH (cdkscreen->window);
-   int parentHeight		= WIN_HEIGHT (cdkscreen->window);
+   CDKSWINDOW	*swindow	= newCDKObject(CDKSWINDOW, &my_funcs);
+   int parentWidth		= getmaxx(cdkscreen->window) - 1;
+   int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
@@ -104,13 +104,12 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->fieldWin = subwin (swindow->win,
 				(boxHeight-swindow->titleLines-2),
 				boxWidth - 2,
-                                ypos+swindow->titleLines+1,
-                                xpos+1);
+                                ypos + swindow->titleLines + 1,
+                                xpos + 1);
    keypad (swindow->fieldWin, TRUE);
 
    /* Set the rest of the variables */
    ScreenOf(swindow)		= cdkscreen;
-   ObjOf(swindow)->fn		= &my_funcs;
    swindow->parent		= cdkscreen->window;
    swindow->shadowWin		= (WINDOW *)NULL;
    swindow->boxHeight		= boxHeight;
@@ -147,7 +146,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    /* Do we need to create a shadow??? */
    if (shadow)
    {
-      swindow->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      swindow->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -234,9 +233,9 @@ void addCDKSwindow  (CDKSWINDOW *swindow, char *info, int insertPos)
       /* Bump everything up one spot. */
       for (x=0; x < swindow->itemCount; x++)
       {
-         swindow->info[x] = swindow->info[x+1];
-         swindow->infoPos[x] = swindow->infoPos[x+1];
-         swindow->infoLen[x] = swindow->infoLen[x+1];
+         swindow->info[x] = swindow->info[x + 1];
+         swindow->infoPos[x] = swindow->infoPos[x + 1];
+         swindow->infoLen[x] = swindow->infoLen[x + 1];
       }
 
       /* Clean out the last position. */
@@ -425,9 +424,9 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
 
       if (x < swindow->itemCount-1)
       {
-         swindow->info[x] = copyChtype (swindow->info[x+1]);
-         swindow->infoPos[x] = swindow->infoPos[x+1];
-         swindow->infoLen[x] = swindow->infoLen[x+1];
+         swindow->info[x] = copyChtype (swindow->info[x + 1]);
+         swindow->infoPos[x] = swindow->infoPos[x + 1];
+         swindow->infoLen[x] = swindow->infoLen[x + 1];
       }
    }
 
@@ -663,8 +662,8 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
 void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = swindow->win->_begx;
-   int currentY = swindow->win->_begy;
+   int currentX = getbegx(swindow->win);
+   int currentY = getbegy(swindow->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -676,8 +675,8 @@ void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relati
      */
    if (relative)
    {
-      xpos = swindow->win->_begx + xplace;
-      ypos = swindow->win->_begy + yplace;
+      xpos = getbegx(swindow->win) + xplace;
+      ypos = getbegy(swindow->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -688,14 +687,12 @@ void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relati
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   swindow->win->_begx = xpos;
-   swindow->win->_begy = ypos;
+   moveCursesWindow(swindow->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (swindow->shadowWin != (WINDOW *)NULL)
    {
-      swindow->shadowWin->_begx -= xdiff;
-      swindow->shadowWin->_begy -= ydiff;
+      moveCursesWindow(swindow->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -716,8 +713,8 @@ void moveCDKSwindow (CDKSWINDOW *swindow, int xplace, int yplace, boolean relati
 void positionCDKSwindow (CDKSWINDOW *swindow)
 {
    /* Declare some variables. */
-   int origX	= swindow->win->_begx;
-   int origY	= swindow->win->_begy;
+   int origX	= getbegx(swindow->win);
+   int origY	= getbegy(swindow->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -726,7 +723,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       key = wgetch (swindow->win);
       if (key == KEY_UP || key == '8')
       {
-         if (swindow->win->_begy > 0)
+         if (getbegy(swindow->win) > 0)
          {
             moveCDKSwindow (swindow, 0, -1, TRUE, TRUE);
          }
@@ -737,7 +734,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (swindow->win->_begy+swindow->win->_maxy < WindowOf(swindow)->_maxy-1)
+         if (getendy(swindow->win) < getmaxy(WindowOf(swindow))-1)
          {
             moveCDKSwindow (swindow, 0, 1, TRUE, TRUE);
          }
@@ -748,7 +745,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (swindow->win->_begx > 0)
+         if (getbegx(swindow->win) > 0)
          {
             moveCDKSwindow (swindow, -1, 0, TRUE, TRUE);
          }
@@ -759,7 +756,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (swindow->win->_begx+swindow->win->_maxx < WindowOf(swindow)->_maxx-1)
+         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1)
          {
             moveCDKSwindow (swindow, 1, 0, TRUE, TRUE);
          }
@@ -770,7 +767,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == '7')
       {
-         if (swindow->win->_begy > 0 && swindow->win->_begx > 0)
+         if (getbegy(swindow->win) > 0 && getbegx(swindow->win) > 0)
          {
             moveCDKSwindow (swindow, -1, -1, TRUE, TRUE);
          }
@@ -781,8 +778,8 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == '9')
       {
-         if (swindow->win->_begx+swindow->win->_maxx < WindowOf(swindow)->_maxx-1 &&
-		swindow->win->_begy > 0)
+         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1
+	  && getbegy(swindow->win) > 0)
          {
             moveCDKSwindow (swindow, 1, -1, TRUE, TRUE);
          }
@@ -793,7 +790,7 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == '1')
       {
-         if (swindow->win->_begx > 0 && swindow->win->_begx+swindow->win->_maxx < WindowOf(swindow)->_maxx-1)
+         if (getbegx(swindow->win) > 0 && getendx(swindow->win) < getmaxx(WindowOf(swindow))-1)
          {
             moveCDKSwindow (swindow, -1, 1, TRUE, TRUE);
          }
@@ -804,8 +801,8 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == '3')
       {
-         if (swindow->win->_begx+swindow->win->_maxx < WindowOf(swindow)->_maxx-1
-	  && swindow->win->_begy+swindow->win->_maxy < WindowOf(swindow)->_maxy-1)
+         if (getendx(swindow->win) < getmaxx(WindowOf(swindow))-1
+	  && getendy(swindow->win) < getmaxy(WindowOf(swindow))-1)
          {
             moveCDKSwindow (swindow, 1, 1, TRUE, TRUE);
          }
@@ -820,27 +817,27 @@ void positionCDKSwindow (CDKSWINDOW *swindow)
       }
       else if (key == 't')
       {
-         moveCDKSwindow (swindow, swindow->win->_begx, TOP, FALSE, TRUE);
+         moveCDKSwindow (swindow, getbegx(swindow->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKSwindow (swindow, swindow->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKSwindow (swindow, getbegx(swindow->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKSwindow (swindow, LEFT, swindow->win->_begy, FALSE, TRUE);
+         moveCDKSwindow (swindow, LEFT, getbegy(swindow->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKSwindow (swindow, RIGHT, swindow->win->_begy, FALSE, TRUE);
+         moveCDKSwindow (swindow, RIGHT, getbegy(swindow->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKSwindow (swindow, CENTER, swindow->win->_begy, FALSE, TRUE);
+         moveCDKSwindow (swindow, CENTER, getbegy(swindow->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKSwindow (swindow, swindow->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKSwindow (swindow, getbegx(swindow->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -890,7 +887,7 @@ void _drawCDKSwindow (CDKOBJS *object, boolean Box)
       {
          writeChtype (swindow->win,
 			swindow->titlePos[x],
-			x+1,
+			x + 1,
 			swindow->title[x],
 			HORIZONTAL, 0,
 			swindow->titleLen[x]);
@@ -906,7 +903,7 @@ void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 /*
  * This draws in the contents of the scrolling window.
  */
-static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box)
+static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
 {
    /* Declare local variables. */
    int lastLine, screenPos, x;
@@ -927,23 +924,23 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box)
    /* Start drawing in each line. */
    for (x=0; x < lastLine; x++)
    {
-      screenPos = swindow->infoPos[x+swindow->currentTop]-swindow->leftChar;
+      screenPos = swindow->infoPos[x + swindow->currentTop]-swindow->leftChar;
 
       /* Write in the correct line. */
       if (screenPos >= 0)
       {
          writeChtype (swindow->fieldWin, screenPos, x,
-			swindow->info[x+swindow->currentTop],
+			swindow->info[x + swindow->currentTop],
 			HORIZONTAL, 0,
-			swindow->infoLen[x+swindow->currentTop]);
+			swindow->infoLen[x + swindow->currentTop]);
       }
       else
       {
          writeChtype (swindow->fieldWin, 0, x,
-			swindow->info[x+swindow->currentTop],
+			swindow->info[x + swindow->currentTop],
 			HORIZONTAL,
-			swindow->leftChar - swindow->infoPos[x+swindow->currentTop],
-			swindow->infoLen[x+swindow->currentTop]);
+			swindow->leftChar - swindow->infoPos[x + swindow->currentTop],
+			swindow->infoLen[x + swindow->currentTop]);
       }
    }
 

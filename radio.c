@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:43:04 $
- * $Revision: 1.63 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.73 $
  */
 
 /*
@@ -23,10 +23,10 @@ static CDKFUNCS my_funcs = {
 CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace, int height, int width, char *title, char **list, int listSize, chtype choiceChar, int defItem, chtype highlight, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKRADIO *radio	= (CDKRADIO *)malloc (sizeof (CDKRADIO));
+   CDKRADIO *radio	= newCDKObject(CDKRADIO, &my_funcs);
    chtype *holder	= (chtype *)NULL;
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= width;
    int boxHeight	= height;
    int maxWidth		= INT_MIN;
@@ -64,7 +64,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
          maxWidth = MAXIMUM (maxWidth, len);
          freeChtype (holder);
       }
-      boxWidth = MAXIMUM (boxWidth, maxWidth+2);
+      boxWidth = MAXIMUM (boxWidth, maxWidth + 2);
 
       /* For each line in the title, convert from a char * to a chtype * */
       for (x=0; x < radio->titleLines; x++)
@@ -127,7 +127,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
 
    /* Determine the size of the scrollbar toggle and the step. */
    radio->step		= (float)(boxHeight-2) / (float)radio->listSize;
-   radio->toggleSize	= (radio->listSize > (boxHeight-2) ? 1 : (int)ceil(radio->step));
+   radio->toggleSize	= (radio->listSize > (boxHeight-2) ? 1 : ceilCDK(radio->step));
 
    /* Each item in the needs to be converted to chtype * */
    for (x=0; x < listSize; x++)
@@ -182,15 +182,15 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    {
       radio->scrollbarWin = subwin (radio->win,
 					boxHeight-radio->titleAdj-1, 1,
-					ypos+radio->titleAdj,
-					xpos+boxWidth-2);
+					ypos + radio->titleAdj,
+					xpos + boxWidth-2);
    }
    else if (splace == LEFT)
    {
       radio->scrollbarWin = subwin (radio->win,
 					boxHeight-radio->titleAdj-1, 1,
-					ypos+radio->titleAdj,
-					xpos+1);
+					ypos + radio->titleAdj,
+					xpos + 1);
    }
    else
    {
@@ -199,7 +199,6 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
 
    /* Set the rest of the variables */
    ScreenOf(radio)		= cdkscreen;
-   ObjOf(radio)->fn		= &my_funcs;
    radio->parent		= cdkscreen->window;
    radio->boxHeight		= boxHeight;
    radio->boxWidth		= boxWidth;
@@ -234,7 +233,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    /* Do we need to create the shadow??? */
    if (shadow)
    {
-      radio->shadowWin	= newwin (boxHeight, boxWidth+1, ypos+1, xpos+1);
+      radio->shadowWin	= newwin (boxHeight, boxWidth + 1, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -499,8 +498,8 @@ int injectCDKRadio (CDKRADIO *radio, chtype input)
 void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = radio->win->_begx;
-   int currentY = radio->win->_begy;
+   int currentX = getbegx(radio->win);
+   int currentY = getbegy(radio->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -512,8 +511,8 @@ void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, bo
  */
    if (relative)
    {
-      xpos = radio->win->_begx + xplace;
-      ypos = radio->win->_begy + yplace;
+      xpos = getbegx(radio->win) + xplace;
+      ypos = getbegy(radio->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -524,21 +523,18 @@ void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, bo
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   radio->win->_begx = xpos;
-   radio->win->_begy = ypos;
+   moveCursesWindow(radio->win, -xdiff, -ydiff);
 
    /* If there is a scrollbar we have to move it too. */
    if (radio->scrollbar)
    {
-      radio->scrollbarWin->_begx -= xdiff;
-      radio->scrollbarWin->_begy -= ydiff;
+      moveCursesWindow(radio->scrollbarWin, -xdiff, -ydiff);
    }
 
    /* If there is a shadow box we have to move it too. */
    if (radio->shadowWin != (WINDOW *)NULL)
    {
-      radio->shadowWin->_begx -= xdiff;
-      radio->shadowWin->_begy -= ydiff;
+      moveCursesWindow(radio->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -560,8 +556,8 @@ void moveCDKRadio (CDKRADIO *radio, int xplace, int yplace, boolean relative, bo
 void positionCDKRadio (CDKRADIO *radio)
 {
    /* Declare some variables. */
-   int origX	= radio->win->_begx;
-   int origY	= radio->win->_begy;
+   int origX	= getbegx(radio->win);
+   int origY	= getbegy(radio->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -570,7 +566,7 @@ void positionCDKRadio (CDKRADIO *radio)
       key = wgetch (radio->win);
       if (key == KEY_UP || key == '8')
       {
-         if (radio->win->_begy > 0)
+         if (getbegy(radio->win) > 0)
          {
             moveCDKRadio (radio, 0, -1, TRUE, TRUE);
          }
@@ -581,7 +577,7 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (radio->win->_begy+radio->win->_maxy < WindowOf(radio)->_maxy-1)
+         if (getendy(radio->win) < getmaxy(WindowOf(radio))-1)
          {
             moveCDKRadio (radio, 0, 1, TRUE, TRUE);
          }
@@ -592,7 +588,7 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (radio->win->_begx > 0)
+         if (getbegx(radio->win) > 0)
          {
             moveCDKRadio (radio, -1, 0, TRUE, TRUE);
          }
@@ -603,7 +599,7 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (radio->win->_begx+radio->win->_maxx < WindowOf(radio)->_maxx-1)
+         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1)
          {
             moveCDKRadio (radio, 1, 0, TRUE, TRUE);
          }
@@ -614,7 +610,7 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == '7')
       {
-         if (radio->win->_begy > 0 && radio->win->_begx > 0)
+         if (getbegy(radio->win) > 0 && getbegx(radio->win) > 0)
          {
             moveCDKRadio (radio, -1, -1, TRUE, TRUE);
          }
@@ -625,8 +621,8 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == '9')
       {
-         if (radio->win->_begx+radio->win->_maxx < WindowOf(radio)->_maxx-1 &&
-		radio->win->_begy > 0)
+         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1
+	  && getbegy(radio->win) > 0)
          {
             moveCDKRadio (radio, 1, -1, TRUE, TRUE);
          }
@@ -637,7 +633,7 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == '1')
       {
-         if (radio->win->_begx > 0 && radio->win->_begx+radio->win->_maxx < WindowOf(radio)->_maxx-1)
+         if (getbegx(radio->win) > 0 && getendx(radio->win) < getmaxx(WindowOf(radio))-1)
          {
             moveCDKRadio (radio, -1, 1, TRUE, TRUE);
          }
@@ -648,8 +644,8 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == '3')
       {
-         if (radio->win->_begx+radio->win->_maxx < WindowOf(radio)->_maxx-1
-	  && radio->win->_begy+radio->win->_maxy < WindowOf(radio)->_maxy-1)
+         if (getendx(radio->win) < getmaxx(WindowOf(radio))-1
+	  && getendy(radio->win) < getmaxy(WindowOf(radio))-1)
          {
             moveCDKRadio (radio, 1, 1, TRUE, TRUE);
          }
@@ -664,27 +660,27 @@ void positionCDKRadio (CDKRADIO *radio)
       }
       else if (key == 't')
       {
-         moveCDKRadio (radio, radio->win->_begx, TOP, FALSE, TRUE);
+         moveCDKRadio (radio, getbegx(radio->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKRadio (radio, radio->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKRadio (radio, getbegx(radio->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKRadio (radio, LEFT, radio->win->_begy, FALSE, TRUE);
+         moveCDKRadio (radio, LEFT, getbegy(radio->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKRadio (radio, RIGHT, radio->win->_begy, FALSE, TRUE);
+         moveCDKRadio (radio, RIGHT, getbegy(radio->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKRadio (radio, CENTER, radio->win->_begy, FALSE, TRUE);
+         moveCDKRadio (radio, CENTER, getbegy(radio->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKRadio (radio, radio->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKRadio (radio, getbegx(radio->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -705,7 +701,7 @@ void positionCDKRadio (CDKRADIO *radio)
 /*
  * This function draws the radio widget.
  */
-void _drawCDKRadio (CDKOBJS *object, boolean Box)
+void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKRADIO *radio = (CDKRADIO *)object;
    int x;
@@ -723,7 +719,7 @@ void _drawCDKRadio (CDKOBJS *object, boolean Box)
       {
          writeChtype (radio->win,
 			radio->titlePos[x],
-			x+1,
+			x + 1,
 			radio->title[x],
 			HORIZONTAL, 0,
 			radio->titleLen[x]);
@@ -760,46 +756,46 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    /* Redraw the list */
    for (x=0; x < radio->viewSize; x++)
    {
-      screenPos = radio->itemPos[x+radio->currentTop]-radio->leftChar+scrollbarAdj;
+      screenPos = radio->itemPos[x + radio->currentTop]-radio->leftChar + scrollbarAdj;
 
       /* Draw in the empty string. */
-      writeChar (radio->win, 1, radio->titleAdj+x,
+      writeChar (radio->win, 1, radio->titleAdj + x,
 			emptyString, HORIZONTAL, 0, (int)strlen(emptyString));
 
       /* Draw in the line. */
       if (screenPos >= 0)
       {
          writeChtype (radio->win,
-			screenPos, x+radio->titleAdj,
-			radio->item[x+radio->currentTop],
+			screenPos, x + radio->titleAdj,
+			radio->item[x + radio->currentTop],
 			HORIZONTAL, 0,
-			radio->itemLen[x+radio->currentTop]);
+			radio->itemLen[x + radio->currentTop]);
       }
       else
       {
          writeChtype (radio->win,
-			1, x+radio->titleAdj,
-			radio->item[x+radio->currentTop],
+			1, x + radio->titleAdj,
+			radio->item[x + radio->currentTop],
 			HORIZONTAL,
-			radio->leftChar - radio->itemPos[x+radio->currentTop]+1,
-			radio->itemLen[x+radio->currentTop]);
+			radio->leftChar - radio->itemPos[x + radio->currentTop] + 1,
+			radio->itemLen[x + radio->currentTop]);
       }
 
       /* Draw in the selected choice... */
-      if (x+radio->currentTop == radio->selectedItem)
+      if (x + radio->currentTop == radio->selectedItem)
       {
-         mvwaddch (radio->win, x+radio->titleAdj, 1+scrollbarAdj, radio->leftBoxChar);
-         mvwaddch (radio->win, x+radio->titleAdj, 2+scrollbarAdj, radio->choiceChar);
-         mvwaddch (radio->win, x+radio->titleAdj, 3+scrollbarAdj, radio->rightBoxChar);
+         mvwaddch (radio->win, x + radio->titleAdj, 1 + scrollbarAdj, radio->leftBoxChar);
+         mvwaddch (radio->win, x + radio->titleAdj, 2 + scrollbarAdj, radio->choiceChar);
+         mvwaddch (radio->win, x + radio->titleAdj, 3 + scrollbarAdj, radio->rightBoxChar);
       }
       else
       {
-         mvwaddch (radio->win, x+radio->titleAdj, 1+scrollbarAdj, radio->leftBoxChar);
-         mvwaddch (radio->win, x+radio->titleAdj, 2+scrollbarAdj, ' ');
-         mvwaddch (radio->win, x+radio->titleAdj, 3+scrollbarAdj, radio->rightBoxChar);
+         mvwaddch (radio->win, x + radio->titleAdj, 1 + scrollbarAdj, radio->leftBoxChar);
+         mvwaddch (radio->win, x + radio->titleAdj, 2 + scrollbarAdj, ' ');
+         mvwaddch (radio->win, x + radio->titleAdj, 3 + scrollbarAdj, radio->rightBoxChar);
       }
    }
-   screenPos = radio->itemPos[radio->currentItem]-radio->leftChar+scrollbarAdj;
+   screenPos = radio->itemPos[radio->currentItem]-radio->leftChar + scrollbarAdj;
 
    /* Draw in the filler character for the scroll bar. */
    if (radio->scrollbarWin != (WINDOW *)NULL)
@@ -814,7 +810,7 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    if (screenPos >= 0)
    {
       writeChtypeAttrib (radio->win,
-			screenPos, radio->currentHigh+radio->titleAdj,
+			screenPos, radio->currentHigh + radio->titleAdj,
 			radio->item[radio->currentItem],
 			radio->highlight,
 			HORIZONTAL, 0,
@@ -823,27 +819,27 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    else
    {
       writeChtypeAttrib (radio->win,
-			1+scrollbarAdj,
-			radio->currentHigh+radio->titleAdj,
+			1 + scrollbarAdj,
+			radio->currentHigh + radio->titleAdj,
 			radio->item[radio->currentItem],
 			radio->highlight,
 			HORIZONTAL,
-			radio->leftChar - radio->itemPos[radio->currentTop]+1,
+			radio->leftChar - radio->itemPos[radio->currentTop] + 1,
 			radio->itemLen[radio->currentItem]);
    }
 
    /* Draw in the selected choice... */
    if (radio->currentItem == radio->selectedItem)
    {
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 1+scrollbarAdj, radio->leftBoxChar);
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 2+scrollbarAdj, radio->choiceChar);
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 3+scrollbarAdj, radio->rightBoxChar);
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 1 + scrollbarAdj, radio->leftBoxChar);
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 2 + scrollbarAdj, radio->choiceChar);
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 3 + scrollbarAdj, radio->rightBoxChar);
    }
    else
    {
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 1+scrollbarAdj, radio->leftBoxChar);
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 2+scrollbarAdj, ' ');
-      mvwaddch (radio->win, radio->currentHigh+radio->titleAdj, 3+scrollbarAdj, radio->rightBoxChar);
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 1 + scrollbarAdj, radio->leftBoxChar);
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 2 + scrollbarAdj, ' ');
+      mvwaddch (radio->win, radio->currentHigh + radio->titleAdj, 3 + scrollbarAdj, radio->rightBoxChar);
    }
 
    /* Determine where the toggle is supposed to be. */
@@ -851,22 +847,22 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    {
       if (radio->listSize > radio->boxHeight-2)
       {
-         radio->togglePos = (int)(floor((float)((float)radio->currentItem * (float)radio->step)));
+         radio->togglePos = floorCDK((float)radio->currentItem * (float)radio->step);
       }
       else
       {
-         radio->togglePos = (int)(ceil((float)((float)radio->currentItem * (float)radio->step)));
+         radio->togglePos = ceilCDK((float)radio->currentItem * (float)radio->step);
       }
 
       /* Make sure the toggle button doesn't go out of bounds. */
-      scrollbarAdj = (radio->togglePos+radio->toggleSize)-(radio->boxHeight-radio->titleAdj-1);
+      scrollbarAdj = (radio->togglePos + radio->toggleSize)-(radio->boxHeight-radio->titleAdj-1);
       if (scrollbarAdj > 0)
       {
          radio->togglePos -= scrollbarAdj;
       }
 
       /* Draw the scrollbar. */
-      for (x=radio->togglePos; x < radio->togglePos+radio->toggleSize; x++)
+      for (x=radio->togglePos; x < radio->togglePos + radio->toggleSize; x++)
       {
          mvwaddch (radio->scrollbarWin, x, 0, ' ' | A_REVERSE);
       }
@@ -1025,7 +1021,7 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
    cleanChar (emptyString, radio->boxWidth-1, ' ');
    for (x=0; x < radio->viewSize ; x++)
    {
-      writeChar (radio->win, 1, radio->titleAdj+x, emptyString,
+      writeChar (radio->win, 1, radio->titleAdj + x, emptyString,
 			HORIZONTAL, 0, (int)strlen(emptyString));
    }
 
@@ -1053,7 +1049,7 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
 
    /* Set the information for the radio bar. */
    radio->step		= (float)(radio->boxHeight-2) / (float)radio->listSize;
-   radio->toggleSize	= (radio->listSize > (radio->boxHeight-2) ? 1 : (int)ceil(radio->step));
+   radio->toggleSize	= (radio->listSize > (radio->boxHeight-2) ? 1 : ceilCDK(radio->step));
 
    /* Each item in the needs to be converted to chtype * */
    for (x=0; x < listSize; x++)

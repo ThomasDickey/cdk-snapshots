@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:32:34 $
- * $Revision: 1.10 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.18 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -18,9 +18,9 @@ static CDKFUNCS my_funcs = {
 CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int height, int width, char *title, int rows, int cols, char **buttons, int buttonCount, chtype highlight, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKBUTTONBOX *buttonbox	= (CDKBUTTONBOX *)malloc (sizeof (CDKBUTTONBOX));
-   int parentWidth		= WIN_WIDTH (cdkscreen->window);
-   int parentHeight		= WIN_HEIGHT (cdkscreen->window);
+   CDKBUTTONBOX *buttonbox	= newCDKObject(CDKBUTTONBOX, &my_funcs);
+   int parentWidth		= getmaxx(cdkscreen->window) - 1;
+   int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= 0;
    int boxHeight		= 0;
    int maxColWidth		= INT_MIN;
@@ -42,7 +42,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    * be ROWS-height, otherwise, the height will be the
    * given height.
    */
-   boxHeight = setWidgetDimension (parentHeight, height, rows+1);
+   boxHeight = setWidgetDimension (parentHeight, height, rows + 1);
 
   /*
    * If the width is a negative value, the width will
@@ -64,7 +64,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
          maxWidth = MAXIMUM (maxWidth, len);
          freeChtype (holder);
       }
-      boxWidth = MAXIMUM (boxWidth, maxWidth+2);
+      boxWidth = MAXIMUM (boxWidth, maxWidth + 2);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < buttonbox->titleLines; x++)
@@ -118,7 +118,6 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
 
    /* Set up the buttonbox box attributes. */
    ScreenOf(buttonbox)			= cdkscreen;
-   ObjOf(buttonbox)->fn			= &my_funcs;
    buttonbox->parent			= cdkscreen->window;
    buttonbox->win			= newwin (boxHeight, boxWidth, ypos, xpos);
    buttonbox->shadowWin			= (WINDOW *)NULL;
@@ -176,7 +175,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    /* Was there a shadow? */
    if (shadow)
    {
-      buttonbox->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      buttonbox->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Empty the key bindings. */
@@ -281,7 +280,7 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
                  break;
 
             case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
-                 if ((buttonbox->currentButton+buttonbox->rows) > lastButton)
+                 if ((buttonbox->currentButton + buttonbox->rows) > lastButton)
                  {
                     buttonbox->currentButton = firstButton;
                  }
@@ -303,7 +302,7 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
                  break;
 
             case KEY_DOWN :
-                 if ((buttonbox->currentButton+1) > lastButton)
+                 if ((buttonbox->currentButton + 1) > lastButton)
                  {
                     buttonbox->currentButton = firstButton;
                  }
@@ -436,7 +435,7 @@ void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
       {
          writeChtype (buttonbox->win,
 			buttonbox->titlePos[x],
-			x+1,
+			x + 1,
 			buttonbox->title[x],
 			HORIZONTAL, 0,
 			buttonbox->titleLen[x]);
@@ -509,8 +508,8 @@ void _eraseCDKButtonbox (CDKOBJS *object)
 void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = buttonbox->win->_begx;
-   int currentY = buttonbox->win->_begy;
+   int currentX = getbegx(buttonbox->win);
+   int currentY = getbegy(buttonbox->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -522,8 +521,8 @@ void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean 
     */
    if (relative)
    {
-      xpos = buttonbox->win->_begx + xplace;
-      ypos = buttonbox->win->_begy + yplace;
+      xpos = getbegx(buttonbox->win) + xplace;
+      ypos = getbegy(buttonbox->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -534,14 +533,12 @@ void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean 
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   buttonbox->win->_begx = xpos;
-   buttonbox->win->_begy = ypos;
+   moveCursesWindow(buttonbox->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (buttonbox->shadowWin != (WINDOW *)NULL)
    {
-      buttonbox->shadowWin->_begx -= xdiff;
-      buttonbox->shadowWin->_begy -= ydiff;
+      moveCursesWindow(buttonbox->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -561,8 +558,8 @@ void moveCDKButtonbox (CDKBUTTONBOX *buttonbox, int xplace, int yplace, boolean 
 void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
 {
    /* Declare some variables. */
-   int origX	= buttonbox->win->_begx;
-   int origY	= buttonbox->win->_begy;
+   int origX	= getbegx(buttonbox->win);
+   int origY	= getbegy(buttonbox->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -571,7 +568,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       key = wgetch (buttonbox->win);
       if (key == KEY_UP || key == '8')
       {
-         if (buttonbox->win->_begy > 0)
+         if (getbegy(buttonbox->win) > 0)
          {
             moveCDKButtonbox (buttonbox, 0, -1, TRUE, TRUE);
          }
@@ -582,7 +579,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (buttonbox->win->_begy+buttonbox->win->_maxy < WindowOf(buttonbox)->_maxy-1)
+         if (getendy(buttonbox->win) < getmaxy(WindowOf(buttonbox))-1)
          {
             moveCDKButtonbox (buttonbox, 0, 1, TRUE, TRUE);
          }
@@ -593,7 +590,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (buttonbox->win->_begx > 0)
+         if (getbegx(buttonbox->win) > 0)
          {
             moveCDKButtonbox (buttonbox, -1, 0, TRUE, TRUE);
          }
@@ -604,7 +601,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (buttonbox->win->_begx+buttonbox->win->_maxx < WindowOf(buttonbox)->_maxx-1)
+         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1)
          {
             moveCDKButtonbox (buttonbox, 1, 0, TRUE, TRUE);
          }
@@ -615,7 +612,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == '7')
       {
-         if (buttonbox->win->_begy > 0 && buttonbox->win->_begx > 0)
+         if (getbegy(buttonbox->win) > 0 && getbegx(buttonbox->win) > 0)
          {
             moveCDKButtonbox (buttonbox, -1, -1, TRUE, TRUE);
          }
@@ -626,8 +623,8 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == '9')
       {
-         if (buttonbox->win->_begx+buttonbox->win->_maxx < WindowOf(buttonbox)->_maxx-1 &&
-		buttonbox->win->_begy > 0)
+         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1
+	  && getbegy(buttonbox->win) > 0)
          {
             moveCDKButtonbox (buttonbox, 1, -1, TRUE, TRUE);
          }
@@ -638,7 +635,7 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == '1')
       {
-         if (buttonbox->win->_begx > 0 && buttonbox->win->_begx+buttonbox->win->_maxx < WindowOf(buttonbox)->_maxx-1)
+         if (getbegx(buttonbox->win) > 0 && getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1)
          {
             moveCDKButtonbox (buttonbox, -1, 1, TRUE, TRUE);
          }
@@ -649,8 +646,8 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == '3')
       {
-         if (buttonbox->win->_begx+buttonbox->win->_maxx < WindowOf(buttonbox)->_maxx-1 &&
-		buttonbox->win->_begy+buttonbox->win->_maxy < WindowOf(buttonbox)->_maxy-1)
+         if (getendx(buttonbox->win) < getmaxx(WindowOf(buttonbox))-1
+	  && getendy(buttonbox->win) < getmaxy(WindowOf(buttonbox))-1)
          {
             moveCDKButtonbox (buttonbox, 1, 1, TRUE, TRUE);
          }
@@ -665,27 +662,27 @@ void positionCDKButtonbox (CDKBUTTONBOX *buttonbox)
       }
       else if (key == 't')
       {
-         moveCDKButtonbox (buttonbox, buttonbox->win->_begx, TOP, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKButtonbox (buttonbox, buttonbox->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKButtonbox (buttonbox, LEFT, buttonbox->win->_begy, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, LEFT, getbegy(buttonbox->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKButtonbox (buttonbox, RIGHT, buttonbox->win->_begy, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, RIGHT, getbegy(buttonbox->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKButtonbox (buttonbox, CENTER, buttonbox->win->_begy, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, CENTER, getbegy(buttonbox->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKButtonbox (buttonbox, buttonbox->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKButtonbox (buttonbox, getbegx(buttonbox->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {

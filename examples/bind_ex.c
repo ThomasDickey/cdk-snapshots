@@ -4,7 +4,7 @@
 char *XCursesProgramName="bind_ex";
 #endif
 
-static int dialogHelpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+static int dialogHelpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    char *mesg[5];

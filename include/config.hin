@@ -1,0 +1,10 @@
+/* 
+ * $Id: config.hin,v 1.1 1999/05/22 20:17:35 tom Exp $
+ */
+
+#ifndef CDK_CONFIG_H
+#define CDK_CONFIG_H 1
+
+@DEFS@
+
+#endif /* CDK_CONFIG_H */

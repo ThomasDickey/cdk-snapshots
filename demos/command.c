@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 /*
  * This is the callback for the down arrow.
  */
-int historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -220,7 +220,7 @@ int historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key
 /*
  * This is the callback for the down arrow.
  */
-int historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -252,7 +252,7 @@ int historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype k
 /*
  * This callback allows the user to play with the scrolling window.
  */
-int viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
    CDKENTRY *entry	= (CDKENTRY *)object;
@@ -268,7 +268,7 @@ int viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype k
 /*
  * This callback jumps to a line in the scrolling window.
  */
-int jumpWindowCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
@@ -300,7 +300,7 @@ int jumpWindowCB (EObjectType cdktype, void *object, void *clientData, chtype ke
  * This callback allows the user to pick from the history list from a
  * scrolling list.
  */
-int listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;

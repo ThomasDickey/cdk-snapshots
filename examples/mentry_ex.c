@@ -4,7 +4,7 @@
 char *XCursesProgramName="mentry_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (int argc GCC_UNUSED, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:42:26 $
- * $Revision: 1.56 $
+ * $Date: 1999/05/23 01:24:33 $
+ * $Revision: 1.59 $
  */
 
 /*
@@ -22,16 +22,15 @@ static CDKFUNCS my_funcs = {
 CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], int menuItems, int *subsize, int *menuloc, int menuPos, chtype titleAttr, chtype subtitleAttr)
 {
    /* Declare local variables.  */
-   CDKMENU *menu	= (CDKMENU *)malloc (sizeof (CDKMENU));
+   CDKMENU *menu	= newCDKObject(CDKMENU, &my_funcs);
    int rightcount	= menuItems-1;
-   int rightloc		= (cdkscreen->window->_maxx) - 1;
+   int rightloc		= getmaxx((cdkscreen->window)) - 1;
    int leftloc		= 0;
    int maxwidth[MAX_MENU_ITEMS];
    int x, y, max, junk;
 
    /* Start making a copy of the information. */
    ScreenOf(menu)		= cdkscreen;
-   ObjOf(menu)->fn		= &my_funcs;
    ObjOf(menu)->box		= FALSE;
    rightcount			= menuItems-1;
    menu->parent			= cdkscreen->window;
@@ -409,7 +408,7 @@ void eraseCDKMenuSubwin (CDKMENU *menu)
 /*
  * This function draws the menu.
  */
-void _drawCDKMenu (CDKOBJS *object, boolean Box)
+void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKMENU *menu = (CDKMENU *)object;
    int x = 0;

@@ -7,7 +7,8 @@ CC		= @CC@
 
 LIBS		= -lcdk @LIBS@
 
-CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
+CFLAGS		= @CFLAGS@
+EXTRA_CFLAGS	= @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I.. -I. 
 
 LIBDIR		= -L.. @LDFLAGS@
@@ -49,58 +50,43 @@ stripBinaries::
 	done
 
 #
-# Basic file selector/file viewer combination.
+# Standard .c to .o compile line.
 #
-fileview: fileview.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+.c.o:
+@RULE_CC@
+	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
+#
+# Most of the examples are built from a single .c file using the same libraries
+#
+.o:
+	@ECHO_LD@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $< -o $@ $(LIBDIR) $(LIBS)
 
-#
-# A fairly robust rolodex.
-#
-rolodex: rolodex.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# fileview    - Basic file selector/file viewer combination.
+fileview: fileview.o
 
-#
-# A basic command interface with command history.
-#
-command: command.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# rolodex     - A fairly robust rolodex.
+rolodex: rolodex.o
 
-#
-# A simple little clock.
-#
-clock: clock.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# command     - A basic command interface with command history.
+command: command.o
 
-#
-# A simple demo I wrote after a couple of pints. :)
-#
-stopSign: stopSign.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# clock       - A simple little clock.
+clock: clock.o
 
-#
-# A basic appointment book/date keeper.
-#
-appointment: appointment.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# stopSign    - A simple demo I wrote after a couple of pints. :)
+stopSign: stopSign.o
 
-#
-# This probes the serial port.
-#
-serial: serial.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# appointment - A basic appointment book/date keeper.
+appointment: appointment.o
 
-#
-# This prints out the keys ASCII and Octal values.
-#
-keycheck: keycheck.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# serial      - This probes the serial port.
+serial: serial.o
 
-#
-# CDK based installer.
-#
-vinstall: vinstall.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+# keycheck    - This prints out the keys ASCII and Octal values.
+keycheck: keycheck.o
+
+# vinstall    - CDK based installer.
+vinstall: vinstall.o
 
 #
 # A Sybase interface.

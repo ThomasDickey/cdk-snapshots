@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:36:49 $
- * $Revision: 1.40 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.49 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -18,9 +18,9 @@ static CDKFUNCS my_funcs = {
 CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *xtitle, char *ytitle)
 {
    /* Declare local variables. */
-   CDKGRAPH *graph	= (CDKGRAPH *)malloc (sizeof (CDKGRAPH));
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   CDKGRAPH *graph	= newCDKObject(CDKGRAPH, &my_funcs);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= width;
    int boxHeight	= height;
    int xpos		= xplace;
@@ -81,7 +81,6 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
 
    /* Create the graph pointer. */
    ScreenOf(graph)	= cdkscreen;
-   ObjOf(graph)->fn	= &my_funcs;
    graph->parent	= cdkscreen->window;
    graph->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    graph->boxHeight	= boxHeight;
@@ -149,7 +148,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
 /*
  * This was added for the builder.
  */
-void activateCDKGraph (CDKGRAPH *graph, chtype *actions)
+void activateCDKGraph (CDKGRAPH *graph, chtype *actions GCC_UNUSED)
 {
    drawCDKGraph (graph, ObjOf(graph)->box);
 }
@@ -392,8 +391,8 @@ void setCDKGraphBackgroundColor (CDKGRAPH *graph, char *color)
 void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = graph->win->_begx;
-   int currentY = graph->win->_begy;
+   int currentX = getbegx(graph->win);
+   int currentY = getbegy(graph->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -405,8 +404,8 @@ void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, bo
     */
    if (relative)
    {
-      xpos = graph->win->_begx + xplace;
-      ypos = graph->win->_begy + yplace;
+      xpos = getbegx(graph->win) + xplace;
+      ypos = getbegy(graph->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -417,14 +416,12 @@ void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, bo
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   graph->win->_begx = xpos;
-   graph->win->_begy = ypos;
+   moveCursesWindow(graph->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (graph->shadow)
    {
-      graph->shadowWin->_begx -= xdiff;
-      graph->shadowWin->_begy -= ydiff;
+      moveCursesWindow(graph->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -445,8 +442,8 @@ void moveCDKGraph (CDKGRAPH *graph, int xplace, int yplace, boolean relative, bo
 void positionCDKGraph (CDKGRAPH *graph)
 {
    /* Declare some variables. */
-   int origX	= graph->win->_begx;
-   int origY	= graph->win->_begy;
+   int origX	= getbegx(graph->win);
+   int origY	= getbegy(graph->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -455,7 +452,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       key = wgetch (graph->win);
       if (key == KEY_UP || key == '8')
       {
-         if (graph->win->_begy > 0)
+         if (getbegy(graph->win) > 0)
          {
             moveCDKGraph (graph, 0, -1, TRUE, TRUE);
          }
@@ -466,7 +463,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (graph->win->_begy+graph->win->_maxy < WindowOf(graph)->_maxy-1)
+         if (getendy(graph->win) < getmaxy(WindowOf(graph))-1)
          {
             moveCDKGraph (graph, 0, 1, TRUE, TRUE);
          }
@@ -477,7 +474,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (graph->win->_begx > 0)
+         if (getbegx(graph->win) > 0)
          {
             moveCDKGraph (graph, -1, 0, TRUE, TRUE);
          }
@@ -488,7 +485,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (graph->win->_begx+graph->win->_maxx < WindowOf(graph)->_maxx-1)
+         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1)
          {
             moveCDKGraph (graph, 1, 0, TRUE, TRUE);
          }
@@ -499,7 +496,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == '7')
       {
-         if (graph->win->_begy > 0 && graph->win->_begx > 0)
+         if (getbegy(graph->win) > 0 && getbegx(graph->win) > 0)
          {
             moveCDKGraph (graph, -1, -1, TRUE, TRUE);
          }
@@ -510,8 +507,8 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == '9')
       {
-         if (graph->win->_begx+graph->win->_maxx < WindowOf(graph)->_maxx-1 &&
-		graph->win->_begy > 0)
+         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1
+	  && getbegy(graph->win) > 0)
          {
             moveCDKGraph (graph, 1, -1, TRUE, TRUE);
          }
@@ -522,7 +519,7 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == '1')
       {
-         if (graph->win->_begx > 0 && graph->win->_begx+graph->win->_maxx < WindowOf(graph)->_maxx-1)
+         if (getbegx(graph->win) > 0 && getendx(graph->win) < getmaxx(WindowOf(graph))-1)
          {
             moveCDKGraph (graph, -1, 1, TRUE, TRUE);
          }
@@ -533,8 +530,8 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == '3')
       {
-         if (graph->win->_begx+graph->win->_maxx < WindowOf(graph)->_maxx-1
-	  && graph->win->_begy+graph->win->_maxy < WindowOf(graph)->_maxy-1)
+         if (getendx(graph->win) < getmaxx(WindowOf(graph))-1
+	  && getendy(graph->win) < getmaxy(WindowOf(graph))-1)
          {
             moveCDKGraph (graph, 1, 1, TRUE, TRUE);
          }
@@ -549,27 +546,27 @@ void positionCDKGraph (CDKGRAPH *graph)
       }
       else if (key == 't')
       {
-         moveCDKGraph (graph, graph->win->_begx, TOP, FALSE, TRUE);
+         moveCDKGraph (graph, getbegx(graph->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKGraph (graph, graph->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKGraph (graph, getbegx(graph->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKGraph (graph, LEFT, graph->win->_begy, FALSE, TRUE);
+         moveCDKGraph (graph, LEFT, getbegy(graph->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKGraph (graph, RIGHT, graph->win->_begy, FALSE, TRUE);
+         moveCDKGraph (graph, RIGHT, getbegy(graph->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKGraph (graph, CENTER, graph->win->_begy, FALSE, TRUE);
+         moveCDKGraph (graph, CENTER, getbegy(graph->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKGraph (graph, graph->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKGraph (graph, getbegx(graph->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -622,7 +619,7 @@ void _drawCDKGraph (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the vertical axis. */
-   drawLine (graph->win, 2, graph->titleLines+1, 2, graph->boxHeight-3, ACS_VLINE);
+   drawLine (graph->win, 2, graph->titleLines + 1, 2, graph->boxHeight-3, ACS_VLINE);
 
    /* Draw in the horizontal axis. */
    drawLine (graph->win, 3, graph->boxHeight-3, graph->boxWidth, graph->boxHeight-3, ACS_HLINE);
@@ -634,7 +631,7 @@ void _drawCDKGraph (CDKOBJS *object, boolean Box)
       {
          writeChtype (graph->win,
 			graph->titlePos[x],
-			x+1,
+			x + 1,
 			graph->title[x],
 			HORIZONTAL, 0,
 			graph->titleLen[x]);
@@ -651,7 +648,7 @@ void _drawCDKGraph (CDKOBJS *object, boolean Box)
    /* Draw in the X axis high value. */
    sprintf (temp, "%d", graph->maxx);
    len = (int)strlen (temp);
-   writeCharAttrib (graph->win, 1, graph->titleLines+1, temp, attrib, VERTICAL, 0, len);
+   writeCharAttrib (graph->win, 1, graph->titleLines + 1, temp, attrib, VERTICAL, 0, len);
 
    /* Draw in the X axis low value. */
    sprintf (temp, "%d", graph->minx);
@@ -688,13 +685,13 @@ void _drawCDKGraph (CDKOBJS *object, boolean Box)
        int colheight = (graph->values[y] / graph->xscale) - 1;
 
        /* Add the marker on the Y axis. */
-       mvwaddch (graph->win, graph->boxHeight-3, (y+1)*spacing+adj, ACS_TTEE);
+       mvwaddch (graph->win, graph->boxHeight-3, (y + 1)*spacing + adj, ACS_TTEE);
 
        /* If this is a plot graph, all we do is draw a dot. */
        if (graph->displayType == vPLOT)
        {
           xpos = graph->boxHeight-4-colheight;
-          ypos = (y+1)*spacing+adj;
+          ypos = (y + 1)*spacing + adj;
           mvwaddch (graph->win, xpos, ypos, graph->graphChar[y]);
        }
        else
@@ -702,7 +699,7 @@ void _drawCDKGraph (CDKOBJS *object, boolean Box)
           for (x=0; x <= graph->yscale; x++)
           {
              xpos = graph->boxHeight-3;
-             ypos = (y+1)*spacing + adj;
+             ypos = (y + 1)*spacing + adj;
              drawLine (graph->win, ypos, xpos-colheight, ypos, xpos, graph->graphChar[y]);
           }
        }

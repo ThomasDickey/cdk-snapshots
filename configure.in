@@ -2,6 +2,7 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_INIT(include/cdk.h)
+AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
 
 dnl
 dnl Checks for programs.
@@ -12,16 +13,15 @@ AC_PROG_INSTALL
 
 CF_DISABLE_ECHO
 
-dnl
-dnl Checks for libraries. If we have start_color
-dnl set the HAVE_COLOR define.
-dnl
-AC_CHECK_LIB(m,sin)
-
 AC_ARG_WITH(warnings,
 [  --with-warnings         turn on gcc warnings, for debugging ],[
+	CF_GCC_ATTRIBUTES
 	CF_GCC_WARNINGS
 ])
+
+dnl
+dnl Checks for libraries.
+dnl
 
 AC_ARG_WITH(ncurses,
 [  --with-ncurses          compile/link with ncurses library],
@@ -32,7 +32,6 @@ AC_ARG_WITH(ncurses,
 	CF_CURSES_LIBS
 ])
 AC_CHECK_FUNC(start_color,[AC_DEFINE(HAVE_COLOR)])
-test "$cf_cv_have_lib_ncurses" = yes && CFLAGS="$CFLAGS -DHAVE_LIBNCURSES"
 
 dnl
 dnl Checks for header files.
@@ -59,4 +58,4 @@ dnl Set pre-processor compile time variables.
 dnl
 AC_CHECK_FUNC(XCursesExit, AC_DEFINE(HAVE_XCURSES))
 
-AC_OUTPUT(Makefile examples/Makefile demos/Makefile)
+AC_OUTPUT(Makefile examples/Makefile demos/Makefile,,,sort)

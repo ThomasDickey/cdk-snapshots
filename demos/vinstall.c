@@ -17,7 +17,7 @@ typedef enum {vCanNotOpenSource,
 		vOK
 		} ECopyFile;
 ECopyFile copyFile (CDKSCREEN *cdkScreen, char *src, char *dest);
-int verifyDirectory (CDKSCREEN *screen, char *directory, int quiet);
+int verifyDirectory (CDKSCREEN *screen, char *directory);
 
 int main(int argc, char **argv)
 {
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
   /*
    * Verify that the source directory is valid.
    */
-   if (verifyDirectory (cdkScreen, sourceDir, quiet) != 0)
+   if (verifyDirectory (cdkScreen, sourceDir) != 0)
    {
       /* Clean up and leave. */
       freeChar (destDir);
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
   /*
    * Verify that the source directory is valid.
    */
-   if (verifyDirectory (cdkScreen, destDir, quiet) != 0)
+   if (verifyDirectory (cdkScreen, destDir) != 0)
    {
       /* Clean up and leave. */
       freeChar (destDir);
@@ -386,7 +386,7 @@ int main(int argc, char **argv)
  * This copies a file from one place to another. (tried rename
  * library call, but it is equivalent to mv)
  */
-ECopyFile copyFile (CDKSCREEN *cdkScreen, char *src, char *dest)
+ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *dest)
 {
    char command[2000];
    FILE *fd;
@@ -428,7 +428,7 @@ ECopyFile copyFile (CDKSCREEN *cdkScreen, char *src, char *dest)
  * doesn't then it will make it.
  * THINK
  */
-int verifyDirectory (CDKSCREEN *cdkScreen, char *directory, int quiet)
+int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 {
    char *buttons[]	= {"Yes", "No"};
    int status		= 0;

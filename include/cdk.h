@@ -14,7 +14,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  * 	This product includes software developed by Mike Glover
  * 	and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors
@@ -34,6 +34,10 @@
  * SUCH DAMAGE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "cdk_config.h"
+#endif
+
 #ifdef	CDK_PERL_EXT
 #undef	instr
 #endif
@@ -51,7 +55,10 @@
 #include <grp.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <math.h>
+
+#ifndef GCC_UNUSED
+#define GCC_UNUSED /*nothing*/
+#endif
 
 /*
  * This enumerated typedef lists all the CDK widget types.
@@ -94,7 +101,7 @@ typedef enum {vFRONT, vBACK, vBOTH} EStripType;
 
 /*
  * This enumerated typedef defines the type of exits the widgets
- * recognise.
+ * recognize.
  */
 typedef enum {vEARLY_EXIT, vESCAPE_HIT, vNORMAL, vNEVER_ACTIVATED} EExitType;
 
@@ -104,7 +111,7 @@ typedef enum {vEARLY_EXIT, vESCAPE_HIT, vNORMAL, vNEVER_ACTIVATED} EExitType;
 typedef int boolean;
 
 /*
- * Declare miscellaneos defines.
+ * Declare miscellaneous defines.
  */
 #define	LEFT		9000
 #define	RIGHT		9001
@@ -119,33 +126,51 @@ typedef int boolean;
 #define ROW		1
 #define COL		2
 
-#define	BOX		1
-#define	NOBOX		0
-
 #define MAX_BINDINGS	300
 #define MAX_ITEMS	2000
 #define MAX_LINES	5000
 #define MAX_BUTTONS	200
 
-#define WIN_WIDTH(a)	(a->_maxx)
-#define WIN_HEIGHT(a)	(a->_maxy)
-#define WIN_XPOS(a)	(a->_begx)
-#define WIN_YPOS(a)	(a->_begy)
-#define	DIFFERENCE(a,b)	(abs(a-b))
-#define	MAXIMUM(a,b)	(a > b ? a : b)
-#define	MINIMUM(a,b)	(a < b ? a : b)
-#define	HALF(a)		(a>>1)
+/*
+ * Not all variants of curses define getmaxx, etc.  But use the provided ones
+ * if they exist, to work around differences in the underlying implementation.
+ */
+#ifndef getmaxx
+#define getmaxx(a)	((a)->_maxx)
+#endif
+
+#ifndef getmaxy
+#define getmaxy(a)	((a)->_maxy)
+#endif
+
+#ifndef getbegx
+#define getbegx(a)	((a)->_begx)
+#endif
+
+#ifndef getbegy
+#define getbegy(a)	((a)->_begy)
+#endif
+
+#define	MAXIMUM(a,b)	((a) > (b) ? (a) : (b))
+#define	MINIMUM(a,b)	((a) < (b) ? (a) : (b))
+#define	HALF(a)		((a) >> 1)
 
 #ifndef COLOR_PAIR
 #define	COLOR_PAIR(a)	A_NORMAL
 #endif
+
+/*
+ * Derived macros
+ */
+#define getendx(a)	(getbegx(a) + getmaxx(a))
+#define getendy(a)	(getbegy(a) + getmaxy(a))
 
 /* Define the 'GLOBAL DEBUG FILEHANDLE'	*/
 extern  FILE	*CDKDEBUG;
 
 /*
  * =========================================================
- * 	Delcare Debugging Routines.
+ * 	Declare Debugging Routines.
  * =========================================================
  */
 #define START_DEBUG(a)		(CDKDEBUG=startCDKDebug(a))
@@ -156,7 +181,7 @@ void writeCDKDebugMessage (FILE *fd, char *filename, char *function, int line, c
 void stopCDKDebug (FILE *fd);
 
 /*
- * These header files define misc values and prototypes.
+ * These header files define miscellaneous values and prototypes.
  */
 #include "cdkscreen.h"
 #include "curdefs.h"
@@ -191,4 +216,4 @@ void stopCDKDebug (FILE *fd);
 #include "viewer.h"
 #include "draw.h"
 
-#endif
+#endif /* CDK_H */

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:41:59 $
- * $Revision: 1.109 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.116 $
  */
 
 /*
@@ -34,9 +34,9 @@ static CDKFUNCS my_funcs = {
 CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows, int cols, int vrows, int vcols, char *title, char **rowtitles, char **coltitles, int *colwidths, int *colvalues, int rspace, int cspace, chtype filler, int dominant, boolean Box, boolean boxCell, boolean shadow)
 {
    /* Declare local variables. */
-   CDKMATRIX *matrix	= (CDKMATRIX *)malloc (sizeof(CDKMATRIX));
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   CDKMATRIX *matrix	= newCDKObject(CDKMATRIX, &my_funcs);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    chtype *junk		= (chtype *)NULL;
    int boxHeight	= 0;
    int boxWidth		= 0;
@@ -306,7 +306,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
    /* Keep the rest of the info. */
    ScreenOf(matrix)		= cdkscreen;
-   ObjOf(matrix)->fn		= &my_funcs;
    ObjOf(matrix)->box		= Box;
    matrix->parent		= cdkscreen->window;
    matrix->rows			= rows;
@@ -1009,8 +1008,8 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 void moveCDKMatrix (CDKMATRIX *matrix, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = matrix->win->_begx;
-   int currentY = matrix->win->_begy;
+   int currentX = getbegx(matrix->win);
+   int currentY = getbegy(matrix->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -1023,8 +1022,8 @@ void moveCDKMatrix (CDKMATRIX *matrix, int xplace, int yplace, boolean relative,
      */
    if (relative)
    {
-      xpos = matrix->win->_begx + xplace;
-      ypos = matrix->win->_begy + yplace;
+      xpos = getbegx(matrix->win) + xplace;
+      ypos = getbegy(matrix->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -1035,23 +1034,20 @@ void moveCDKMatrix (CDKMATRIX *matrix, int xplace, int yplace, boolean relative,
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   matrix->win->_begx = xpos;
-   matrix->win->_begy = ypos;
+   moveCursesWindow(matrix->win, -xdiff, -ydiff);
 
    for (x=0; x <= matrix->vrows; x++)
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-         matrix->cell[x][y]->_begx -= xdiff;
-         matrix->cell[x][y]->_begy -= ydiff;
+         moveCursesWindow(matrix->cell[x][y], -xdiff, -ydiff);
       }
    }
 
    /* If there is a shadow box we have to move it too. */
    if (matrix->shadowWin != (WINDOW *)NULL)
    {
-      matrix->shadowWin->_begx -= xdiff;
-      matrix->shadowWin->_begy -= ydiff;
+      moveCursesWindow(matrix->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -1072,8 +1068,8 @@ void moveCDKMatrix (CDKMATRIX *matrix, int xplace, int yplace, boolean relative,
 void positionCDKMatrix (CDKMATRIX *matrix)
 {
    /* Declare some variables. */
-   int origX	= matrix->win->_begx;
-   int origY	= matrix->win->_begy;
+   int origX	= getbegx(matrix->win);
+   int origY	= getbegy(matrix->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -1082,7 +1078,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       key = wgetch (matrix->win);
       if (key == KEY_UP || key == '8')
       {
-         if (matrix->win->_begy > 0)
+         if (getbegy(matrix->win) > 0)
          {
             moveCDKMatrix (matrix, 0, -1, TRUE, TRUE);
          }
@@ -1093,7 +1089,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (matrix->win->_begy+matrix->win->_maxy < WindowOf(matrix)->_maxy-1)
+         if (getendy(matrix->win) < getmaxy(WindowOf(matrix))-1)
          {
             moveCDKMatrix (matrix, 0, 1, TRUE, TRUE);
          }
@@ -1104,7 +1100,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (matrix->win->_begx > 0)
+         if (getbegx(matrix->win) > 0)
          {
             moveCDKMatrix (matrix, -1, 0, TRUE, TRUE);
          }
@@ -1115,7 +1111,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (matrix->win->_begx+matrix->win->_maxx < WindowOf(matrix)->_maxx-1)
+         if (getendx(matrix->win) < getmaxx(WindowOf(matrix))-1)
          {
             moveCDKMatrix (matrix, 1, 0, TRUE, TRUE);
          }
@@ -1126,7 +1122,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == '7')
       {
-         if (matrix->win->_begy > 0 && matrix->win->_begx > 0)
+         if (getbegy(matrix->win) > 0 && getbegx(matrix->win) > 0)
          {
             moveCDKMatrix (matrix, -1, -1, TRUE, TRUE);
          }
@@ -1137,8 +1133,8 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == '9')
       {
-         if (matrix->win->_begx+matrix->win->_maxx < WindowOf(matrix)->_maxx-1 &&
-		matrix->win->_begy > 0)
+         if (getendx(matrix->win) < getmaxx(WindowOf(matrix))-1
+	  && getbegy(matrix->win) > 0)
          {
             moveCDKMatrix (matrix, 1, -1, TRUE, TRUE);
          }
@@ -1149,7 +1145,7 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == '1')
       {
-         if (matrix->win->_begx > 0 && matrix->win->_begx+matrix->win->_maxx < WindowOf(matrix)->_maxx-1)
+         if (getbegx(matrix->win) > 0 && getendx(matrix->win) < getmaxx(WindowOf(matrix))-1)
          {
             moveCDKMatrix (matrix, -1, 1, TRUE, TRUE);
          }
@@ -1160,8 +1156,8 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == '3')
       {
-         if (matrix->win->_begx+matrix->win->_maxx < WindowOf(matrix)->_maxx-1
-	  && matrix->win->_begy+matrix->win->_maxy < WindowOf(matrix)->_maxy-1)
+         if (getendx(matrix->win) < getmaxx(WindowOf(matrix))-1
+	  && getendy(matrix->win) < getmaxy(WindowOf(matrix))-1)
          {
             moveCDKMatrix (matrix, 1, 1, TRUE, TRUE);
          }
@@ -1176,27 +1172,27 @@ void positionCDKMatrix (CDKMATRIX *matrix)
       }
       else if (key == 't')
       {
-         moveCDKMatrix (matrix, matrix->win->_begx, TOP, FALSE, TRUE);
+         moveCDKMatrix (matrix, getbegx(matrix->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKMatrix (matrix, matrix->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKMatrix (matrix, getbegx(matrix->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKMatrix (matrix, LEFT, matrix->win->_begy, FALSE, TRUE);
+         moveCDKMatrix (matrix, LEFT, getbegy(matrix->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKMatrix (matrix, RIGHT, matrix->win->_begy, FALSE, TRUE);
+         moveCDKMatrix (matrix, RIGHT, getbegy(matrix->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKMatrix (matrix, CENTER, matrix->win->_begy, FALSE, TRUE);
+         moveCDKMatrix (matrix, CENTER, getbegy(matrix->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKMatrix (matrix, matrix->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKMatrix (matrix, getbegx(matrix->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -1252,7 +1248,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
          mvwaddch (cell, 1, x, matrix->filler|highlight);
       }
    }
-   wmove (cell, 1, infolen+1);
+   wmove (cell, 1, infolen + 1);
    wrefresh (cell);
 
    /* Only draw the box iff the user asked for a box. */
@@ -1453,7 +1449,7 @@ void _drawCDKMatrix (CDKOBJS *object, boolean Box)
       {
          writeChtype (matrix->win,
 			matrix->titlePos[x],
-			x+1,
+			x + 1,
 			matrix->title[x],
 			HORIZONTAL, 0,
 			matrix->titleLen[x]);
@@ -1466,10 +1462,10 @@ void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    for (x=1; x <= matrix->vcols; x++)
    {
       writeChtype (matrix->cell[0][x],
-			matrix->coltitlePos[matrix->lcol+x-1], 0,
-			matrix->coltitle[matrix->lcol+x-1],
+			matrix->coltitlePos[matrix->lcol + x-1], 0,
+			matrix->coltitle[matrix->lcol + x-1],
 			HORIZONTAL,
-			0, matrix->coltitleLen[matrix->lcol+x-1]);
+			0, matrix->coltitleLen[matrix->lcol + x-1]);
       wrefresh (matrix->cell[0][x]);
    }
 
@@ -1478,18 +1474,18 @@ void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    {
       /* Draw in the row titles */
       writeChtype (matrix->cell[x][0],
-			matrix->rowtitlePos[matrix->trow+x-1], 1,
-			matrix->rowtitle[matrix->trow+x-1],
+			matrix->rowtitlePos[matrix->trow + x-1], 1,
+			matrix->rowtitle[matrix->trow + x-1],
 			HORIZONTAL,
-			0, matrix->rowtitleLen[matrix->trow+x-1]);
+			0, matrix->rowtitleLen[matrix->trow + x-1]);
       wrefresh (matrix->cell[x][0]);
 
       /* Draw in the cells.. */
       for (y=1; y <= matrix->vcols; y++)
       {
          drawCDKMatrixCell (matrix, x, y,
-				matrix->trow+x-1,
-				matrix->lcol+y-1,
+				matrix->trow + x-1,
+				matrix->lcol + y-1,
 				A_NORMAL,
 				matrix->boxCell);
       }

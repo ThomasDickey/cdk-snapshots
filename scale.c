@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:43:28 $
- * $Revision: 1.69 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.76 $
  */
 
 /*
@@ -23,10 +23,10 @@ static CDKFUNCS my_funcs = {
 CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, int start, int low, int high, int inc, int fastinc, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKSCALE *scale	= (CDKSCALE *) malloc (sizeof (CDKSCALE));
+   CDKSCALE *scale	= newCDKObject(CDKSCALE, &my_funcs);
    chtype *holder	= (chtype *)NULL;
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxHeight	= 3;
    int boxWidth		= fieldWidth + 2;
    int maxWidth		= INT_MIN;
@@ -123,22 +123,21 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    if (scale->label != (chtype *)NULL)
    {
       scale->labelWin = subwin (scale->win, 1,
-				scale->labelLen+2,
-				ypos+scale->titleLines+1,
-				xpos+horizontalAdjust+1);
+				scale->labelLen + 2,
+				ypos + scale->titleLines + 1,
+				xpos + horizontalAdjust + 1);
    }
 
    /* Create the scale field window. */
    scale->fieldWin = subwin (scale->win, 1, fieldWidth,
-				ypos+scale->titleLines+1,
-				xpos+scale->labelLen+horizontalAdjust+1);
+				ypos + scale->titleLines + 1,
+				xpos + scale->labelLen + horizontalAdjust + 1);
    keypad (scale->fieldWin, TRUE);
    keypad (scale->win, TRUE);
 
    /* Create the scale field. */
    ScreenOf(scale)		= cdkscreen;
-   ObjOf(scale)->fn		= &my_funcs;
-   ObjOf(scale)->box			= Box;
+   ObjOf(scale)->box		= Box;
    scale->parent		= cdkscreen->window;
    scale->shadowWin		= (WINDOW *)NULL;
    scale->boxWidth		= boxWidth;
@@ -168,7 +167,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Do we want a shadow??? */
    if (shadow)
    {
-      scale->shadowWin	= newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      scale->shadowWin	= newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -355,8 +354,8 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
 void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = scale->win->_begx;
-   int currentY = scale->win->_begy;
+   int currentX = getbegx(scale->win);
+   int currentY = getbegy(scale->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -368,8 +367,8 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
      */
    if (relative)
    {
-      xpos = scale->win->_begx + xplace;
-      ypos = scale->win->_begy + yplace;
+      xpos = getbegx(scale->win) + xplace;
+      ypos = getbegy(scale->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -380,21 +379,17 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   scale->win->_begx = xpos;
-   scale->win->_begy = ypos;
+   moveCursesWindow(scale->win, -xdiff, -ydiff);
    if (scale->labelWin != (WINDOW *)NULL)
    {
-      scale->labelWin->_begx -= xdiff;
-      scale->labelWin->_begy -= ydiff;
+      moveCursesWindow(scale->labelWin, -xdiff, -ydiff);
    }
-   scale->fieldWin->_begx -= xdiff;
-   scale->fieldWin->_begy -= ydiff;
+   moveCursesWindow(scale->fieldWin, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (scale->shadowWin != (WINDOW *)NULL)
    {
-      scale->shadowWin->_begx -= xdiff;
-      scale->shadowWin->_begy -= ydiff;
+      moveCursesWindow(scale->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -416,8 +411,8 @@ void moveCDKScale (CDKSCALE *scale, int xplace, int yplace, boolean relative, bo
 void positionCDKScale (CDKSCALE *scale)
 {
    /* Declare some variables. */
-   int origX	= scale->win->_begx;
-   int origY	= scale->win->_begy;
+   int origX	= getbegx(scale->win);
+   int origY	= getbegy(scale->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -426,7 +421,7 @@ void positionCDKScale (CDKSCALE *scale)
       key = wgetch (scale->win);
       if (key == KEY_UP || key == '8')
       {
-         if (scale->win->_begy > 0)
+         if (getbegy(scale->win) > 0)
          {
             moveCDKScale (scale, 0, -1, TRUE, TRUE);
          }
@@ -437,7 +432,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (scale->win->_begy+scale->win->_maxy < WindowOf(scale)->_maxy-1)
+         if (getendy(scale->win) < getmaxy(WindowOf(scale))-1)
          {
             moveCDKScale (scale, 0, 1, TRUE, TRUE);
          }
@@ -448,7 +443,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (scale->win->_begx > 0)
+         if (getbegx(scale->win) > 0)
          {
             moveCDKScale (scale, -1, 0, TRUE, TRUE);
          }
@@ -459,7 +454,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1)
+         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1)
          {
             moveCDKScale (scale, 1, 0, TRUE, TRUE);
          }
@@ -470,7 +465,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '7')
       {
-         if (scale->win->_begy > 0 && scale->win->_begx > 0)
+         if (getbegy(scale->win) > 0 && getbegx(scale->win) > 0)
          {
             moveCDKScale (scale, -1, -1, TRUE, TRUE);
          }
@@ -481,8 +476,8 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '9')
       {
-         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1 &&
-		scale->win->_begy > 0)
+         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1
+	  && getbegy(scale->win) > 0)
          {
             moveCDKScale (scale, 1, -1, TRUE, TRUE);
          }
@@ -493,7 +488,7 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '1')
       {
-         if (scale->win->_begx > 0 && scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1)
+         if (getbegx(scale->win) > 0 && getendx(scale->win) < getmaxx(WindowOf(scale))-1)
          {
             moveCDKScale (scale, -1, 1, TRUE, TRUE);
          }
@@ -504,8 +499,8 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == '3')
       {
-         if (scale->win->_begx+scale->win->_maxx < WindowOf(scale)->_maxx-1
-	  && scale->win->_begy+scale->win->_maxy < WindowOf(scale)->_maxy-1)
+         if (getendx(scale->win) < getmaxx(WindowOf(scale))-1
+	  && getendy(scale->win) < getmaxy(WindowOf(scale))-1)
          {
             moveCDKScale (scale, 1, 1, TRUE, TRUE);
          }
@@ -520,27 +515,27 @@ void positionCDKScale (CDKSCALE *scale)
       }
       else if (key == 't')
       {
-         moveCDKScale (scale, scale->win->_begx, TOP, FALSE, TRUE);
+         moveCDKScale (scale, getbegx(scale->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKScale (scale, scale->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKScale (scale, getbegx(scale->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKScale (scale, LEFT, scale->win->_begy, FALSE, TRUE);
+         moveCDKScale (scale, LEFT, getbegy(scale->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKScale (scale, RIGHT, scale->win->_begy, FALSE, TRUE);
+         moveCDKScale (scale, RIGHT, getbegy(scale->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKScale (scale, CENTER, scale->win->_begy, FALSE, TRUE);
+         moveCDKScale (scale, CENTER, getbegy(scale->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKScale (scale, scale->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKScale (scale, getbegx(scale->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -589,7 +584,7 @@ void _drawCDKScale (CDKOBJS *object, boolean Box)
       {
          writeChtype (scale->win,
 			scale->titlePos[x],
-			x+1,
+			x + 1,
 			scale->title[x],
 			HORIZONTAL, 0,
 			scale->titleLen[x]);

@@ -1601,7 +1601,7 @@ int printGroup (SRolodex groupRecord, char *filename, char *printer)
  *                  Start of callback functions.
  ****************************************************************
  */
-int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chtype input)
+int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype input)
 {
    if (input == ' ')
    {
@@ -1614,7 +1614,7 @@ int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chty
 /*
  * This allows the user to insert a new phone entry into the database.
  */
-int insertPhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key)
+int insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
@@ -1640,7 +1640,7 @@ int insertPhoneEntryCB (EObjectType cdkType, void *object, void *clientData, cht
 /*
  * This allows the user to delete a phone entry from the database.
  */
-int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key)
+int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1696,7 +1696,7 @@ int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, cht
 /*
  * This function provices help for the phone list editor.
  */
-int phoneEntryHelpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
+int phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1732,7 +1732,7 @@ int phoneEntryHelpCB (EObjectType cdkType, void *object, void *clientData, chtyp
  * This is a callback to the menu widget. It allows the user to 
  * ask for help about any sub-menu item.
  */
-int helpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
+int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKMENU *menu= (CDKMENU *)object;
@@ -1805,7 +1805,7 @@ int helpCB (EObjectType cdkType, void *object, void *clientData, chtype key)
 /*
  * This is a callback to the group list scrolling list.
  */
-int groupInfoCB (EObjectType cdkType, void *object, void *clientData, chtype key)
+int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
