@@ -20,9 +20,10 @@ int main (void)
 
    /* Start curses. */
    mainWindow = initscr();
+   curs_set(0);
 
    /* Create a basic window. */
-   subWindow = newwin (20, 40, 5, 5);
+   subWindow = newwin (LINES-5, COLS-10, 2, 5);
 
    /* Start Cdk. */
    cdkscreen = initCDKScreen (subWindow);
