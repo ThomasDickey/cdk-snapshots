@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/06/29 00:00:38 $
- * $Revision: 1.106 $
+ * $Date: 2000/08/19 01:41:31 $
+ * $Revision: 1.107 $
  */
 
 /*
@@ -182,6 +182,7 @@ void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
    {
       temp = CDKsplitString (title, '\n');
       viewer->titleLines = CDKcountStrings (temp);
+      viewer->titleLines = MINIMUM(viewer->titleLines, MAX_LINES - 1);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < viewer->titleLines; x++)
@@ -211,6 +212,8 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
    int widestLine	= -1;
    int currentLine	= 0;
    int x		= 0;
+
+   infoSize = MINIMUM(infoSize, MAX_LINES - 4);
 
    /* Clean out the old viewer info. (if there is any) */
    for (x=0; x < viewer->infoSize; x++)
@@ -266,6 +269,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 	    else
 	    {
 	       /* For each line read, copy it into the viewer. */
+	       fileLen = MINIMUM(fileLen, MAX_LINES - 1);
 	       for (fileLine=0; fileLine < fileLen ; fileLine++)
 	       {
 		  int len = (int)strlen (fileContents[fileLine]);

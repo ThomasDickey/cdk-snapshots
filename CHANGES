@@ -7,6 +7,13 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ fix some array-overruns in viewer.c if it happens to load a binary
+	  file.
+	+ fix symbol conflict with newkey in waitCDKLabel(), as well as keycode
+	  truncation in that function.
+
 2000/6/28 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
 	+ add RPM spec-file (Wai-Sun Chia <waisun.chia@msa.dec.com>).
