@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.122 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.123 $
  */
 
 /*
@@ -437,7 +437,7 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
    if (matrix->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(matrix->preProcessFunction)) (vMATRIX, matrix, matrix->preProcessData, input);
+      ppReturn = matrix->preProcessFunction (vMATRIX, matrix, matrix->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -870,7 +870,7 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
       /* Should we call a post-process? */
       if (matrix->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(matrix->postProcessFunction)) (vMATRIX, matrix, matrix->postProcessData, input);
+	 matrix->postProcessFunction (vMATRIX, matrix, matrix->postProcessData, input);
       }
    }
 

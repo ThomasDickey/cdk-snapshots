@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/09/23 15:55:24 $
- * $Revision: 1.40 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.41 $
  */
 
 DeclareCDKObjects(my_funcs,Itemlist);
@@ -254,7 +254,7 @@ int injectCDKItemlist (CDKITEMLIST *itemlist, chtype input)
    if (itemlist->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(itemlist->preProcessFunction)) (vITEMLIST, itemlist, itemlist->preProcessData, input);
+      ppReturn = itemlist->preProcessFunction (vITEMLIST, itemlist, itemlist->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -326,7 +326,7 @@ int injectCDKItemlist (CDKITEMLIST *itemlist, chtype input)
       /* Should we call a post-process? */
       if (itemlist->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(itemlist->postProcessFunction)) (vITEMLIST, itemlist, itemlist->postProcessData, input);
+	 itemlist->postProcessFunction (vITEMLIST, itemlist, itemlist->postProcessData, input);
       }
    }
 

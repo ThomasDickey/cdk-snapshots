@@ -4,7 +4,7 @@
 char *XCursesProgramName="bind_ex";
 #endif
 
-static void dialogHelpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int dialogHelpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKDIALOG *dialog = (CDKDIALOG *)object;
    char *mesg[5];
@@ -37,6 +37,7 @@ static void dialogHelpCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
       mesg[1] = "<C>When this button is picked the dialog box is exited.";
       popupLabel (ScreenOf(dialog), mesg, 2);
    }
+   return (FALSE);
 }
 
 int main (void)

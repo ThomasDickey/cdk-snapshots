@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.112 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.113 $
  */
 
 /*
@@ -277,7 +277,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
    if (mentry->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(mentry->preProcessFunction)) (vMENTRY, mentry, mentry->preProcessData, input);
+      ppReturn = mentry->preProcessFunction (vMENTRY, mentry, mentry->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -639,7 +639,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
       /* Should we do a post-process? */
       if (mentry->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(mentry->postProcessFunction)) (vMENTRY, mentry, mentry->postProcessData, input);
+	 mentry->postProcessFunction (vMENTRY, mentry, mentry->postProcessData, input);
       }
    }
 

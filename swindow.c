@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/06/29 00:08:48 $
- * $Revision: 1.70 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.71 $
  */
 
 /*
@@ -499,7 +499,7 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
    if (swindow->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(swindow->preProcessFunction)) (vSWINDOW, swindow, swindow->preProcessData, input);
+      ppReturn = swindow->preProcessFunction (vSWINDOW, swindow, swindow->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -640,7 +640,7 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
       /* Should we call a post-process? */
       if (swindow->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(swindow->postProcessFunction)) (vSWINDOW, swindow, swindow->postProcessData, input);
+	 swindow->postProcessFunction (vSWINDOW, swindow, swindow->postProcessData, input);
       }
    }
 

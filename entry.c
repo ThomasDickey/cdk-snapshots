@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.155 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.156 $
  */
 
 /*
@@ -269,7 +269,7 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
    if (entry->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(entry->preProcessFunction)) (vENTRY, entry, entry->preProcessData, input);
+      ppReturn = entry->preProcessFunction (vENTRY, entry, entry->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -522,7 +522,7 @@ char *injectCDKEntry (CDKENTRY *entry, chtype input)
       /* Should we do a post-process? */
       if (entry->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(entry->postProcessFunction)) (vENTRY, entry, entry->postProcessData, input);
+	 entry->postProcessFunction (vENTRY, entry, entry->postProcessData, input);
       }
    }
 

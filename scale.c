@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.82 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.83 $
  */
 
 /*
@@ -243,7 +243,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
    if (scale->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(scale->preProcessFunction)) (vSCALE, scale, scale->preProcessData, input);
+      ppReturn = scale->preProcessFunction (vSCALE, scale, scale->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -332,7 +332,7 @@ int injectCDKScale (CDKSCALE *scale, chtype input)
       /* Should we call a post-process? */
       if (scale->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(scale->postProcessFunction)) (vSCALE, scale, scale->postProcessData, input);
+	 scale->postProcessFunction (vSCALE, scale, scale->postProcessData, input);
       }
    }
 

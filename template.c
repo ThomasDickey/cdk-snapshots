@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:54 $
- * $Revision: 1.85 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.86 $
  */
 
 /*
@@ -280,7 +280,7 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
    /* Check if there is a pre-process function to be called. */
    if (cdktemplate->preProcessFunction != 0)
    {
-      ppReturn = ((PROCESSFN)(cdktemplate->preProcessFunction)) (vTEMPLATE, cdktemplate, cdktemplate->preProcessData, input);
+      ppReturn = cdktemplate->preProcessFunction (vTEMPLATE, cdktemplate, cdktemplate->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -393,7 +393,7 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
       /* Should we call a post-process? */
       if (cdktemplate->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(cdktemplate->postProcessFunction)) (vTEMPLATE, cdktemplate, cdktemplate->postProcessData, input);
+	 cdktemplate->postProcessFunction (vTEMPLATE, cdktemplate, cdktemplate->postProcessData, input);
       }
    }
 

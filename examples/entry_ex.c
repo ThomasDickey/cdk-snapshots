@@ -84,6 +84,7 @@ int main (int argc GCC_UNUSED, char **argv)
    exit (0);
 }
 
-static void  XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int  XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
+   return (TRUE);
 }

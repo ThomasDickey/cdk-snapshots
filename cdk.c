@@ -1,9 +1,9 @@
 #include <cdk.h>
 
 /*
- * $Author: Simon.Burge $
- * $Date: 2000/09/15 10:19:51 $
- * $Revision: 1.168 $
+ * $Author: tom $
+ * $Date: 2000/10/21 21:57:52 $
+ * $Revision: 1.169 $
  */
 
 char *GPasteBuffer = 0;
@@ -855,7 +855,9 @@ int mode2Filetype (mode_t mode)
 #ifdef S_IFLNK
       { S_IFLNK,  'l' },  /* Socket */
 #endif
+#ifdef S_IFSOCK
       { S_IFSOCK, '@' },  /* Socket */
+#endif
       { S_IFIFO,  '&' },  /* Pipe */
    };
    int filetype = '?';

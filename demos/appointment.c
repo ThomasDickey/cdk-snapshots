@@ -277,7 +277,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 /*
  * This adds a marker to the calendar.
  */
-static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    CDKENTRY *entry				= 0;
@@ -304,7 +304,7 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
    {
       destroyCDKItemlist (itemlist);
       drawCDKCalendar (calendar, ObjOf(calendar)->box);
-      return;
+      return (FALSE);
    }
 
    /* Destroy the itemlist and set the marker. */
@@ -327,7 +327,7 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
    {
       destroyCDKEntry (entry);
       drawCDKCalendar (calendar, ObjOf(calendar)->box);
-      return;
+      return (FALSE);
    }
 
    /* Destroy the entry and set the marker. */
@@ -352,13 +352,13 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 
    /* Redraw the calendar. */
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
-   return;
+   return (FALSE);
 }
 
 /*
  * This removes a marker from the calendar.
  */
-static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    struct AppointmentInfo *appointmentInfo	= (struct AppointmentInfo *)clientData;
@@ -385,13 +385,13 @@ static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 
    /* Redraw the calendar. */
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
-   return;
+   return (FALSE);
 }
 
 /*
  * This displays the marker(s) on the given day.
  */
-static void displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    CDKLABEL *label				= 0;
@@ -484,12 +484,13 @@ static void displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *obje
 
    /* Redraw the calendar widget. */
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
-   return;
+   return (FALSE);
 }
 
 /*
  * This allows the user to accelerate to a given date.
  */
-static void accelerateToDateCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int accelerateToDateCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
+   return (FALSE);
 }

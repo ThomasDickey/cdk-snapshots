@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 /*
  * This is the callback for the down arrow.
  */
-static void historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -205,7 +205,7 @@ static void historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *cli
    if (history->current == 0)
    {
       Beep();
-      return;
+      return (FALSE);
    }
 
    /* Decrement the counter. */
@@ -214,12 +214,13 @@ static void historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *cli
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (FALSE);
 }
 
 /*
  * This is the callback for the down arrow.
  */
-static void historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -228,7 +229,7 @@ static void historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
    if (history->current == history->count)
    {
       Beep();
-      return;
+      return (FALSE);
    }
 
    /* Increment the counter... */
@@ -239,17 +240,19 @@ static void historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
    {
       cleanCDKEntry (entry);
       drawCDKEntry (entry, ObjOf(entry)->box);
+      return (FALSE);
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (FALSE);
 }
 
 /*
  * This callback allows the user to play with the scrolling window.
  */
-static void viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
    CDKENTRY *entry	= (CDKENTRY *)object;
@@ -259,12 +262,13 @@ static void viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (FALSE);
 }
 
 /*
  * This callback jumps to a line in the scrolling window.
  */
-static void jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
@@ -289,13 +293,14 @@ static void jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
 
    /* Redraw the widgets. */
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (FALSE);
 }
 
 /*
  * This callback allows the user to pick from the history list from a
  * scrolling list.
  */
-static void listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -315,7 +320,7 @@ static void listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
       drawCDKScreen (ScreenOf(entry));
 
       /* And leave... */
-      return;
+      return (FALSE);
    }
 
    /* Create the scrolling list of previous commands. */
@@ -338,6 +343,7 @@ static void listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *c
    /* Redraw the screen. */
    eraseCDKEntry (entry);
    drawCDKScreen (ScreenOf(entry));
+   return (FALSE);
 }
 
 /*

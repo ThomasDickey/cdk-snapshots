@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2000/06/29 00:52:24 $
- * $Revision: 1.55 $
+ * $Date: 2001/01/06 19:25:27 $
+ * $Revision: 1.56 $
  */
  
 /*
@@ -461,7 +461,7 @@ void setCDKAlphalistPostProcess (CDKALPHALIST *alphalist, PROCESSFN callback, vo
 /*
  * Start of callback functions.
  */
-static void adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKALPHALIST *alphalist	= (CDKALPHALIST *)clientData;
    CDKSCROLL *scrollp		= (CDKSCROLL*)alphalist->scrollField;
@@ -476,6 +476,7 @@ static void adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void *object G
    setCDKEntryValue (entry, current);
    drawCDKEntry (entry, ObjOf(entry)->box);
    freeChar (current);
+   return (TRUE);
 }
 
 /*
@@ -591,7 +592,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GC
 /*
  * This tries to complete the word in the entry field.
  */
-static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key GCC_UNUSED)
+static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key GCC_UNUSED)
 {
    CDKALPHALIST *alphalist	= (CDKALPHALIST *)clientData;
    CDKENTRY *entry		= (CDKENTRY*)alphalist->entryField;
@@ -611,7 +612,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
    if (entry->info == 0)
    {
       Beep();
-      return;
+      return (TRUE);
    }
    wordLength = (int)strlen (entry->info);
 
@@ -619,7 +620,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
    if (wordLength == 0)
    {
       Beep();
-      return;
+      return (TRUE);
    }
 
    /* Look for a unique word match. */
@@ -629,7 +630,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
    if (Index < 0)
    {
       Beep();
-      return;
+      return (TRUE);
    }
 
    /* Did we find the last word in the list? */
@@ -637,7 +638,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
    {
       setCDKEntryValue (entry, alphalist->list[Index]);
       drawCDKEntry (entry, ObjOf(entry)->box);
-      return;
+      return (TRUE);
    }
 
    /* Ok, we found a match, is the next item similar? */
@@ -684,7 +685,7 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
 
 	 /* Redraw the alphalist and return. */
 	 drawCDKAlphalist (alphalist, ObjOf(alphalist)->box);
-	 return;
+	 return (TRUE);
       }
 
       /* Destroy the scrolling list. */
@@ -711,4 +712,5 @@ static void completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_
       setCDKEntry (entry, alphalist->list[Index], entry->min, entry->max, ObjOf(entry)->box);
       drawCDKEntry (entry, ObjOf(entry)->box);
    }
+   return (TRUE);
 }

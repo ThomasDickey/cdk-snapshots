@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:54 $
- * $Revision: 1.80 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.81 $
  */
 
 /*
@@ -287,7 +287,7 @@ int injectCDKScroll (CDKSCROLL *scrollp, chtype input)
    if (scrollp->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(scrollp->preProcessFunction)) (vSCROLL, scrollp, scrollp->preProcessData, input);
+      ppReturn = scrollp->preProcessFunction (vSCROLL, scrollp, scrollp->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -505,7 +505,7 @@ int injectCDKScroll (CDKSCROLL *scrollp, chtype input)
       /* Should we call a post-process? */
       if (scrollp->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(scrollp->postProcessFunction)) (vSCROLL, scrollp, scrollp->postProcessData, input);
+	 scrollp->postProcessFunction (vSCROLL, scrollp, scrollp->postProcessData, input);
       }
    }
 
