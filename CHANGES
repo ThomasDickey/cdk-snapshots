@@ -1,11 +1,31 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Some changes copyright Thomas Dickey 1999, 2000
+Modifications copyright Thomas Dickey 1999, 2000
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
+
+2000/9/23 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ change literal 48's in calendar.c to '0'.
+	+ eliminate nonprinting/nonspace characters using macro CTRL().
+	+ integrated new examples into makefiles.
+	+ use raiseCDKObject_ex.c and lowerCDKObject_ex.c to debug/fix the
+	  raiseCDKObject() and lowerCDKObject() functions which shared the same
+	  defect in 4.9.9 (the code did not properly update two objects, but
+	  modified screenIndex of one twice).
+	+ modified cli programs to work with CDKreadFile(), CDKsplitString()
+	  and CDKcountStrings() since readFile() and splitString() are not
+	  provided in this version.
+	> reviewed/integrated changes from Mike Glover's 4.9.10 (August 2000):
+	+ add examples/raiseCDKObject_ex.c, examples/lowerCDKObject_ex.c
+	+ add cli subdirectory
+	+ modify itemlist.c to make labels one cell wider.
+	+ did not use changes to cdkscreen.c (see 1999/5/15).
+	+ did not use casts to unsigned char, since those are incorrect
+	  (they are casting chtype's which are wider than a char).
 
 2000/9/15 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
@@ -13,7 +33,7 @@ were fixed from release to release.
 	  internals of the WINDOW struct, which is opaque on NetBSD (patch by
 	  Simon Burge <simonb@wasabisystems.com>).
 	+ update autoconf scripts (config.guess, config.sub, macros
-	  CF_CURSES_LIBS, CF_UPPER, CF_X_ATHENA) to my 20000819 patch.
+	  CF_CURSES_LIBS, CF_UPPER, CF_X_ATHENA) to my 20000819 autoconf patch.
 	+ revised man-pages:  reorder so that functions are listed
 	  alphabetically within the NAME, SYNOPSIS, DESCRIPTION sections, the
 	  prototypes shown only in the SYNOPSIS section (and formatted for
@@ -21,7 +41,7 @@ were fixed from release to release.
 
 2000/8/28 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
-	+ add cdk_position.3
+	+ add cdk_position.3 man page.
 	+ rename cdk_cdk.3 to cdk.3
 
 2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>

@@ -1,3 +1,4 @@
+# $Id: Makefile.in,v 1.20 2000/09/23 16:07:52 tom Exp $
 #
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
@@ -33,7 +34,7 @@
 SHELL		= /bin/sh
 
 MAJORVER	= 4
-MINORVER	= 9.9
+MINORVER	= 9.10
 VERSION		= $(MAJORVER).$(MINORVER)
 CDKLIB		= @LIB_PREFIX@cdk.a
 CDKSHLIB	= @LIB_PREFIX@cdk.so.$(VERSION)
@@ -172,30 +173,36 @@ CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
 CDKOBJS		= $(CDKSRC:.c=.o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
 
-$(CDKOBJS) :	include/cdk_config.h
+all $(CDKOBJS) ::	include/cdk_config.h
 
 
 #
 # Standard library directive.
 #
-cdklib $(CDKLIB): $(CDKOBJS)
+all cdklib $(CDKLIB) :: $(CDKOBJS)
 	$(AR) -cr $(CDKLIB) $(CDKOBJS)
 	$(RANLIB) $(CDKLIB)
 
-cdkshlib $(CDKSHLIB): $(CDKSHOBJS)
+cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS)
 	gcc -shared -Wl,-soname=$(SONAME) $(LDFLAGS) -o $(CDKSHLIB) $(CDKSHOBJS)
 
 #
 # Make the examples directory.
 #
-examples::
+all examples ::
 	@(cd examples; make)
 
 #
 # Make the demos directory.
 #
-demos::
+all demos ::
 	@(cd demos; make)
+
+#
+# Make the cli directory.
+#
+all cli ::
+	@(cd cli; make)
 
 #
 # The 'install' target installs all of the CDK library release.
@@ -263,6 +270,7 @@ clean::
 realclean:: clean
 	cd examples	&& make clean
 	cd demos	&& make clean
+	cd cli		&& make clean
 
 #
 # Use this to clean the distribution.
@@ -271,6 +279,7 @@ distclean:: realclean
 	$(RM) config.cache config.log config.status
 	cd examples	&& $(RM) Makefile
 	cd demos	&& $(RM) Makefile
+	cd cli		&& $(RM) Makefile
 	$(RM) include/cdk_config.h
 	$(RM) Makefile
 

@@ -2,6 +2,8 @@
 #define CURDEF_H
 
 /*
+ * $Id: curdefs.h,v 1.5 2000/09/23 15:00:37 tom Exp $
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -42,41 +44,44 @@
 typedef unsigned long chtype;
 #endif
 
+#undef CTRL
+#define CTRL(c)		((c)&0x1f)
+
 #ifndef	CDK_REFRESH
-#define	CDK_REFRESH	''	/* Key used to refresh the screen.	*/
+#define	CDK_REFRESH	CTRL('L')
 #endif
 #ifndef	CDK_PASTE
-#define	CDK_PASTE	''	/* Key used for pasting.		*/
+#define	CDK_PASTE	CTRL('V')
 #endif
 #ifndef	CDK_COPY
-#define	CDK_COPY	''	/* Key used for taking copies.		*/
+#define	CDK_COPY	CTRL('Y')
 #endif
 #ifndef	CDK_ERASE
-#define	CDK_ERASE	''	/* Key used for erasing fields.		*/
+#define	CDK_ERASE	CTRL('U')
 #endif
 #ifndef	CDK_CUT
-#define	CDK_CUT		''	/* Key used for cutting.		*/
+#define	CDK_CUT		CTRL('X')
 #endif
 #ifndef CDK_BEGOFLINE
-#define CDK_BEGOFLINE	''
+#define CDK_BEGOFLINE	CTRL('A')
 #endif
 #ifndef CDK_ENDOFLINE
-#define CDK_ENDOFLINE	''
+#define CDK_ENDOFLINE	CTRL('E')
 #endif
 #ifndef CDK_BACKCHAR
-#define CDK_BACKCHAR	''
+#define CDK_BACKCHAR	CTRL('B')
 #endif
 #ifndef CDK_FORCHAR
-#define CDK_FORCHAR	''
+#define CDK_FORCHAR	CTRL('F')
 #endif
 #ifndef CDK_TRANSPOSE
-#define CDK_TRANSPOSE	''
+#define CDK_TRANSPOSE	CTRL('T')
 #endif
 #ifndef CDK_NEXT
-#define CDK_NEXT	''
+#define CDK_NEXT	CTRL('N')
 #endif
 #ifndef CDK_PREV
-#define CDK_PREV	''
+#define CDK_PREV	CTRL('P')
 #endif
 #ifndef	SPACE
 #define	SPACE		' '
@@ -91,7 +96,7 @@ typedef unsigned long chtype;
 #define	TAB		'\t'	/* Tab key.				*/
 #endif
 #ifndef	KEY_ESC
-#define	KEY_ESC		''	/* Escape Key.				*/
+#define	KEY_ESC		'\033'	/* Escape Key.				*/
 #endif
 #ifndef KEY_RETURN
 #define KEY_RETURN	'\012'	/* Return key				*/
@@ -285,8 +290,11 @@ typedef unsigned long chtype;
 #ifndef KEY_MAX
 #define KEY_MAX		0777	/* Maximum curses key			*/
 #endif
+#ifndef A_CHARTEXT
+#define A_CHARTEXT      0x000000ff
+#endif
 #ifndef A_ATTRIBUTES
-#define A_ATTRIBUTES    0xffffff00
+#define A_ATTRIBUTES    (~A_CHARTEXT)
 #endif
 #ifndef A_NORMAL
 #define A_NORMAL        0x00000000
@@ -317,9 +325,6 @@ typedef unsigned long chtype;
 #endif
 #ifndef A_PROTECT
 #define A_PROTECT       0x01000000
-#endif
-#ifndef A_CHARTEXT
-#define A_CHARTEXT      0x000000ff
 #endif
 #ifndef A_COLOR
 #define A_COLOR         0x0000ff00
@@ -518,4 +523,5 @@ typedef unsigned long chtype;
 #ifndef ACS_S2
 #define ACS_S2		'2'
 #endif
+
 #endif /* CURDEF_H */
