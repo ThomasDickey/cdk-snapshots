@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.26 2002/02/26 01:32:02 tom Exp $
+# $Id: Makefile.in,v 1.34 2002/07/20 00:37:34 tom Exp $
 #
-#  Copyright 2001, Thomas Dickey
+#  Copyright 2001,2002, Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -34,12 +34,15 @@
 #
 SHELL		= /bin/sh
 
-MAJORVER	= 4
-MINORVER	= 9.10
-VERSION		= $(MAJORVER).$(MINORVER)
-CDKLIB		= @LIB_PREFIX@cdk.a
+LIBTOOL		= @LIBTOOL@
+LIB_SUFFIX	= @LIB_SUFFIX@
+
+VERSION_MAJOR	= @VERSION_MAJOR@
+VERSION_MINOR	= @VERSION_MINOR@
+VERSION		= $(VERSION_MAJOR).$(VERSION_MINOR)
+CDKLIB		= @LIB_PREFIX@cdk$(LIB_SUFFIX)
 CDKSHLIB	= @LIB_PREFIX@cdk.so.$(VERSION)
-SONAME		= @LIB_PREFIX@cdk.so.$(MAJORVER)
+SONAME		= @LIB_PREFIX@cdk.so.$(VERSION_MAJOR)
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -57,12 +60,14 @@ INCLUDE_DIR	= $(includedir)/cdk
 LIB_DIR		= $(libdir)
 MAN_DIR		= $(mandir)/man3
 
-CFLAGS		= @CFLAGS@
-CPPFLAGS	= -I./include -I$(srcdir)/include @CPPFLAGS@ @DEFS@
-EXTRA_CFLAGS	= @EXTRA_CFLAGS@
+LIBS		= @LIBS@
+
+CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
+CPPFLAGS	= @DEFS@ -I./include -I$(srcdir)/include @CPPFLAGS@
+
 CC		= @CC@
 LDFLAGS		= @LDFLAGS@
-LIBS		= @LIBS@
+LIB_CREATE	= @LIB_CREATE@
 RANLIB		= @RANLIB@
 
 RM		= rm -f
@@ -70,6 +75,8 @@ RM		= rm -f
 INSTALL		= @INSTALL@
 INSTALL_PROGRAM	= @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
+INSTALL_LIB	= @INSTALL_LIB@ $(INSTALL_DATA)
+UNINSTALL_LIB	= @UNINSTALL_LIB@ $(RM)
 
 .SUFFIXES: .c .o .os
 
@@ -83,12 +90,14 @@ default :: $(DEFAULT)
 CDKHDR		= \
 		alphalist.h \
 		binding.h \
+		button.h \
 		buttonbox.h \
 		calendar.h \
 		cdk.h \
 		cdk_config.h \
 		cdk_objs.h \
 		cdk_util.h \
+		cdk_version.h \
 		cdkscreen.h \
 		curdefs.h \
 		dialog.h \
@@ -111,11 +120,13 @@ CDKHDR		= \
 		slider.h \
 		swindow.h \
 		template.h \
+		traverse.h \
 		viewer.h
 
 CDKSRC		= \
 		alphalist.c \
 		binding.c \
+		button.c \
 		buttonbox.c \
 		calendar.c \
 		cdk.c \
@@ -142,12 +153,15 @@ CDKSRC		= \
 		slider.c \
 		swindow.c \
 		template.c \
+		traverse.c \
+		version.c \
 		viewer.c
 
 CDKMAN		= \
 		cdk.3 \
 		cdk_alphalist.3 \
 		cdk_binding.3 \
+		cdk_button.3 \
 		cdk_buttonbox.3 \
 		cdk_calendar.3 \
 		cdk_dialog.3 \
@@ -174,14 +188,16 @@ CDKMAN		= \
 		cdk_slider.3 \
 		cdk_swindow.3 \
 		cdk_template.3 \
+		cdk_traverse.3 \
 		cdk_viewer.3
 
 CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
 
-CDKOBJS		= $(CDKSRC:.c=.o)
+OBJECTS		= $(CDKSRC:.c=.o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
+LIB_OBJECT	= @LIB_OBJECT@
 
-all $(CDKOBJS) ::	include/cdk_config.h
+all $(OBJECTS) ::	include/cdk_config.h
 
 
 #
@@ -189,9 +205,9 @@ all $(CDKOBJS) ::	include/cdk_config.h
 #
 all cdklib :: $(DEFAULT)
 
-$(CDKLIB) :: $(CDKOBJS)
-	$(AR) -cr $(CDKLIB) $(CDKOBJS)
-	$(RANLIB) $(CDKLIB)
+$(CDKLIB) :: $(OBJECTS)
+	@echo creating $@; $(LIB_CREATE) $@ $(LIB_OBJECT)
+	@$(RANLIB) $@
 
 cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS) headers.sed
 	gcc -shared -Wl,-soname=$(SONAME) $(LDFLAGS) -o $(CDKSHLIB) $(CDKSHOBJS)
@@ -200,40 +216,26 @@ cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS) headers.sed
 # Make the examples directory.
 #
 all examples ::
-	@(cd examples; make)
+	cd examples && make
 
 #
 # Make the demos directory.
 #
 all demos ::
-	@(cd demos; make)
+	cd demos && make
 
 #
 # Make the cli directory.
 #
 all cli ::
-	@(cd cli; make)
+	cd cli && make
 
-#
-# The 'install' target installs all of the CDK library release.
-# There are separate targets for each type of file.
-#
-
-#
-# This installs the header files.
-#
-install \
-installCDKHeaderFiles :: headers.sed $(INCLUDE_DIR)
-	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
-	@for i in $(CDKHDR); do \
-	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(INCLUDE_DIR) $(srcdir) include/$$i; \
-	done
-
-uninstall \
-uninstallCDKHeaderFiles ::
-	@- for i in $(CDKHDR); do \
-	   $(RM) $(INCLUDE_DIR)/$$i; \
-	done
+# Order of install-targets should match the order of uninstalls.  Put the
+# documentation first, then the headers, and finally the library:
+#	(un)installCDKReadme
+#	(un)installCDKManPages
+#	(un)installCDKHeaderFiles
+#	(un)installCDKLibrary
 
 #
 # This installs the informational readme files.
@@ -248,37 +250,10 @@ installCDKReadme :: $(DOCUMENT_DIR)
 
 uninstall \
 uninstallCDKReadme ::
+	@echo "Uninstalling CDK Readme files from $(DOCUMENT_DIR)..."
 	@- for i in $(CDKREADME); do \
 	   $(RM) $(DOCUMENT_DIR)/$$i; \
 	done
-
-#
-# This installs the CDK library.
-#
-install \
-installCDKLibrary :: $(LIB_DIR) $(CDKLIB)
-	@echo "Installing CDK library"
-	@echo "	$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)"
-	@$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)
-
-uninstall \
-uninstallCDKLibrary ::
-	@- $(RM) $(LIB_DIR)/$(CDKLIB) 
-
-#
-# This installs the CDK shared library.
-#
-installCDKSHLibrary :: $(LIB_DIR) $(CDKSHLIB)
-	@echo "Installing CDK library"
-	@echo "	$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)"
-	@$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)
-	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so"
-	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so
-
-uninstall \
-uninstallCDKSHLibrary ::
-	@- $(RM) $(LIB_DIR)/@LIB_PREFIX@cdk.so
-	@- $(RM) $(LIB_DIR)/$(CDKSHLIB) 
 
 #
 # This installs the CDK man pages.
@@ -292,9 +267,56 @@ installCDKManPages :: headers.sed $(MAN_DIR)
 
 uninstall \
 uninstallCDKManPages ::
+	@echo "Uninstalling the CDK man pages from $(MAN_DIR) ..."
 	@- for i in $(CDKMAN); do \
 	    $(RM) $(MAN_DIR)/$$i; \
 	done
+
+#
+# This installs the header files.
+#
+install \
+installCDKHeaderFiles :: headers.sed $(INCLUDE_DIR)
+	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
+	@for i in $(CDKHDR); do \
+	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(INCLUDE_DIR) $(srcdir) include/$$i; \
+	done
+
+uninstall \
+uninstallCDKHeaderFiles ::
+	@echo "Uninstalling CDK header files from $(INCLUDE_DIR)..."
+	@- for i in $(CDKHDR); do \
+	   $(RM) $(INCLUDE_DIR)/$$i; \
+	done
+
+#
+# This installs the CDK library.
+#
+install \
+installCDKLibrary :: $(LIB_DIR) $(CDKLIB)
+	@echo "Installing CDK library"
+	@$(INSTALL_LIB) $(CDKLIB) $(LIB_DIR)/$(CDKLIB)
+
+uninstall \
+uninstallCDKLibrary ::
+	@echo "Uninstalling CDK library"
+	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(CDKLIB) 
+
+#
+# This installs the CDK shared library.  The rules are for an RPM spec, and
+# not of general interest.
+#
+installCDKSHLibrary :: $(LIB_DIR) $(CDKSHLIB)
+	@echo "Installing CDK library"
+	@echo "	$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)"
+	@$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)
+	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so"
+	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so
+
+uninstall \
+uninstallCDKSHLibrary ::
+	@- $(RM) $(LIB_DIR)/@LIB_PREFIX@cdk.so
+	@- $(RM) $(LIB_DIR)/$(CDKSHLIB) 
 
 headers.sed : $(srcdir)/headers.sh
 	$(SHELL) $(srcdir)/headers.sh $(INCLUDE_DIR) $(srcdir)/include
@@ -303,7 +325,8 @@ headers.sed : $(srcdir)/headers.sh
 # Clean up after ourselves...
 #
 clean ::
-	$(RM) *.o *.os $(CDKLIB) $(CDKSHLIB) headers.sed core tags *~
+	$(RM) -fr .libs
+	$(RM) *.[oa] *.l[oa] *.os $(CDKLIB) $(CDKSHLIB) headers.sed core tags *~
 
 realclean :: clean
 	cd examples	&& make clean
@@ -319,6 +342,7 @@ distclean :: realclean
 	cd demos	&& $(RM) Makefile
 	cd cli		&& $(RM) Makefile
 	$(RM) include/cdk_config.h
+	$(RM) include/cdk_version.h
 	$(RM) Makefile
 
 #
@@ -326,17 +350,11 @@ distclean :: realclean
 #
 .c.o:
 @RULE_CC@
-	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
+	@ECHO_CC@$(LIBTOOL) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 .c.os:
 @RULE_CC@
-	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
-
-#
-# Set up our PHONY tags.
-#
-.PHONY: examples
-.PHONY: demos
+	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
 
 $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \

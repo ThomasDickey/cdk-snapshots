@@ -1,3 +1,5 @@
+/* $Id: fselect_ex.c,v 1.7 2002/07/16 22:39:26 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -22,7 +24,7 @@ int main (int argc, char **argv)
    int selected, lines, ret;
 
    /* Parse up the command line. */
-   while (1)
+   for (;;)
    {
       ret = getopt (argc, argv, "d:");
       if (ret == -1)
@@ -32,7 +34,8 @@ int main (int argc, char **argv)
       switch (ret)
       {
 	 case 'd' :
-	      directory = strdup (optarg);
+	   directory = strdup (optarg);
+	   break;
       }
    }
 

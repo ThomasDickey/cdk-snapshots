@@ -1,3 +1,6 @@
+/*
+ * $Id: itemlist_ex.c,v 1.7 2002/07/14 14:47:46 tom Exp $
+ */
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -24,9 +27,9 @@ int main (void)
     * Get the current date and set the default month to the
     * current month.
     */
-    time (&clck);
-    dateInfo	= localtime (&clck);
-    startMonth	= dateInfo->tm_mon;
+   time (&clck);
+   dateInfo	= localtime (&clck);
+   startMonth	= dateInfo->tm_mon;
 
    /* Set up CDK. */
    cursesWin = initscr();

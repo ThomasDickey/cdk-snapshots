@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.h,v 1.14 2002/04/30 22:02:21 tom Exp $
+ * $Id: dialog.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -122,9 +122,7 @@ int activateCDKDialog (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKDialog (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* input */);
+#define injectCDKDialog(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets multiple attributes of the widget.
@@ -204,6 +202,13 @@ void setCDKDialogBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKDialogBackgroundAttrib (
+		CDKDIALOG *	/* dialog */,
+		chtype		/* attribute */);
+
+/*
  * This draws a dialog box button.
  */
 void drawCDKDialogButton (
@@ -236,8 +241,7 @@ void drawCDKDialogButton (
 /*
  * This destroys the widget and all the memory associated with it.
  */
-void destroyCDKDialog (
-		CDKDIALOG *	/* dialog */);
+#define destroyCDKDialog(obj) destroyCDKObject(obj)
 
 /*
  * This draws the dialog box buttons.

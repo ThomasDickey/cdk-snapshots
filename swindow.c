@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/12/20 01:43:06 $
- * $Revision: 1.72 $
+ * $Date: 2002/07/27 16:06:44 $
+ * $Revision: 1.79 $
  */
 
 /*
@@ -11,7 +11,7 @@
  */
 static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box);
 
-DeclareCDKObjects(my_funcs,Swindow);
+DeclareCDKObjects(SWINDOW, Swindow, Int);
 
 /*
  * This function creates a scrolling window widget.
@@ -24,6 +24,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
+   int borderSize               = 1;
    int xpos			= xplace;
    int ypos			= yplace;
    char **temp			= 0;
@@ -76,7 +77,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->titleAdj = swindow->titleLines + 1;
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Make the scrolling window */
    swindow->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -120,6 +121,8 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->saveLines		= saveLines;
    swindow->exitType		= vNEVER_ACTIVATED;
    ObjOf(swindow)->box		= Box;
+   ObjOf(swindow)->borderSize   = 1;
+   ObjOf(swindow)->inputWindow	= swindow->win;
    swindow->shadow		= shadow;
    swindow->preProcessFunction	= 0;
    swindow->preProcessData	= 0;
@@ -451,7 +454,7 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
       for (;;)
       {
 	 /* Get the input. */
-	 input = wgetch (swindow->win);
+	 input = getcCDKObject (ObjOf(swindow));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKSwindow (swindow, input);
@@ -487,10 +490,13 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
 /*
  * This injects a single character into the widget.
  */
-int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
+static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 {
+   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
    /* Declare local variables. */
    int ppReturn = 1;
+   int ret = unknownInt;
+   bool complete = FALSE;
 
    /* Draw the window.... */
    drawCDKSwindow (swindow, ObjOf(swindow)->box);
@@ -509,7 +515,7 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
       if (checkCDKObjectBind (vSWINDOW, swindow, input) != 0)
       {
 	 swindow->exitType = vESCAPE_HIT;
-	 return -1;
+	 complete = TRUE;
       }
       else
       {
@@ -621,11 +627,14 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
 
 	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
 		 swindow->exitType = vNORMAL;
-		 return 1;
+		 ret = 1;
+		 complete = TRUE;
+		 break;
 
 	    case KEY_ESC :
 		 swindow->exitType = vESCAPE_HIT;
-		 return -1;
+		 complete = TRUE;
+		 break;
 
 	    case CDK_REFRESH :
 		 eraseCDKScreen (ScreenOf(swindow));
@@ -638,18 +647,19 @@ int injectCDKSwindow (CDKSWINDOW *swindow, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (swindow->postProcessFunction != 0)
+      if (!complete && (swindow->postProcessFunction != 0))
       {
 	 swindow->postProcessFunction (vSWINDOW, swindow, swindow->postProcessData, input);
       }
    }
 
-   /* Redraw the list */
-   drawCDKSwindowList (swindow, ObjOf(swindow)->box);
+   if (!complete) {
+      drawCDKSwindowList (swindow, ObjOf(swindow)->box);
+      swindow->exitType = vEARLY_EXIT;
+   }
 
-   /* Set the exit type and return. */
-   swindow->exitType = vEARLY_EXIT;
-   return -1;
+   ResultOf(swindow).valueInt = ret;
+   return (ret != unknownInt);
 }
 
 /*
@@ -677,7 +687,7 @@ static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean re
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(swindow), &xpos, &ypos, swindow->boxWidth, swindow->boxHeight);
+   alignxy (WindowOf(swindow), &xpos, &ypos, swindow->boxWidth, swindow->boxHeight, BorderOf(swindow));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -685,12 +695,7 @@ static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean re
 
    /* Move the window to the new location. */
    moveCursesWindow(swindow->win, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (swindow->shadowWin != 0)
-   {
-      moveCursesWindow(swindow->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(swindow->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(swindow));
@@ -846,23 +851,30 @@ void setCDKSwindowBackgroundColor (CDKSWINDOW *swindow, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (swindow->win, holder[0]);
-   wbkgd (swindow->fieldWin, holder[0]);
+   setCDKSwindowBackgroundAttrib (swindow, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
 }
 
 /*
+ * This sets the background attribute of the widget.
+ */
+void setCDKSwindowBackgroundAttrib (CDKSWINDOW *swindow, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (swindow->win, attrib);
+   wbkgd (swindow->fieldWin, attrib);
+}
+
+/*
  * This function destroys the scrolling window widget.
  */
-void destroyCDKSwindow (CDKSWINDOW *swindow)
+static void _destroyCDKSwindow (CDKOBJS *object)
 {
+   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
    /* Declare local variables. */
    int x;
-
-   /* Erase the object. */
-   eraseCDKSwindow (swindow);
 
    /* Clear out the character pointers. */
    for (x=0; x <= swindow->itemCount; x++)
@@ -881,9 +893,6 @@ void destroyCDKSwindow (CDKSWINDOW *swindow)
 
    /* Unregister this object. */
    unregisterCDKObject (vSWINDOW, swindow);
-
-   /* Finish cleaning up. */
-   free (swindow);
 }
 
 /*
@@ -891,10 +900,13 @@ void destroyCDKSwindow (CDKSWINDOW *swindow)
  */
 static void _eraseCDKSwindow (CDKOBJS *object)
 {
-   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
+   if (validCDKObject (object))
+   {
+      CDKSWINDOW *swindow = (CDKSWINDOW *)object;
 
-   eraseCursesWindow (swindow->win);
-   eraseCursesWindow (swindow->shadowWin);
+      eraseCursesWindow (swindow->win);
+      eraseCursesWindow (swindow->shadowWin);
+   }
 }
 
 /*
@@ -1148,4 +1160,24 @@ void setCDKSwindowPostProcess (CDKSWINDOW *swindow, PROCESSFN callback, void *da
 {
    swindow->postProcessFunction = callback;
    swindow->postProcessData = data;
+}
+
+static void _focusCDKSwindow(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKSwindow(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

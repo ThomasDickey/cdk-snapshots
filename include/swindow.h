@@ -1,5 +1,5 @@
 /*
- * $Id: swindow.h,v 1.13 2002/04/30 21:59:02 tom Exp $
+ * $Id: swindow.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -120,9 +120,7 @@ void activateCDKSwindow (
 /*
  * This injects a single character into the scrolling window.
  */
-int injectCDKSwindow (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* input */);
+#define injectCDKSwindow(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This executes the given command and puts the output of the
@@ -231,6 +229,13 @@ void setCDKSwindowBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKSwindowBackgroundAttrib (
+		CDKSWINDOW *	/* swindow */,
+		chtype		/* attribute */);
+
+/*
  * This draws the scrolling window on the screen.
  */
 #define drawCDKSwindow(obj,Box) drawCDKObject(obj,Box)
@@ -275,8 +280,7 @@ void trimCDKSwindow (
 /*
  * This destroys the widget and all associated memory.
  */
-void destroyCDKSwindow (
-		CDKSWINDOW *	/* swindow */);
+#define destroyCDKSwindow(obj) destroyCDKObject(obj)
 
 /*
  * These set the pre/post process callback functions.

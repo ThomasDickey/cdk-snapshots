@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.15 2002/04/30 21:40:28 tom Exp $
+ * $Id: scroll.h,v 1.18 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -66,6 +66,7 @@ struct SScroll {
    WINDOW	*parent;
    WINDOW	*win;
    WINDOW	*scrollbarWin;
+   WINDOW       *listWin;
    WINDOW	*shadowWin;
    chtype	*title[MAX_LINES];
    int		titlePos[MAX_LINES];
@@ -138,9 +139,7 @@ int activateCDKScroll (
 /*
  * This injects a single character into the scrolling list.
  */
-int injectCDKScroll (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* input */);
+#define injectCDKScroll(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets various attributes of the scrolling list.
@@ -156,6 +155,13 @@ void setCDKScroll (
 void setCDKScrollPosition (
 		CDKSCROLL *	/* scroll */,
 		int		/* item */);
+
+int  getCDKScrollCurrent(
+		CDKSCROLL *	/* scroll */);
+
+void setCDKScrollCurrent(
+		CDKSCROLL *	/* scroll */,
+		int		/* i */);
 
 /*
  * This sets the contents of the scrolling list.
@@ -230,6 +236,13 @@ void setCDKScrollBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKScrollBackgroundAttrib (
+		CDKSCROLL *	/* scroll */,
+		chtype		/* attribute */);
+
+/*
  * This adds a single item into the scrolling list.
  */
 void addCDKScrollItem (
@@ -266,8 +279,7 @@ void deleteCDKScrollItem (
 /*
  * This destroys the widget and all associated memory.
  */
-void destroyCDKScroll (
-		CDKSCROLL *	/* scroll */);
+#define destroyCDKScroll(obj) destroyCDKObject(obj)
 
 /*
  * These set the scrolling list pre/post process functions.

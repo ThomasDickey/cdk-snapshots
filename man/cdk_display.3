@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_display.3,v 1.4 2000/09/15 01:20:49 tom Exp $
+.\" $Id: cdk_display.3,v 1.5 2002/07/14 14:05:26 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -21,6 +21,9 @@ The following are outlined in this manual page:
 .SH DESCRIPTION
 Cdk has special formatting commands which can be included in any string which
 add highlights, justification, or even colors to a basic string.
+These attributes, once set, remain in effect until changed explicitly,
+or until the end of the string.
+.LP
 This manual
 page outlines and demonstrates how they work.
 .SS How To Use Colors
@@ -34,8 +37,9 @@ You can still do this, but
 creating a string with multiple colors gets terribly difficult.
 That is why
 the color commands were created.
-The color setting are stored directly in the
-string and when the widget is created or activated, the string is converted
+.LP
+The color settings are stored directly in the string.
+When the widget is created or activated, the string is converted
 to take advantage of any color commands in the string.
 To turn on a color pair
 insert </XX> into the string; where \fIXX\fR is a numeric value from 0 to 64.
@@ -43,8 +47,10 @@ Color pair 0 is the standard default color pair for the screen.
 To turn off a
 color pair use the format command <!XX> where \fIXX\fR is a numeric value from
 0 to 64.
-The following code segment demonstrates the use of the color commands.
 .LP
+The following code segment demonstrates the use of the color commands.
+.ne 10
+.sp 1
 .nf
 .ce
 \fI----------------------------------------\fR
@@ -83,25 +89,21 @@ void main()
 .fi
 .ce
 \fI----------------------------------------\fR
-This example uses the color pair 5 (which is white on blue) for the label to
-the entry widget.
 .PP
 .SS How To Use Different Character Attributes
 Cdk also provides attribute commands which allow different character attributes
 to be displayed in a Cdk widget.
 To use a character attribute the format command
-is </X> where \fIX\fR is one of several command characters.
-To turn a attribute
-off use the command <!X>.
-The following table outlines the command characters
-and what they mean.
+is \fI</X>\fR where \fIX\fR is one of several command characters.
+To turn a attribute off use the command \fI<!X>\fR.
+The following table outlines the command characters:
 .LP
 .TS
 center tab(/) box;
 l l
 l l
 lw15 lw35 .
-\fBCommand_Character/Character_Attribute\fR
+\fBCommand Character/Character Attribute\fR
 =
 B/Bold
 U/Underline
@@ -111,8 +113,10 @@ S/Standout
 D/Dim
 N/Normal
 .TE
-
+.LP
 The following code segment demonstrates the use of character display attributes.
+.ne 10
+.sp 2
 .nf
 .ce
 \fI----------------------------------------\fR
@@ -120,29 +124,29 @@ The following code segment demonstrates the use of character display attributes.
 
 void main()
 {
-   CDKSCREEN	*cdkscreen;
-   CDKLABEL	*demo;
-   WINDOW	*screen;
-   char		*mesg[4];
+   CDKSCREEN    *cdkscreen;
+   CDKLABEL     *demo;
+   WINDOW       *screen;
+   char         *mesg[4];
 
-   /* Initialize the Cdk screen.	*/
+   /* Initialize the Cdk screen.  */
    screen = initscr();
    cdkscreen = initCDKScreen (screen);
 
-   /* Set the labels up.		*/
-   mesg[0] = "</B/1>This line should have a yellow foreground and a blue background.<!1>";
-   mesg[1] = "</U/2>This line should have a white  foreground and a blue background.<!2>";
-   mesg[2] = "</K/3>This line should have a yellow foreground and a red  background.<!3>";
-   mesg[3] = "<C>This line should be set to whatever the screen default is.";
+   /* Set the labels up.  */
+   mesg[0] = "</B/1>Bold text            yellow foreground / blue background.<!1>";
+   mesg[1] = "</U/2>Underlined text      white  foreground / blue background.<!2>";
+   mesg[2] = "</K/3>Blinking text        yellow foreground / red  background.<!3>";
+   mesg[3] = "<C>This line uses the screen default colors.";
 
-   /* Declare the labels.	*/
-   demo	= newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
+   /* Declare the labels.  */
+   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
 
-   /* Draw the label		*/
+   /* Draw the label */
    drawCDKLabel (demo, TRUE);
    waitCDKLabel (demo, ' ');
 
-   /* Clean up			*/
+   /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
    endCDK();
@@ -151,10 +155,11 @@ void main()
 .ce
 \fI----------------------------------------\fR
 .fi
-Notice that color commands and format commands can be mixed inside the same
+.LP
+Note that color commands and format commands can be mixed inside the same
 format marker.
 The above example underlines the label marker, which also sets
-color pair number 5.
+color pair number 2.
 .SS How To Justify Strings
 Justification commands can left justify, right justify, or center a string of text.
 To use a justification format in a string the command <X> is used.
@@ -187,30 +192,30 @@ in a Cdk widget.
 
 void main()
 {
-   CDKSCREEN	*cdkscreen;
-   CDKLABEL	*demo;
-   WINDOW	*screen;
-   char		*mesg[4];
+   CDKSCREEN    *cdkscreen;
+   CDKLABEL     *demo;
+   WINDOW       *screen;
+   char         *mesg[4];
 
-   /* Initialize the Cdk screen.	*/
+   /* Initialize the Cdk screen.  */
    screen = initscr();
    cdkscreen = initCDKScreen (screen);
 
-   /* Set the labels up.		*/
+   /* Set the labels up.  */
    mesg[0] = "<R></B/1>This line should have a yellow foreground and a blue background.<!1>";
    mesg[1] = "</U/2>This line should have a white  foreground and a blue background.<!2>";
    mesg[2] = "<B=+>This is a bullet.";
    mesg[3] = "<I=10>This is indented 10 characters.";
    mesg[4] = "<C>This line should be set to whatever the screen default is.";
 
-   /* Declare the labels.	*/
-   demo	= newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 5, TRUE, TRUE);
+   /* Declare the labels.  */
+   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 5, TRUE, TRUE);
 
-   /* Draw the label		*/
+   /* Draw the label */
    drawCDKLabel (demo, TRUE);
    waitCDKLabel (demo, ' ');
 
-   /* Clean up			*/
+   /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
    endCDK();
@@ -281,47 +286,47 @@ The following code segment draws a box within a label window.
 
 void main()
 {
-   /* Declare variables.	*/
-   CDKSCREEN	*cdkscreen;
-   CDKLABEL	*demo;
-   WINDOW 	*cursesWin;
-   char		*mesg[4];
+   /* Declare variables.  */
+   CDKSCREEN    *cdkscreen;
+   CDKLABEL     *demo;
+   WINDOW       *cursesWin;
+   char         *mesg[4];
 
-   /* Set up CDK 		*/
+   /* Set up CDK */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
-   /* Start CDK Colors		*/
+   /* Start CDK Colors */
    initCDKColor();
 
-   /* Set the labels up.	*/
+   /* Set the labels up.  */
    mesg[0] = "<C><#UL><#HL(25)><#UR>";
    mesg[1] = "<C><#VL></R>This text should be boxed.<!R><#VL>";
    mesg[2] = "<C><#LL><#HL(25)><#LR>";
    mesg[3] = "<C>While this is not.";
 
-   /* Declare the labels.	*/
-   demo	= newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
+   /* Declare the labels.  */
+   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
 
-   /* Is the label NULL???	*/
+   /* Is the label NULL???  */
    if (demo == (CDKLABEL *)NULL)
    {
-      /* Clean up the memory.	*/
+      /* Clean up the memory.  */
       destroyCDKScreen (cdkscreen);
 
-      /* End curses...		*/
+      /* End curses...  */
       endCDK();
 
-      /* Spit out a message.	*/
+      /* Spit out a message.  */
       printf ("Oops. Can't seem to create the label. Is the window too small?\n");
       exit (1);
    }
 
-   /* Draw the CDK screen.	*/
+   /* Draw the CDK screen.  */
    refreshCDKScreen (cdkscreen);
    waitCDKLabel (demo, ' ');
 
-   /* Clean up			*/
+   /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);

@@ -1,5 +1,5 @@
 /*
- * $Id: slider.h,v 1.13 2002/04/30 22:02:21 tom Exp $
+ * $Id: slider.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -130,9 +130,7 @@ int activateCDKSlider (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKSlider (
-		CDKSLIDER *	/* slider */,
-		chtype		/* input */);
+#define injectCDKSlider(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets various attributes of the widget.
@@ -214,6 +212,13 @@ void setCDKSliderBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKSliderBackgroundAttrib (
+		CDKSLIDER *	/* slider */,
+		chtype		/* attribute */);
+
+/*
  * This draws the slider widget on the screen.
  */
 #define drawCDKSlider(obj,Box) drawCDKObject(obj,Box)
@@ -236,8 +241,7 @@ void setCDKSliderBackgroundColor (
 /*
  * This destroys the slider widget and associated memory.
  */
-void destroyCDKSlider (
-		CDKSLIDER *	/* slider */);
+#define destroyCDKSlider(obj) destroyCDKObject(obj)
 
 /*
  * These functions set the pre/post process functions.

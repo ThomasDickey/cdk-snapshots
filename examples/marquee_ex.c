@@ -1,3 +1,5 @@
+/* $Id: marquee_ex.c,v 1.5 2002/07/14 21:40:23 moloney Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -117,6 +119,7 @@ int main (int argc, char **argv)
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
+   curs_set(0);
 
    /* Start CDK Colors. */
    initCDKColor();
@@ -142,9 +145,10 @@ int main (int argc, char **argv)
    /* Create the marquee message. */
    if (mesg == 0)
    {
-      /* Get the current time. */
+      /* Get the current time and chop off the newline. */
       time (&clck);
       currentTime = ctime (&clck);
+      currentTime[strlen(currentTime)-1] = 0;
 
       if (startAttr[0] != '\0')
       {

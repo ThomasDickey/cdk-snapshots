@@ -1,5 +1,5 @@
 /*
- * $Id: histogram.h,v 1.12 2002/04/30 21:52:44 tom Exp $
+ * $Id: histogram.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -242,6 +242,13 @@ void setCDKHistogramBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKHistogramBackgroundAttrib (
+		CDKHISTOGRAM *	/* histogram */,
+		chtype		/* attribute */);
+
+/*
  * This draws the widget on the screen.
  */
 #define drawCDKHistogram(obj,Box) drawCDKObject(obj,Box)
@@ -264,8 +271,7 @@ void setCDKHistogramBackgroundColor (
 /*
  * This destroys the histogram and all related pointers.
  */
-void destroyCDKHistogram (
-		CDKHISTOGRAM *	/* histogram */);
+#define destroyCDKHistogram(obj) destroyCDKObject(obj)
 
 #ifdef __cplusplus
 }

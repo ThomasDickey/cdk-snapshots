@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.13 2002/04/30 21:51:50 tom Exp $
+ * $Id: itemlist.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -119,9 +119,7 @@ int activateCDKItemlist (
 /*
  * This injects a single character into the itemlist widget.
  */
-int injectCDKItemlist (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* input */);
+#define injectCDKItemlist(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * These functions set specific elements of the itemlist widget.
@@ -215,6 +213,13 @@ void setCDKItemlistBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKItemlistBackgroundAttrib (
+		CDKITEMLIST *	/* itemlist */,
+		chtype		/* attribute */);
+
+/*
  * This draws the itemlist widget.
  */
 #define drawCDKItemlist(obj,Box) drawCDKObject(obj,Box)
@@ -223,7 +228,8 @@ void setCDKItemlistBackgroundColor (
  * This draws the itemlist field.
  */
 void drawCDKItemlistField (
-		CDKITEMLIST *	/* itemlist */);
+		CDKITEMLIST *	/* itemlist */,
+		boolean         /* highlight */);
 
 /*
  * This removes the widget from the screen.
@@ -243,8 +249,7 @@ void drawCDKItemlistField (
 /*
  * This destroys the widget and all the associated memory.
  */
-void destroyCDKItemlist (
-		CDKITEMLIST *	/* itemlist */);
+#define destroyCDKItemlist(obj) destroyCDKObject(obj)
 
 /*
  * These functions set the pre/post process functions.

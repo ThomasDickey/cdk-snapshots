@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/02/25 22:37:10 $
- * $Revision: 1.87 $
+ * $Date: 2002/07/27 16:39:26 $
+ * $Revision: 1.97 $
  */
 
 /*
@@ -20,7 +20,7 @@ static void adjustCDKTemplateCursor (CDKTEMPLATE *cdktemplate, int direction);
  */
 extern char *GPasteBuffer;
 
-DeclareCDKObjects(my_funcs,Template);
+DeclareCDKObjects(TEMPLATE, Template, String);
 
 /*
  * This creates a cdktemplate widget.
@@ -33,7 +33,8 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= 0;
-   int boxHeight		= 3;
+   int boxHeight		= Box ? 3 : 1;
+   int borderSize               = Box ? 1 : 0;
    int maxWidth			= INT_MIN;
    int xpos			= xplace;
    int ypos			= yplace;
@@ -50,7 +51,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       free (cdktemplate);
       return 0;
    }
-   fieldWidth = (int)strlen (plate) + 2;
+   fieldWidth = (int)strlen (plate) + 2*borderSize;
 
    /* Set some basic values of the cdktemplate field. */
    cdktemplate->label		= 0;
@@ -78,7 +79,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    }
 
    /* Set the box width. */
-   boxWidth = fieldWidth+ cdktemplate->labelLen + 2;
+   boxWidth = fieldWidth+ cdktemplate->labelLen + 2*borderSize;
 
    /* Translate the char * items to chtype * */
    if (title != 0)
@@ -101,14 +102,14 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
        if (maxWidth > boxWidth)
        {
 	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-	  boxWidth = maxWidth + 2;
+          boxWidth = maxWidth + 2*borderSize;
        }
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < cdktemplate->titleLines; x++)
       {
 	 cdktemplate->title[x]	  = char2Chtype (temp[x], &cdktemplate->titleLen[x], &cdktemplate->titlePos[x]);
-	 cdktemplate->titlePos[x] = justifyString (boxWidth, cdktemplate->titleLen[x], cdktemplate->titlePos[x]);
+         cdktemplate->titlePos[x] = justifyString (boxWidth-2*borderSize, cdktemplate->titleLen[x], cdktemplate->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -124,10 +125,11 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    */
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = (fieldWidth > (boxWidth - cdktemplate->labelLen - 2) ? (boxWidth - cdktemplate->labelLen - 2) : fieldWidth);
+   fieldWidth = (fieldWidth > (boxWidth - cdktemplate->labelLen - 2*borderSize) ? 
+                 (boxWidth - cdktemplate->labelLen - 2*borderSize) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Make the cdktemplate window */
    cdktemplate->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -149,15 +151,15 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    if (cdktemplate->label != 0)
    {
       cdktemplate->labelWin = subwin (cdktemplate->win, 1,
-					cdktemplate->labelLen + 2,
-					ypos + cdktemplate->titleLines + 1,
-					xpos + horizontalAdjust + 1);
+					cdktemplate->labelLen,
+					ypos + cdktemplate->titleLines + borderSize,
+					xpos + horizontalAdjust + borderSize);
    }
 
    /* Make the field window. */
    cdktemplate->fieldWin = subwin (cdktemplate->win, 1, fieldWidth,
-				ypos + cdktemplate->titleLines + 1,
-				xpos + cdktemplate->labelLen + horizontalAdjust + 2);
+				ypos + cdktemplate->titleLines + borderSize,
+				xpos + cdktemplate->labelLen + horizontalAdjust + borderSize);
    keypad (cdktemplate->fieldWin, TRUE);
 
    /* Set up the info field. */
@@ -183,8 +185,10 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    cdktemplate->exitType		= vNEVER_ACTIVATED;
    cdktemplate->min			= 0;
    ObjOf(cdktemplate)->box		= Box;
+   ObjOf(cdktemplate)->borderSize	= borderSize;
+   ObjOf(cdktemplate)->inputWindow	= cdktemplate->win;
    cdktemplate->shadow			= shadow;
-   cdktemplate->callbackfn		= (void *)&CDKTemplateCallBack;
+   cdktemplate->callbackfn		= CDKTemplateCallBack;
    cdktemplate->preProcessFunction	= 0;
    cdktemplate->preProcessData		= 0;
    cdktemplate->postProcessFunction	= 0;
@@ -231,7 +235,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
       for (;;)
       {
 	 /* Get the input. */
-	 input = wgetch (cdktemplate->win);
+	 input = getcCDKObject (ObjOf(cdktemplate));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKTemplate (cdktemplate, input);
@@ -265,11 +269,14 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
 /*
  * This injects a character into the widget.
  */
-char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
+static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 {
+   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    /* Declare some local variables. */
    int ppReturn = 1;
    int length, x;
+   char *ret = unknownString;
+   bool complete = FALSE;
 
    /* Set the exit type and return. */
    cdktemplate->exitType = vEARLY_EXIT;
@@ -290,7 +297,7 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
       if (checkCDKObjectBind (vTEMPLATE, cdktemplate, input) != 0)
       {
 	 cdktemplate->exitType = vESCAPE_HIT;
-	 return 0;
+	 complete = TRUE;
       }
       else
       {
@@ -353,7 +360,7 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
 		    length = (int)strlen (GPasteBuffer);
 		    for (x=0; x < length; x++)
 		    {
-		       ((TEMPLATECB)cdktemplate->callbackfn)(cdktemplate, GPasteBuffer[x]);
+		       (cdktemplate->callbackfn)(cdktemplate, GPasteBuffer[x]);
 		    }
 		    drawCDKTemplateField (cdktemplate);
 		 }
@@ -371,13 +378,15 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
 		 else
 		 {
 		    cdktemplate->exitType = vNORMAL;
-		    return cdktemplate->info;
+		    ret = cdktemplate->info;
+		    complete = TRUE;
 		 }
 		 break;
 
 	    case KEY_ESC :
 		 cdktemplate->exitType = vESCAPE_HIT;
-		 return 0;
+		 complete = TRUE;
+		 break;
 
 	    case CDK_REFRESH :
 		 eraseCDKScreen (ScreenOf(cdktemplate));
@@ -385,21 +394,24 @@ char *injectCDKTemplate (CDKTEMPLATE *cdktemplate, chtype input)
 		 break;
 
 	    default :
-		 ((TEMPLATECB)cdktemplate->callbackfn)(cdktemplate, input);
+		 (cdktemplate->callbackfn)(cdktemplate, input);
 		 break;
 	 }
       }
 
       /* Should we call a post-process? */
-      if (cdktemplate->postProcessFunction != 0)
+      if (!complete && (cdktemplate->postProcessFunction != 0))
       {
 	 cdktemplate->postProcessFunction (vTEMPLATE, cdktemplate, cdktemplate->postProcessData, input);
       }
    }
 
-   /* Set the exit type and return. */
-   cdktemplate->exitType = vEARLY_EXIT;
-   return 0;
+   if (!complete) {
+      cdktemplate->exitType = vEARLY_EXIT;
+   }
+
+   ResultOf(cdktemplate).valueString = ret;
+   return (ret != unknownString);
 }
 
 /*
@@ -431,6 +443,10 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
       mvwaddch (cdktemplate->fieldWin, 0, cdktemplate->screenPos,
 		cdktemplate->overlay[cdktemplate->platePos] | fieldColor);
       adjustCDKTemplateCursor (cdktemplate, -1);
+   }
+   else if (input <= 0 || input >= KEY_MIN)
+   {
+      Beep();
    }
    else
    {
@@ -583,7 +599,7 @@ static void _moveCDKTemplate (CDKOBJS *object, int xplace, int yplace, boolean r
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(cdktemplate), &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight);
+   alignxy (WindowOf(cdktemplate), &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight, BorderOf(cdktemplate));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -591,17 +607,9 @@ static void _moveCDKTemplate (CDKOBJS *object, int xplace, int yplace, boolean r
 
    /* Move the window to the new location. */
    moveCursesWindow(cdktemplate->win, -xdiff, -ydiff);
-   if (cdktemplate->labelWin != 0)
-   {
-      moveCursesWindow(cdktemplate->labelWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(cdktemplate->labelWin, -xdiff, -ydiff);
    moveCursesWindow(cdktemplate->fieldWin, -xdiff, -ydiff);
-
-   /* If there is a shadow box we have to move it too. */
-   if (cdktemplate->shadowWin != 0)
-   {
-      moveCursesWindow(cdktemplate->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(cdktemplate->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(cdktemplate));
@@ -621,6 +629,7 @@ static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    int x;
+   int borderSize = object->borderSize;
 
    /* Do we need to draw the shadow. */
    if (cdktemplate->shadowWin != 0)
@@ -644,8 +653,8 @@ static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
       for (x=0; x < cdktemplate->titleLines; x++)
       {
 	 writeChtype (cdktemplate->win,
-			cdktemplate->titlePos[x],
-			x + 1,
+			cdktemplate->titlePos[x] + borderSize,
+			x + borderSize,
 			cdktemplate->title[x],
 			HORIZONTAL, 0,
 			cdktemplate->titleLen[x]);
@@ -775,26 +784,33 @@ void setCDKTemplateBackgroundColor (CDKTEMPLATE *cdktemplate, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (cdktemplate->win, holder[0]);
-   wbkgd (cdktemplate->fieldWin, holder[0]);
-   if (cdktemplate->labelWin != 0)
-   {
-      wbkgd (cdktemplate->labelWin, holder[0]);
-   }
+   setCDKTemplateBackgroundAttrib( cdktemplate, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
 }
 
 /*
+ * This sets the background attribute of the widget.
+ */
+void setCDKTemplateBackgroundAttrib (CDKTEMPLATE *cdktemplate, chtype attrib)
+{
+   /* Set the widgets background attribute. */
+   wbkgd (cdktemplate->win, attrib);
+   wbkgd (cdktemplate->fieldWin, attrib);
+   if (cdktemplate->labelWin != 0)
+   {
+      wbkgd (cdktemplate->labelWin, attrib);
+   }
+}
+
+/*
  * This function destroys this widget.
  */
-void destroyCDKTemplate (CDKTEMPLATE *cdktemplate)
+static void _destroyCDKTemplate (CDKOBJS *object)
 {
+   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
    int x;
-
-   /* Erase the object. */
-   eraseCDKTemplate (cdktemplate);
 
    /* Clear out the character pointers. */
    freeChtype (cdktemplate->label);
@@ -814,9 +830,6 @@ void destroyCDKTemplate (CDKTEMPLATE *cdktemplate)
 
    /* Unregister this object. */
    unregisterCDKObject (vTEMPLATE, cdktemplate);
-
-   /* Finish cleaning up. */
-   free (cdktemplate);
 }
 
 /*
@@ -824,12 +837,15 @@ void destroyCDKTemplate (CDKTEMPLATE *cdktemplate)
  */
 static void _eraseCDKTemplate (CDKOBJS *object)
 {
-   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
+   if (validCDKObject (object))
+   {
+      CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
 
-   eraseCursesWindow (cdktemplate->fieldWin);
-   eraseCursesWindow (cdktemplate->labelWin);
-   eraseCursesWindow (cdktemplate->win);
-   eraseCursesWindow (cdktemplate->shadowWin);
+      eraseCursesWindow (cdktemplate->fieldWin);
+      eraseCursesWindow (cdktemplate->labelWin);
+      eraseCursesWindow (cdktemplate->win);
+      eraseCursesWindow (cdktemplate->shadowWin);
+   }
 }
 
 /*
@@ -875,7 +891,7 @@ void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
    /* Use the function which handles the input of the characters. */
    for (x=0; x < len; x++)
    {
-      ((TEMPLATECB)cdktemplate->callbackfn)(cdktemplate, (chtype)newValue[x]);
+      (cdktemplate->callbackfn)(cdktemplate, (chtype)newValue[x]);
    }
 }
 char *getCDKTemplateValue (CDKTEMPLATE *cdktemplate)
@@ -923,7 +939,7 @@ void cleanCDKTemplate (CDKTEMPLATE *cdktemplate)
  */
 void setCDKTemplateCB (CDKTEMPLATE *cdktemplate, TEMPLATECB callback)
 {
-   cdktemplate->callbackfn = (void *)callback;
+   cdktemplate->callbackfn = callback;
 }
 
 /*
@@ -942,4 +958,24 @@ void setCDKTemplatePostProcess (CDKTEMPLATE *cdktemplate, PROCESSFN callback, vo
 {
    cdktemplate->postProcessFunction = callback;
    cdktemplate->postProcessData = data;
+}
+
+static void _focusCDKTemplate(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKTemplate(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKTemplate(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKTemplate(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

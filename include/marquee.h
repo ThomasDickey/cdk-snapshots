@@ -1,5 +1,5 @@
 /*
- * $Id: marquee.h,v 1.12 2002/04/30 22:02:21 tom Exp $
+ * $Id: marquee.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -125,8 +125,7 @@ void deactivateCDKMarquee (
 /*
  * This destroys the marquee widget.
  */
-void destroyCDKMarquee (
-		CDKMARQUEE *	/* marquee */);
+#define destroyCDKMarquee(obj) destroyCDKObject(obj)
 
 /*
  * These functions set the drawing characters of the widget.
@@ -165,6 +164,13 @@ void setCDKMarqueeBoxAttribute (
 void setCDKMarqueeBackgroundColor (
 		CDKMARQUEE *	/* marquee */,
 		char *		/* color */);
+
+/*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKMarqueeBackgroundAttrib (
+		CDKMARQUEE *	/* marquee */,
+		chtype		/* attribute */);
 
 #ifdef __cplusplus
 }

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/12/30 23:21:10 $
- * $Revision: 1.124 $
+ * $Date: 2002/07/27 16:36:31 $
+ * $Revision: 1.136 $
  */
 
 /*
@@ -22,7 +22,7 @@ static void redrawTitles (CDKMATRIX *matrix, int row, int col);
  */
 extern char *GPasteBuffer;
 
-DeclareCDKObjects(my_funcs,Matrix);
+DeclareCDKObjects(MATRIX, Matrix, Int);
 
 /*
  * This function creates the matrix widget.
@@ -38,6 +38,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    int boxWidth		= 0;
    int xpos		= xplace;
    int ypos		= yplace;
+   int borderSize       = 1;
    int maxWidth		= INT_MIN;
    int maxRowTitleWidth = 0;
    int rowSpace		= MAXIMUM (0, rspace);
@@ -147,7 +148,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
 
    /* Make the pop-up window. */
    matrix->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -275,7 +276,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    for (x=1; x <= cols; x++)
    {
       matrix->coltitle[x]	= char2Chtype (coltitles[x], &matrix->coltitleLen[x], &matrix->coltitlePos[x]);
-      matrix->coltitlePos[x]	= justifyString (colwidths[x], matrix->coltitleLen[x], matrix->coltitlePos[x]);
+      matrix->coltitlePos[x]	= borderSize + justifyString (colwidths[x], matrix->coltitleLen[x], matrix->coltitlePos[x]);
       matrix->colwidths[x]	= colwidths[x];
    }
 
@@ -294,6 +295,8 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    /* Keep the rest of the info. */
    ScreenOf(matrix)		= cdkscreen;
    ObjOf(matrix)->box		= Box;
+   ObjOf(matrix)->borderSize	= borderSize;
+   ObjOf(matrix)->inputWindow	= matrix->win;
    matrix->parent		= cdkscreen->window;
    matrix->rows			= rows;
    matrix->cols			= cols;
@@ -326,7 +329,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    matrix->HChar		= ACS_HLINE;
    matrix->VChar		= ACS_VLINE;
    matrix->BoxAttrib		= A_NORMAL;
-   matrix->callbackfn		= (void *)&CDKMatrixCallBack;
+   matrix->callbackfn		= CDKMatrixCallBack;
    matrix->preProcessFunction	= 0;
    matrix->preProcessData	= 0;
    matrix->postProcessFunction	= 0;
@@ -400,14 +403,17 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
 /*
  * This injects a single character into the matrix widget.
  */
-int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
+static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 {
+   CDKMATRIX *matrix = (CDKMATRIX *)object;
    /* Declare local variables. */
    int refreshCells	= FALSE;
    int movedCell	= FALSE;
    int charcount	= (int)strlen (matrix->info[matrix->row][matrix->col]);
    int ppReturn		= 1;
    int x, y, infolen;
+   int ret              = unknownInt;
+   bool complete        = FALSE;
 
    /* Set the exit type. */
    matrix->exitType = vEARLY_EXIT;
@@ -446,7 +452,7 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
       if (checkCDKObjectBind (vMATRIX, matrix, input) != 0)
       {
 	 matrix->exitType = vESCAPE_HIT;
-	 return -1;
+	 complete = TRUE;
       }
       else
       {
@@ -455,10 +461,10 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 	    case CDK_TRANSPOSE :
 		 break;
 
-	    case CDK_BEGOFLINE :
+	    case KEY_HOME : case CDK_BEGOFLINE :
 		 break;
 
-	    case CDK_ENDOFLINE :
+	    case KEY_END : case CDK_ENDOFLINE :
 		 break;
 
 	    case KEY_BACKSPACE : case DELETE : case CONTROL('H') : case KEY_DC :
@@ -541,7 +547,7 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 		 }
 		 break;
 
-	    case KEY_LEFT :
+	    case KEY_LEFT : case KEY_BTAB :
 		 if (matrix->ccol != 1)
 		 {
 		    /* We are moving to the left... */
@@ -755,7 +761,9 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 	      }
 	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
 	      matrix->exitType = vNORMAL;
-	      return 0;
+	      ret = 1;
+	      complete = TRUE;
+	      break;
 
 	 case KEY_ESC :
 	      if (!matrix->boxCell)
@@ -778,7 +786,8 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 	      }
 	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
 	      matrix->exitType = vESCAPE_HIT;
-	      return -1;
+	      complete = TRUE;
+	      break;
 
 	 case CDK_REFRESH :
 	      eraseCDKScreen (ScreenOf(matrix));
@@ -786,102 +795,109 @@ int injectCDKMatrix (CDKMATRIX *matrix, chtype input)
 	      break;
 
 	 default :
-	      ((MATRIXCB)matrix->callbackfn)(matrix, input);
+	      (matrix->callbackfn)(matrix, input);
 	      break;
 	 }
       }
 
-      /* Did we change cells? */
-      if (movedCell)
+      if (!complete)
       {
-	 /* un-highlight the old box  */
-	 if (!matrix->boxCell)
+	 /* Did we change cells? */
+	 if (movedCell)
 	 {
-	    attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
-			' ',	' ',
-			' ',	' ',
-			' ',	' ',
-			A_NORMAL);
-	 }
-	 else
-	 {
-	    drawCDKMatrixCell (matrix,
-				matrix->oldcrow,
-				matrix->oldccol,
-				matrix->oldvrow,
-				matrix->oldvcol,
-				0,
-				matrix->boxCell);
-	 }
-	 wrefresh (matrix->cell[matrix->oldcrow][matrix->oldccol]);
-
-	 /* Highlight the new cell. */
-	 attrbox (matrix->cell[matrix->crow][matrix->ccol],
-			ACS_ULCORNER,	ACS_URCORNER,
-			ACS_LLCORNER,	ACS_LRCORNER,
-			ACS_HLINE,	ACS_VLINE,
-			A_BOLD);
-	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-	 highlightCDKMatrixCell (matrix);
-      }
-
-      /* Redraw each cell. */
-      if (refreshCells)
-      {
-	 /* Fill in the cells. */
-	 for (x=1; x <= matrix->vrows; x++)
-	 {
-	    for (y=1; y <= matrix->vcols; y++)
+	    /* un-highlight the old box  */
+	    if (!matrix->boxCell)
 	    {
-	       drawCDKMatrixCell (matrix, x, y,
-					matrix->trow+x-1,
-					matrix->lcol+y-1,
-					0,
-					matrix->boxCell);
+	       attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+			   ' ',	' ',
+			   ' ',	' ',
+			   ' ',	' ',
+			   A_NORMAL);
 	    }
+	    else
+	    {
+	       drawCDKMatrixCell (matrix,
+				   matrix->oldcrow,
+				   matrix->oldccol,
+				   matrix->oldvrow,
+				   matrix->oldvcol,
+				   0,
+				   matrix->boxCell);
+	    }
+	    wrefresh (matrix->cell[matrix->oldcrow][matrix->oldccol]);
+
+	    /* Highlight the new cell. */
+	    attrbox (matrix->cell[matrix->crow][matrix->ccol],
+			   ACS_ULCORNER,	ACS_URCORNER,
+			   ACS_LLCORNER,	ACS_LRCORNER,
+			   ACS_HLINE,	ACS_VLINE,
+			   A_BOLD);
+	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	    highlightCDKMatrixCell (matrix);
 	 }
 
-	 /* Highlight the current cell. */
-	 attrbox (matrix->cell[matrix->crow][matrix->ccol],
-			ACS_ULCORNER,	ACS_URCORNER,
-			ACS_LLCORNER,	ACS_LRCORNER,
-			ACS_HLINE,	ACS_VLINE,
-			A_BOLD);
-	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-	 highlightCDKMatrixCell (matrix);
-      }
-
-      /* Move to the correct position in the cell. */
-      if (refreshCells || movedCell)
-      {
-	 if (matrix->colwidths[matrix->ccol] == 1)
+	 /* Redraw each cell. */
+	 if (refreshCells)
 	 {
-	    wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
-	 }
-	 else
-	 {
-	    infolen = (int)strlen (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-	    wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
-	 }
-	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-      }
+	    /* Fill in the cells. */
+	    for (x=1; x <= matrix->vrows; x++)
+	    {
+	       for (y=1; y <= matrix->vcols; y++)
+	       {
+		  drawCDKMatrixCell (matrix, x, y,
+					   matrix->trow+x-1,
+					   matrix->lcol+y-1,
+					   0,
+					   matrix->boxCell);
+	       }
+	    }
 
-      /* Should we call a post-process? */
-      if (matrix->postProcessFunction != 0)
-      {
-	 matrix->postProcessFunction (vMATRIX, matrix, matrix->postProcessData, input);
+	    /* Highlight the current cell. */
+	    attrbox (matrix->cell[matrix->crow][matrix->ccol],
+			   ACS_ULCORNER,	ACS_URCORNER,
+			   ACS_LLCORNER,	ACS_LRCORNER,
+			   ACS_HLINE,	ACS_VLINE,
+			   A_BOLD);
+	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	    highlightCDKMatrixCell (matrix);
+	 }
+
+	 /* Move to the correct position in the cell. */
+	 if (refreshCells || movedCell)
+	 {
+	    if (matrix->colwidths[matrix->ccol] == 1)
+	    {
+	       wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
+	    }
+	    else
+	    {
+	       infolen = (int)strlen (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
+	       wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
+	    }
+	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	 }
+
+	 /* Should we call a post-process? */
+	 if (matrix->postProcessFunction != 0)
+	 {
+	    matrix->postProcessFunction (vMATRIX, matrix, matrix->postProcessData, input);
+	 }
       }
    }
 
-   /* Set the variables we need. */
-   matrix->oldcrow	= matrix->crow;
-   matrix->oldccol	= matrix->ccol;
-   matrix->oldvrow	= matrix->row;
-   matrix->oldvcol	= matrix->col;
+   if (!complete) {
+      /* Set the variables we need. */
+      matrix->oldcrow	= matrix->crow;
+      matrix->oldccol	= matrix->ccol;
+      matrix->oldvrow	= matrix->row;
+      matrix->oldvcol	= matrix->col;
 
-   /* Set the exit type and exit. */
-   matrix->exitType = vEARLY_EXIT;
-   return -1;
+      /* Set the exit type and exit. */
+      matrix->exitType = vEARLY_EXIT;
+   }
+
+   ResultOf(matrix).valueInt = ret;
+   return (ret != unknownInt);
 }
 
 /*
@@ -895,7 +911,11 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
    chtype newchar		= 0;
 
    /* Check the types */
-   if (disptype == vINT && !isdigit((int)input))
+   if (input <= 0 || input >= KEY_MIN)
+   {
+      Beep();
+   }
+   else if (disptype == vINT && !isdigit((int)input))
    {
       Beep();
    }
@@ -909,39 +929,35 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
    {
       Beep();
    }
+   else if (charcount == matrix->colwidths[matrix->col])
+   {
+      Beep();
+   }
    else
    {
-      /* Check the width of the string. */
-      if (charcount == matrix->colwidths[matrix->col])
+      /* We will make any needed adjustments to the case of the character. */
+      newchar = input;
+      if ((disptype == vUCHAR || disptype == vUCHAR ||
+	     disptype == vUMIXED || disptype == vUHMIXED)
+	     && !isdigit((int)input))
       {
-	 Beep();
+	 newchar = toupper(input);
       }
-      else
+      else if ((disptype == vUCHAR || disptype == vUCHAR ||
+		     disptype == vUMIXED || disptype == vUHMIXED) &&
+		     !isdigit((int)input))
       {
-	 /* We will make any needed adjustments to the case of the character. */
-	 newchar = input;
-	 if ((disptype == vUCHAR || disptype == vUCHAR ||
-		disptype == vUMIXED || disptype == vUHMIXED)
-		&& !isdigit((int)input))
-	 {
-	    newchar = toupper(input);
-	 }
-	 else if ((disptype == vUCHAR || disptype == vUCHAR ||
-			disptype == vUMIXED || disptype == vUHMIXED) &&
-			!isdigit((int)input))
-	 {
-	    newchar = tolower(input);
-	 }
-
-	 /* Update the screen. */
-	 wmove (matrix->cell[matrix->crow][matrix->ccol], 1, (int)strlen (matrix->info[matrix->row][matrix->col])+1);
-	 waddch (matrix->cell[matrix->crow][matrix->ccol], newchar);
-	 wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-
-	 /* Update the character pointer. */
-	 matrix->info[matrix->row][matrix->col][charcount++] = newchar;
-	 matrix->info[matrix->row][matrix->col][charcount] = '\0';
+	 newchar = tolower(input);
       }
+
+      /* Update the screen. */
+      wmove (matrix->cell[matrix->crow][matrix->ccol], 1, (int)strlen (matrix->info[matrix->row][matrix->col])+1);
+      waddch (matrix->cell[matrix->crow][matrix->ccol], newchar);
+      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+
+      /* Update the character pointer. */
+      matrix->info[matrix->row][matrix->col][charcount++] = newchar;
+      matrix->info[matrix->row][matrix->col][charcount] = '\0';
    }
 }
 
@@ -1012,7 +1028,7 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(matrix), &xpos, &ypos, matrix->boxWidth, matrix->boxHeight);
+   alignxy (WindowOf(matrix), &xpos, &ypos, matrix->boxWidth, matrix->boxHeight, BorderOf(matrix));
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -1029,11 +1045,7 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
       }
    }
 
-   /* If there is a shadow box we have to move it too. */
-   if (matrix->shadowWin != 0)
-   {
-      moveCursesWindow(matrix->shadowWin, -xdiff, -ydiff);
-   }
+   moveCursesWindow(matrix->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
    touchwin (WindowOf(matrix));
@@ -1339,14 +1351,12 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
 /*
  * This function destroys the matrix widget.
  */
-void destroyCDKMatrix (CDKMATRIX *matrix)
+static void _destroyCDKMatrix (CDKOBJS *object)
 {
+   CDKMATRIX *matrix = (CDKMATRIX *)object;
    /* Declare local variables. */
    int x = 0;
    int y = 0;
-
-   /* Erase the object. */
-   eraseCDKMatrix (matrix);
 
    /* Clear out the title. */
    if (matrix->titleLines != 0)
@@ -1400,9 +1410,6 @@ void destroyCDKMatrix (CDKMATRIX *matrix)
 
    /* Unregister this object. */
    unregisterCDKObject (vMATRIX, matrix);
-
-   /* Finish cleaning up. */
-   free (matrix);
 }
 
 /*
@@ -1410,29 +1417,32 @@ void destroyCDKMatrix (CDKMATRIX *matrix)
  */
 static void _eraseCDKMatrix (CDKOBJS *object)
 {
-   CDKMATRIX *matrix = (CDKMATRIX *)object;
-   int x	= 0;
-   int y	= 0;
+   if (validCDKObject (object))
+   {
+      CDKMATRIX *matrix = (CDKMATRIX *)object;
+      int x	= 0;
+      int y	= 0;
 
-   /* Clear the matrix cells. */
-   eraseCursesWindow (matrix->cell[0][0]);
-   for (x=1; x <= matrix->vrows; x++)
-   {
-      eraseCursesWindow (matrix->cell[x][0]);
-   }
-   for (x=1; x <= matrix->vcols; x++)
-   {
-      eraseCursesWindow (matrix->cell[0][x]);
-   }
-   for (x=1; x <= matrix->vrows; x++)
-   {
-      for (y=1; y <= matrix->vcols; y++)
+      /* Clear the matrix cells. */
+      eraseCursesWindow (matrix->cell[0][0]);
+      for (x=1; x <= matrix->vrows; x++)
       {
-	 eraseCursesWindow (matrix->cell[x][y]);
+	 eraseCursesWindow (matrix->cell[x][0]);
       }
+      for (x=1; x <= matrix->vcols; x++)
+      {
+	 eraseCursesWindow (matrix->cell[0][x]);
+      }
+      for (x=1; x <= matrix->vrows; x++)
+      {
+	 for (y=1; y <= matrix->vcols; y++)
+	 {
+	    eraseCursesWindow (matrix->cell[x][y]);
+	 }
+      }
+      eraseCursesWindow (matrix->shadowWin);
+      eraseCursesWindow (matrix->win);
    }
-   eraseCursesWindow (matrix->shadowWin);
-   eraseCursesWindow (matrix->win);
 }
 
 /*
@@ -1801,7 +1811,7 @@ void setCDKMatrixBoxAttribute (CDKMATRIX *matrix, chtype character)
 void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
 {
    chtype *holder = 0;
-   int x, y, junk1, junk2;
+   int junk1, junk2;
 
    if (color == 0)
    {
@@ -1812,17 +1822,27 @@ void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widgets background color. */
-   wbkgd (matrix->win, holder[0]);
+   setCDKMatrixBackgroundAttrib (matrix, holder[0]);
+
+   /* Clean up. */
+   freeChtype (holder);
+}
+
+/*
+ * This sets the background attribute of the widget.
+ */
+void setCDKMatrixBackgroundAttrib (CDKMATRIX *matrix, chtype attrib)
+{
+   int x, y;
+   /* Set the widgets background attribute. */
+   wbkgd (matrix->win, attrib);
    for (x=0; x <= matrix->vrows; x++)
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-	 wbkgd (matrix->cell[x][y], holder[0]);
+	 wbkgd (matrix->cell[x][y], attrib);
       }
    }
-
-   /* Clean up. */
-   freeChtype (holder);
 }
 
 /*
@@ -1841,4 +1861,24 @@ void setCDKMatrixPostProcess (CDKMATRIX *matrix, PROCESSFN callback, void *data)
 {
    matrix->postProcessFunction = callback;
    matrix->postProcessData = data;
+}
+
+static void _focusCDKMatrix(CDKOBJS *object GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _unfocusCDKMatrix(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _refreshDataCDKMatrix(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
+}
+
+static void _saveDataCDKMatrix(CDKOBJS *entry GCC_UNUSED)
+{
+   /* FIXME */
 }

@@ -1,5 +1,6 @@
 Cdk Copying Guide
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
+Modifications copyright Thomas Dickey 1999, 2000, 2001, 2002
 -------------------------------------------------------------------------------
 In order to copy Cdk around I have some requirements that will protect me,
 and possibly even you. First thing, I feel I should say that this little project

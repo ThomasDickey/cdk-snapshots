@@ -1,5 +1,5 @@
 /*
- * $Id: graph.h,v 1.13 2002/04/30 22:02:21 tom Exp $
+ * $Id: graph.h,v 1.15 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -227,6 +227,13 @@ void setCDKGraphBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKGraphBackgroundAttrib (
+		CDKGRAPH *	/* graph */,
+		chtype		/* attribute */);
+
+/*
  * This draws the graph on the screen.
  */
 #define drawCDKGraph(obj,Box) drawCDKObject(obj,Box)
@@ -249,8 +256,7 @@ void setCDKGraphBackgroundColor (
 /*
  * This destroys the graph and all the associated memory.
  */
-void destroyCDKGraph (
-		CDKGRAPH *	/* graph */);
+#define destroyCDKGraph(obj) destroyCDKObject(obj)
 
 #ifdef __cplusplus
 }

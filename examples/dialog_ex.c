@@ -30,8 +30,8 @@ int main (void)
    message[2]	= "<C>The dialog widget allows the programmer to create";
    message[3]	= "<C>a popup dialog box with buttons. The dialog box";
    message[4]	= "<C>can contain </B/32>colours<!B!32>, </R>character attributes<!R>";
-   message[5]	= "<R>and even be justified.";
-   message[6]	= "<C>Even the buttons can have colours.";
+   message[5]	= "<R>and even be right justified.";
+   message[6]	= "<L>and left.";
 
    /* Create the dialog box. */
    question = newCDKDialog (cdkscreen, CENTER, CENTER,

@@ -1,0 +1,289 @@
+'\" t
+.\" $Id: cdk_button.3,v 1.3 2002/07/10 09:05:40 tom Exp $
+.TH cdk_button 3
+.SH NAME
+activateCDKButton,
+destroyCDKButton,
+drawCDKButton,
+eraseCDKButton, 
+getCDKButtonBox,
+getCDKButtonMessage,
+injectCDKButton,
+moveCDKButton,
+newCDKButton,
+positionCDKButton,
+setCDKButton,
+setCDKButtonBackgroundColor,
+setCDKButtonBox,
+setCDKButtonBoxAttribute,
+setCDKButtonHorizontalChar,
+setCDKButtonLLChar,
+setCDKButtonLRChar,
+setCDKButtonMessage,
+setCDKButtonULChar,
+setCDKButtonURChar,
+setCDKButtonVerticalChar \- create and manage a curses button widget.
+.SH SYNOPSIS
+.LP
+.B cc
+.RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
+.B \-lcdk
+.RI "[ " "library" " \|.\|.\|. ]"
+.LP
+#include <cdk.h>
+
+typedef void (*tButtonCallback)(struct SButton *button);
+.nf
+.TP 15
+.B "int activateCDKButton ("
+.BI "CDKBUTTONBOX *" "button",
+.BI "chtype * " "actions");
+.TP 15
+.BI "void destroyCDKButton ("
+.BI "CDKBUTTON *" "button");
+.TP 15
+.BI "void drawCDKButton ("
+.BI "CDKBUTTON *" "b",
+.BI "boolean " "box");
+.TP 15
+.BI "void eraseCDKButton ("
+.BI "CDKBUTTON *" "button");
+.TP 15
+.BI "boolean getCDKButtonBox ("
+.BI "CDKBUTTON *" "b");
+.TP 15
+.BI "chtype *getCDKButtonMessage ("
+.BI "CDKBUTTON *" "b");
+.TP 15
+.B "int injectCDKButtonbox ("
+.BI "CDKBUTTONBOX *" "buttonbox",
+.BI "chtype " "input");
+.TP 15
+.BI "CDKBUTTON *newCDKButton("
+.BI "CDKSCREEN *" "cdkscreen",
+.BI "int " "xpos",
+.BI "int " "ypos",
+.BI "char *" "message",
+.BI "tButtonCallback " "callback",
+.BI "boolean " "box",
+.BI "boolean " "shadow");
+.TP 15
+.BI "void setCDKButton("
+.BI "CDKBUTTON *" "b",
+.BI "char *" "message",
+.BI "boolean " "box");
+.TP 15
+.BI "void setCDKButtonBackgroundColor ("
+.BI "CDKBUTTON *" "b",
+.BI "char * " "color");
+.TP 15
+.BI "void setCDKButtonBox ("
+.BI "CDKBUTTON *" "button",
+.BI "boolean " "box");
+.TP 15
+.BI "void setCDKButtonBoxAttribute ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonHorizontalChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonLLChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonLRChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonMessage ("
+.BI "CDKBUTTON *" "b",
+.BI "char *" "message");
+.TP 15
+.BI "void setCDKButtonULChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonURChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void setCDKButtonVerticalChar ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "c");
+.TP 15
+.BI "void moveCDKButton("
+.BI "CDKBUTTON *" "b",
+.BI "int " "box",
+.BI "int " "box",
+.BI "boolean " "relative",
+.BI "boolean " "refresh");
+.TP 15
+.BI "void positionCDKButton ("
+.BI "CDKBUTTON *" "b");
+.TP 15
+.BI "void waitCDKButton ("
+.BI "CDKBUTTON *" "button",
+.BI "char " "key");
+.fi
+.SH DESCRIPTION
+The Cdk button widget displays a message string and executes a callback when
+the user presses enter or space.
+As such, it is only useful on a screen
+that is being managed by some external screen traversal engine such as
+\fBtraverseCDKScreen()\fR.
+The button will be highlighted when the widget has the focus.
+The following functions create or manipulate the Cdk button widget.
+.SH AVAILABLE FUNCTIONS
+.TP 5
+.B activateCDKButton
+activates the button widget and lets the user interact with the widget.
+The parameter \fBbutton\fR is a pointer to a non-NULL button widget.
+If the \fBactions\fR parameter is passed with a non-NULL value, the characters
+in the array will be injected into the widget.
+To activate the widget
+interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+If the character entered
+into this widget is \fIRETURN\fR or \fITAB\fR then this function will return a
+value from 0 to the number of buttons -1, representing the button selected.
+It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
+If the
+character entered into this widget was \fIESCAPE\fR then the widget will return
+a value of -1 and the widget data \fIexitType\fR will be set to
+\fIvESCAPE_HIT\fR.
+.TP 5
+.B destroyCDKButton
+removes the widget from the screen and frees up any memory the
+object used.
+.TP 5
+.B drawCDKButton
+draws the button widget on the screen.
+If the \fBbox\fR parameter is true, the widget is drawn with a box.
+.TP 5
+.B eraseCDKButton
+removes the widget from the screen.
+This does \fINOT\fR destroy the widget.
+.TP 5
+.B getCDKButtonBox
+returns true if the widget will be drawn with a box around it.
+.TP 5
+.B getCDKButtonMessage
+returns the contents of the button widget.
+.TP 5
+.B injectCDKButton
+injects a single character into the widget.
+The parameter \fBbutton\fR is a pointer to a non-NULL button widget.
+The parameter \fBcharacter\fR is the character to inject into the widget.
+If the character
+injected into this widget was \fIRETURN\fR then the character injected into
+this widget is \fIRETURN\fR or \fITAB\fR then this function will return 0,
+representing the button selected.
+It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
+If the
+character entered into this widget was \fIESCAPE\fR then the widget will return
+a value of -1 and the widget data \fIexitType\fR will be set to
+\fIvESCAPE_HIT\fR.
+Any other character injected into the widget will set the
+widget data \fIexitType\fR to \fIvEARLY_EXIT\fR and the function will
+return -1.
+.TP 5
+.B moveCDKButton
+moves the given widget to the given position.
+The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
+The parameter \fBxpos\fR may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+The parameter \fBypos\fR may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+The parameter \fBrelative\fR states whether
+the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
+For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+then the widget would move one row down and two columns right.
+If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
+\fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
+(weird things may happen).
+The final parameter \fBrefresh\fR is a boolean value which states
+whether the widget will get refreshed after the move.
+.TP 5
+.B newCDKButton
+creates a pointer to a buttonbox widget.
+The \fBscreen\fR parameter
+is the screen you wish this widget to be placed in.
+The parameter \fBxpos\fR controls the placement of the object along the horizontal axis.
+It may be an integer or one of the pre-defined values \fILEFT\fR,
+\fIRIGHT\fR, and \fICENTER\fR.
+The parameter \fBypos\fR controls the placement
+of the object along the vertical axis.
+This parameter may be an integer
+value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+
+The \fBmessage\fR parameter is the message to display in the button window,
+formatted as described in \fIcdk_display\fR.
+
+The \fBcallback\fR parameter is an optional pointer to a callback function
+that will be executed when the user activates the button by pressing space
+or enter.
+
+The \fBbox\fR parameter states whether the widget will be drawn with a box around
+it.
+The \fBshadow\fR parameter turns the shadow on or off around this widget.
+If the widget could not be created then a \fINULL\fR
+pointer is returned.
+.TP 5
+.B positionCDKButton
+allows the user to move the widget around the screen via the cursor/keypad keys.
+See \fBcdk_position (3)\fR for key bindings.
+.TP 5
+.B setCDKButton
+lets the programmer modify certain elements of an existing
+buttonbox widget.
+The parameter names correspond to the same parameter names listed
+in the \fBnewCDKButton\fR function.
+.TP 5
+.B setCDKButtonBackgroundColor
+sets the background color of the widget.
+The parameter \fBcolor\fR
+is in the format of the Cdk format strings.
+(See \fIcdk_display\fR).
+.TP 5
+.B setCDKButtonBox 
+sets true if the widget will be drawn with a box around it.
+.TP 5
+.B setCDKButtonBoxAttribute
+sets the attribute of the box.
+.TP 5
+.B setCDKButtonHorizontalChar
+sets the horizontal drawing character for the box to the given character.
+.TP 5
+.B setCDKButtonLLChar
+sets the lower left hand corner of the widget's box to the given character.
+.TP 5
+.B setCDKButtonLRChar
+sets the lower right hand corner of the widget's box to the given character.
+.TP 5
+.B setCDKButtonMessage
+This sets the contents of the label widget.
+.TP 5
+.B setCDKButtonULChar
+sets the upper left hand corner of the widget's box to the given character.
+.TP 5
+.B setCDKButtonURChar
+sets the upper right hand corner of the widget's box to the given character.
+.TP 5
+.B setCDKButtonVerticalChar
+sets the vertical drawing character for the box to the given character.
+.SH BUGS
+Changing the Box attribute after the widget has been created probably
+does not work right.
+None of the positioning/movement code has been tested.
+.SH AUTHOR
+Grant Edwards, Aspen Research Corporation
+.SH SEE ALSO
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3),
+.BR cdk_position (3),
+.BR cdk_process (3),
+.BR cdk_screen (3),
+.BR cdk_traverse (3)

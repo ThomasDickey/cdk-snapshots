@@ -1,5 +1,5 @@
 /*
- * $Id: scale.h,v 1.13 2002/04/30 22:02:21 tom Exp $
+ * $Id: scale.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -124,9 +124,7 @@ int activateCDKScale (
 /*
  * This injects a single character into the widget.
  */
-int injectCDKScale (
-		CDKSCALE *	/* scale */,
-		chtype		/* input */);
+#define injectCDKScale(obj,input) injectCDKObject(obj,input,Int)
 
 /*
  * This sets various attributes of the widget.
@@ -211,6 +209,13 @@ void setCDKScaleBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKScaleBackgroundAttrib (
+		CDKSCALE *	/* scale */,
+		chtype		/* attribute */);
+
+/*
  * This draws the scale widget on the screen.
  */
 #define drawCDKScale(obj,Box) drawCDKObject(obj,Box)
@@ -233,8 +238,7 @@ void setCDKScaleBackgroundColor (
 /*
  * This destroys the widget and all associated memory.
  */
-void destroyCDKScale (
-		CDKSCALE *	/* scale */);
+#define destroyCDKScale(obj) destroyCDKObject(obj)
 
 /*
  * These set the pre/post process callback functions.

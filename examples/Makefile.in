@@ -1,12 +1,8 @@
-# $Id: Makefile.in,v 1.9 2001/12/05 00:08:29 Lutz.Mueller Exp $
+# $Id: Makefile.in,v 1.13 2002/07/19 00:56:40 tom Exp $
 #
 # Makefile for the examples directory.
 #
 SHELL		= /bin/sh
-
-CC		= @CC@
-
-x		= @PROG_EXT@
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -14,11 +10,16 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
-LIBS		= -lcdk @LIBS@
-LIBDIR		= -L.. @LDFLAGS@
+LIBS		= ../libcdk@LIB_SUFFIX@ @LIBS@
+LDFLAGS		= @LDFLAGS@
+
+LIBTOOL		= @LIBTOOL@
+CC		= @CC@
+LINK		= $(LIBTOOL) $(CC)
+x		= @PROG_EXT@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
-CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I$(srcdir)/../include
+CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include @CPPFLAGS@
 
 BINS	= \
 	alphalist_ex$x \
@@ -43,6 +44,7 @@ BINS	= \
 	position_ex$x \
 	preprocess_ex$x \
 	radio_ex$x \
+	radio1_ex$x \
 	raiseCDKObject_ex$x \
 	scale_ex$x \
 	scroll_ex$x \
@@ -51,10 +53,11 @@ BINS	= \
 	subwindow_ex$x \
 	swindow_ex$x \
 	template_ex$x \
+	traverse_ex$x \
 	viewer_ex$x \
 	vinstall$x
 
-LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
 
 all : $(BINS)
 
@@ -80,6 +83,7 @@ menu_ex$x :		menu_ex.c		; $(LINKIT)
 position_ex$x :		position_ex.c		; $(LINKIT)
 preprocess_ex$x :	preprocess_ex.c		; $(LINKIT)
 radio_ex$x :		radio_ex.c		; $(LINKIT)
+radio1_ex$x :		radio1_ex.c		; $(LINKIT)
 raiseCDKObject_ex$x :	raiseCDKObject_ex.c	; $(LINKIT)
 scale_ex$x :		scale_ex.c		; $(LINKIT)
 scroll_ex$x :		scroll_ex.c		; $(LINKIT)
@@ -88,12 +92,15 @@ slider_ex$x :		slider_ex.c		; $(LINKIT)
 subwindow_ex$x :	subwindow_ex.c		; $(LINKIT)
 swindow_ex$x :		swindow_ex.c		; $(LINKIT)
 template_ex$x :		template_ex.c		; $(LINKIT)
+traverse_ex$x :		traverse_ex.c		; $(LINKIT)
 viewer_ex$x :		viewer_ex.c		; $(LINKIT)
 vinstall$x :		vinstall.c		; $(LINKIT)
 #
 # Standard clean directives.
 #
 clean::
+	$(RM) -rf .libs
 	$(RM) core *.o $(BINS)
+
 distclean:: clean
 	$(RM) Makefile

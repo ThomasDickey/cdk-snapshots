@@ -1,0 +1,164 @@
+.\" $Id: cdk_traverse.3,v 1.3 2002/07/09 21:51:16 tom Exp $
+.TH cdk_traverse 3
+.SH NAME
+traverseCDKScreen,
+exitOKCDKScreen,
+exitOKCDKScreenOf,
+exitCancelCDKScreen,
+exitCancelCDKScreenOf,
+resetCDKScreen,
+resetCDKScreenOf - functions to support keyboard traversal
+.SH SYNOPSIS
+.LP
+.B cc
+.RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
+.B \-lcdk
+.RI "[ " "library" " \|.\|.\|. ]"
+.LP
+#include <cdk.h>
+.LP
+.BI "int traverseCDKScreen (CDKSCREEN *" "screen");
+.LP
+.BI "void exitOKCDKScreen (CDKSCREEN *" "screen");
+.LP
+.BI "void exitCancelCDKScreen (CDKSCREEN *" "screen");
+.LP
+.BI "void resetCDKScreen (CDKSCREEN *" "screen");
+.LP
+.BI "void exitOKCDKScreenOf(CDKOBJS *" "obj");
+.LP
+.BI "void exitCancelCDKScreenOf (CDKOBJS *" "obj");
+.LP
+.BI "void resetCDKScreenOf (CDKOBJS *" "obj");
+.SH DESCRIPTION
+The functions above handle the traversal of a screen populated with various
+widgets.  Once the screen has been created and populated with widgets, a
+single call to \f2traverseCDKScreen()\f1 will allow the user to move between
+widgets and enter data (or otherwise manipulate widgets).  The remainder of
+the functions above are intended to be used as callbacks by the widgets on
+the screen.
+.LP
+In order for widgets to be used on a screen which is to be handled by
+\f2traverseCDKScreen()\f1, it must have the following methods available:
+.nf
+.ft C
+   injectCharObj
+   inputWindowObj
+   focusObj
+   unfocusObj
+   saveDataObj
+   refreshDataObj
+.ft R
+.fi
+.LP
+In addition, the following object properties must be properly handled:
+.nf
+.ft C
+   acceptsFocus
+   hasFocus
+   inputWindow
+   dataPtr
+   dataType  
+.ft R
+.fi
+.LP
+At the time of this writing, not all widgets have been modified to work with
+the screen-traversal facility.
+.SH AVAILABLE FUNCTIONS
+int traverseCDKScreen (CDKSCREEN *\f2screen\f1);
+.RS 3
+This function contains the main screen traversal engine.
+It does the following:
+.TP 4 
+ 1.
+Calls the refreshData method on each of the widgets to tell them to
+update their appearance to match the data which are referenced by their
+respective data pointers.
+.TP 4
+ 2.
+Calls the focusObject method on the first widget.
+.TP 4
+ 3.
+Repeats the following until one of the exit functions listed above has been
+called:
+.RS 4
+.TP 3
+*
+Read a keystroke from the keyboard.
+.TP 3
+*
+If the keystroke is ESCAPE and a menu widget is present, activate the
+menu and traverse it until the user selects an entry or hits TAB.
+.TP 3
+*
+If the keystroke is TAB/BACKTAB then call the unfocusObject method on the
+current widget, and move focus to the next/previous widget (not counting
+menu widgets).  Call the focusObject method on the newly current widget.
+.TP 3
+*
+If the keystroke is the EXIT-SAVE keystroke, then call the saveData method
+on each widget and return 1.
+.TP 3
+*
+If the keystroke is the EXIT-CANCEL keystroke, return 0 without saving
+changes made by the user.
+.TP 3
+*
+If the keystroke is the RESET-DATA keystroke, then call the refreshData
+method on each of the widgets to reset their appearance to match the data
+values that were present upon entry.
+.TP 3
+*
+Otherwise, pass the keystroke to the current widget.
+.RE
+.RE
+.TP 5
+.B exitOKCDKScreen
+.RS 3
+Causes the traversal engine to exit after calling the saveData
+method for each of the widgets.
+.RE
+.TP 5
+.B exitOKCDKScreenOf
+.RS 3
+Calls \f2exitOKCDKScreen()\f1 on the screen associated with widget
+\f2obj\f1.  This function was designed to be used as a callback routine
+for a button widget used as an OK button on a data-entry screen.
+.RE
+.TP 5
+.B exitCancelCDKScreen 
+.RS 3
+Causes the traversal engine to exit without saving 
+user modified data.
+.RE
+.TP 5
+.B exitCancelCDKScreenOf
+.RS 3
+Calls \f2exitCancelCDKScreen()\f1 on the screen associated with widget
+\f2obj\f1.  This function was designed to be used as a callback routine
+for a button widget used as a Cancel button on a data-entry screen.
+.RE
+.TP 5
+.B resetCDKScreen
+.RS 3 
+Causes the traversal engine to call the refreshData
+method for each widget.  This will cause any unsaved changes to be discarded
+and the widget states will be restored to their initial values.
+.RE
+.TP 5
+.B resetCDKScreenOf
+.RS 3
+Calls \f2resetCDKScreen()\f1 on the screen associated with widget
+\f2obj\f1.  This function was designed to be used as a callback routine
+for a button widget used as a Reset button on a data-entry screen.
+.RE
+.SH BUGS
+Not all widgets have had the extra methods added so that they work with 
+the screen traversal engine.
+.SH AUTHOR
+Grant Edwards, Aspen Research Corporation
+.SH SEE ALSO
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3),
+.BR cdk_screen (3)

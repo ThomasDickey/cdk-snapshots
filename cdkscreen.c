@@ -3,77 +3,193 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/09/23 00:16:19 $
- * $Revision: 1.61 $
+ * $Date: 2002/07/27 12:21:39 $
+ * $Revision: 1.67 $
  */
 
-static void segvTrap (int sig);
-
-static boolean validObjType(EObjectType type)
+typedef struct _all_screens
 {
-   switch (type) {
-   case vALPHALIST:
-   case vBUTTONBOX:
-   case vCALENDAR:
-   case vDIALOG:
-   case vENTRY:
-   case vFSELECT:
-   case vGRAPH:
-   case vHISTOGRAM:
-   case vITEMLIST:
-   case vLABEL:
-   case vMARQUEE:
-   case vMATRIX:
-   case vMENTRY:
-   case vMENU:
-   case vRADIO:
-   case vSCALE:
-   case vSCROLL:
-   case vSELECTION:
-   case vSLIDER:
-   case vSWINDOW:
-   case vTEMPLATE:
-   case vVIEWER:
-      return TRUE;
-   default:
-      return FALSE;
+   struct _all_screens *link;
+   CDKSCREEN *screen;
+}
+ALL_SCREENS;
+
+static ALL_SCREENS *all_screens;
+
+typedef struct _all_objects
+{
+   struct _all_objects *link;
+   CDKOBJS *object;
+}
+ALL_OBJECTS;
+
+static ALL_OBJECTS *all_objects;
+
+/*
+ * This is the function called when we trap a SEGV or a BUS error.
+ */
+static void segvTrap (int sig)
+{
+   static int nested;
+   if (!nested++)
+   {
+      endCDK ();
+      printf ("core dumped. your fault! (signal %d)\n", sig);
    }
+   abort ();
 }
 
-void *_newCDKObject(unsigned size, CDKFUNCS *funcs)
+static boolean validObjType (CDKOBJS * obj, EObjectType type)
 {
-   void *result = malloc(size);
-   memset(result, 0, sizeof(CDKOBJS));
-   ((CDKOBJS *)result)->fn = funcs;
+   bool valid = FALSE;
+
+   if (obj != 0 && ObjTypeOf (obj) == type)
+   {
+      switch (type)
+      {
+      case vALPHALIST:
+      case vBUTTON:
+      case vBUTTONBOX:
+      case vCALENDAR:
+      case vDIALOG:
+      case vENTRY:
+      case vFSCALE:
+      case vFSELECT:
+      case vGRAPH:
+      case vHISTOGRAM:
+      case vITEMLIST:
+      case vLABEL:
+      case vMARQUEE:
+      case vMATRIX:
+      case vMENTRY:
+      case vMENU:
+      case vRADIO:
+      case vSCALE:
+      case vSCROLL:
+      case vSELECTION:
+      case vSLIDER:
+      case vSWINDOW:
+      case vTEMPLATE:
+      case vVIEWER:
+	 valid = TRUE;
+	 break;
+      case vTRAVERSE:		/* not really an object */
+      case vNULL:
+	 break;
+      }
+   }
+   return valid;
+}
+
+/*
+ * Returns true if we have done a "new" on this object but no "destroy"
+ */
+bool validCDKObject (CDKOBJS * obj)
+{
+   bool result = FALSE;
+   if (obj != 0)
+   {
+      ALL_OBJECTS *ptr;
+      int item;
+
+      for (ptr = all_objects; ptr != 0; ptr = ptr->link)
+      {
+	 if (ptr->object == obj)
+	 {
+	    result = validObjType (obj, ObjTypeOf (obj));
+	    break;
+	 }
+      }
+   }
    return result;
+}
+
+void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
+{
+   ALL_OBJECTS *item;
+   CDKOBJS *result = 0;
+   if ((item = (ALL_OBJECTS *) calloc (1, sizeof (ALL_OBJECTS))) != 0)
+   {
+      if ((result = (CDKOBJS *) calloc (1, size)) != 0)
+      {
+	 result->fn = funcs;
+	 result->hasFocus = TRUE;
+
+	 item->link = all_objects;
+	 item->object = result;
+	 all_objects = item;
+      }
+      else
+      {
+	 free (item);
+      }
+   }
+   return (void *)result;
+}
+
+void _destroyCDKObject (CDKOBJS * obj)
+{
+   ALL_OBJECTS *p, *q;
+
+   if (validCDKObject (obj))
+   {
+      for (p = all_objects, q = 0; p != 0; q = p, p = p->link)
+      {
+	 if (p->object == obj)
+	 {
+	    /* delink it first, to avoid problems with recursion */
+	    if (q != 0)
+	       q->link = p->link;
+	    else
+	       all_objects = p->link;
+
+	    MethodPtr (obj, destroyObj) (obj);
+	    free (obj);
+	    break;
+	 }
+      }
+   }
 }
 
 /*
  * This creates a new CDK screen.
  */
-CDKSCREEN *initCDKScreen(WINDOW *window)
+CDKSCREEN *initCDKScreen (WINDOW *window)
 {
-   CDKSCREEN *screen = (CDKSCREEN *)malloc (sizeof(CDKSCREEN));
-   int x;
+   ALL_SCREENS *item;
+   CDKSCREEN *screen = 0;
 
-   /* Set signal trap handlers. */
-   signal (SIGSEGV, segvTrap);
-   signal (SIGBUS, segvTrap);
-
-   /* Set up basic curses settings. */
-   noecho();
-   cbreak();
-
-   /* Initialize the CDKSCREEN pointer. */
-   screen->objectCount	= 0;
-   screen->window	= window;
-   for (x=0; x < MAX_OBJECTS; x++)
+   /* initialization, for the first time */
+   if (all_screens == 0)
    {
-      screen->object[x] = 0;
-      screen->cdktype[x] = vNULL;
+      /* Set signal trap handlers. */
+      signal (SIGSEGV, segvTrap);
+      signal (SIGBUS, segvTrap);
+
+      /* Set up basic curses settings. */
+      noecho ();
+      cbreak ();
    }
 
-   /* OK, we are done. */
+   if ((item = (ALL_SCREENS *) malloc (sizeof (ALL_SCREENS))) != 0)
+   {
+      if ((screen = (CDKSCREEN *)calloc (1, sizeof (CDKSCREEN))) != 0)
+      {
+	 item->link = all_screens;
+	 item->screen = screen;
+	 all_screens = item;
+
+	 /* Initialize the CDKSCREEN pointer. */
+	 screen->objectCount = 0;
+	 screen->window = window;
+
+	 /* OK, we are done. */
+      }
+      else
+      {
+	 free (item);
+      }
+   }
    return (screen);
 }
 
@@ -82,17 +198,18 @@ CDKSCREEN *initCDKScreen(WINDOW *window)
  */
 void registerCDKObject (CDKSCREEN *screen, EObjectType cdktype, void *object)
 {
-   /* Set some basic vars. */
-   int objectNumber			= screen->objectCount;
-   CDKOBJS *obj				= (CDKOBJS *)object;
+   int objectNumber = screen->objectCount;
+   CDKOBJS *obj = (CDKOBJS *) object;
 
-   screen->object[objectNumber]		= obj;
-
-   if (validObjType(cdktype)) {
-      (obj)->screenIndex		= objectNumber;
-      (obj)->screen			= screen;
-      screen->cdktype[objectNumber]	= cdktype;
-      screen->objectCount++;
+   if (objectNumber < MAX_OBJECTS - 1)
+   {
+      if (validObjType (obj, cdktype))
+      {
+	 (obj)->screenIndex = objectNumber;
+	 (obj)->screen = screen;
+	 screen->object[objectNumber] = obj;
+	 screen->objectCount++;
+      }
    }
 }
 
@@ -101,32 +218,30 @@ void registerCDKObject (CDKSCREEN *screen, EObjectType cdktype, void *object)
  */
 void unregisterCDKObject (EObjectType cdktype, void *object)
 {
+   CDKOBJS *obj = (CDKOBJS *) object;
    /* Declare some vars. */
    CDKSCREEN *screen;
    int Index, x;
 
-   if (validObjType(cdktype)) {
-      CDKOBJS *obj = (CDKOBJS *)object;
-
-      screen	= (obj)->screen;
-      Index	= (obj)->screenIndex;
+   if (validObjType (obj, cdktype) && obj->screenIndex >= 0)
+   {
+      screen = (obj)->screen;
+      Index = (obj)->screenIndex;
+      obj->screenIndex = -1;
 
       /*
        * If this is the last object -1 then this is the last. If not
        * we have to shuffle all the other objects to the left.
        */
-      for (x=Index; x < screen->objectCount-1; x++)
+      for (x = Index; x < screen->objectCount - 1; x++)
       {
-	 cdktype		= screen->cdktype[x+1];
-	 screen->cdktype[x]	= cdktype;
-	 screen->object[x]	= screen->object[x+1];
+	 screen->object[x] = screen->object[x + 1];
 	 (screen->object[x])->screenIndex = x;
       }
 
       /* Clear out the last widget on the screen list. */
       x = screen->objectCount--;
-      screen->object[x]		= 0;
-      screen->cdktype[x]	= vNULL;
+      screen->object[x] = 0;
    }
 }
 
@@ -135,28 +250,25 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
  */
 void raiseCDKObject (EObjectType cdktype, void *object)
 {
+   CDKOBJS *obj = (CDKOBJS *) object;
    CDKOBJS *swapobject;
-   EObjectType swaptype;
    int swapindex;
    int toppos;
 
-   if (validObjType(cdktype)) {
-      CDKOBJS *obj	= (CDKOBJS *)object;
-      CDKSCREEN *parent	= obj->screen;
+   if (validObjType (obj, cdktype))
+   {
+      CDKSCREEN *parent = obj->screen;
 
-      toppos		= parent->objectCount - 1;
+      toppos = parent->objectCount - 1;
 
-      swapobject	= parent->object[toppos];
-      swaptype		= parent->cdktype[toppos];
-      swapindex		= (obj)->screenIndex;
+      swapobject = parent->object[toppos];
+      swapindex = (obj)->screenIndex;
 
-      (obj)->screenIndex	= toppos;
-      parent->object[toppos]	= obj;
-      parent->cdktype[toppos]	= cdktype;
+      (obj)->screenIndex = toppos;
+      parent->object[toppos] = obj;
 
-      (swapobject)->screenIndex	= swapindex;
-      parent->object[swapindex]	= swapobject;
-      parent->cdktype[swapindex] = swaptype;
+      (swapobject)->screenIndex = swapindex;
+      parent->object[swapindex] = swapobject;
    }
 }
 
@@ -165,28 +277,25 @@ void raiseCDKObject (EObjectType cdktype, void *object)
  */
 void lowerCDKObject (EObjectType cdktype, void *object)
 {
+   CDKOBJS *obj = (CDKOBJS *) object;
    CDKOBJS *swapobject;
-   EObjectType swaptype;
    int swapindex;
    int toppos;
 
-   if (validObjType(cdktype)) {
-      CDKOBJS *obj = (CDKOBJS *)object;
-      CDKSCREEN *parent	= obj->screen;
+   if (validObjType (obj, cdktype))
+   {
+      CDKSCREEN *parent = obj->screen;
 
-      toppos		= 0;
+      toppos = 0;
 
-      swapobject	= parent->object[toppos];
-      swaptype		= parent->cdktype[toppos];
-      swapindex		= (obj)->screenIndex;
+      swapobject = parent->object[toppos];
+      swapindex = (obj)->screenIndex;
 
-      (obj)->screenIndex	= toppos;
-      parent->object[toppos]	= obj;
-      parent->cdktype[toppos]	= cdktype;
+      (obj)->screenIndex = toppos;
+      parent->object[toppos] = obj;
 
-      (swapobject)->screenIndex	= swapindex;
-      parent->object[swapindex]	= swapobject;
-      parent->cdktype[swapindex] = swaptype;
+      (swapobject)->screenIndex = swapindex;
+      parent->object[swapindex] = swapobject;
    }
 }
 
@@ -195,7 +304,7 @@ void lowerCDKObject (EObjectType cdktype, void *object)
  */
 void drawCDKScreen (CDKSCREEN *cdkscreen)
 {
-    refreshCDKScreen (cdkscreen);
+   refreshCDKScreen (cdkscreen);
 }
 
 /*
@@ -211,12 +320,12 @@ void refreshCDKScreen (CDKSCREEN *cdkscreen)
    wrefresh (cdkscreen->window);
 
    /* We just call the drawObject function. */
-   for (x=0; x < objectCount; x++)
+   for (x = 0; x < objectCount; x++)
    {
       CDKOBJS *obj = cdkscreen->object[x];
 
-      if (validObjType (cdkscreen->cdktype[x]))
-	 obj->fn->drawObj(obj, obj->box);
+      if (validObjType (obj, ObjTypeOf (obj)))
+	 obj->fn->drawObj (obj, obj->box);
    }
 }
 
@@ -229,10 +338,13 @@ void eraseCDKScreen (CDKSCREEN *cdkscreen)
    int x;
 
    /* We just call the drawObject function. */
-   for (x=0; x < objectCount; x++)
+   for (x = 0; x < objectCount; x++)
    {
-      if (validObjType (cdkscreen->cdktype[x])) {
-	  cdkscreen->object[x]->fn->eraseObj(cdkscreen->object[x]);
+      CDKOBJS *obj = cdkscreen->object[x];
+
+      if (validObjType (obj, ObjTypeOf (obj)))
+      {
+	 obj->fn->eraseObj (obj);
       }
    }
 
@@ -241,42 +353,63 @@ void eraseCDKScreen (CDKSCREEN *cdkscreen)
 }
 
 /*
+ * Destroy all of the objects on a screen
+ */
+void destroyCDKScreenObjects (CDKSCREEN *cdkscreen)
+{
+   int x;
+
+   for (x = 0; x < cdkscreen->objectCount; x++)
+   {
+      CDKOBJS *obj = cdkscreen->object[x];
+      int before = cdkscreen->objectCount;
+
+      if (validObjType (obj, ObjTypeOf (obj)))
+      {
+	 MethodPtr (obj, eraseObj) (obj);
+	 _destroyCDKObject (obj);
+	 x -= (cdkscreen->objectCount - before);
+      }
+   }
+}
+
+/*
  * This destroys a CDK screen.
  */
 void destroyCDKScreen (CDKSCREEN *screen)
 {
-   free (screen);
+   ALL_SCREENS *p, *q;
+
+   for (p = all_screens, q = 0; p != 0; q = p, p = p->link)
+   {
+      if (screen == p->screen)
+      {
+	 if (q != 0)
+	    q->link = p->link;
+	 else
+	    all_screens = p->link;
+	 free (p);
+	 free (screen);
+	 break;
+      }
+   }
 }
 
 /*
  * This is added to remain consistent.
  */
-void endCDK(void)
+void endCDK (void)
 {
    /* Turn echoing back on. */
-   echo();
+   echo ();
 
    /* Turn off cbreak. */
-   nocbreak();
+   nocbreak ();
 
    /* End the curses windows. */
-   endwin();
+   endwin ();
 
 #ifdef HAVE_XCURSES
-   XCursesExit();
+   XCursesExit ();
 #endif
-}
-
-/*
- * This is the function called when we trap a SEGV or a BUS error.
- */
-static void segvTrap (int sig)
-{
-   static int nested;
-   if (!nested++)
-   {
-      endCDK();
-      printf ("core dumped. your fault! (signal %d)\n", sig);
-   }
-   abort();
 }

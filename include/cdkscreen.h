@@ -1,5 +1,5 @@
 /*
- * $Id: cdkscreen.h,v 1.8 2002/04/30 21:44:34 tom Exp $
+ * $Id: cdkscreen.h,v 1.10 2002/07/17 21:06:24 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -53,9 +53,14 @@ extern "C" {
  * Declare and definitions needed for the widget.
  */
 #define MAX_OBJECTS	1000
-#define MAX_WIDGETS	MAX_OBJECTS
 
 struct CDKOBJS;
+
+typedef enum {
+      CDKSCREEN_NOEXIT = 0
+      , CDKSCREEN_EXITOK
+      , CDKSCREEN_EXITCANCEL
+} EExitStatus;
 
 /*
  * Define the CDK screen structure.
@@ -63,8 +68,8 @@ struct CDKOBJS;
 struct SScreen {
    WINDOW *		window;
    struct CDKOBJS *	object[MAX_OBJECTS];
-   EObjectType		cdktype[MAX_OBJECTS];
    int			objectCount;
+   EExitStatus		exitStatus;
 };
 typedef struct SScreen CDKSCREEN;
 
@@ -160,6 +165,12 @@ void drawCDKScreen (
  */
 void eraseCDKScreen (
 		CDKSCREEN *	/* screen */);
+
+/*
+ * Destroy all of the widgets on a screen
+ */
+
+void destroyCDKScreenObjects (CDKSCREEN *cdkscreen);
 
 /*
  * This frees up any memory the CDKSCREEN pointer used.

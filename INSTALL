@@ -1,4 +1,11 @@
 Cdk Installation Guide
+-------------------------------------------------------------------------------
+
+Cdk should build/work on any Unix system running SVr4 curses or X/Open curses.
+
+The original INSTALL notes follow:
+
+-------------------------------------------------------------------------------
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 -------------------------------------------------------------------------------
 
@@ -14,7 +21,7 @@ platforms:
                     makefile. Sorry.)
 	* HPUX 9.* (and even HPUX 10.* but there is no mention of this in the
                     makefile. Sorry.)
-	* Linux (all sorts Slakware, BSD, and Redhat)
+	* Linux (all sorts Slackware, BSD, and Redhat)
 
 Building
 --------
@@ -26,7 +33,7 @@ the following steps:
 	change the default install directory use the --prefix 
 	command line argument on configure. For example, if you
 	want to install under /export/local instead, run the command:
-	./confugure --prefix="/export/local"
+	./configure --prefix="/export/local"
 
 2) Type make. This will make the library, the example binaries
 	and the demonstration binaries.

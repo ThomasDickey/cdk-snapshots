@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.13 2002/04/30 21:58:39 tom Exp $
+ * $Id: viewer.h,v 1.15 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -226,6 +226,13 @@ void setCDKViewerBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKViewerBackgroundAttrib (
+		CDKVIEWER *	/* viewer */,
+		chtype		/* attribute */);
+
+/*
  * This draws the viewer field on the screen.
  */
 #define drawCDKViewer(obj,box) drawCDKObject(obj,box)
@@ -248,8 +255,7 @@ void setCDKViewerBackgroundColor (
 /*
  * This destroys the widget and all the memory associated with the widget.
  */
-void destroyCDKViewer (
-		CDKVIEWER *	/* viewer */);
+#define destroyCDKViewer(obj) destroyCDKObject(obj)
 
 #ifdef __cplusplus
 }

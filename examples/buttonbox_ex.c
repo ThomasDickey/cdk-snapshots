@@ -1,10 +1,13 @@
+/*
+ * $Id: buttonbox_ex.c,v 1.13 2002/07/14 15:27:49 tom Exp $
+ */
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="buttonbox_ex";
+char *XCursesProgramName = "buttonbox_ex";
 #endif
 
-static BINDFN_PROTO(entryCB);
+static BINDFN_PROTO (entryCB);
 
 /*
  * This program demonstrates the Cdk buttonbox widget.
@@ -21,11 +24,11 @@ int main (void)
    int selection;
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Create the entry widget. */
    entry = newCDKEntry (cdkscreen, CENTER, CENTER,
@@ -34,12 +37,12 @@ int main (void)
 
    /* Create the button box widget. */
    buttonWidget = newCDKButtonbox (cdkscreen,
-			getbegx(entry->win),
-			getbegy(entry->win) + entry->boxHeight - 1,
-			1, entry->boxWidth - 1,
-			0, 1, 2,
-			buttons, 2, A_REVERSE,
-			TRUE, FALSE);
+				   getbegx (entry->win),
+				   getbegy (entry->win) + entry->boxHeight - 1,
+				   1, entry->boxWidth - 1,
+				   0, 1, 2,
+				   buttons, 2, A_REVERSE,
+				   TRUE, FALSE);
 
    /* Set the lower left and right characters of the box. */
    setCDKEntryLLChar (entry, ACS_LTEE);
@@ -47,10 +50,10 @@ int main (void)
    setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
    setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-  /*
-   * Bind the Tab key in the entry field to send a
-   * Tab key to the button box widget.
-   */
+   /*
+    * Bind the Tab key in the entry field to send a
+    * Tab key to the button box widget.
+    */
    bindCDKObject (vENTRY, entry, KEY_TAB, entryCB, buttonWidget);
 
    /* Activate the entry field. */
@@ -63,16 +66,20 @@ int main (void)
    destroyCDKEntry (entry);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);
-   endCDK();
+   endCDK ();
 
    /* Spit out some info. */
-   printf ("You typed in (%s) and selected button (%s)\n", info, buttons[selection]);
+   printf ("You typed in (%s) and selected button (%s)\n",
+	   (info != 0) ? info : "<null>",
+	   buttons[selection]);
    exit (0);
 }
 
-static int entryCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int entryCB (EObjectType cdktype GCC_UNUSED,
+		    void *object GCC_UNUSED,
+		    void *clientData, chtype key)
 {
-   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
+   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *) clientData;
    injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.13 2002/04/30 21:42:14 tom Exp $
+ * $Id: alphalist.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -112,9 +112,7 @@ char *activateCDKAlphalist (
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKAlphalist (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* input */);
+#define injectCDKAlphalist(obj,input) injectCDKObject(obj,input,String)
 
 /*
  * This sets multiple attributes of the alphalist widget.
@@ -208,6 +206,13 @@ void setCDKAlphalistBackgroundColor (
 		char *		/* color */);
 
 /*
+ * This sets the background attribute of the widget.
+ */ 
+void setCDKAlphalistBackgroundAttrib (
+		CDKALPHALIST *	/* alphalist */,
+		chtype		/* attribute */);
+
+/*
  * This draws the widget on the screen.
  */
 #define drawCDKAlphalist(obj,box) drawCDKObject(obj,box)
@@ -230,8 +235,7 @@ void setCDKAlphalistBackgroundColor (
 /*
  * This destroys the widget and all the memory associated with it.
  */
-void destroyCDKAlphalist (
-		CDKALPHALIST *	/* alphalist */);
+#define destroyCDKAlphalist(obj) destroyCDKObject(obj)
 
 /*
  * These functions set the pre and post process functions for the widget.

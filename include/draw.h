@@ -1,5 +1,5 @@
 /*
- * $Id: draw.h,v 1.6 2002/04/30 22:02:21 tom Exp $
+ * $Id: draw.h,v 1.7 2002/07/17 10:04:54 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -69,6 +69,17 @@ void drawLine (
 		int		/* endx */,
 		int		/* endy */,
 		chtype		/* character */);
+
+/*
+ * This writes a blank string segment on the given window.
+ */
+void writeBlanks (
+		WINDOW *	/* window */,
+		int		/* xpos */,
+		int		/* ypos */,
+		int		/* align */,
+		int		/* start */,
+		int		/* len */);
 
 /*
  * This writes a string segment on the given window.

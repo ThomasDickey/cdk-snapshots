@@ -21,11 +21,9 @@ CF_DISABLE_ECHO
 CF_PROG_EXT
 CF_LIB_PREFIX
 
-AC_ARG_WITH(warnings,
-[  --with-warnings         turn on gcc warnings, for debugging ],[
-	CF_GCC_ATTRIBUTES
-	CF_GCC_WARNINGS
-])
+CF_WITH_WARNINGS
+CF_WITH_LIBTOOL
+CF_VERSION_INFO
 
 dnl
 dnl Checks for libraries.
@@ -107,9 +105,24 @@ pdcurses) #(vi
 	;;
 esac
 
-CF_CURSES_FUNCS(start_color getmaxx getmaxy getbegx getbegy mvwin Xinitscr)
+CF_CURSES_FUNCS(\
+	Xinitscr\
+	getbegx \
+	getbegy \
+	getmaxx \
+	getmaxy \
+	start_color \
+	waddchnstr \
+)
+
+CF_CURSES_SETBEGYX
 
 dnl
 dnl Set pre-processor compile time variables.
 dnl
-AC_OUTPUT(Makefile cli/Makefile examples/Makefile demos/Makefile,,,sort)
+AC_OUTPUT(
+	include/cdk_version.h:include/cdk_version.hin
+	Makefile
+	cli/Makefile
+	examples/Makefile
+	demos/Makefile,,,sort)
