@@ -1,0 +1,206 @@
+Cdk Version Change List
+Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
+-------------------------------------------------------------------------------
+
+This file outlines all of the changes/additions from one release to another.
+You should also look at the BUGS file for information related to bugs which
+were fixed from release to release.
+
+
+4.9.7 -> 4.9.8 (December 1998)
+==========================================
+	* Changed the way key bindings worked. If the key binding exited
+	  with a non-zero value then the widget would exit like the user
+	  pressed the escape key. This provides more control over key
+	  binding callbacks. Now the bind prototype is:
+	     int function (EObjectType cdktype, void *object, void *clientData, chtype key);
+	* Reversed the order of this file. The most recent first.
+
+4.9.6 -> 4.9.7 (December 1998)
+==========================================
+	* Went from static Makefiles to autoconf and configure. (finally)
+
+4.9.2 -> 4.9.6
+==========================================
+	* Once again, it's a complete mystery.
+
+4.9.1 -> 4.9.2
+==========================================
+	* Changed the activateCDKViewer funtion to be more compliant
+	  with the rest of the activateCDKXXX functions.
+
+4.9.0 -> 4.9.1
+==========================================
+	* Added the functions setCDKXXXULChar/URChar/LLChar/LRChar,
+	  setCDKXXXVerticalChar, setCDKHorizontalChar, and
+	  setCDKXXXBoxAttribute to each of the widgets but the menu
+	  widget. These functions allow the programmer to define
+	  the corner characters of the widget as well as the vertical,
+	  horizontal, and attributes of the box.
+	* Added the function setCDKXXXBackgroundColor. This sets the
+ 	  background color of the widget's window. 
+	* Added makefile for the SGI
+	* Created the buttonbox widget.
+	* Added in Ctrl-N and Ctrl-P to switch between buttons on the
+	  dialog box and viewer.
+	* Added the functions setCDKRadioItems and setCDKSelectionItems.
+	* Added the functions setCDKRadioTitle, setCDKSelectionTitle,
+	  setCDKScrollTitle.
+
+4.8.3 -> 4.9.0
+==========================================
+	* Added a parameter to the setCDKViewer function to turn on/off the 
+	  line X of Y in the top left corner.
+	* Removed the eraseCDKXXX in each of the drawCDKXXX functions. This 
+	  results in a quicker refresh and less overhead when using the 
+	  widgets. This should make things A LOT faster. (I suppose it's about 
+	  time I had complete faith in curses optimized screen refreshing. :) )
+	  The side effect is that you might have to change some programs to 
+	  force an eraseCDKXXX/drawCDKXXX when you think the screen is garbled.
+	* Added a little bit of logic in char2Chtype when a terminal cannot 
+	  display color, bold will be used instead.
+	* Cleaned up the way filename completion works in the file selector.
+	  You may now type in a path and hit tab and that directory tree
+	  will be loaded.
+	* Added the ability to use the ~ character to refer to a users home
+	  directory, in the file selector. (like csh variants)
+	* Changed the setCDKXXX functions. Made many different setCDKXXX
+	  functions, one for each item being set. This reduces the overhead
+	  of all the setCDKXXX functions.
+	* Drastically changed cdk.h. Split the widget definitions and 
+	  functions into their own header files. This makes it easier
+	  to expand CDK.
+	* Added the ability to have multiple line titles on most of the widgets.
+	* Added the functions setCDKSelectionChoice/getCDKSelectionChoice to
+	  set/get a single choice value from a selection list.
+	* Added the functions setCDKSelectionModes/getCDKSelectionModes to
+	  set/get the ability to set some items in the selection list as
+	  editable/uneditable.
+	* Added makefile for the DEC Alpha (I forget who sent me this, if
+	  you want recognition, mail me again)
+	* Created a 'visual install' using some of the widgets. Try it.
+	  (type in make vinstall once the library has been made)
+	* Added the ability to set the width of the widget respective to the
+	  screen size. If you pass in a negative value, the widget will
+	  adjust to the width of the window the widget sits in minus the 
+	  given value. If zero is given, then the widget will be the full
+	  width of the window. This removes the need to know how wide the
+	  window is when the widget is created.
+	* Changed the demos and examples makefiles. I was making things too
+	  difficult. It's simpler and easier to compile these directories.
+	* Re-Purified the code. (no leaks, no UMR's, no problem... :) )
+	* Quantified the code a bit for those who complained about the
+	  performance. It has been sped up; I just hope it's enough for
+	  some of you speed freaks. :)
+	* Added the functions get/setCDKTemplateMin. This allows you to
+	  set the minimum number of characters to type in before the
+	  widget wil accept the typed in value.
+	* Changed the documentation to reflect all the changes.
+
+4.8.1 -> 4.8.2 -> 4.8.3
+==========================================
+	* It's a complete mystery.
+
+4.8.0 -> 4.8.1
+==========================================
+	* Changed the bind prototype function from
+	  void function (EObjectType cdktype, void *object, void *clientData);
+	  to
+	  void function (EObjectType cdktype, void *object, void *clientData, chtype key);
+	* Added scroll bars to the scrolling list, the selection list, and
+	  the radio list.
+	* Modified the template widget so the new character takes on the
+	  color/attributes of the plate widget.
+	* Added the function classes moveCDKXXX and positionCDKXXX.
+	* Changed the structure of the makefile and created a single makefile
+	  for each platform to compile on.
+	* Added support for the delete character KEY_DC.
+
+4.7.0 -> 4.8.0
+==========================================
+	* Fixed bugs documented by Miguel Marques (miguel@apex.cos.yorku.ca)
+	  in the entry and mentry widgets. The bug displays itself when you 
+	  use vHINT or vINT display types. The vHINT actually showed the 
+	  numbers being typed in (which goes against the hidden element of 
+	  this display type) and in certain cases vINT allowed non-alph 
+	  characters to be entered.
+	* Added compile support for Free BSD.
+	* Cleaned up the behavior of the entry field.
+	* Cleaned up the behavior of the scrolling list.
+	* Cleaned up the behavior of the radio list.
+	* Cleaned up the behavior of the selection list.
+	* Changed (improved) the behavior of the file selector widget.
+	* Made the activateCDKFselect behave like the other widgets.
+	* Added injectCDKFselect function.
+	* Added the calendar widget.
+	* Added the slider widget.
+	* Added the alphalist widget on the request of Luigi Rizzo.
+	  (luigi@ien.unipi.it)
+	* Fixed a bug with addCDKScrollItem.
+	* Fixed segmentation fault in the rolodex demo.
+	* Changed the macros MAX, MIN, and DIFF to MAXIMUM, MINIMUM,
+ 	  and DIFFERENCE respectively to avoid conflicts.
+	* Fixed errors with the alphalist and fselect widgets.
+	* Added the link format comand for the file viewer. This allows
+	  users to 'hyper-link' text files.
+	* Removed the use of CTRL-N.
+	* Added the ability to load/save with the scrolling window.
+	* Added filename completion to the file selector.
+	* Cleaned up massive changes and errors in the documentation.
+	* Added 'emacs-like' field editing capabilities to the entry
+	  and mentry widgets.
+
+4.6.1 -> 4.7.0
+==========================================
+	* Added injectCDKXXX class of functions. This allows you to inject a
+	  single character into the widget.
+	* Changed the activateCDKXXX to take an array of chtype to send in a
+	  set of predefined characters. This is very useful for performming
+	  automated tests of your programs.
+	* Added functions setCDKXXXPreProcess and setCDKXXXPosProcess to 
+	  perform actions before and after a character has been hit.
+	* Made the use of CTRL-N consistent.
+	* Fixed manual page errors.
+	* Added the ability to cut text from the entry, mentry, and template
+	  widgets. (uses a global buffer)
+	* Added the ability to copy text from the entry, mentry, and template
+	  widgets. (uses a global buffer)
+	* Added the ability to paste text into the entry, mentry, and template
+	  widgets. (uses a global buffer)
+	* Added the use of the escape key to exit a widget early.
+	* Added the functions addCDKScroll/deleteCDKScroll to insert and 
+	  delete items in an active scrolling list.
+	* Added a parameter to the menu to specify where the menu windows
+	  were to be drawn. (top or bottom)
+	* Added execCDKSwindow to the swindow function list. This allows the
+	  user to 'spawn' a command and direct the output to the scrolling
+	  window.
+
+4.6.0 -> 4.6.1
+==========================================
+	* Removed the callback function parameter from the entry, mentry,
+	  matrix, and template widgets. Added in a function setCDKXXXCB.
+	  The XXX is the name of the widget.
+	* Changed the viewer widget functions around. Moved activateCDKViewer
+	  to setCDKViewer. Moved manageCDKViewer to activateCDKViewer and 
+	  removed the old setCDKViewer.
+	* Added in special drawing characters.
+	* Added in indent format to indent lines.
+
+4.6.0 (January 1996)
+==========================================
+	* First pulic release of Cdk.
+
+If you want to get a hold of me mail me at one of the following:
+        glover@credit.erin.utoronto.ca
+        vexus@home.com
+
+The CDK Web page has several homes. They are:
+        http://members.home.net/vexus/CDK.html (official)
+        http://www.datasoft.on.ca/~cdk (Sponsered by the nice folks at Datasoft)
+
+ttfn,
+        Mike
+
+PS: There is also a Perl5 extension of this library for you Perl5 fans.
+    Look under any CPAN site under the directory CPAN/authors/id/GLOVER.

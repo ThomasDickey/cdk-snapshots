@@ -1,0 +1,83 @@
+#include "cdk.h"
+
+#ifdef HAVE_XCURSES
+char *XCursesProgramName="alphalist_ex";
+#endif
+
+/*
+ * This program demonstrates the Cdk alphalist widget.
+ */
+#define	MAXINFOLINES	10000
+
+int getUserList (char **list, int maxItems);
+
+int main(int argc, char **argv)
+{
+   /* Declare variables. */
+   CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
+   CDKALPHALIST *alphaList	= (CDKALPHALIST *)NULL;
+   WINDOW *cursesWin		= (WINDOW *)NULL;
+   char *title			= "<C></B/24>Alpha List\n<C>Title";
+   char *label			= "</B>Account: ";
+   char *word			= (char *)NULL;
+   char *info[MAXINFOLINES], *mesg[5], temp[256];
+   int count;
+
+   /* Set up CDK. */ 
+   cursesWin = initscr();
+   cdkscreen = initCDKScreen (cursesWin);
+
+   /* Start color. */
+   initCDKColor();
+
+   /* Get the user list. */
+   count = getUserList (info, MAXINFOLINES);
+
+   /* Create the alpha list widget. */
+   alphaList = newCDKAlphalist (cdkscreen, CENTER, CENTER, 
+				0, 0, title, label,
+				info, count,
+				'_', A_REVERSE, TRUE, FALSE);
+
+   /* Let them play with the alpha list. */
+   word = activateCDKAlphalist (alphaList, NULL);
+
+   /* Determine what the user did. */
+   if (alphaList->exitType == vESCAPE_HIT)
+   {
+      mesg[0] = "<C>You hit escape. No word was selected.";
+      mesg[1] = "",
+      mesg[2] = "<C>Press any key to continue.";
+      popupLabel (cdkscreen, mesg, 3);
+   }
+   else if (alphaList->exitType == vNORMAL)
+   {
+      mesg[0] = "<C>You selected the following";
+      sprintf (temp, "<C>(%s)", word);
+      mesg[1] = copyChar (temp);
+      mesg[2] = "";
+      mesg[3] = "<C>Press any key to continue.";
+      popupLabel (cdkscreen, mesg, 4);
+   }
+
+   /* Clean up. */
+   destroyCDKAlphalist (alphaList);
+   delwin (cursesWin);
+   endCDK();
+   exit (0);
+}
+
+/*
+ * This reads the passwd file and retrieves user information.
+ */
+int getUserList (char **list, int maxItems)
+{
+   struct passwd *ent;
+   int x = 0;
+
+   while ( (ent = getpwent ()) != NULL)
+   {
+      list[x++] = copyChar (ent->pw_name);
+   }
+   return x;
+}
