@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:42:06 $
- * $Revision: 1.149 $
+ * $Date: 2004/10/04 22:53:31 $
+ * $Revision: 1.150 $
  */
 
 /*
@@ -237,8 +237,9 @@ static void setupLine (CDKVIEWER *viewer, boolean interpret, char *list, int x)
 	       while (*s != 0)
 	       {
 		  if (pass)
-		     t[len] = CharOf(*s++);
+		     t[len] = CharOf(*s);
 		  ++len;
+		  ++s;
 	       }
 	    }
 	 }
