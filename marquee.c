@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:01:18 $
- * $Revision: 1.63 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.65 $
  */
 
 DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
@@ -14,7 +14,7 @@ DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
 CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean Box, boolean shadow)
 {
    CDKMARQUEE *marquee	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
    int xpos		= xplace;
    int ypos		= yplace;
    int boxHeight	= 3;
@@ -33,7 +33,7 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(marquee));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the marquee pointer. */
    ScreenOf(marquee)	= cdkscreen;
@@ -226,7 +226,7 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight, BorderOf(marquee));
+   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

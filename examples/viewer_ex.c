@@ -1,4 +1,4 @@
-/* $Id: viewer_ex.c,v 1.10 2003/11/25 00:56:22 tom Exp $ */
+/* $Id: viewer_ex.c,v 1.11 2003/11/30 20:22:51 tom Exp $ */
 
 #include <cdk.h>
 
@@ -18,38 +18,24 @@ int main (int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C>Pick\n<C>A\n<C>File";
    char *label		= "File: ";
-   char *directory	= ".";
    char **info		= 0;
    char *button[5];
-   char *filename	= 0;
    char vTitle[256];
    char *mesg[4];
    char temp[256];
-   int selected, lines, ret;
-   int interp_it	= FALSE;
-   int link_it		= FALSE;
+   int selected, lines;
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      if ((ret = getopt (argc, argv, "f:d:il")) == EOF)
-	 break;
-      switch (ret)
-      {
-	 case 'f':	/* specify filename, bypassing fselect */
-	    filename = optarg;
-	    break;
-	 case 'd' :	/* specify starting directory for fselect */
-	    directory = optarg;
-	    break;
-	 case 'i':	/* interpret embedded markup */
-	    interp_it = TRUE;
-	    break;
-	 case 'l':	/* load file via embedded link */
-	    link_it = TRUE;
-	    break;
-      }
-   }
+   CDK_PARAMS params;
+   char *filename;		/* specify filename, bypassing fselect */
+   char *directory;		/* specify starting directory for fselect */
+   int interp_it;		/* interpret embedded markup */
+   int link_it;			/* load file via embedded link */
+
+   CDKparseParams(argc, argv, &params, "f:d:il" CDK_CLI_PARAMS);
+   filename     = CDKparamString (&params, 'f');
+   directory    = CDKparamString2 (&params, 'd', ".");
+   interp_it	= CDKparamNumber2 (&params, 'i', FALSE);
+   link_it	= CDKparamNumber2 (&params, 'l', FALSE);
 
    /* Create the viewer buttons. */
    button[0]	= "</5><OK><!5>";
@@ -65,9 +51,15 @@ int main (int argc, char **argv)
    /* Get the filename. */
    if (filename == 0)
    {
-      fSelect = newCDKFselect (cdkscreen, CENTER, CENTER, 20, 65,
+      fSelect = newCDKFselect (cdkscreen,
+			       CDKparamValue(&params, 'X', CENTER),
+			       CDKparamValue(&params, 'Y', CENTER),
+			       CDKparamValue(&params, 'H', 20),
+			       CDKparamValue(&params, 'W', 65),
 			       title, label, A_NORMAL, '_', A_REVERSE,
-			       "</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
+			       "</5>", "</48>", "</N>", "</N>",
+			       CDKparamValue(&params, 'N', TRUE),
+			       CDKparamValue(&params, 'S', FALSE));
 
       /*
        * Set the starting directory. This is not necessary because when
@@ -96,8 +88,14 @@ int main (int argc, char **argv)
    }
 
    /* Create the file viewer to view the file selected.*/
-   example = newCDKViewer (cdkscreen, CENTER, CENTER, 20, -2,
-			   button, 2, A_REVERSE, TRUE, FALSE);
+   example = newCDKViewer (cdkscreen,
+			   CDKparamValue(&params, 'X', CENTER),
+			   CDKparamValue(&params, 'Y', CENTER),
+			   CDKparamValue(&params, 'H', 20),
+			   CDKparamValue(&params, 'W', -2),
+			   button, 2, A_REVERSE,
+			   CDKparamValue(&params, 'N', TRUE),
+			   CDKparamValue(&params, 'S', FALSE));
 
    /* Could we create the viewer widget? */
    if (example == 0)

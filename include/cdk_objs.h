@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.22 2003/11/15 19:21:26 tom Exp $
+ * $Id: cdk_objs.h,v 1.24 2003/11/27 16:36:39 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -147,13 +147,18 @@ typedef struct CDKOBJS {
    CDKDataUnion resultData;
    int          bindingCount;
    CDKBINDING * bindingList;
+   /* title-drawing */
+   chtype **	title;
+   int *	titlePos;
+   int *	titleLen;
+   int		titleLines;
    /* line-drawing (see 'box') */
-   chtype       ULChar;
-   chtype       URChar;
-   chtype       LLChar;
-   chtype       LRChar;
-   chtype       VTChar;
-   chtype       HZChar;
+   chtype       ULChar;		/* lines: upper-left */
+   chtype       URChar;		/* lines: upper-right */
+   chtype       LLChar;		/* lines: lower-left */
+   chtype       LRChar;		/* lines: lower-right */
+   chtype       VTChar;		/* lines: vertical */
+   chtype       HZChar;		/* lines: horizontal */
    chtype       BXAttr;
 } CDKOBJS;
 
@@ -163,6 +168,12 @@ typedef struct CDKOBJS {
 #define WindowOf(ptr)           (ScreenOf(ptr)->window)
 #define BorderOf(p)             (ObjOf(p)->borderSize)
 #define ResultOf(p)             (ObjOf(p)->resultData)
+
+/* titles */
+#define TitleOf(w)              ObjOf(w)->title
+#define TitlePosOf(w)           ObjOf(w)->titlePos
+#define TitleLenOf(w)           ObjOf(w)->titleLen
+#define TitleLinesOf(w)         ObjOf(w)->titleLines
 
 /* line-drawing characters */
 #define ULCharOf(w)             ObjOf(w)->ULChar
@@ -245,6 +256,11 @@ static const CDKFUNCS my_funcs = { \
 
 extern int getcCDKObject (CDKOBJS *);
 extern void positionCDKObject (CDKOBJS *, WINDOW *);
+
+/* title-storage is implemented identically with all widgets */
+extern int setCdkTitle (CDKOBJS *, char *, int);
+extern void drawCdkTitle (WINDOW *, CDKOBJS *);
+extern void cleanCdkTitle (CDKOBJS *);
 
 #ifdef __cplusplus
 }

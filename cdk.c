@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/25 00:28:07 $
- * $Revision: 1.186 $
+ * $Date: 2003/11/30 21:18:52 $
+ * $Revision: 1.188 $
  */
 
 #define L_MARKER '<'
@@ -53,12 +53,12 @@ void cleanChtype (chtype *s, int len, chtype character)
  * This takes an x and y position and realigns the values iff they sent in
  * values like CENTER, LEFT, RIGHT, ...
  */
-void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight, int borderSize)
+void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 {
    int first, gap, last;
 
-   first = (getbegx(window) + borderSize);
-   last	 = (getmaxx(window) - 2*borderSize);
+   first = getbegx(window);
+   last	 = getmaxx(window);
    if ((gap = (last - boxWidth)) < 0) gap = 0;
    last	 = first + gap;
 
@@ -73,15 +73,16 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight,
    case CENTER:
       (*xpos) = first + (gap / 2);
       break;
+   default:
+      if ((*xpos) > last)
+	 (*xpos) = last;
+      else if ((*xpos) < first)
+	 (*xpos) = first;
+      break;
    }
 
-   if ((*xpos) > last)
-      (*xpos) = last;
-   else if ((*xpos) < first)
-      (*xpos) = first;
-
-   first = (getbegy(window) + borderSize);
-   last	 = (getmaxy(window) - 2*borderSize);
+   first = getbegy(window);
+   last	 = getmaxy(window);
    if ((gap = (last - boxHeight)) < 0) gap = 0;
    last	 = first + gap;
 
@@ -96,12 +97,14 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight,
    case CENTER:
       (*ypos) = first + (gap/2);
       break;
+   default:
+      if ((*ypos) > last) {
+	 (*ypos) = last;
+      } else if ((*ypos) < first) {
+	 (*ypos) = first;
+      }
+      break;
    }
-
-   if ((*ypos) > last)
-      (*ypos) = last;
-   else if ((*ypos) < first)
-      (*ypos) = first;
 }
 
 /*
@@ -1241,7 +1244,7 @@ char *baseName (char *pathname)
 	    /* Find the last '/' in the pathname. */
 	    if (pathname[x] == '/')
 	    {
-	       strcpy(base, pathname + x);
+	       strcpy(base, pathname + x + 1);
 	       break;
 	    }
 	 }
@@ -1285,32 +1288,33 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
 {
    int dimension = 0;
 
-   /* If the user passed in FULL, return the number of rows. */
+   /* If the user passed in FULL, return the parent's size. */
    if ((proposedDim == FULL) || (proposedDim == 0))
    {
-      return parentDim;
+      dimension = parentDim;
    }
-
-   /* If they gave a positive value, return it. */
-   if (proposedDim >= 0)
+   else
    {
-      if (proposedDim >= parentDim)
+      /* If they gave a positive value, return it. */
+      if (proposedDim >= 0)
       {
-	 return parentDim;
+	 if (proposedDim >= parentDim)
+	    dimension = parentDim;
+	 else
+	    dimension = (proposedDim + adjustment);
       }
-      return (proposedDim + adjustment);
-   }
+      else
+      {
+	/*
+	 * If they gave a negative value, then return the
+	 * dimension of the parent minus the value given.
+	 */
+	 dimension = parentDim + proposedDim;
 
-  /*
-   * If they gave a negative value, then return the
-   * dimension of the parent minus the value given.
-   */
-   dimension = parentDim + proposedDim;
-
-   /* Just to make sure. */
-   if (dimension < 0)
-   {
-      return parentDim;
+	 /* Just to make sure. */
+	 if (dimension < 0)
+	    dimension = parentDim;
+      }
    }
    return dimension;
 }

@@ -46,7 +46,7 @@ echo "<C>Hit </R>space<!R> to continue." >> ${tmp}
 #
 # Create the label widget to display the information.
 #
-${CDK_LABEL} -f ${tmp} -p " " -B
+${CDK_LABEL} -f ${tmp} -p " "
 
 #
 # Clean up.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:13:21 $
- * $Revision: 1.58 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.62 $
  */
 
 /*
@@ -19,18 +19,15 @@ DeclareCDKObjects(SLIDER, Slider, setCdk, Int);
 CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype filler, int fieldWidth, int start, int low, int high, int inc, int fastInc, boolean Box, boolean shadow)
 {
    CDKSLIDER *slider	= 0;
-   chtype *holder	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxHeight;
    int boxWidth		= 0;
-   int maxWidth		= INT_MIN;
-   int horizontalAdjust = 0;
+   int horizontalAdjust, oldWidth;
    int xpos		= xplace;
    int ypos		= yplace;
    int highValueLen	= intlen (high);
-   char **temp		= 0;
-   int x, len, junk, junk2;
+   int junk;
 
    if ((slider = newCDKObject(CDKSLIDER, &my_funcs)) == 0)
       return (0);
@@ -42,7 +39,6 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    slider->label	= 0;
    slider->labelLen	= 0;
    slider->labelWin	= 0;
-   slider->titleLines	= 0;
 
   /*
    * If the fieldWidth is a negative value, the fieldWidth will
@@ -62,58 +58,22 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       boxWidth = fieldWidth + highValueLen + 2*BorderOf(slider);
    }
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
+   oldWidth = boxWidth;
+   boxWidth = setCdkTitle(ObjOf(slider), title, boxWidth);
+   horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-      temp = CDKsplitString (title, '\n');
-      slider->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < slider->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-
-      /*
-       * If one of the title lines is wider than the field and the label,
-       * the box width will expand to accomodate.
-       */
-       if (maxWidth > boxWidth)
-       {
-	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2 * BorderOf(slider);
-       }
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(slider));
-      for (x=0; x < slider->titleLines; x++)
-      {
-	 slider->title[x]	= char2Chtype (temp[x], &slider->titleLen[x], &slider->titlePos[x]);
-         slider->titlePos[x]	= justifyString (titleWidth, slider->titleLen[x], slider->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      slider->titleLines = 0;
-   }
-   boxHeight += slider->titleLines;
+   boxHeight += TitleLinesOf(slider);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
    */
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = (fieldWidth > (boxWidth-slider->labelLen-highValueLen-1) ? 
-                 (boxWidth-slider->labelLen-highValueLen-1) : fieldWidth);
+   fieldWidth = (fieldWidth > (boxWidth-slider->labelLen-highValueLen-1) ?
+		 (boxWidth-slider->labelLen-highValueLen-1) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(slider));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the slider window. */
    slider->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -131,7 +91,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    {
       slider->labelWin = subwin (slider->win, 1,
 					slider->labelLen,
-					ypos + slider->titleLines + BorderOf(slider),
+					ypos + TitleLinesOf(slider) + BorderOf(slider),
 					xpos + horizontalAdjust + BorderOf(slider));
       if (slider->labelWin == 0)
       {
@@ -143,7 +103,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Create the slider field window. */
    slider->fieldWin = subwin (slider->win, 1,
 				fieldWidth + highValueLen-1,
-				ypos + slider->titleLines + BorderOf(slider),
+				ypos + TitleLinesOf(slider) + BorderOf(slider),
 				xpos + slider->labelLen + horizontalAdjust + BorderOf(slider));
    if (slider->fieldWin == 0)
    {
@@ -401,7 +361,7 @@ static void _moveCDKSlider (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(slider), &xpos, &ypos, slider->boxWidth, slider->boxHeight, BorderOf(slider));
+   alignxy (WindowOf(slider), &xpos, &ypos, slider->boxWidth, slider->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -430,7 +390,6 @@ static void _moveCDKSlider (CDKOBJS *object, int xplace, int yplace, boolean rel
 static void _drawCDKSlider (CDKOBJS *object, boolean Box)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
-   int x;
 
    /* Draw the shadow. */
    if (slider->shadowWin != 0)
@@ -444,20 +403,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
       drawObjBox (slider->win, ObjOf(slider));
    }
 
-   /* Draw in the title if there is one. */
-   if (slider->titleLines != 0)
-   {
-      for (x=0; x < slider->titleLines; x++)
-      {
-	 writeChtype (slider->win,
-			slider->titlePos[x] + BorderOf(slider),
-			x + BorderOf(slider),
-			slider->title[x],
-			HORIZONTAL, 0,
-			slider->titleLen[x]);
-      }
-      wrefresh (slider->win);
-   }
+   drawCdkTitle (slider->win, object);
 
    /* Draw the label. */
    if (slider->labelWin != 0)
@@ -545,14 +491,9 @@ void setCDKSliderBackgroundAttrib (CDKSLIDER *slider, chtype attrib)
 static void _destroyCDKSlider (CDKOBJS *object)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
-   int x;
 
-   /* Clean up the char pointers. */
+   cleanCdkTitle (object);
    freeChtype (slider->label);
-   for (x=0; x < slider->titleLines; x++)
-   {
-      freeChtype (slider->title[x]);
-   }
 
    /* Clean up the windows. */
    deleteCursesWindow (slider->fieldWin);

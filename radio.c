@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:07:40 $
- * $Revision: 1.95 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.99 $
  */
 
 /*
@@ -20,18 +20,13 @@ DeclareCDKObjects(RADIO, Radio, setCdk, Int);
 CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace, int height, int width, char *title, char **list, int listSize, chtype choiceChar, int defItem, chtype highlight, boolean Box, boolean shadow)
 {
    CDKRADIO *radio	= 0;
-   chtype *holder	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= width;
    int boxHeight	= height;
-   int maxWidth		= INT_MIN;
    int xpos		= xplace;
    int ypos		= yplace;
    int widestItem	= 0;
-   int x		= 0;
-   char **temp		= 0;
-   int len, junk2;
 
    if ((radio = newCDKObject(CDKRADIO, &my_funcs)) == 0)
    {
@@ -54,54 +49,25 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    */
    boxWidth = setWidgetDimension (parentWidth, width, 5);
 
-   /* Translate the char * title to a chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
-
-      temp = CDKsplitString (title, '\n');
-      radio->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < radio->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * BorderOf(radio));
-
-      /* For each line in the title, convert from a char * to a chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(radio));
-      for (x=0; x < radio->titleLines; x++)
-      {
-	 radio->title[x]	= char2Chtype (temp[x], &radio->titleLen[x], &radio->titlePos[x]);
-         radio->titlePos[x]	= justifyString (titleWidth, radio->titleLen[x], radio->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      radio->titleLines = 0;
-   }
+   boxWidth = setCdkTitle(ObjOf(radio), title, boxWidth);
 
    /* Set the box height. */
-   if (radio->titleLines > boxHeight)
+   if (TitleLinesOf(radio) > boxHeight)
    {
       if (listSize > 8)
       {
-         boxHeight = radio->titleLines + 8 + 2 * BorderOf(radio);
+         boxHeight = TitleLinesOf(radio) + 8 + 2 * BorderOf(radio);
       }
       else
       {
-         boxHeight = radio->titleLines + listSize + 2 * BorderOf(radio);
+         boxHeight = TitleLinesOf(radio) + listSize + 2 * BorderOf(radio);
       }
    }
 
    /* Set the rest of the variables. */
-   radio->titleAdj	= radio->titleLines + BorderOf(radio);
+   radio->titleAdj	= TitleLinesOf(radio) + BorderOf(radio);
    radio->listSize	= listSize;
-   radio->viewSize	= boxHeight - (2 * BorderOf(radio) + radio->titleLines);
+   radio->viewSize	= boxHeight - (2 * BorderOf(radio) + TitleLinesOf(radio));
    radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 
@@ -157,7 +123,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    }
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(radio));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the radio window */
    radio->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -509,7 +475,7 @@ static void _moveCDKRadio (CDKOBJS *object, int xplace, int yplace, boolean rela
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(radio), &xpos, &ypos, radio->boxWidth, radio->boxHeight, BorderOf(radio));
+   alignxy (WindowOf(radio), &xpos, &ypos, radio->boxWidth, radio->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -537,7 +503,6 @@ static void _moveCDKRadio (CDKOBJS *object, int xplace, int yplace, boolean rela
 static void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKRADIO *radio = (CDKRADIO *)object;
-   int x;
 
    /* Do we need to draw in the shadow??? */
    if (radio->shadowWin != 0)
@@ -545,19 +510,7 @@ static void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
       drawShadow (radio->shadowWin);
    }
 
-   /* Draw in the title if there is one */
-   if (radio->titleLines != 0)
-   {
-      for (x=0; x < radio->titleLines; x++)
-      {
-	 writeChtype (radio->win,
-			radio->titlePos[x] + BorderOf(radio),
-			x + BorderOf(radio),
-			radio->title[x],
-			HORIZONTAL, 0,
-			radio->titleLen[x]);
-      }
-   }
+   drawCdkTitle (radio->win, object);
 
    /* Draw in the radio list. */
    drawCDKRadioList (radio, ObjOf(radio)->box);
@@ -738,13 +691,8 @@ void setCDKRadioBackgroundAttrib (CDKRADIO *radio, chtype attrib)
 static void _destroyCDKRadio (CDKOBJS *object)
 {
    CDKRADIO *radio = (CDKRADIO *)object;
-   int x	= 0;
 
-   /* Clear up the char pointers. */
-   for (x=0; x < radio->titleLines; x++)
-   {
-      freeChtype (radio->title[x]);
-   }
+   cleanCdkTitle (object);
    CDKfreeChtypes(radio->item);
 
    /* Clean up the windows. */
@@ -801,7 +749,7 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
 
    /* Readjust all of the variables ... */
    radio->listSize	= listSize;
-   radio->viewSize	= radio->boxHeight - (2 + radio->titleLines);
+   radio->viewSize	= radio->boxHeight - (2 + TitleLinesOf(radio));
    radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 

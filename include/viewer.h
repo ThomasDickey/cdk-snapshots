@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.18 2003/11/25 00:20:21 tom Exp $
+ * $Id: viewer.h,v 1.19 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -70,11 +70,7 @@ struct SViewer {
    chtype **	list;
    int *	listLen;
    int *	listPos;
-   chtype*	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    int		listSize;
    int		boxHeight;
    int		boxWidth;

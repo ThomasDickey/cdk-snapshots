@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.11 2003/11/25 00:03:03 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.12 2003/11/29 13:33:13 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,7 +9,7 @@ char *XCursesProgramName="scroll_ex";
 /*
  * This program demonstrates the Cdk scrolling list widget.
  */
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -19,6 +19,10 @@ int main (void)
    char **item			= 0;
    char *mesg[5], temp[256];
    int selection, count;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -31,9 +35,17 @@ int main (void)
    count = CDKgetDirectoryContents (".", &item);
 
    /* Create the scrolling list. */
-   scrollList = newCDKScroll (cdkscreen, CENTER, CENTER, RIGHT,
-				10, 50, title, item, count,
-				TRUE, A_REVERSE, TRUE, FALSE);
+   scrollList = newCDKScroll (cdkscreen,
+			      CDKparamValue(&params, 'X', CENTER),
+			      CDKparamValue(&params, 'Y', CENTER),
+			      RIGHT,
+			      CDKparamValue(&params, 'H', 10),
+			      CDKparamValue(&params, 'W', 50),
+			      title, item, count,
+			      TRUE,
+			      A_REVERSE,
+			      CDKparamValue(&params, 'N', TRUE),
+			      CDKparamValue(&params, 'S', FALSE));
 
    /* Is the scrolling list null? */
    if (scrollList == 0)

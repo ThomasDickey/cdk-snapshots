@@ -1,4 +1,4 @@
-/* $Id: raiseCDKObject_ex.c,v 1.4 2002/02/25 23:39:15 tom Exp $ */
+/* $Id: raiseCDKObject_ex.c,v 1.5 2003/11/30 19:42:06 tom Exp $ */
 
 #include "cdk.h"
 
@@ -8,130 +8,139 @@ char *XCursesProgramName = "raiseCDKObject_ex";
 
 #define MY_LABEL(p) ObjOf(p)->screenIndex | 0x30 | A_UNDERLINE | A_BOLD
 
-int main(int argc GCC_UNUSED, char **argv GCC_UNUSED)
+int main(int argc, char **argv)
 {
-  char ch;
+   char ch;
 
-  char *mesg[1];
-  char *mesg1[10];
-  char *mesg2[10];
-  char *mesg3[10];
-  char *mesg4[10];
+   char *mesg[1];
+   char *mesg1[10];
+   char *mesg2[10];
+   char *mesg3[10];
+   char *mesg4[10];
 
-  WINDOW *cursesWin;
-  CDKSCREEN *cdkscreen;
-  CDKLABEL *label1, *label2, *label3, *label4, *instruct;
+   WINDOW *cursesWin;
+   CDKSCREEN *cdkscreen;
+   CDKLABEL *label1, *label2, *label3, *label4, *instruct;
 
-  /* Set up CDK. */
-  cursesWin = initscr();
-  cdkscreen = initCDKScreen (cursesWin);
+   CDK_PARAMS params;
 
-  mesg1[0] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[1] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[2] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[3] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[4] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[5] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[6] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[7] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[8] = "label1 label1 label1 label1 label1 label1 label1";
-  mesg1[9] = "label1 label1 label1 label1 label1 label1 label1";
-  label1 = newCDKLabel (cdkscreen, 10, 4, mesg1, 10, TRUE, FALSE);
-  setCDKLabelULChar (label1, '1' | A_BOLD);
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
 
-  mesg2[0] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[1] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[2] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[3] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[4] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[5] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[6] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[7] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[8] = "label2 label2 label2 label2 label2 label2 label2";
-  mesg2[9] = "label2 label2 label2 label2 label2 label2 label2";
-  label2 = newCDKLabel (cdkscreen, 8, 8, mesg2, 10, TRUE, FALSE);
-  setCDKLabelULChar (label2, '2' | A_BOLD);
+   /* Set up CDK. */
+   cursesWin = initscr ();
+   cdkscreen = initCDKScreen (cursesWin);
 
-  mesg3[0] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[1] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[2] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[3] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[4] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[5] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[6] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[7] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[8] = "label3 label3 label3 label3 label3 label3 label3";
-  mesg3[9] = "label3 label3 label3 label3 label3 label3 label3";
-  label3 = newCDKLabel (cdkscreen, 6, 12, mesg3, 10, TRUE, FALSE);
-  setCDKLabelULChar (label3, '3' | A_BOLD);
+   mesg1[0] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[1] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[2] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[3] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[4] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[5] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[6] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[7] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[8] = "label1 label1 label1 label1 label1 label1 label1";
+   mesg1[9] = "label1 label1 label1 label1 label1 label1 label1";
+   label1 = newCDKLabel (cdkscreen, 10, 4, mesg1, 10, TRUE, FALSE);
+   setCDKLabelULChar (label1, '1' | A_BOLD);
 
-  mesg4[0] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[1] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[2] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[3] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[4] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[5] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[6] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[7] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[8] = "label4 label4 label4 label4 label4 label4 label4";
-  mesg4[9] = "label4 label4 label4 label4 label4 label4 label4";
-  label4 = newCDKLabel (cdkscreen, 4, 16, mesg4, 10, TRUE, FALSE);
-  setCDKLabelULChar (label4, '4' | A_BOLD);
+   mesg2[0] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[1] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[2] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[3] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[4] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[5] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[6] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[7] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[8] = "label2 label2 label2 label2 label2 label2 label2";
+   mesg2[9] = "label2 label2 label2 label2 label2 label2 label2";
+   label2 = newCDKLabel (cdkscreen, 8, 8, mesg2, 10, TRUE, FALSE);
+   setCDKLabelULChar (label2, '2' | A_BOLD);
 
-  mesg[0] = "</B>#<!B> - raise </U>label#<!U>, </B>r<!B> - </U>redraw<!U>, </B>q<!B> - </U>quit<!U>";
-  instruct = newCDKLabel (cdkscreen, CENTER, LINES, mesg, 1, TRUE, FALSE);
-  setCDKLabelULChar (instruct, ' ' | A_NORMAL);
-  setCDKLabelURChar (instruct, ' ' | A_NORMAL);
-  setCDKLabelLLChar (instruct, ' ' | A_NORMAL);
-  setCDKLabelVerticalChar (instruct, ' ' | A_NORMAL);
-  setCDKLabelHorizontalChar (instruct, ' ' | A_NORMAL);
+   mesg3[0] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[1] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[2] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[3] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[4] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[5] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[6] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[7] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[8] = "label3 label3 label3 label3 label3 label3 label3";
+   mesg3[9] = "label3 label3 label3 label3 label3 label3 label3";
+   label3 = newCDKLabel (cdkscreen, 6, 12, mesg3, 10, TRUE, FALSE);
+   setCDKLabelULChar (label3, '3' | A_BOLD);
 
-  setCDKLabelLRChar (label1, MY_LABEL(label1));
-  setCDKLabelLRChar (label2, MY_LABEL(label2));
-  setCDKLabelLRChar (label3, MY_LABEL(label3));
-  setCDKLabelLRChar (label4, MY_LABEL(label4));
-  setCDKLabelLRChar (instruct, MY_LABEL(instruct));
-  refreshCDKScreen (cdkscreen);
+   mesg4[0] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[1] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[2] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[3] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[4] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[5] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[6] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[7] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[8] = "label4 label4 label4 label4 label4 label4 label4";
+   mesg4[9] = "label4 label4 label4 label4 label4 label4 label4";
+   label4 = newCDKLabel (cdkscreen, 4, 16, mesg4, 10, TRUE, FALSE);
+   setCDKLabelULChar (label4, '4' | A_BOLD);
 
-  while ((ch = getch()) != 'q')
-  {
-    switch (ch)
-    {
+   mesg[0] = "</B>#<!B> - raise </U>label#<!U>, </B>r<!B> - </U>redraw<!U>, </B>q<!B> - </U>quit<!U>";
+   instruct = newCDKLabel (cdkscreen,
+			   CDKparamValue(&params, 'X', CENTER),
+			   CDKparamValue(&params, 'Y', BOTTOM),
+			   mesg, 1,
+			   CDKparamValue(&params, 'N', TRUE),
+			   CDKparamValue(&params, 'S', FALSE));
+   setCDKLabelULChar (instruct, ' ' | A_NORMAL);
+   setCDKLabelURChar (instruct, ' ' | A_NORMAL);
+   setCDKLabelLLChar (instruct, ' ' | A_NORMAL);
+   setCDKLabelVerticalChar (instruct, ' ' | A_NORMAL);
+   setCDKLabelHorizontalChar (instruct, ' ' | A_NORMAL);
+
+   setCDKLabelLRChar (label1, MY_LABEL (label1));
+   setCDKLabelLRChar (label2, MY_LABEL (label2));
+   setCDKLabelLRChar (label3, MY_LABEL (label3));
+   setCDKLabelLRChar (label4, MY_LABEL (label4));
+   setCDKLabelLRChar (instruct, MY_LABEL (instruct));
+   refreshCDKScreen (cdkscreen);
+
+   while ((ch = getch ()) != 'q')
+   {
+      switch (ch)
+      {
       case '1':
-        raiseCDKObject (vLABEL, label1);
-        break;
+	 raiseCDKObject (vLABEL, label1);
+	 break;
       case '2':
-        raiseCDKObject (vLABEL, label2);
-        break;
+	 raiseCDKObject (vLABEL, label2);
+	 break;
       case '3':
-        raiseCDKObject (vLABEL, label3);
-        break;
+	 raiseCDKObject (vLABEL, label3);
+	 break;
       case '4':
-        raiseCDKObject (vLABEL, label4);
-        break;
+	 raiseCDKObject (vLABEL, label4);
+	 break;
       case 'r':
-        refreshCDKScreen (cdkscreen);
-        break;
+	 refreshCDKScreen (cdkscreen);
+	 break;
       default:
-        continue;
-    }
+	 continue;
+      }
 
-    setCDKLabelLRChar (label1, MY_LABEL(label1));
-    setCDKLabelLRChar (label2, MY_LABEL(label2));
-    setCDKLabelLRChar (label3, MY_LABEL(label3));
-    setCDKLabelLRChar (label4, MY_LABEL(label4));
-    setCDKLabelLRChar (instruct, MY_LABEL(instruct));
-    refreshCDKScreen (cdkscreen);
-  }
+      setCDKLabelLRChar (label1, MY_LABEL (label1));
+      setCDKLabelLRChar (label2, MY_LABEL (label2));
+      setCDKLabelLRChar (label3, MY_LABEL (label3));
+      setCDKLabelLRChar (label4, MY_LABEL (label4));
+      setCDKLabelLRChar (instruct, MY_LABEL (instruct));
+      refreshCDKScreen (cdkscreen);
+   }
 
-  /* Clean up. */
-  destroyCDKLabel (label1);
-  destroyCDKLabel (label2);
-  destroyCDKLabel (label3);
-  destroyCDKLabel (label4);
-  destroyCDKLabel (instruct);
-  destroyCDKScreen (cdkscreen);
-  endCDK();
-  delwin (cursesWin);
-  exit (0);
+   /* Clean up. */
+   destroyCDKLabel (label1);
+   destroyCDKLabel (label2);
+   destroyCDKLabel (label3);
+   destroyCDKLabel (label4);
+   destroyCDKLabel (instruct);
+   destroyCDKScreen (cdkscreen);
+   endCDK ();
+   delwin (cursesWin);
+   exit (0);
 }

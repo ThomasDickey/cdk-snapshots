@@ -2,22 +2,48 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:47:59 $
- * $Revision: 1.56 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.61 $
  */
 
 /*
  * Declare file local variables.
  */
-char *monthsOfTheYear[] = {"NULL", "January", "February", "March", "April",
-				"May", "June", "July", "August", "September",
-				"October", "November", "December"};
-int daysOfTheMonth[] = {-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+static char *monthsOfTheYear[] = {
+   "NULL",
+   "January",
+   "February",
+   "March",
+   "April",
+   "May",
+   "June",
+   "July",
+   "August",
+   "September",
+   "October",
+   "November",
+   "December"
+};
+
+static int daysOfTheMonth[] = {
+   -1,
+   31,
+   28,
+   31,
+   30,
+   31,
+   30,
+   31,
+   31,
+   30,
+   31,
+   30,
+   31
+};
 
 /*
  * Declare file local prototypes.
  */
-static int isLeapYear (int year);
 static int getMonthLength (int year, int month);
 static int getMonthStartWeekday (int year, int month);
 static time_t getCurrentTime (CDKCALENDAR *calendar);
@@ -39,61 +65,25 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
 {
    /* Maintain the calendar information. */
    CDKCALENDAR *calendar	= 0;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= 24;
    int boxHeight		= 11;
    int xpos			= xplace;
    int ypos			= yplace;
-   int len			= 0;
-   int maxWidth			= INT_MIN;
-   chtype *junk			= 0;
-   char **temp			= 0;
-   int x, y, z, junk2;
+   int x, y, z;
    struct tm *dateInfo;
    time_t clck;
+   char *dayname		= "Su Mo Tu We Th Fr Sa";
 
    if ((calendar = newCDKObject(CDKCALENDAR, &my_funcs)) == 0)
       return (0);
 
    setCDKCalendarBox (calendar, Box);
 
-   /* We need to determine the width of the calendar box. */
-   if (title != 0)
-   {
-      int titleWidth;
+   boxWidth = setCdkTitle(ObjOf(calendar), title, boxWidth);
 
-      /* We need to split the title on \n. */
-      temp = CDKsplitString (title, '\n');
-      calendar->titleLines = CDKcountStrings (temp);
-
-      /* For each element, determine the width. */
-      for (x=0; x < calendar->titleLines; x++)
-      {
-	 junk = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (junk);
-      }
-      maxWidth += 2;
-
-      /* Set the box width. */
-      boxWidth = MAXIMUM (maxWidth, boxWidth);
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(calendar));
-      for (x=0; x < calendar->titleLines; x++)
-      {
-	 calendar->title[x]	= char2Chtype (temp[x], &calendar->titleLen[x], &calendar->titlePos[x]);
-	 calendar->titlePos[x]	= justifyString (titleWidth, calendar->titleLen[x], calendar->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      calendar->titleLines = 0;
-   }
-   boxHeight += calendar->titleLines;
+   boxHeight += TitleLinesOf(calendar);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -102,7 +92,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, 1);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the calendar window. */
    calendar->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -119,11 +109,18 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    calendar->xOffset = (int)((boxWidth - 20) / 2);
    calendar->fieldWidth = boxWidth - 2;
 
+   /* Set months and days names */
+   for (x=0; x < MAX_MONTHS; x++)
+   {
+      calendar->MonthName[x] = copyChar(monthsOfTheYear[x]);
+   }
+   calendar->DayName = copyChar(dayname);
+
    /* Set the rest of the widget values. */
    ScreenOf(calendar)			= cdkscreen;
    calendar->parent			= cdkscreen->window;
-   calendar->labelWin			= subwin (calendar->win, 1, calendar->fieldWidth, ypos + calendar->titleLines + 1, xpos + calendar->xOffset);
-   calendar->fieldWin			= subwin (calendar->win, 7, calendar->fieldWidth, ypos + calendar->titleLines + 3, xpos + calendar->xOffset-2);
+   calendar->labelWin			= subwin (calendar->win, 1, calendar->fieldWidth, ypos + TitleLinesOf(calendar) + 1, xpos + calendar->xOffset);
+   calendar->fieldWin			= subwin (calendar->win, 7, calendar->fieldWidth, ypos + TitleLinesOf(calendar) + 3, xpos + calendar->xOffset-2);
    calendar->shadowWin			= 0;
    calendar->xpos			= xpos;
    calendar->ypos			= ypos;
@@ -376,7 +373,7 @@ static void _moveCDKCalendar (CDKOBJS *object, int xplace, int yplace, boolean r
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(calendar), &xpos, &ypos, calendar->boxWidth, calendar->boxHeight, 1);
+   alignxy (WindowOf(calendar), &xpos, &ypos, calendar->boxWidth, calendar->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -405,9 +402,7 @@ static void _moveCDKCalendar (CDKOBJS *object, int xplace, int yplace, boolean r
 static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
-   char *header		= "Su Mo Tu We Th Fr Sa";
-   int headerLen	= (int)strlen (header);
-   int x;
+   int headerLen	= (int)strlen (calendar->DayName);
 
    /* Is there a shadow? */
    if (calendar->shadowWin != 0)
@@ -421,24 +416,12 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
       drawObjBox (calendar->win, ObjOf(calendar));
    }
 
-   /* Draw in the title. */
-   if (calendar->titleLines != 0)
-   {
-      for (x=0; x < calendar->titleLines; x++)
-      {
-	 writeChtype (calendar->win,
-			calendar->titlePos[x] + BorderOf(calendar),
-			x + 1,
-			calendar->title[x],
-			HORIZONTAL, 0,
-			calendar->titleLen[x]);
-      }
-   }
+   drawCdkTitle (calendar->win, object);
 
    /* Draw in the day-of-the-week header. */
    writeChar (calendar->win,
-		calendar->xOffset, calendar->titleLines + 2,
-		header, HORIZONTAL, 0, headerLen);
+		calendar->xOffset, TitleLinesOf(calendar) + 2,
+		calendar->DayName, HORIZONTAL, 0, headerLen);
 
    /* Refresh the main window. */
    touchwin (calendar->win);
@@ -454,7 +437,7 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
 static void drawCDKCalendarField (CDKCALENDAR *calendar)
 {
    /* Declare local variables. */
-   char *monthName	= monthsOfTheYear[calendar->month];
+   char *monthName	= calendar->MonthName[calendar->month];
    int monthNameLength	= (int)strlen (monthName);
    int monthLength	= getMonthLength (calendar->year, calendar->month);
    int yearIndex	= calendar->year - 1900;
@@ -722,10 +705,13 @@ static void _destroyCDKCalendar (CDKOBJS *object)
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    int x;
 
-   /* Free up the character pointers. */
-   for (x=0; x < calendar->titleLines; x++)
+   cleanCdkTitle (object);
+
+   freeChar(calendar->DayName);
+
+   for (x=0; x < MAX_MONTHS; x++)
    {
-      freeChtype (calendar->title[x]);
+      freeChar(calendar->MonthName[x]);
    }
 
    /* Free up the window pointers. */
@@ -782,6 +768,29 @@ void setCDKCalendarPostProcess (CDKCALENDAR *calendar, PROCESSFN callback, void 
 {
    calendar->postProcessFunction = callback;
    calendar->postProcessData = data;
+}
+
+/*
+ * This function sets the month name.
+ */
+void setCDKCalendarMonthsNames (CDKCALENDAR *calendar, char **months)
+{
+   int x;
+
+   for (x=1; x < MAX_MONTHS; x++)
+   {
+      freeChar(calendar->MonthName[x]);
+      calendar->MonthName[x] = copyChar(months[x]);
+   }
+}
+
+/*
+ * This function sets the days name.
+ */
+void setCDKCalendarDaysNames (CDKCALENDAR *calendar, char *days)
+{
+   freeChar(calendar->DayName);
+   calendar->DayName = copyChar(days);
 }
 
 /*

@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:43:07 $
- * $Revision: 1.16 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.18 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -19,8 +19,8 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
 {
    /* Maintain the button information. */
    CDKBUTTON *button	= 0;
-   int parentWidth      = getmaxx (cdkscreen->window) - 1;
-   int parentHeight     = getmaxy (cdkscreen->window) - 1;
+   int parentWidth      = getmaxx (cdkscreen->window);
+   int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth         = 0;
    int boxHeight;
    int xpos = xplace;
@@ -47,7 +47,7 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(button));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the button. */
    ScreenOf (button)            = cdkscreen;
@@ -308,7 +308,7 @@ static void _moveCDKButton (CDKOBJS *object,
 
    /* Adjust the window if we need to. */
    alignxy (WindowOf (button), &xpos, &ypos, button->boxWidth,
-	    button->boxHeight, BorderOf (button));
+	    button->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

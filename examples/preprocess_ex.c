@@ -1,3 +1,5 @@
+/* $Id: preprocess_ex.c,v 1.11 2003/11/27 17:00:09 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -7,7 +9,7 @@ char *XCursesProgramName="preprocess_ex";
 static BINDFN_PROTO(entryPreProcessCB);
 
 /*
- * This demonstrates the Cdk entry field widget.
+ * This demonstrates the Cdk preprocess feature.
  */
 int main (void)
 {
@@ -27,8 +29,8 @@ int main (void)
 
    /* Create the entry field widget. */
    widget = newCDKEntry (cdkscreen, CENTER, CENTER,
-				title, 0, A_NORMAL, '.', vMIXED,
-				40, 0, 256, TRUE, FALSE);
+			 title, 0, A_NORMAL, '.', vMIXED,
+			 40, 0, 256, TRUE, FALSE);
 
    /* Is the widget null? */
    if (widget == 0)

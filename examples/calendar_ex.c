@@ -1,3 +1,5 @@
+/* $Id: calendar_ex.c,v 1.9 2003/11/29 16:13:53 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -16,52 +18,28 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen		= 0;
    CDKCALENDAR *calendar	= 0;
    WINDOW *cursesWin		= 0;
-   char *title			= "<C></U>CDK Calendar Widget\n<C>Demo";
-   int day, month, year, ret;
    char *mesg[5], temp[256];
    struct tm *dateInfo;
    time_t clck, retVal;
+
+   CDK_PARAMS params;
+   char *title;
+   int day;
+   int month;
+   int year;
 
    /*
     * Get the current dates and set the default values for
     * the day/month/year values for the calendar.
     */
-    time (&clck);
-    dateInfo	= localtime (&clck);
-    day		= dateInfo->tm_mday;
-    month	= dateInfo->tm_mon + 1;
-    year	= dateInfo->tm_year + 1900;
+   time (&clck);
+   dateInfo	= localtime (&clck);
 
-   /* Check the command line for options. */
-   while (1)
-   {
-      ret = getopt (argc, argv, "d:m:y:t:");
-
-      /* Are there any more command line options to parse. */
-      if (ret == -1)
-      {
-	 break;
-      }
-
-      switch (ret)
-      {
-	 case 'd':
-	      day = atoi (optarg);
-	      break;
-
-	 case 'm':
-	      month = atoi (optarg);
-	      break;
-
-	 case 'y':
-	      year = atoi (optarg);
-	      break;
-
-	 case 't':
-	      title = copyChar (optarg);
-	      break;
-      }
-   }
+   CDKparseParams(argc, argv, &params, "d:m:y:t:" CDK_MIN_PARAMS);
+   day   = CDKparamNumber2(&params, 'd', dateInfo->tm_mday);
+   month = CDKparamNumber2(&params, 'm', dateInfo->tm_mon + 1);
+   year  = CDKparamNumber2(&params, 'y', dateInfo->tm_year + 1900);
+   title = CDKparamString2(&params, 't', "<C></U>CDK Calendar Widget\n<C>Demo");
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -71,13 +49,16 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the calendar widget. */
-   calendar = newCDKCalendar (cdkscreen, CENTER, CENTER,
-				title, day, month, year,
-				COLOR_PAIR(16)|A_BOLD,
-				COLOR_PAIR(24)|A_BOLD,
-				COLOR_PAIR(32)|A_BOLD,
-				COLOR_PAIR(40)|A_REVERSE,
-				TRUE, FALSE);
+   calendar = newCDKCalendar (cdkscreen,
+			      CDKparamValue(&params, 'X', CENTER),
+			      CDKparamValue(&params, 'Y', CENTER),
+			      title, day, month, year,
+			      COLOR_PAIR(16)|A_BOLD,
+			      COLOR_PAIR(24)|A_BOLD,
+			      COLOR_PAIR(32)|A_BOLD,
+			      COLOR_PAIR(40)|A_REVERSE,
+			      CDKparamValue(&params, 'N', TRUE),
+			      CDKparamValue(&params, 'S', FALSE));
 
    /* Is the widget null? */
    if (calendar == 0)

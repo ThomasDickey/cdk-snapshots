@@ -1,7 +1,9 @@
+/* $Id: scale_ex.c,v 1.4 2003/11/30 19:50:16 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="scale_ex";
+char *XCursesProgramName = "scale_ex";
 #endif
 
 /*
@@ -15,38 +17,18 @@ int main (int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C>Select a value";
    char *label		= "</5>Current value";
-   int low		= 0;
-   int high		= 100;
-   int inc		= 1;
    char temp[256], *mesg[5];
-   int selection, ret;
+   int selection;
 
-   /* Parse up the command line.*/
-   while (1)
-   {
-      ret = getopt (argc, argv, "l:h:i:");
+   CDK_PARAMS params;
+   int high;
+   int inc;
+   int low;
 
-      /* Are there any more command line options to parse. */
-      if (ret == -1)
-      {
-	 break;
-      }
-
-      switch (ret)
-      {
-	 case 'l':
-	      low = atoi (optarg);
-	      break;
-
-	 case 'h':
-	      high = atoi (optarg);
-	      break;
-
-	 case 'i':
-	      inc = atoi (optarg);
-	      break;
-      }
-   }
+   CDKparseParams(argc, argv, &params, "h:i:l:w:" CDK_MIN_PARAMS);
+   high   = CDKparamNumber2(&params, 'h', 100);
+   inc    = CDKparamNumber2(&params, 'i', 1);
+   low    = CDKparamNumber2(&params, 'l', 0);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -56,10 +38,15 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the scale. */
-   scale = newCDKScale (cdkscreen, CENTER, CENTER,
+   scale = newCDKScale (cdkscreen,
+			CDKparamValue(&params, 'X', CENTER),
+			CDKparamValue(&params, 'Y', CENTER),
 			title, label, A_NORMAL,
-			5, low, low, high,
-			inc, (inc*2), TRUE, FALSE);
+			CDKparamNumber2(&params, 'w', 5),
+			low, low, high,
+			inc, (inc*2),
+			CDKparamValue(&params, 'N', TRUE),
+			CDKparamValue(&params, 'S', FALSE));
 
    /* Is the scale null? */
    if (scale == 0)

@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.19 2003/11/19 00:18:07 tom Exp $
+ * $Id: itemlist.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -64,11 +64,7 @@ struct SItemList {
    WINDOW *	shadowWin;
    WINDOW *	labelWin;
    WINDOW *	fieldWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype *	label;
    int		labelLen;
    int		fieldWidth;

@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.19 2003/11/15 18:11:09 tom Exp $
+ * $Id: matrix.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -71,11 +71,7 @@ struct SMatrix {
    WINDOW *	shadowWin;
    WINDOW *	cell[MAX_MATRIX_ROWS][MAX_MATRIX_COLS];
    char *	info[MAX_MATRIX_ROWS][MAX_MATRIX_COLS];
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    int		rows;
    int		cols;
    int		vrows;

@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.21 2003/11/16 15:17:40 tom Exp $
+ * $Id: cdk_util.h,v 1.22 2003/11/30 21:15:51 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -68,8 +68,7 @@ void alignxy (
 		int *		/* xpos */,
 		int *		/* ypos */,
 		int		/* boxWidth */,
-		int		/* boxHeight */,
-		int		/* borderSize */);
+		int		/* boxHeight */);
 
 /*
  * This takes a string, a field width and a justification type and returns the

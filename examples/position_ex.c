@@ -1,13 +1,15 @@
+/* $Id: position_ex.c,v 1.8 2003/11/30 19:26:27 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="position_ex";
+char *XCursesProgramName = "position_ex";
 #endif
 
 /*
- * This demonstrates the Cdk entry field widget.
+ * This demonstrates the positioning of a Cdk entry field widget.
  */
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare local variables.*/
    CDKSCREEN *cdkscreen = 0;
@@ -18,6 +20,10 @@ int main (void)
    char *mesg[10];
    char temp[256];
 
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, "w:" CDK_MIN_PARAMS);
+
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
@@ -26,9 +32,14 @@ int main (void)
    initCDKColor();
 
    /* Create the entry field widget. */
-   directory = newCDKEntry (cdkscreen, CENTER, CENTER,
-				0, label, A_NORMAL, '.', vMIXED,
-				40, 0, 256, TRUE, FALSE);
+   directory = newCDKEntry (cdkscreen,
+			    CDKparamValue(&params, 'X', CENTER),
+			    CDKparamValue(&params, 'Y', CENTER),
+			    0, label, A_NORMAL, '.', vMIXED,
+			    CDKparamValue(&params, 'w', 40),
+			    0, 256,
+			    CDKparamValue(&params, 'N', TRUE),
+			    CDKparamValue(&params, 'S', FALSE));
 
    /* Is the widget null? */
    if (directory == 0)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/19 00:18:24 $
- * $Revision: 1.56 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.60 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -17,18 +17,15 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 {
    /* Set up some variables.  */
    CDKITEMLIST *itemlist = 0;
-   chtype *holder	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= 0;
    int boxHeight;
    int maxWidth		= INT_MIN;
    int fieldWidth	= 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   int horizontalAdjust = 0;
-   char **temp		= 0;
-   int x, len, junk, junk2;
+   int x, junk;
 
    if ((itemlist = newCDKObject(CDKITEMLIST, &my_funcs)) == 0
     || !createList(itemlist, item, count))
@@ -42,7 +39,6 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 
    /* Set some basic values of the itemlist. */
    itemlist->label	= 0;
-   itemlist->titleLines = 0;
    itemlist->labelLen	= 0;
    itemlist->labelWin	= 0;
 
@@ -64,47 +60,9 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    fieldWidth = maxWidth + 1;
    boxWidth = fieldWidth + itemlist->labelLen + 2 * BorderOf(itemlist);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
+   boxWidth = setCdkTitle(ObjOf(itemlist), title, boxWidth);
 
-      temp = CDKsplitString (title, '\n');
-      itemlist->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < itemlist->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-
-      /*
-       * If one of the title lines is wider than the field and the label,
-       * the box width will expand to accomodate.
-       */
-       if (maxWidth > boxWidth)
-       {
-	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-	  boxWidth = maxWidth + 2 * BorderOf(itemlist);
-       }
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(itemlist));
-      for (x=0; x < itemlist->titleLines; x++)
-      {
-	 itemlist->title[x]	= char2Chtype (temp[x], &itemlist->titleLen[x], &itemlist->titlePos[x]);
-	 itemlist->titlePos[x]	= justifyString (titleWidth, itemlist->titleLen[x], itemlist->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      itemlist->titleLines = 0;
-   }
-   boxHeight += itemlist->titleLines;
+   boxHeight += TitleLinesOf(itemlist);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -114,7 +72,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    fieldWidth = MINIMUM(fieldWidth, boxWidth - itemlist->labelLen - 2 * BorderOf(itemlist));
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(itemlist));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the window. */
    itemlist->win = newwin(boxHeight, boxWidth, ypos, xpos);
@@ -130,7 +88,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       itemlist->labelWin = subwin (itemlist->win,
 				   1,
 				   itemlist->labelLen,
-				   ypos + BorderOf(itemlist) + itemlist->titleLines,
+				   ypos + BorderOf(itemlist) + TitleLinesOf(itemlist),
 				   xpos + BorderOf(itemlist));
       if (itemlist->labelWin == 0)
       {
@@ -145,7 +103,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    itemlist->fieldWin = subwin (itemlist->win,
 				1,
 				fieldWidth,
-				ypos + BorderOf(itemlist) + itemlist->titleLines,
+				ypos + BorderOf(itemlist) + TitleLinesOf(itemlist),
 				xpos + itemlist->labelLen + BorderOf(itemlist));
    if (itemlist->fieldWin == 0)
    {
@@ -391,7 +349,7 @@ static void _moveCDKItemlist (CDKOBJS *object, int xplace, int yplace, boolean r
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(itemlist), &xpos, &ypos, itemlist->boxWidth, itemlist->boxHeight, BorderOf(itemlist));
+   alignxy (WindowOf(itemlist), &xpos, &ypos, itemlist->boxWidth, itemlist->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -420,7 +378,6 @@ static void _moveCDKItemlist (CDKOBJS *object, int xplace, int yplace, boolean r
 static void _drawCDKItemlist (CDKOBJS *object, int Box)
 {
    CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
-   int x;
 
    /* Did we ask for a shadow? */
    if (itemlist->shadowWin != 0)
@@ -434,17 +391,7 @@ static void _drawCDKItemlist (CDKOBJS *object, int Box)
       drawObjBox (itemlist->win, ObjOf(itemlist));
    }
 
-   /* Draw in the title if there is one. */
-   for (x=0; x < itemlist->titleLines; x++)
-   {
-      writeChtype (itemlist->win,
-		itemlist->titlePos[x] + BorderOf(itemlist),
-		x + BorderOf(itemlist),
-		itemlist->title[x],
-		HORIZONTAL,
-		0,
-		chlen(itemlist->title[x]));
-   }
+   drawCdkTitle (itemlist->win, object);
 
    /* Draw in the label to the widget. */
    if (itemlist->labelWin != 0)
@@ -564,15 +511,9 @@ static void _destroyCDKItemlist (CDKOBJS *object)
    if (object != 0)
    {
       CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
-      /* Declare local variables. */
-      int x;
 
-      /* Clear out the character pointers. */
+      cleanCdkTitle (object);
       freeChtype (itemlist->label);
-      for (x=0; x < itemlist->titleLines; x++)
-      {
-	 freeChtype (itemlist->title[x]);
-      }
       CDKfreeChtypes (itemlist->item);
 
       /* Delete the windows. */

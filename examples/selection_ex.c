@@ -1,10 +1,12 @@
+/* $Id: selection_ex.c,v 1.6 2003/11/30 19:55:29 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="selection_ex";
+char *XCursesProgramName = "selection_ex";
 #endif
 
-int main (void)
+int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -15,6 +17,10 @@ int main (void)
    char *item[400], temp[256], *mesg[200];
    struct passwd *ent;
    int count, x, y;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -32,9 +38,16 @@ int main (void)
    count--;
 
    /* Create the selection list. */
-   selection = newCDKSelection (cdkscreen, CENTER, CENTER, RIGHT,
-					10, 50, title, item, count, choices, 2,
-					A_REVERSE, TRUE, FALSE);
+   selection = newCDKSelection (cdkscreen,
+				CDKparamValue(&params, 'X', CENTER),
+				CDKparamValue(&params, 'Y', CENTER),
+				CDKparsePosition(CDKparamString2(&params, 's', "RIGHT")),
+				CDKparamValue(&params, 'H', 10),
+				CDKparamValue(&params, 'W', 50),
+				title, item, count, choices, 2,
+				A_REVERSE,
+				CDKparamValue(&params, 'N', TRUE),
+				CDKparamValue(&params, 'S', FALSE));
 
    /* Is the selection list null? */
    if (selection == 0)

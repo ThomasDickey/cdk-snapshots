@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.23 2003/04/18 23:05:04 tom Exp $
+ * $Id: cdk.h,v 1.25 2003/11/28 13:32:47 tom Exp $
  */
 
 #ifndef CDK_H
@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 /*
+ * Copyright 2000-2002,2003, Thomas Dickey
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -236,7 +237,6 @@ typedef int boolean;
 
 #define MAX_BINDINGS	300
 #define MAX_ITEMS	2000
-#define MAX_LINES	5000
 #define MAX_BUTTONS	200
 
 /*
@@ -298,6 +298,7 @@ void stopCDKDebug (FILE *fd);
 #include <binding.h>
 #include <cdk_util.h>
 #include <cdk_objs.h>
+#include <cdk_params.h>
 
 /*
  * Include the CDK widget header files.

@@ -1,3 +1,5 @@
+/* $Id: subwindow_ex.c,v 1.6 2003/11/30 20:07:51 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -7,7 +9,7 @@ char *XCursesProgramName="subwindow_ex";
 /*
  * This demo displays the ability to put widgets within a curses subwindow.
  */
-int main (void)
+int main (int argc, char **argv)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen;
@@ -17,6 +19,10 @@ int main (void)
    char *dow[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
    char *mesg[5];
    int pick;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
 
    /* Start curses. */
    mainWindow = initscr();
@@ -33,9 +39,16 @@ int main (void)
    wrefresh (subWindow);
 
    /* Create a basic scrolling list inside the window. */
-   dowList = newCDKScroll (cdkscreen, CENTER, CENTER, RIGHT, 10, 15,
-			"<C></U>Pick a Day", dow, 7, NONUMBERS,
-			A_REVERSE, TRUE, FALSE);
+   dowList = newCDKScroll (cdkscreen,
+			   CDKparamValue(&params, 'X', CENTER),
+			   CDKparamValue(&params, 'Y', CENTER),
+			   CDKparsePosition(CDKparamString2(&params, 's', "RIGHT")),
+			   CDKparamValue(&params, 'H', 10),
+			   CDKparamValue(&params, 'W', 15),
+			   "<C></U>Pick a Day", dow, 7, NONUMBERS,
+			   A_REVERSE,
+			   CDKparamValue(&params, 'N', TRUE),
+			   CDKparamValue(&params, 'S', FALSE));
 
    /* Put a title within the window. */
    mesg[0] = "<C><#HL(30)>";

@@ -1,9 +1,9 @@
-/* $Id: fselect_ex.c,v 1.8 2003/11/25 00:54:34 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.9 2003/11/29 16:20:34 tom Exp $ */
 
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="fselect_ex";
+char *XCursesProgramName = "fselect_ex";
 #endif
 
 /*
@@ -18,26 +18,15 @@ int main (int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C>Pick\n<C>A\n<C>File";
    char *label		= "File: ";
-   char *directory	= ".";
    char **info		= 0;
    char *button[5], *filename, vTitle[256], *mesg[4], temp[256];
-   int selected, lines, ret;
+   int selected, lines;
 
-   /* Parse up the command line. */
-   for (;;)
-   {
-      ret = getopt (argc, argv, "d:");
-      if (ret == -1)
-      {
-	 break;
-      }
-      switch (ret)
-      {
-	 case 'd' :
-	   directory = strdup (optarg);
-	   break;
-      }
-   }
+   CDK_PARAMS params;
+   char *directory;
+
+   CDKparseParams(argc, argv, &params, "d:" CDK_CLI_PARAMS);
+   directory = CDKparamString2(&params, 'd', ".");
 
    /* Create the viewer buttons. */
    button[0]	= "</5><OK><!5>";
@@ -51,12 +40,18 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Get the filename. */
-   fSelect = newCDKFselect (cdkscreen, CENTER, CENTER, 20, 65,
-				title, label, A_NORMAL, '_', A_REVERSE,
-				"</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
+   fSelect = newCDKFselect (cdkscreen,
+			    CDKparamValue(&params, 'X', CENTER),
+			    CDKparamValue(&params, 'Y', CENTER),
+			    CDKparamValue(&params, 'H', 20),
+			    CDKparamValue(&params, 'W', 65),
+			    title, label, A_NORMAL, '_', A_REVERSE,
+			    "</5>", "</48>", "</N>", "</N>",
+			    CDKparamValue(&params, 'N', TRUE),
+			    CDKparamValue(&params, 'S', FALSE));
 
    /*
-    * Set the starting directory. This is not neccessary because when
+    * Set the starting directory. This is not necessary because when
     * the file selector starts it uses the present directory as a default.
     */
    setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,

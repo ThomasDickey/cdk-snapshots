@@ -1,12 +1,12 @@
-/* $Id: graph_ex.c,v 1.8 2002/07/17 10:12:05 tom Exp $ */
+/* $Id: graph_ex.c,v 1.9 2003/11/30 17:52:40 tom Exp $ */
 
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="graph_ex";
+char *XCursesProgramName = "graph_ex";
 #endif
 
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen = 0;
@@ -20,6 +20,10 @@ int main (void)
    char *mesg[2];
    int values[20], colors[20];
    int count;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS); /* -N, -S unused */
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -49,7 +53,11 @@ int main (void)
    mesg[0] = "Press any key when done viewing the graph.";
 
    /* Create the graph widget. */
-   graph = newCDKGraph (cdkscreen, CENTER, CENTER, 10, 20,
+   graph = newCDKGraph (cdkscreen,
+			CDKparamValue(&params, 'X', CENTER),
+			CDKparamValue(&params, 'Y', CENTER),
+			CDKparamValue(&params, 'H', 10),
+			CDKparamValue(&params, 'W', 20),
 			title, xtitle, ytitle);
 
    /* Is the graph null? */

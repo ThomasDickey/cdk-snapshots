@@ -1,13 +1,15 @@
+/* $Id: template_ex.c,v 1.5 2003/11/30 20:14:39 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="template_ex";
+char *XCursesProgramName = "template_ex";
 #endif
 
 /*
  * This program demonstrates the Cdk template widget.
  */
-int main (void)
+int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -19,6 +21,10 @@ int main (void)
    char *plate			= "(###) ###-####";
    char *info, *mixed, temp[256], *mesg[5];
 
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
+
    /* Set up CDK*/
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
@@ -27,10 +33,13 @@ int main (void)
    initCDKColor();
 
    /* Declare the template. */
-   phoneNumber = newCDKTemplate (cdkscreen, CENTER, CENTER,
-					title, label,
-					plate, Overlay,
-					TRUE, TRUE);
+   phoneNumber = newCDKTemplate (cdkscreen,
+				 CDKparamValue(&params, 'X', CENTER),
+				 CDKparamValue(&params, 'Y', CENTER),
+				 title, label,
+				 plate, Overlay,
+				 CDKparamValue(&params, 'N', TRUE),
+				 CDKparamValue(&params, 'S', FALSE));
 
    /* Is the template pointer null? */
    if (phoneNumber == 0)

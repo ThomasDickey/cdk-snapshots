@@ -1,7 +1,9 @@
+/* $Id: slider_ex.c,v 1.4 2003/11/30 20:01:11 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="slider_ex";
+char *XCursesProgramName = "slider_ex";
 #endif
 
 /*
@@ -15,51 +17,36 @@ int main (int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C></U>Enter a value:";
    char *label		= "</B>Current Value:";
-   int low		= 1;
-   int high		= 100;
-   int inc		= 1;
-   int fieldWidth	= 50;
    char temp[256], *mesg[5];
-   int selection, ret;
+   int selection;
+
+   CDK_PARAMS params;
+   int high;
+   int inc;
+   int low;
+
+   CDKparseParams(argc, argv, &params, "h:i:l:w:" CDK_MIN_PARAMS);
+   high   = CDKparamNumber2(&params, 'h', 100);
+   inc    = CDKparamNumber2(&params, 'i', 1);
+   low    = CDKparamNumber2(&params, 'l', 1);
 
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      ret = getopt (argc, argv, "l:h:i:");
-
-      /* Are there any more command line options to parse. */
-      if (ret == -1)
-      {
-	 break;
-      }
-
-      switch (ret)
-      {
-	 case 'l':
-	      low = atoi (optarg);
-	      break;
-
-	 case 'h':
-	      high = atoi (optarg);
-	      break;
-
-	 case 'i':
-	      inc = atoi (optarg);
-	      break;
-      }
-   }
-
    /* Start CDK Colors. */
    initCDKColor();
 
    /* Create the slider. */
-   slider = newCDKSlider (cdkscreen, CENTER, CENTER, title, label,
-				A_REVERSE | COLOR_PAIR (29) | ' ', fieldWidth, low,
-				low, high, inc, (inc*2), TRUE, FALSE);
+   slider = newCDKSlider (cdkscreen,
+			  CDKparamValue(&params, 'X', CENTER),
+			  CDKparamValue(&params, 'Y', CENTER),
+			  title, label,
+			  A_REVERSE | COLOR_PAIR (29) | ' ',
+			  CDKparamNumber2(&params, 'w', 50),
+			  low, low, high, inc, (inc*2),
+			  CDKparamValue(&params, 'N', TRUE),
+			  CDKparamValue(&params, 'S', FALSE));
 
    /* Is the slider null? */
    if (slider == 0)

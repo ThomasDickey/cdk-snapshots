@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.3 2003/04/18 12:33:10 tom Exp $
+# $Id: Makefile.in,v 1.4 2003/11/27 12:03:41 tom Exp $
 #
 # Makefile for the cli directory.
 #
@@ -10,16 +10,22 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
-LIBS		= -l@LIB_ROOTNAME@ @LIBS@
-LDFLAGS		= -L.. @LDFLAGS@
-
-LIBTOOL		= @LIBTOOL@
 CC		= @CC@
-LINK		= $(LIBTOOL) $(CC)
-x		= @PROG_EXT@
+RM		= rm -f
+
+LIBS		= -l@LIB_ROOTNAME@ @LIBS@
+
+LIBTOOL		= @LIBTOOL@ @ECHO_LT@
+LIBTOOL_CLEAN	= @LIB_CLEAN@
+LIBTOOL_LINK	= @LIB_LINK@
+LINK		= $(LIBTOOL_LINK) $(CC)
+
+x		= @EXEEXT@
+o		= .@OBJEXT@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
-CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include @CPPFLAGS@
+CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include -I. @CPPFLAGS@
+LDFLAGS		= -L.. @LDFLAGS@
 
 BINS	= \
 	cdkalphalist$x \
@@ -63,6 +69,7 @@ cdkviewer$x :		cdkviewer.c	; $(LINKIT)
 # Standard clean directives.
 #
 clean::
-	$(RM) core *.o $(BINS)
+	- $(LIBTOOL_CLEAN) $(RM) *.o core $(BINS)
+
 distclean:: clean
 	$(RM) Makefile

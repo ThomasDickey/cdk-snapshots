@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:04:45 $
- * $Revision: 1.131 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.135 $
  */
 
 /*
@@ -19,19 +19,16 @@ DeclareCDKObjects(MENTRY, Mentry, setCdk, String);
 CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
 {
    CDKMENTRY *mentry	= 0;
-   chtype *holder	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int fieldWidth	= fWidth;
    int fieldRows	= fRows;
    int boxWidth		= 0;
    int boxHeight	= 0;
-   int maxWidth		= INT_MIN;
-   int horizontalAdjust = 0;
+   int horizontalAdjust, oldWidth;
    int xpos		= xplace;
    int ypos		= yplace;
-   char **temp		= 0;
-   int x, len, junk, junk2;
+   int junk;
 
    if ((mentry = newCDKObject(CDKMENTRY, &my_funcs)) == 0)
       return (0);
@@ -57,7 +54,6 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->label	= 0;
    mentry->labelLen	= 0;
    mentry->labelWin	= 0;
-   mentry->titleLines	= 0;
 
    /* We need to translate the char * label to a chtype * */
    if (label != 0)
@@ -66,46 +62,11 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    }
    boxWidth = mentry->labelLen + fieldWidth + 2;
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth = boxWidth - (2 * BorderOf(mentry));
+   oldWidth = boxWidth;
+   boxWidth = setCdkTitle(ObjOf(mentry), title, boxWidth);
+   horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-      temp = CDKsplitString (title, '\n');
-      mentry->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < mentry->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-
-      /*
-       * If one of the title lines is wider than the field and the label,
-       * the box width will expand to accomodate.
-       */
-       if (maxWidth > boxWidth)
-       {
-	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-	  boxWidth = maxWidth + 2;
-       }
-
-      /* For each line in the title, convert from char * to chtype * */
-      for (x=0; x < mentry->titleLines; x++)
-      {
-	 mentry->title[x]	= char2Chtype (temp[x], &mentry->titleLen[x], &mentry->titlePos[x]);
-	 mentry->titlePos[x]	= justifyString (titleWidth, mentry->titleLen[x], mentry->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      mentry->titleLines = 0;
-   }
-   boxHeight += mentry->titleLines;
+   boxHeight += TitleLinesOf(mentry);
 
   /*
    * Make sure we didn't extend beyond the parent window.
@@ -113,10 +74,10 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
    fieldWidth = (fieldWidth > (boxWidth - mentry->labelLen - 2) ? (boxWidth - mentry->labelLen - 2) : fieldWidth);
-   fieldRows = (fieldRows > (boxHeight - mentry->titleLines - 2) ? (boxHeight - mentry->titleLines - 2) : fieldRows);
+   fieldRows = (fieldRows > (boxHeight - TitleLinesOf(mentry) - 2) ? (boxHeight - TitleLinesOf(mentry) - 2) : fieldRows);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, 1);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the label window. */
    mentry->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -133,13 +94,13 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    {
       mentry->labelWin = subwin (mentry->win, fieldRows,
 					mentry->labelLen + 2,
-					ypos + mentry->titleLines + 1,
+					ypos + TitleLinesOf(mentry) + 1,
 					xpos + horizontalAdjust + 1);
    }
 
    /* Make the field window. */
    mentry->fieldWin = subwin (mentry->win, fieldRows, fieldWidth,
-				ypos + mentry->titleLines + 1,
+				ypos + TitleLinesOf(mentry) + 1,
 				xpos + mentry->labelLen + horizontalAdjust + 1);
 
    /* Turn on the keypad. */
@@ -660,7 +621,7 @@ static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(mentry), &xpos, &ypos, mentry->boxWidth, mentry->boxHeight, 1);
+   alignxy (WindowOf(mentry), &xpos, &ypos, mentry->boxWidth, mentry->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -699,19 +660,8 @@ void drawCDKMentryField (CDKMENTRY *mentry)
       return;
    }
 
-   /* Draw in the title if there is one. */
-   if (mentry->titleLines != 0)
-   {
-      for (x=0; x < mentry->titleLines; x++)
-      {
-	 writeChtype (mentry->win,
-			mentry->titlePos[x] + BorderOf(mentry),
-			x + 1,
-			mentry->title[x],
-			HORIZONTAL, 0,
-			mentry->titleLen[x]);
-      }
-   }
+   drawCdkTitle (mentry->win, ObjOf(mentry));
+
    touchwin (mentry->win);
    wrefresh (mentry->win);
 
@@ -974,15 +924,10 @@ static void _eraseCDKMentry (CDKOBJS *object)
 static void _destroyCDKMentry (CDKOBJS *object)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
-   int x;
 
-   /* Clean up the char pointers. */
+   cleanCdkTitle (object);
    freeChtype (mentry->label);
    freeChar (mentry->info);
-   for (x=0; x < mentry->titleLines; x++)
-   {
-      freeChtype (mentry->title[x]);
-   }
 
    /* Clean up the windows. */
    deleteCursesWindow (mentry->fieldWin);

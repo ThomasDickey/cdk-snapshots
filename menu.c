@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:06:11 $
- * $Revision: 1.70 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.72 $
  */
 
 /*
@@ -19,8 +19,8 @@ DeclareCDKObjects(MENU, Menu, setCdk, Int);
 CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], int menuItems, int *subsize, int *menuloc, int menuPos, chtype titleAttr, chtype subtitleAttr)
 {
    CDKMENU *menu	= 0;
-   int rightcount	= menuItems-1;
-   int rightloc		= getmaxx((cdkscreen->window)) - 1;
+   int rightcount	= menuItems - 1;
+   int rightloc		= getmaxx((cdkscreen->window));
    int leftloc		= 0;
    int x, y, max, junk;
 
@@ -456,7 +456,7 @@ static void _moveCDKMenu (CDKOBJS *object, int xplace, int yplace, boolean relat
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(menu), &xpos, &ypos, getmaxx(WindowOf(menu)), getmaxy(WindowOf(menu)), BorderOf(menu));
+   alignxy (WindowOf(menu), &xpos, &ypos, getmaxx(WindowOf(menu)), getmaxy(WindowOf(menu)));
 
    /* Get the difference. */
    xdiff = currentX - xpos;

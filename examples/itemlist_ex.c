@@ -1,16 +1,16 @@
 /*
- * $Id: itemlist_ex.c,v 1.7 2002/07/14 14:47:46 tom Exp $
+ * $Id: itemlist_ex.c,v 1.8 2003/11/30 18:38:33 tom Exp $
  */
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="itemlist_ex";
+char *XCursesProgramName = "itemlist_ex";
 #endif
 
 /*
  * This program demonstrates the Cdk itemlist widget.
  */
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -22,6 +22,10 @@ int main (void)
    int choice, startMonth;
    struct tm *dateInfo;
    time_t clck;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
 
    /*
     * Get the current date and set the default month to the
@@ -53,9 +57,13 @@ int main (void)
    info[11]	= "<C></11>December";
 
    /* Create the itemlist widget. */
-   monthlist	= newCDKItemlist (cdkscreen, CENTER, CENTER,
-					title, label, info, 12,
-					startMonth, TRUE, FALSE);
+   monthlist	= newCDKItemlist (cdkscreen,
+				  CDKparamValue(&params, 'X', CENTER),
+				  CDKparamValue(&params, 'Y', CENTER),
+				  title, label, info, 12,
+				  startMonth,
+				  CDKparamValue(&params, 'N', TRUE),
+				  CDKparamValue(&params, 'S', FALSE));
 
    /* Is the widget null? */
    if (monthlist == 0)

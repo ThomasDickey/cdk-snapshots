@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.5 2003/11/18 23:49:48 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.6 2003/11/28 22:51:19 tom Exp $ */
 
 #include <cdk.h>
 
@@ -27,149 +27,44 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen		= 0;
    CDKVIEWER *widget		= 0;
    WINDOW *cursesWindow		= 0;
-   char *buttons		= 0;
    char *filename		= 0;
-   char *title			= 0;
    char *CDK_WIDGET_COLOR	= 0;
    char *temp			= 0;
    chtype *holder		= 0;
    int answer			= 0;
-   int xpos			= CENTER;
-   int ypos			= CENTER;
-   int height			= 20;
-   int width			= 60;
-   int ret			= 0;
    int messageLines		= -1;
    int buttonCount		= 0;
-   int interpret		= FALSE;
-   boolean boxWidget		= TRUE;
-   boolean shadowWidget		= FALSE;
-   boolean showInfoLine		= FALSE;
    char **messageList		= 0;
    char **buttonList		= 0;
    char tempTitle[256];
    int x, j1, j2;
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      /* If there aren't any more options, then break. */
-      if ((ret = getopt (argc, argv, "m:B:f:T:ilX:Y:H:W:BS")) == -1)
-      {
-         break;
-      }
+   CDK_PARAMS params;
+   boolean boxWidget;
+   boolean interpret;
+   boolean shadowWidget;
+   boolean showInfoLine;
+   char *buttons;
+   char *title;
+   int height;
+   int width;
+   int xpos;
+   int ypos;
 
-      /* Determine which command line option we just received. */
-      switch (ret)
-      {
-         case 'T':
-              title = copyChar (optarg);
-              break;
+   CDKparseParams(argc, argv, &params, "f:il:B:T:" CDK_CLI_PARAMS);
 
-         case 'W':
-              if (strcmp (optarg, "FULL") == 0)
-              {
-                 width = COLS;
-              }
-              else
-              {
-                 width = atoi (optarg);
-              }
-              break;
+   xpos            = CDKparamValue(&params, 'X', CENTER);
+   ypos            = CDKparamValue(&params, 'Y', CENTER);
+   height          = CDKparamValue(&params, 'H', 20);
+   width           = CDKparamValue(&params, 'W', 60);
+   boxWidget       = CDKparamValue(&params, 'N', TRUE);
+   shadowWidget    = CDKparamValue(&params, 'S', FALSE);
 
-         case 'H':
-              if (strcmp (optarg, "FULL") == 0)
-              {
-                 height = LINES;
-              }
-              else
-              {
-                 height = atoi (optarg);
-              }
-              break;
-
-         case 'f':
-              filename = copyChar (optarg);
-              break;
-
-         case 'B':
-              buttons = copyChar (optarg);
-              break;
-
-         case 'X':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 xpos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 xpos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 xpos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 xpos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 xpos = CENTER;
-              }
-              else
-              {
-                 xpos = atoi (optarg);
-              }
-              break;
-
-         case 'Y':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 ypos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 ypos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 ypos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 ypos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 ypos = CENTER;
-              }
-              else
-              {
-                 ypos = atoi (optarg);
-              }
-              break;
-
-         case 'N':
-              boxWidget = FALSE;
-              break;
-
-         case 'S':
-              shadowWidget = TRUE;
-              break;
-
-         case 'i':
-              interpret=TRUE;
-              break;
-
-         case 'l':
-              showInfoLine=TRUE;
-              break;
-
-         default:
-              break;
-      }
-   }
+   interpret       = CDKparamValue(&params, 'i', FALSE);
+   showInfoLine    = CDKparamValue(&params, 'l', FALSE);
+   filename        = CDKparamString(&params, 'f');
+   buttons         = CDKparamString(&params, 'B');
+   title           = CDKparamString(&params, 'T');
 
    /* Make sure they gave us a file to read. */
    if (filename == 0)
@@ -200,7 +95,6 @@ int main (int argc, char **argv)
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
-      freeChar (buttons);
    }
 
    /* Set up the title of the viewer. */
@@ -243,14 +137,12 @@ int main (int argc, char **argv)
       /* Clean up used memory. */
       for (x=0; x < messageLines; x++)
       {
-         freeChar (messageList[x]);
+	 freeChar (messageList[x]);
       }
       for (x=0; x < buttonCount; x++)
       {
-         freeChar (buttonList[x]);
+	 freeChar (buttonList[x]);
       }
-      freeChar (title);
-      freeChar (filename);
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
@@ -286,8 +178,6 @@ int main (int argc, char **argv)
    {
       freeChar (buttonList[x]);
    }
-   freeChar (title);
-   freeChar (filename);
    destroyCDKViewer (widget);
    destroyCDKScreen (cdkScreen);
    delwin (cursesWindow);

@@ -5,6 +5,7 @@ AC_INIT(include/cdk.h)
 AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
 
 CF_CHECK_CACHE
+CF_VERSION_INFO(cdk)
 
 dnl
 dnl Checks for programs.
@@ -15,6 +16,12 @@ AC_PROG_GCC_TRADITIONAL
 AC_PROG_RANLIB 
 AC_PROG_INSTALL
 
+dnl needed for CF_WITH_LIBTOOL
+AC_CHECK_TOOL(AR, ar, ar)
+
+AC_PROG_MAKE_SET
+CF_MAKEFLAGS
+
 AC_C_CONST
 
 CF_DISABLE_ECHO
@@ -24,7 +31,9 @@ CF_LIB_PREFIX
 CF_WITH_CURSES_DIR
 CF_WITH_WARNINGS
 CF_WITH_LIBTOOL
-CF_VERSION_INFO
+if test "$with_libtool" = "yes" ; then
+	OBJEXT="lo"
+fi
 
 dnl
 dnl Checks for libraries.

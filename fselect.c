@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:54:07 $
- * $Revision: 1.44 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.47 $
  */
 
 /*
@@ -31,13 +31,15 @@ DeclareCDKObjects(FSELECT, Fselect, _setMy, String);
 CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *label, chtype fieldAttribute, chtype fillerChar, chtype highlight, char *dAttribute, char *fAttribute, char *lAttribute, char *sAttribute, boolean Box, boolean shadow)
 {
    CDKFSELECT *fselect	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= width;
    int boxHeight	= height;
    int xpos		= xplace;
    int ypos		= yplace;
-   int entryWidth, labelLen, junk;
+   int tempWidth	= 0;
+   int tempHeight	= 0;
+   int labelLen, junk;
    chtype *chtypeString;
 
    if ((fselect = newCDKObject(CDKFSELECT, &my_funcs)) == 0)
@@ -60,7 +62,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(fselect));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make sure the box isn't too small. */
    boxWidth = (boxWidth < 15 ? 15 : boxWidth);
@@ -105,13 +107,15 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    /* Create the entry field in the selector. */
    chtypeString = char2Chtype (label, &labelLen, &junk);
    freeChtype (chtypeString);
-   entryWidth = boxWidth - labelLen - 3;
+   tempWidth = (isFullWidth(width)
+   		 ? FULL
+		 : boxWidth - 2 - labelLen);
    fselect->entryField = newCDKEntry (cdkscreen,
 					getbegx(fselect->win),
 					getbegy(fselect->win),
 					title, label,
 					fieldAttribute, fillerChar,
-					vMIXED, entryWidth, 0, 512,
+					vMIXED, tempWidth, 0, 512,
 					Box, FALSE);
 
    /* Make sure the widget was created. */
@@ -139,12 +143,16 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    setCDKEntryValue (fselect->entryField, fselect->pwd);
 
    /* Create the scrolling list in the selector. */
+   tempHeight = getmaxy(fselect->entryField->win) - BorderOf(fselect);
+   tempWidth = (isFullWidth(width)
+   		? FULL
+		: boxWidth - 1);
    fselect->scrollField = newCDKScroll (cdkscreen,
 					getbegx(fselect->win),
-					getbegy(fselect->win) + (fselect->entryField)->titleLines + 2,
+					getbegy(fselect->win) + tempHeight,
 					RIGHT,
-					boxHeight - (fselect->entryField)->titleLines - 3,
-					boxWidth-2,
+				        boxHeight - tempHeight,
+					tempWidth,
 					0,
 					fselect->dirContents,
 					fselect->fileCounter,
@@ -207,7 +215,7 @@ static void _moveCDKFselect (CDKOBJS *object, int xplace, int yplace, boolean re
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(fselect), &xpos, &ypos, fselect->boxWidth, fselect->boxHeight, BorderOf(fselect));
+   alignxy (WindowOf(fselect), &xpos, &ypos, fselect->boxWidth, fselect->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

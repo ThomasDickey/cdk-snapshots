@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.21 2003/11/19 00:17:59 tom Exp $
+ * $Id: scroll.h,v 1.22 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -70,11 +70,7 @@ struct SScroll {
    WINDOW	*scrollbarWin;
    WINDOW       *listWin;
    WINDOW	*shadowWin;
-   chtype	*title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype **	item;
    int *	itemPos;
    int *	itemLen;

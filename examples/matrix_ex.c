@@ -1,15 +1,15 @@
-/* $Id: matrix_ex.c,v 1.8 2002/07/17 19:34:28 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.9 2003/11/30 19:16:22 tom Exp $ */
 
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="matrix_ex";
+char *XCursesProgramName = "matrix_ex";
 #endif
 
 /*
  * This program demonstrates the Cdk matrix widget.
  */
-int main (void)
+int main (int argc, char **argv)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -22,6 +22,10 @@ int main (void)
    int vcols			= 5;
    char *coltitle[10], *rowtitle[10], *mesg[10];
    int colwidth[10], colvalue[10];
+
+   CDK_PARAMS params;
+
+   CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -57,12 +61,15 @@ int main (void)
 
    /* Create the matrix object. */
    courseList = newCDKMatrix (cdkscreen,
-				CENTER, CENTER,
-				rows, cols, vrows, vcols,
-				title, rowtitle, coltitle,
-				colwidth, colvalue,
-				-1, -1, '.',
-				COL, TRUE, TRUE, TRUE);
+			      CDKparamValue(&params, 'X', CENTER),
+			      CDKparamValue(&params, 'Y', CENTER),
+			      rows, cols, vrows, vcols,
+			      title, rowtitle, coltitle,
+			      colwidth, colvalue,
+			      -1, -1, '.',
+			      COL, TRUE,
+			      CDKparamValue(&params, 'N', TRUE),
+			      CDKparamValue(&params, 'S', TRUE));
 
    /* Check to see if the matrix is null. */
    if (courseList == 0)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/19 01:38:33 $
- * $Revision: 1.88 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.93 $
  */
 
 /*
@@ -20,14 +20,12 @@ DeclareCDKObjects(SWINDOW, Swindow, setCdk, Int);
 CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, int saveLines, boolean Box, boolean shadow)
 {
    CDKSWINDOW	*swindow	= 0;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
    int ypos			= yplace;
-   char **temp			= 0;
-   int x;
 
    if ((swindow = newCDKObject(CDKSWINDOW, &my_funcs)) == 0)
       return (0);
@@ -48,31 +46,10 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    */
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
-
-      temp = CDKsplitString (title, '\n');
-      swindow->titleLines = CDKcountStrings (temp);
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(swindow));
-      for (x=0; x < swindow->titleLines; x++)
-      {
-	 swindow->title[x]	= char2Chtype (temp[x], &swindow->titleLen[x], &swindow->titlePos[x]);
-	 swindow->titlePos[x]	= justifyString (titleWidth, swindow->titleLen[x], swindow->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      swindow->titleLines = 0;
-   }
+   boxWidth = setCdkTitle(ObjOf(swindow), title, boxWidth);
 
    /* Set the box height. */
-   boxHeight += swindow->titleLines + 1;
+   boxHeight += TitleLinesOf(swindow) + 1;
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -81,10 +58,10 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Set the rest of the variables. */
-   swindow->titleAdj = swindow->titleLines + 1;
+   swindow->titleAdj = TitleLinesOf(swindow) + 1;
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(swindow));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the scrolling window */
    swindow->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -97,9 +74,9 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
 
   /* Make the field window. */
    swindow->fieldWin = subwin (swindow->win,
-				(boxHeight-swindow->titleLines-2),
+				(boxHeight-TitleLinesOf(swindow)-2),
 				boxWidth - 2,
-				ypos + swindow->titleLines + 1,
+				ypos + TitleLinesOf(swindow) + 1,
 				xpos + 1);
    keypad (swindow->fieldWin, TRUE);
 
@@ -109,7 +86,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->shadowWin		= 0;
    swindow->boxHeight		= boxHeight;
    swindow->boxWidth		= boxWidth;
-   swindow->viewSize		= boxHeight-swindow->titleLines-2;
+   swindow->viewSize		= boxHeight-TitleLinesOf(swindow)-2;
    swindow->currentTop		= 0;
    swindow->maxTopLine		= 0;
    swindow->leftChar		= 0;
@@ -433,7 +410,7 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
 }
 
 /*
- * This allows the user to play inside the scolling window.
+ * This allows the user to play inside the scrolling window.
  */
 void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
 {
@@ -679,7 +656,7 @@ static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean re
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(swindow), &xpos, &ypos, swindow->boxWidth, swindow->boxHeight, BorderOf(swindow));
+   alignxy (WindowOf(swindow), &xpos, &ypos, swindow->boxWidth, swindow->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -706,7 +683,6 @@ static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean re
 static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
-   int x;
 
    /* Do we need to draw in the shadow. */
    if (swindow->shadowWin != 0)
@@ -720,19 +696,8 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
       drawObjBox (swindow->win, ObjOf(swindow));
    }
 
-   /* Draw in the title if there is one */
-   if (swindow->titleLines != 0)
-   {
-      for (x=0; x < swindow->titleLines; x++)
-      {
-	 writeChtype (swindow->win,
-			swindow->titlePos[x] + BorderOf(swindow),
-			x + BorderOf(swindow),
-			swindow->title[x],
-			HORIZONTAL, 0,
-			swindow->titleLen[x]);
-      }
-   }
+   drawCdkTitle (swindow->win, object);
+
    touchwin (swindow->win);
    wrefresh (swindow->win);
 
@@ -842,14 +807,10 @@ static void destroyInfo(CDKSWINDOW *swindow)
 static void _destroyCDKSwindow (CDKOBJS *object)
 {
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
-   int x;
 
    destroyInfo(swindow);
 
-   for (x=0; x < swindow->titleLines; x++)
-   {
-      freeChtype (swindow->title[x]);
-   }
+   cleanCdkTitle (object);
 
    /* Delete the windows. */
    deleteCursesWindow (swindow->shadowWin);
@@ -906,7 +867,7 @@ int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
 
 /*
  * This function allows the user to dump the information from the
- * scrollong window to a file.
+ * scrolling window to a file.
  */
 void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 {
@@ -978,7 +939,7 @@ void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 }
 
 /*
- * This function allows the user to load new informatrion into the scrolling
+ * This function allows the user to load new information into the scrolling
  * window.
  */
 void loadCDKSwindowInformation (CDKSWINDOW *swindow)
