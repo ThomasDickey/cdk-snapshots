@@ -1,8 +1,9 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.13 2003/04/17 22:43:13 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.14 2003/11/19 01:35:45 tom Exp $
 .TH cdk_viewer 3
 .SH NAME
 activateCDKViewer,
+cleanCDKViewer,
 destroyCDKViewer,
 drawCDKViewer,
 eraseCDKViewer,
@@ -39,6 +40,9 @@ setCDKViewerVerticalChar \- curses viewer list widget.
 .nf
 .TP 15
 .B "int activateCDKViewer ("
+.BI "CDKVIEWER *" "viewer");
+.TP 15
+.B "void cleanCDKViewer ("
 .BI "CDKVIEWER *" "viewer");
 .TP 15
 .B "void destroyCDKViewer ("
@@ -180,6 +184,9 @@ set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 If the character
 entered into this widget was \fIESCAPE\fR then the widget will return
 a value of -1 and the widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
+.TP 5
+.B cleanCDKViewer
+clears the information from the window.
 .TP 5
 .B destroyCDKViewer
 removes the widget from the screen and frees memory the object used.

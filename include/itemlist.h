@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.18 2003/11/16 15:10:54 tom Exp $
+ * $Id: itemlist.h,v 1.19 2003/11/19 00:18:07 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -75,7 +75,7 @@ struct SItemList {
    chtype **	item;
    int *	itemPos;
    int *	itemLen;
-   int		itemCount;
+   int		listSize;
    int		currentItem;
    int		defaultItem;
    int		boxWidth;

@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.4 2001/04/20 23:04:35 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.5 2003/11/18 23:49:48 tom Exp $ */
 
 #include <cdk.h>
 
@@ -379,6 +379,8 @@ int dumpViewer (CDKVIEWER *widget, char *filename)
    /* Declare local variables. */
    FILE *outputFile	= 0;
    char *rawLine	= 0;
+   int listSize;
+   chtype **list	= getCDKViewerInfo (widget, &listSize);
    int x;
 
    /* Try to open the file. */
@@ -388,16 +390,16 @@ int dumpViewer (CDKVIEWER *widget, char *filename)
    }
 
    /* Start writing out the file. */
-   for (x=0; x < widget->infoSize; x++)
+   for (x=0; x < listSize; x++)
    {
-      rawLine = chtype2Char (widget->info[x]);
+      rawLine = chtype2Char (list[x]);
       fprintf (outputFile, "%s\n", rawLine);
       freeChar (rawLine);
    }
 
    /* Close the file and return the number of lines written. */
    fclose (outputFile);
-   return widget->infoSize;
+   return listSize;
 }
 
 int widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
