@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:39:57 $
- * $Revision: 1.79 $
+ * $Date: 2004/12/23 22:24:08 $
+ * $Revision: 1.80 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -484,7 +484,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	    {
 	       marker |= getCDKCalendarMarker(calendar, day, calendar->month, yearIndex);
 	    }
-	    writeCharAttrib (calendar->fieldWin, ((y+1)*3)-1, x,
+	    writeCharAttrib (calendar->fieldWin, y*3, x,
 			     temp, marker, HORIZONTAL, 0, 2);
 	 }
 	 day++;

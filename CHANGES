@@ -5,6 +5,12 @@ Modifications copyright Thomas E. Dickey 1999-2003, 2004
 
 This file outlines all of the changes/additions from one release to another.
 
+2004/12/24 - T.E.Dickey <dickey@his.com>
+========================================
+	+ correct expression in CDKCalendarField from 2004/08/31 changes, which
+	  caused it to show only 6 days/week, broken by a fix for
+	  demos/appointment (reports/patches by Ryan Flannery and Greg Martin).
+
 2004/11/07 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ correct top-level Makefile.in to remove libtool's auxiliary files
