@@ -1,16 +1,16 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.28 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:28:20 $
+ * $Revision: 1.31 $
  */
 
 /*
  * This sets up a basic set of color pairs. These can be redefined
  * if wanted...
  */
-void initCDKColor ()
+void initCDKColor (void)
 {
 #ifdef HAVE_COLOR
    /* Declare local variables. */
@@ -24,7 +24,7 @@ void initCDKColor ()
 
    /* Start color first. */
    start_color();
-  
+
    /* Create the color pairs. */
    for (x=0; x < 8; x++)
    {
@@ -49,14 +49,14 @@ void boxWindow (WINDOW *window, chtype attr)
    int x, y;
 
    /* Draw horizontal lines. */
-   for (x=tlx; x<=brx;x++) 
+   for (x=tlx; x<=brx;x++)
    {
        mvwaddch (window, tly, x, ACS_HLINE | attr);
        mvwaddch (window, bry, x, ACS_HLINE | attr);
     }
 
    /* Draw vertical lines. */
-   for (y=tly; y<=bry;y++) 
+   for (y=tly; y<=bry;y++)
    {
        mvwaddch (window, y, tlx, ACS_VLINE | attr);
        mvwaddch (window, y, brx, ACS_VLINE | attr);
@@ -92,7 +92,7 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
    /* Draw horizontal lines. */
    if (horz != (chtype)NULL)
    {
-      for (x=x1; x<=x2; x++) 
+      for (x=x1; x<=x2; x++)
       {
          if (attr != (chtype)NULL)
          {
@@ -111,7 +111,7 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
    /* Draw vertical lines. */
    if (vert != (chtype)NULL)
    {
-      for (y=y1; y<=y2; y++) 
+      for (y=y1; y<=y2; y++)
       {
          if (attr != (chtype)NULL)
          {
@@ -219,7 +219,7 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
       int yratio	= (width > height ? (width / height) : 1);
       int xadj		= 0;
       int yadj		= 0;
-  
+
       /* Set the vars. */
       x	= startx;
       y	= starty;
@@ -293,7 +293,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
 
    /* Check the alignment of the message. */
    if (align == HORIZONTAL)
-   { 
+   {
       display = MINIMUM(display,window->_maxx-1);
       for (x=0; x < display ; x++)
       {
@@ -323,7 +323,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
 
    /* Check the alignment of the message. */
    if (align == HORIZONTAL)
-   { 
+   {
       /* Draw the message on a horizontal axis. */
       display		= MINIMUM(display,window->_maxx-1);
       for (x=0; x < display ; x++)
@@ -484,7 +484,7 @@ int popupDialog (CDKSCREEN *screen, char **mesg, int mesgCount, char **buttons, 
  */
 int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boolean numbers)
 {
-   CDKSCROLL *scroll	= (CDKSCROLL *)NULL;
+   CDKSCROLL *scrollp	= (CDKSCROLL *)NULL;
    int selected		= -1;
    int height		= 10;
    int width		= -1;
@@ -511,29 +511,29 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
    width += 5;
 
    /* Create the scrolling list. */
-   scroll = newCDKScroll (screen, CENTER, CENTER, RIGHT,
+   scrollp = newCDKScroll (screen, CENTER, CENTER, RIGHT,
 				height, width, title,
 				list, listSize, numbers,
 				A_REVERSE, TRUE, FALSE);
 
    /* Check if we made the list. */
-   if (scroll == (CDKSCROLL *)NULL)
+   if (scrollp == (CDKSCROLL *)NULL)
    {
       refreshCDKScreen (screen);
       return -1;
    }
 
    /* Let the user play. */
-   selected = activateCDKScroll (scroll, (chtype)NULL);
+   selected = activateCDKScroll (scrollp, (chtype)NULL);
 
    /* Check how they exited. */
-   if (scroll->exitType != vNORMAL)
+   if (scrollp->exitType != vNORMAL)
    {
       selected = -1;
    }
 
    /* Clean up. */
-   destroyCDKScroll (scroll);
+   destroyCDKScroll (scrollp);
    refreshCDKScreen (screen);
    return selected;
 }
@@ -570,7 +570,7 @@ char *getString (CDKSCREEN *screen, char *title, char *label, char *initValue)
    return value;
 }
 
-/* 
+/*
  * This allows the user to view a file.
  */
 int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, int buttonCount)
@@ -589,7 +589,7 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    {
       return (lines);
    }
- 
+
    /* Create the file viewer to view the file selected.*/
    viewer = newCDKViewer (screen, CENTER, CENTER, -6, -16,
 				buttons, buttonCount,
@@ -597,7 +597,7 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
 
    /* Set up the viewer title, and the contents to the widget. */
    setCDKViewer (viewer, title, info, lines, A_REVERSE, TRUE, TRUE, TRUE);
- 
+
    /* Activate the viewer widget. */
    selected = activateCDKViewer (viewer, (chtype *)NULL);
 
@@ -619,7 +619,7 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    return selected;
 }
 
-/* 
+/*
  * This allows the user to view information.
  */
 int viewInfo (CDKSCREEN *screen, char *title, char **info, int count, char **buttons, int buttonCount, boolean interpret)
@@ -634,7 +634,7 @@ int viewInfo (CDKSCREEN *screen, char *title, char **info, int count, char **but
 
    /* Set up the viewer title, and the contents to the widget. */
    setCDKViewer (viewer, title, info, count, A_REVERSE, interpret, TRUE, TRUE);
- 
+
    /* Activate the viewer widget. */
    selected = activateCDKViewer (viewer, (chtype *)NULL);
 

@@ -1,15 +1,20 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.41 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:40:13 $
+ * $Revision: 1.45 $
  */
+
+static CDKFUNCS my_funcs = {
+    _drawCDKHistogram,
+    _eraseCDKHistogram,
+};
 
 /*
  * This creates a histogram widget.
  */
-CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, int orient, char *title, boolean box, boolean shadow)
+CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, int orient, char *title, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
    CDKHISTOGRAM *histogram	= (CDKHISTOGRAM *)malloc (sizeof (CDKHISTOGRAM));
@@ -31,7 +36,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    */
    boxHeight = setWidgetDimension (parentHeight, height, 2);
    oldHeight = boxHeight;
- 
+
   /*
    * If the width is a negative value, the width will
    * be COLS-width, otherwise, the width will be the
@@ -45,7 +50,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    {
       /* We need to split the title on \n. */
       histogram->titleLines = splitString (title, temp, '\n');
- 
+
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < histogram->titleLines; x++)
       {
@@ -68,11 +73,13 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    */
    boxWidth = (boxWidth > parentWidth ? oldWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? oldHeight : boxHeight);
-   
+
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the histogram pointer. */
+   ScreenOf(histogram)		= cdkscreen;
+   ObjOf(histogram)->fn		= &my_funcs;
    histogram->parent		= cdkscreen->window;
    histogram->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    histogram->shadowWin		= (WINDOW *)NULL;
@@ -118,7 +125,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    histogram->lowString	= (char *)NULL;
    histogram->highString	= (char *)NULL;
    histogram->curString	= (char *)NULL;
-   histogram->box	= box;
+   ObjOf(histogram)->box	= Box;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -138,7 +145,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
  */
 void activateCDKHistogram (CDKHISTOGRAM *histogram, chtype *actions)
 {
-   drawCDKHistogram (histogram, histogram->box);
+   drawCDKHistogram (histogram, ObjOf(histogram)->box);
 }
 
 /*
@@ -175,7 +182,7 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
    if (histogram->orient == VERTICAL)
    {
       histogram->barSize = (int)(histogram->percent * (float)histogram->fieldHeight);
-   } 
+   }
    else
    {
       histogram->barSize = (int)(histogram->percent * (float)histogram->fieldWidth);
@@ -203,13 +210,13 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->lowString	= copyChar (string);
             histogram->lowx		= 1;
             histogram->lowy		= histogram->boxHeight - len - 1;
-            
+
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             histogram->highString	= copyChar (string);
             histogram->highx		= 1;
             histogram->highy		= histogram->titleLines + 1;
-   
+
             /* Set the current value attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -247,7 +254,7 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->highString	= copyChar (string);
             histogram->highx		= (histogram->fieldWidth/2) + 1;
             histogram->highy		= histogram->titleLines + 1;
-   
+
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -279,13 +286,13 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->lowString	= copyChar (string);
             histogram->lowx		= histogram->fieldWidth;
             histogram->lowy		= histogram->boxHeight - len - 1;
-            
+
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             histogram->highString	= copyChar (string);
             histogram->highx		= histogram->fieldWidth;
             histogram->highy		= histogram->titleLines + 1;
-   
+
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -320,14 +327,14 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->lowString	= copyChar (string);
             histogram->lowx		= 1;
             histogram->lowy		= histogram->titleLines+1;
-            
+
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             len				= (int)strlen(string);
             histogram->highString	= copyChar (string);
             histogram->highx		= histogram->boxWidth - len - 1;
             histogram->highy		= histogram->titleLines+1;
-   
+
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -358,14 +365,14 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->lowString	= copyChar (string);
             histogram->lowx		= 1;
             histogram->lowy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
-            
+
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             len				= (int)strlen (string);
             histogram->highString	= copyChar (string);
             histogram->highx		= histogram->boxWidth - len - 1;
             histogram->highy		= (histogram->fieldHeight/2) + histogram->titleLines + 1;
-   
+
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -396,14 +403,14 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             histogram->lowString	= copyChar (string);
             histogram->lowx		= 1;
             histogram->lowy		= histogram->boxHeight - 2;
-            
+
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             len				= (int)strlen (string);
             histogram->highString	= copyChar (string);
             histogram->highx		= histogram->boxWidth - len - 1;
             histogram->highy		= histogram->boxHeight - 2;
-   
+
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
             {
@@ -490,11 +497,11 @@ chtype getCDKHistogramFillerChar (CDKHISTOGRAM *histogram)
  */
 void setCDKHistogramBox (CDKHISTOGRAM *histogram, boolean Box)
 {
-   histogram->box = Box;
+   ObjOf(histogram)->box = Box;
 }
 boolean getCDKHistogramBox (CDKHISTOGRAM *histogram)
 {
-   return histogram->box;
+   return ObjOf(histogram)->box;
 }
 
 /*
@@ -531,7 +538,7 @@ void setCDKHistogramBoxAttribute (CDKHISTOGRAM *histogram, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
 {
    chtype *holder = (chtype *)NULL;
@@ -556,7 +563,7 @@ void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
 /*
  * This moves the histogram field to the given location.
  */
-void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = histogram->win->_begx;
@@ -577,7 +584,7 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (histogram->screen->window, &xpos, &ypos, histogram->boxWidth, histogram->boxHeight);
+   alignxy (WindowOf(histogram), &xpos, &ypos, histogram->boxWidth, histogram->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -595,13 +602,13 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (histogram->screen->window);
-   wrefresh (histogram->screen->window);
+   touchwin (WindowOf(histogram));
+   wrefresh (WindowOf(histogram));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKHistogram (histogram, histogram->box);
+      drawCDKHistogram (histogram, ObjOf(histogram)->box);
    }
 }
 
@@ -633,7 +640,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (histogram->win->_begy+histogram->win->_maxy < histogram->screen->window->_maxy-1)
+         if (histogram->win->_begy+histogram->win->_maxy < WindowOf(histogram)->_maxy-1)
          {
             moveCDKHistogram (histogram, 0, 1, TRUE, TRUE);
          }
@@ -655,7 +662,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < histogram->screen->window->_maxx-1)
+         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1)
          {
             moveCDKHistogram (histogram, 1, 0, TRUE, TRUE);
          }
@@ -677,7 +684,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '9')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < histogram->screen->window->_maxx-1 &&
+         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1 &&
 		histogram->win->_begy > 0)
          {
             moveCDKHistogram (histogram, 1, -1, TRUE, TRUE);
@@ -689,7 +696,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '1')
       {
-         if (histogram->win->_begx > 0 && histogram->win->_begx+histogram->win->_maxx < histogram->screen->window->_maxx-1)
+         if (histogram->win->_begx > 0 && histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1)
          {
             moveCDKHistogram (histogram, -1, 1, TRUE, TRUE);
          }
@@ -700,8 +707,8 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '3')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < histogram->screen->window->_maxx-1 &&
-		histogram->win->_begy+histogram->win->_maxy < histogram->screen->window->_maxy-1)
+         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1
+	  && histogram->win->_begy+histogram->win->_maxy < WindowOf(histogram)->_maxy-1)
          {
             moveCDKHistogram (histogram, 1, 1, TRUE, TRUE);
          }
@@ -740,8 +747,8 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (histogram->screen);
-         refreshCDKScreen (histogram->screen);
+         eraseCDKScreen (ScreenOf(histogram));
+         refreshCDKScreen (ScreenOf(histogram));
       }
       else if (key == KEY_ESC)
       {
@@ -757,9 +764,9 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
 /*
  * This function draws the histogram.
  */
-void drawCDKHistogram (CDKHISTOGRAM *histogram, boolean Box)
+void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 {
-   /* Delcare local variables. */
+   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
    chtype battr	= (chtype)NULL;
    chtype bchar	= (chtype)NULL;
    chtype fattr	= histogram->filler & A_ATTRIBUTES;
@@ -808,7 +815,7 @@ void drawCDKHistogram (CDKHISTOGRAM *histogram, boolean Box)
       if (histogram->lowString != (char *)NULL)
       {
          len = (int)strlen (histogram->lowString);
-         writeCharAttrib (histogram->win, 
+         writeCharAttrib (histogram->win,
 				histogram->lowx,
 				histogram->lowy,
 				histogram->lowString,
@@ -821,7 +828,7 @@ void drawCDKHistogram (CDKHISTOGRAM *histogram, boolean Box)
       if (histogram->curString != (char *)NULL)
       {
          len = (int)strlen (histogram->curString);
-         writeCharAttrib (histogram->win, 
+         writeCharAttrib (histogram->win,
 				histogram->curx,
 				histogram->cury,
 				histogram->curString,
@@ -834,7 +841,7 @@ void drawCDKHistogram (CDKHISTOGRAM *histogram, boolean Box)
       if (histogram->highString != (char *)NULL)
       {
          len = (int)strlen (histogram->highString);
-         writeCharAttrib (histogram->win, 
+         writeCharAttrib (histogram->win,
 				histogram->highx,
 				histogram->highy,
 				histogram->highString,
@@ -916,8 +923,10 @@ void destroyCDKHistogram (CDKHISTOGRAM *histogram)
 /*
  * This function erases the histogram from the screen.
  */
-void eraseCDKHistogram (CDKHISTOGRAM *histogram)
+void _eraseCDKHistogram (CDKOBJS *object)
 {
+   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
+
    eraseCursesWindow (histogram->win);
    eraseCursesWindow (histogram->shadowWin);
 }

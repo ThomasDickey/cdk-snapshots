@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (c) 1990 The Regents of the University of California.
+ * Copyright 1999, Mike Glover
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,17 +21,17 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ *    must display the following acknowledgment:
+ *      This product includes software developed by Mike Glover
+ *      and contributors.
+ * 4. Neither the name of Mike Glover, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -44,21 +44,21 @@
 /*
  * Declare some definitions needed for this widget.
  */
-#define	MAX_DAYS	50
-#define	MAX_MONTHS	13
-#define	MAX_YEARS	502
+#define MAX_DAYS	50
+#define MAX_MONTHS	13
+#define MAX_YEARS	502
 
 /*
  * Define the CDK calendar widget structure.
  */
 struct SCalendar {
-   CDKSCREEN	*screen;
-   WINDOW	*parent;
-   WINDOW	*win;
-   WINDOW	*labelWin;
-   WINDOW	*fieldWin;
-   WINDOW	*shadowWin;
-   chtype	*title[MAX_LINES];
+   CDKOBJS	obj;
+   WINDOW *	parent;
+   WINDOW *	win;
+   WINDOW *	labelWin;
+   WINDOW *	fieldWin;
+   WINDOW *	shadowWin;
+   chtype *	title[MAX_LINES];
    int		titlePos[MAX_LINES];
    int		titleLen[MAX_LINES];
    int		titleAdj;
@@ -89,9 +89,7 @@ struct SCalendar {
    chtype	HChar;
    chtype	BoxAttrib;
    EExitType	exitType;
-   boolean	box;
    boolean	shadow;
-   int		screenIndex;
    BINDFN	bindFunction[MAX_BINDINGS];
    void *	bindData[MAX_BINDINGS];
    PROCESSFN	preProcessFunction;
@@ -104,124 +102,221 @@ typedef struct SCalendar CDKCALENDAR;
 /*
  * This creates a pointer to a new calendar widget.
  */
-CDKCALENDAR *newCDKCalendar (CDKSCREEN *screen, int xPos, int yPos,
-			char *title, int day, int month, int year,
-			chtype dayAttrib, chtype monthAttrib,
-			chtype yearAttrib, chtype highlight, 
-			boolean Box, boolean shadow);
+CDKCALENDAR *newCDKCalendar (
+		CDKSCREEN *	/* screen */,
+		int		/* xPos */,
+		int		/* yPos */,
+		char *		/* title */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */,
+		chtype		/* dayAttrib */,
+		chtype		/* monthAttrib */,
+		chtype		/* yearAttrib */,
+		chtype		/* highlight */,
+		boolean		/* Box */,
+		boolean		/* shadow */);
 
 /*
  * This activates the calendar widget.
  */
-time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions);
+time_t activateCDKCalendar (
+		CDKCALENDAR *	/* calendar */,
+		chtype *	/* actions */);
 
 /*
  * This injects a single character into the widget.
  */
-time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input);
+time_t injectCDKCalendar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* input */);
 
 /*
  * This sets multiple attributes of the widget.
  */
-void setCDKCalendar (CDKCALENDAR *calendar,
-			int day, int month, int year,
-			chtype dayAttrib, chtype monthAttrib,
-			chtype yearAttrib, chtype highlight,
-			boolean Box);
+void setCDKCalendar (
+		CDKCALENDAR *	/* calendar */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */,
+		chtype		/* dayAttrib */,
+		chtype		/* monthAttrib */,
+		chtype		/* yearAttrib */,
+		chtype		/* highlight */,
+		boolean		/* Box */);
 
 /*
  * This sets the date of the calendar.
  */
-void setCDKCalendarDate (CDKCALENDAR *calendar, int day, int month, int year);
-void getCDKCalendarDate (CDKCALENDAR *calendar, int *day, int *month, int *year);
+void setCDKCalendarDate (
+		CDKCALENDAR *	/* calendar */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */);
+
+void getCDKCalendarDate (
+		CDKCALENDAR *	/* calendar */,
+		int *		/* day */,
+		int *		/* month */,
+		int *		/* year */);
 
 /*
  * This sets the attribute of the days in the calendar.
  */
-void setCDKCalendarDayAttribute (CDKCALENDAR *calendar, chtype attribute);
-chtype getCDKCalendarDayAttribute (CDKCALENDAR *calendar);
+void setCDKCalendarDayAttribute (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* attribute */);
+
+chtype getCDKCalendarDayAttribute (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * This sets the attribute of the month names in the calendar.
  */
-void setCDKCalendarMonthAttribute (CDKCALENDAR *calendar, chtype attribute);
-chtype getCDKCalendarMonthAttribute (CDKCALENDAR *calendar);
+void setCDKCalendarMonthAttribute (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* attribute */);
+
+chtype getCDKCalendarMonthAttribute (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * This sets the attribute of the year in the calendar.
  */
-void setCDKCalendarYearAttribute (CDKCALENDAR *calendar, chtype attribute);
-chtype getCDKCalendarYearAttribute (CDKCALENDAR *calendar);
+void setCDKCalendarYearAttribute (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* attribute */);
+
+chtype getCDKCalendarYearAttribute (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * This sets the attribute of the highlight bar.
  */
-void setCDKCalendarHighlight (CDKCALENDAR *calendar, chtype highlight);
-chtype getCDKCalendarHighlight (CDKCALENDAR *calendar);
+void setCDKCalendarHighlight (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* highlight */);
+
+chtype getCDKCalendarHighlight (
+		CDKCALENDAR *	/* calendar */);
 
 /*
-  * This sets the box attibute of the widget.
+  * This sets the box attribute of the widget.
  */
-void setCDKCalendarBox (CDKCALENDAR *calendar, boolean Box);
-boolean getCDKCalendarBox (CDKCALENDAR *calendar);
+void setCDKCalendarBox (
+		CDKCALENDAR *	/* calendar */,
+		boolean		/* Box */);
+
+boolean getCDKCalendarBox (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKCalendarULChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarURChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarLLChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarLRChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarVerticalChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarHorizontalChar (CDKCALENDAR *calendar, chtype character);
-void setCDKCalendarBoxAttribute (CDKCALENDAR *calendar, chtype character);
+void setCDKCalendarULChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarURChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarLLChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarLRChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarVerticalChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarHorizontalChar (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
+
+void setCDKCalendarBoxAttribute (
+		CDKCALENDAR *	/* calendar */,
+		chtype		/* character */);
 
 /*
  * This sets the background color of the widget.
- */ 
-void setCDKCalendarBackgroundColor (CDKCALENDAR *calendar, char *color);
+ */
+void setCDKCalendarBackgroundColor (
+		CDKCALENDAR *	/* calendar */,
+		char *		/* color */);
 
 /*
  * This sets a marker on the calendar.
  */
-void setCDKCalendarMarker (CDKCALENDAR *calendar, 
-				int day, int month, int year,
-				chtype markerChar);
+void setCDKCalendarMarker (
+		CDKCALENDAR *	/* calendar */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */,
+		chtype		/* markerChar */);
 
 /*
  * This removes a marker from the calendar.
  */
-void removeCDKCalendarMarker (CDKCALENDAR *calendar, 
-				int day, int month, int year);
+void removeCDKCalendarMarker (
+		CDKCALENDAR *	/* calendar */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */);
 
 /*
  * This draws the widget on the screen.
  */
-void drawCDKCalendar (CDKCALENDAR *calendar, boolean Box);
+void _drawCDKCalendar (
+		CDKOBJS *	/* calendar */,
+		boolean		/* Box */);
+
+#define drawCDKCalendar(calendar,box) _drawCDKCalendar(ObjOf(calendar),box)
 
 /*
  * This removes the widget from the screen.
  */
-void eraseCDKCalendar (CDKCALENDAR *calendar);
+void _eraseCDKCalendar (
+		CDKOBJS *	/* calendar */);
+
+#define eraseCDKCalendar(calendar) _eraseCDKCalendar(ObjOf(calendar))
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKCalendar (CDKCALENDAR *calendar, int xpos, int ypos, boolean relative, boolean refresh);
+void moveCDKCalendar (
+		CDKCALENDAR *	/* calendar */,
+		int		/* xpos */,
+		int		/* ypos */,
+		boolean		/* relative */,
+		boolean		/* refresh */);
 
 /*
  * This is an interactive method of moving the widget.
  */
-void positionCDKCalendar (CDKCALENDAR *calendar);
+void positionCDKCalendar (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * This destroys the calendar widget and all associated memory.
  */
-void destroyCDKCalendar (CDKCALENDAR *calendar);
+void destroyCDKCalendar (
+		CDKCALENDAR *	/* calendar */);
 
 /*
  * This sets the pre and post process functions.
  */
-void setCDKCalendarPreProcess (CDKCALENDAR *calendar, PROCESSFN callback, void *data);
-void setCDKCalendarPostProcess (CDKCALENDAR *calendar, PROCESSFN callback, void *data);
-#endif
+void setCDKCalendarPreProcess (
+		CDKCALENDAR *	/* calendar */,
+		PROCESSFN	/* callback */,
+		void *		/* data */);
+
+void setCDKCalendarPostProcess (
+		CDKCALENDAR *	/* calendar */,
+		PROCESSFN	/* callback */,
+		void *		/* data */);
+
+#endif /* CDKCALENDAR_H */

@@ -9,7 +9,7 @@ int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chty
 /*
  * This demonstrates the Cdk entry field widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
@@ -90,12 +90,12 @@ int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chty
       mesg[lines++] = "<C>I told you </B>NOT<!B> to type G";
       mesg[lines++] = "<C><#HL(30)>";
 
-      widget = newCDKDialog (entry->screen, CENTER, CENTER,
+      widget = newCDKDialog (ScreenOf(entry), CENTER, CENTER,
 				mesg, lines, buttons, buttonCount,
 				A_REVERSE, FALSE, FALSE, FALSE);
       activateCDKDialog (widget, NULL);
       destroyCDKDialog (widget);
-      drawCDKEntry (entry, entry->box);
+      drawCDKEntry (entry, ObjOf(entry)->box);
       return 0;
    }
    return 1;

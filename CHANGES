@@ -6,6 +6,29 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/5/15 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ revised configure script, using autoconf macros which I've written
+	  for other programs to check for ncurses configuration.
+	+ corrected language of copyrights - Mike Glover's intent to retain
+	  copyright of CDK is not served by putting a 1990 copyright attributed
+	  to UC Berkeley.
+	+ except for unused parameters, fix gcc compiler warnings.
+	+ change prototypes to not use parameter names, since this causes
+	  namespace pollution.
+	+ make functions that do not have public prototypes static.
+	+ add missing exit() call in fileview.c, after endCDK() call.
+	+ move delwin() calls before endCDK() call in a few other examples.
+	+ correct apparent bug in widgets which process a binding (such as
+	  KEY_DOWN, in the alphalist and fileview.c demos).  They set the
+	  exitType to vESCAPE_HIT rather than the expected vEARLY_EXIT.
+	+ ifdef'd out some debug code in scroll_ex.c
+	+ correct a loop limit freeing mesg[] array in selection_ex.c
+	+ move common object data into new struct CDKOBJS, making cdkscreen.c
+	  much simpler and extensible.
+	+ change erase and draw functions (called from cdkscreen.c) to
+	  object pointers, so only widgets used are linked, making example
+	  programs half as big.
 
 4.9.7 -> 4.9.8 (December 1998)
 ==========================================

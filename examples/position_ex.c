@@ -7,7 +7,7 @@ char *XCursesProgramName="position_ex";
 /*
  * This demonstrates the Cdk entry field widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare local variables.*/
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
    }
 
    /* Let the user move the widget around the window. */
-   drawCDKEntry (directory, directory->box);
+   drawCDKEntry (directory, ObjOf(directory)->box);
    positionCDKEntry (directory);
 
    /* Activate the entry field. */

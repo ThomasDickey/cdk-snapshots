@@ -13,7 +13,7 @@ char *menuInfo[3][4] = {{"", "This saves the current info.", "This exits the pro
 /*
  * This program demonstratres the Cdk menu widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;

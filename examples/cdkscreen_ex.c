@@ -9,7 +9,7 @@
 char *XCursesProgramName="cdkscreen_ex";
 #endif
 
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare vars. */
    WINDOW	*cursesWindow;

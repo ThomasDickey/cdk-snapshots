@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (c) 1990 The Regents of the University of California.
+ * Copyright 1999, Mike Glover
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,16 +22,16 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
  *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ * 	This product includes software developed by Mike Glover
+ * 	and contributors.
+ * 4. Neither the name of Mike Glover, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -51,7 +51,7 @@
  * Define the CDK menu widget structure.
  */
 struct SMenu {
-   CDKSCREEN	*screen;
+   CDKOBJS	obj;
    WINDOW	*parent;
    WINDOW	*pullWin[MAX_MENU_ITEMS];
    WINDOW	*titleWin[MAX_MENU_ITEMS];
@@ -69,7 +69,6 @@ struct SMenu {
    int		lastTitle;
    int		lastSubtitle;
    EExitType	exitType;
-   int		screenIndex;
    int		lastSelection;
    BINDFN	bindFunction[MAX_BINDINGS];
    void *	bindData[MAX_BINDINGS];
@@ -83,75 +82,123 @@ typedef struct SMenu CDKMENU;
 /*
  * This creates a new CDK menu widget pointer.
  */
-CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
-			char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS],
-			int menuitems,
-			int *subsize,
-			int *menuloc,
-			int menuPos,
-			chtype titleattr,
-			chtype subtitleattr);
+CDKMENU *newCDKMenu (
+    		CDKSCREEN *	/* cdkscreen */,
+		char *		/* menulist */ [MAX_MENU_ITEMS][MAX_SUB_ITEMS],
+		int 		/* menuitems */,
+		int *		/* subsize */,
+		int *		/* menuloc */,
+		int		/* menuPos */,
+		chtype 		/* titleattr */,
+		chtype 		/* subtitleattr */);
 
 /*
  * This activates the menu.
  */
-int activateCDKMenu (CDKMENU *menu, chtype *actions);
+int activateCDKMenu (
+    		CDKMENU *	/* menu */,
+		chtype *	/* actions */);
 
 /*
  * This injects a single character into the menu widget.
  */
-int injectCDKMenu (CDKMENU *menu, chtype input);
+int injectCDKMenu (
+    		CDKMENU *	/* menu */,
+		chtype 		/* input */);
 
 /*
  * These set specific attributes of the menu.
  */
-void setCDKMenu (CDKMENU *menu, int menuItem, int subMenuItem, 
-			chtype titleHighlight, chtype subTitleHighlight);
+void setCDKMenu (
+    		CDKMENU *	/* menu */,
+		int 		/* menuItem */,
+		int 		/* subMenuItem */,
+		chtype 		/* titleHighlight */,
+		chtype 		/* subTitleHighlight */);
 
 /*
  * This returns the current item the menu is on.
  */
-void setCDKMenuCurrentItem (CDKMENU *menu, int menuItem, int subMenuItem);
-void getCDKMenuCurrentItem (CDKMENU *menu, int *menuItem, int *subMenuItem);
+void setCDKMenuCurrentItem (
+    		CDKMENU *	/* menu */,
+		int 		/* menuItem */,
+		int 		/* subMenuItem */);
+
+void getCDKMenuCurrentItem (
+    		CDKMENU *	/* menu */,
+		int *		/* menuItem */,
+		int *		/* subMenuItem */);
 
 /*
  * This sets the highlight of the title.
  */
-void setCDKMenuTitleHighlight (CDKMENU *menu, chtype highlight);
-chtype getCDKMenuTitleHighlight (CDKMENU *menu);
+void setCDKMenuTitleHighlight (
+    		CDKMENU *	/* menu */,
+		chtype 		/* highlight */);
+
+chtype getCDKMenuTitleHighlight (
+    		CDKMENU *	/* menu */);
 
 /*
  * This sets the sub-menu title highlight.
  */
-void setCDKMenuSubTitleHighlight (CDKMENU *menu, chtype highlight);
-chtype getCDKMenuSubTitleHighlight (CDKMENU *menu);
+void setCDKMenuSubTitleHighlight (
+    		CDKMENU *	/* menu */,
+		chtype 		/* highlight */);
+
+chtype getCDKMenuSubTitleHighlight (
+    		CDKMENU *	/* menu */);
 
 /*
  * This draws the menu on the screen.
  */
-void drawCDKMenu (CDKMENU *menu);
-void drawCDKMenuTitles (CDKMENU *menu);
-void drawCDKMenuSubwin (CDKMENU *menu);
+void _drawCDKMenu (
+    		CDKOBJS *	/* menu */,
+		int		/* box */);
+
+#define drawCDKMenu(menu,box) _drawCDKMenu(ObjOf(menu),box)
+
+void drawCDKMenuTitles (
+    		CDKMENU *	/* menu */);
+
+void drawCDKMenuSubwin (
+    		CDKMENU *	/* menu */);
 
 /*
  * This erases the complere menu widget from the screen.
  */
-void eraseCDKMenu (CDKMENU *menu);
-void eraseCDKMenuSubwin (CDKMENU *menu);
+void _eraseCDKMenu (
+    		CDKOBJS *	/* menu */);
+
+#define eraseCDKMenu(menu) _eraseCDKMenu(ObjOf(menu))
+
+void eraseCDKMenuSubwin (
+    		CDKMENU *	/* menu */);
 
 /*
  * This sets the background color of the widget.
- */ 
-void setCDKMenuBackgroundColor (CDKMENU *menu, char *color);
+ */
+void setCDKMenuBackgroundColor (
+    		CDKMENU *	/* menu */,
+		char *		/* color */);
 
 /*
  * This destroys the menu widget.
  */
-void destroyCDKMenu (CDKMENU *menu);
+void destroyCDKMenu (
+    		CDKMENU *	/* menu */);
 
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKMenuPreProcess (CDKMENU *menu, PROCESSFN callback, void *data);
-void setCDKMenuPostProcess (CDKMENU *menu, PROCESSFN callback, void *data);
-#endif
+void setCDKMenuPreProcess (
+    		CDKMENU *	/* menu */,
+		PROCESSFN 	/* callback */,
+		void *		/* data */);
+
+void setCDKMenuPostProcess (
+    		CDKMENU *	/* menu */,
+		PROCESSFN 	/* callback */,
+		void *		/* data */);
+
+#endif /* CDKMENU_H */

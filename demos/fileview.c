@@ -14,7 +14,7 @@ int main (int argc, char **argv)
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
    CDKVIEWER *example	= (CDKVIEWER *)NULL;
-   CDKFSELECT *fSelect	= (CDKFSELECT *)NULL;	
+   CDKFSELECT *fSelect	= (CDKFSELECT *)NULL;
    WINDOW *cursesWin	= (WINDOW *)NULL;
    char *title		= "<C>Pick a file.";
    char *label		= "File: ";
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
    button[0]	= "</5><OK><!5>";
    button[1]	= "</5><Cancel><!5>";
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -56,18 +56,18 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Get the filename. */
-   if (filename == (char *)NULL)
+   if (filename == 0)
    {
       fSelect = newCDKFselect (cdkscreen, CENTER, CENTER, 20, 65,
 				title, label, A_NORMAL, '_', A_REVERSE,
 				"</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
- 
+
       /*
        * Set the starting directory. This is not neccessary because when
        * the file selector starts it uses the present directory as a default.
        */
-      setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE, 
-			"</5>", "</48>", "</N>", "</N>", fSelect->box);
+      setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,
+			"</5>", "</48>", "</N>", "</N>", ObjOf(fSelect)->box);
 
       /* Activate the file selector. */
       filename = copyChar (activateCDKFselect (fSelect, NULL));
@@ -80,13 +80,15 @@ int main (int argc, char **argv)
          mesg[1] = "";
          mesg[2] = "<C>Press any key to continue.";
          popupLabel (cdkscreen, mesg, 3);
-   
+
          /* Destroy the file selector. */
          destroyCDKFselect (fSelect);
 
          /* Exit CDK. */
          destroyCDKScreen (cdkscreen);
          endCDK();
+
+         exit (0);
       }
    }
 

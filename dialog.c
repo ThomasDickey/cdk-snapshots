@@ -1,15 +1,20 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1997/04/25 12:48:43 $
- * $Revision: 1.42 $
+ * $Author: tom $
+ * $Date: 1999/05/16 02:35:52 $
+ * $Revision: 1.47 $
  */
+
+static CDKFUNCS my_funcs = {
+    _drawCDKDialog,
+    _eraseCDKDialog,
+};
 
 /*
  * This function creates a dialog widget.
  */
-CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, char **buttonLabel, int buttonCount, chtype highlight, boolean separator, boolean box, boolean shadow)
+CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, char **buttonLabel, int buttonCount, chtype highlight, boolean separator, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
    CDKDIALOG *dialog	= (CDKDIALOG *)malloc (sizeof (CDKDIALOG));
@@ -47,6 +52,8 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Set up the dialog box attributes. */
+   ScreenOf(dialog)		= cdkscreen;
+   ObjOf(dialog)->fn		= &my_funcs;
    dialog->parent		= cdkscreen->window;
    dialog->win			= newwin (boxHeight, boxWidth, ypos, xpos);
    dialog->shadowWin		= (WINDOW *)NULL;
@@ -58,7 +65,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->highlight		= highlight;
    dialog->separator		= separator;
    dialog->exitType		= vNEVER_ACTIVATED;
-   dialog->box			= box;
+   ObjOf(dialog)->box		= Box;
    dialog->shadow		= shadow;
    dialog->ULChar		= ACS_ULCORNER;
    dialog->URChar		= ACS_URCORNER;
@@ -133,7 +140,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    int ret;
 
    /* Draw the dialog box. */
-   drawCDKDialog (dialog, dialog->box);
+   drawCDKDialog (dialog, ObjOf(dialog)->box);
 
    /* Lets move to the first button. */
    writeChtypeAttrib (dialog->win,
@@ -223,7 +230,7 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
                     dialog->currentButton--;
                  }
                  break;
-   
+
             case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
                  if (dialog->currentButton == lastButton)
                  {
@@ -234,26 +241,25 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
                     dialog->currentButton++;
                  }
                  break;
-   
+
             case KEY_UP : case KEY_DOWN :
                  Beep();
                  break;
-   
+
             case CDK_REFRESH :
-                 eraseCDKScreen (dialog->screen);
-                 refreshCDKScreen (dialog->screen);
+                 eraseCDKScreen (ScreenOf(dialog));
+                 refreshCDKScreen (ScreenOf(dialog));
                  break;
-   
+
             case KEY_ESC :
                  dialog->exitType = vESCAPE_HIT;
                  return -1;
-                 break;
-   
+
             case KEY_RETURN : case KEY_ENTER :
                  dialog->exitType = vNORMAL;
                  return dialog->currentButton;
                  break;
-   
+
          default :
             break;
          }
@@ -278,7 +284,7 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
 /*
  * This moves the dialog field to the given location.
  */
-void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative, boolean refresh)
+void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
    int currentX = dialog->win->_begx;
@@ -299,7 +305,7 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
    }
 
    /* Adjust the window if we need to. */
-   alignxy (dialog->screen->window, &xpos, &ypos, dialog->boxWidth, dialog->boxHeight);
+   alignxy (WindowOf(dialog), &xpos, &ypos, dialog->boxWidth, dialog->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -317,13 +323,13 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (dialog->screen->window);
-   wrefresh (dialog->screen->window);
+   touchwin (WindowOf(dialog));
+   wrefresh (WindowOf(dialog));
 
    /* Redraw the window, if they asked for it. */
-   if (refresh)
+   if (refresh_flag)
    {
-      drawCDKDialog (dialog, dialog->box);
+      drawCDKDialog (dialog, ObjOf(dialog)->box);
    }
 }
 
@@ -355,7 +361,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (dialog->win->_begy+dialog->win->_maxy < dialog->screen->window->_maxy-1)
+         if (dialog->win->_begy+dialog->win->_maxy < WindowOf(dialog)->_maxy-1)
          {
             moveCDKDialog (dialog, 0, 1, TRUE, TRUE);
          }
@@ -377,7 +383,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < dialog->screen->window->_maxx-1)
+         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1)
          {
             moveCDKDialog (dialog, 1, 0, TRUE, TRUE);
          }
@@ -399,7 +405,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '9')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < dialog->screen->window->_maxx-1 &&
+         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1 &&
 		dialog->win->_begy > 0)
          {
             moveCDKDialog (dialog, 1, -1, TRUE, TRUE);
@@ -411,7 +417,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '1')
       {
-         if (dialog->win->_begx > 0 && dialog->win->_begx+dialog->win->_maxx < dialog->screen->window->_maxx-1)
+         if (dialog->win->_begx > 0 && dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1)
          {
             moveCDKDialog (dialog, -1, 1, TRUE, TRUE);
          }
@@ -422,8 +428,8 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '3')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < dialog->screen->window->_maxx-1 &&
-		dialog->win->_begy+dialog->win->_maxy < dialog->screen->window->_maxy-1)
+         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1
+	  && dialog->win->_begy+dialog->win->_maxy < WindowOf(dialog)->_maxy-1)
          {
             moveCDKDialog (dialog, 1, 1, TRUE, TRUE);
          }
@@ -462,8 +468,8 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == CDK_REFRESH)
       {
-         eraseCDKScreen (dialog->screen);
-         refreshCDKScreen (dialog->screen);
+         eraseCDKScreen (ScreenOf(dialog));
+         refreshCDKScreen (ScreenOf(dialog));
       }
       else if (key == KEY_ESC)
       {
@@ -479,9 +485,9 @@ void positionCDKDialog (CDKDIALOG *dialog)
 /*
  * This function draws the dialog widget.
  */
-void drawCDKDialog (CDKDIALOG *dialog, boolean Box)
+void _drawCDKDialog (CDKOBJS *object, boolean Box)
 {
-   /* Declare local variables. */
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
    int x = 0;
 
    /* Is there a shadow? */
@@ -553,8 +559,9 @@ void destroyCDKDialog (CDKDIALOG *dialog)
 /*
  * This function erases the dialog widget from the screen.
  */
-void eraseCDKDialog (CDKDIALOG *dialog)
+void _eraseCDKDialog (CDKOBJS *object)
 {
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
    eraseCursesWindow (dialog->win);
    eraseCursesWindow (dialog->shadowWin);
 }
@@ -580,7 +587,7 @@ chtype getCDKDialogHighlight (CDKDIALOG *dialog)
 {
    return dialog->highlight;
 }
- 
+
 /*
  * This sets whether or not the dialog box will have a separator line.
  */
@@ -592,17 +599,17 @@ boolean getCDKDialogSeparator (CDKDIALOG *dialog)
 {
    return dialog->separator;
 }
- 
+
 /*
  * This sets the box attribute of the widget.
  */
 void setCDKDialogBox (CDKDIALOG *dialog, boolean Box)
 {
-   dialog->box = Box;
+   ObjOf(dialog)->box = Box;
 }
 boolean getCDKDialogBox (CDKDIALOG *dialog)
 {
-   return dialog->box;
+   return ObjOf(dialog)->box;
 }
 
 /*
@@ -639,7 +646,7 @@ void setCDKDialogBoxAttribute (CDKDIALOG *dialog, chtype character)
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 void setCDKDialogBackgroundColor (CDKDIALOG *dialog, char *color)
 {
    chtype *holder = (chtype *)NULL;
@@ -710,7 +717,7 @@ void setCDKDialogPreProcess (CDKDIALOG *dialog, PROCESSFN callback, void *data)
    dialog->preProcessFunction = callback;
    dialog->preProcessData = data;
 }
- 
+
 /*
  * This function sets the post-process function.
  */

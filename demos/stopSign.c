@@ -4,7 +4,7 @@
 char *XCursesProgramName="sillyness_ex";
 #endif
 
-int main()
+int main(void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
@@ -15,7 +15,7 @@ int main()
    char *mesg[5], *sign[4];
    chtype key;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 

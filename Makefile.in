@@ -1,5 +1,5 @@
 # 
-#  Copyright (c) 1990 The Regents of the University of California.
+#  Copyright 1999, Mike Glover
 #  All rights reserved.
 # 
 #  Redistribution and use in source and binary forms, with or without
@@ -12,16 +12,16 @@
 #     documentation and/or other materials provided with the distribution.
 #  3. All advertising materials mentioning features or use of this software
 #     must display the following acknowledgement:
-# 	This product includes software developed by the University of
-# 	California, Berkeley and its contributors.
-#  4. Neither the name of the University nor the names of its contributors
+# 	This product includes software developed by Mike Glover
+# 	and contributors.
+#  4. Neither the name of Mike Glover, nor the names of contributors
 #     may be used to endorse or promote products derived from this software
 #     without specific prior written permission.
 # 
-#  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+#  THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
 #  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-#  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+#  ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
 #  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
 #  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
 #  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -30,19 +30,36 @@
 #  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #  SUCH DAMAGE.
 # 
+SHELL		= /bin/sh
 
 CDKLIB		= libcdk.a
 VERSION		= 4.9.8
-CFLAGS		= -Iinclude @CFLAGS@ @DEFS@
+
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+
+srcdir		= @srcdir@
+
+DESTDIR		=
+includedir	= $(DESTDIR)@includedir@
+libdir		= $(DESTDIR)@libdir@
+mandir		= $(DESTDIR)@mandir@
+
+INCLUDE_DIR	= $(includedir)/cdk
+LIB_DIR		= $(libdir)
+MAN_DIR		= $(mandir)/man3
+
+CFLAGS		= @CFLAGS@
+CPPFLAGS	= -I$(srcdir)/include @CPPFLAGS@ @DEFS@
+EXTRA_CFLAGS	= @EXTRA_CFLAGS@
 CC		= @CC@
 LDFLAGS		= @LDFLAGS@
 LIBS		= @LIBS@
 RANLIB		= @RANLIB@
+
 INSTALL		= @INSTALL@
-INSTALL_DIR	= @prefix@
-INCLUDE_DIR	= $(INSTALL_DIR)/include/cdk
-LIB_DIR		= $(INSTALL_DIR)/lib
-MAN_DIR		= $(INSTALL_DIR)/man/man3
+INSTALL_PROGRAM	= @INSTALL_PROGRAM@
+INSTALL_DATA	= @INSTALL_DATA@
 
 default:: cdklib
 
@@ -92,84 +109,81 @@ demos::
 	@(cd demos; make)
 
 #
-# This installs all of the CDK library release.
+# The 'install' target installs all of the CDK library release.
+# There are separate targets for each type of file.
 #
-install:: installCDKHeaderFiles installCDKReadme installCDKLibrary installCDKManPages
 
 #
 # This installs the header files.
 #
-installCDKHeaderFiles::
+install \
+installCDKHeaderFiles:: $(INCLUDE_DIR)
 	@echo "Installing CDK header files..."
-	@if [ ! -d $(INCLUDE_DIR) ]; then \
-	   mkdir $(INCLUDE_DIR); \
-	fi
 	@for i in $(CDKHDR); do \
-	   echo "	$(INSTALL) include/$$i $(INCLUDE_DIR)"; \
-	   $(INSTALL) include/$$i $(INCLUDE_DIR); \
+	   echo "	$(INSTALL_DATA) include/$$i $(INCLUDE_DIR)"; \
+	   $(INSTALL_DATA) include/$$i $(INCLUDE_DIR)/$$i; \
 	done
 
 #
 # This installs the informational readme files.
 #
+install \
 installCDKReadme::
 	@echo "Installing CDK Readme files..."
 	@for i in $(CDKREADME); do \
-	   echo "	$(INSTALL) $$i $(INCLUDE_DIR)"; \
-	   $(INSTALL) $$i $(INCLUDE_DIR); \
+	   echo "	$(INSTALL_DATA) $$i $(INCLUDE_DIR)"; \
+	   $(INSTALL_DATA) $$i $(INCLUDE_DIR)/$$i; \
 	done
 
 #
 # This installs the CDK library.
 #
-installCDKLibrary::
+install \
+installCDKLibrary:: $(LIB_DIR) $(CDKLIB) 
 	@echo "Installing CDK library"
-	@if [ ! -d $(LIB_DIR) ]; then \
-	   mkdir $(LIB_DIR); \
-	fi
-	@echo "	$(INSTALL) $(CDKLIB) $(LIB_DIR)"
-	@$(INSTALL) $(CDKLIB) $(LIB_DIR)
+	@echo "	$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)"
+	@$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)
 
 #
 # This installs the CDK man pages.
 #
-installCDKManPages::
+install \
+installCDKManPages:: $(MAN_DIR)
 	@echo "Installing the CDK man pages ..."
-	@if [ ! -d $(MAN_DIR) ]; then \
-	   mkdir $(MAN_DIR); \
-	fi
 	@for i in $(CDKMAN); do \
-	   echo "	$(INSTALL) man/$$i $(MAN_DIR)"; \
-	   $(INSTALL) man/$$i $(MAN_DIR); \
+	   echo "	$(INSTALL_DATA) man/$$i $(MAN_DIR)"; \
+	   $(INSTALL_DATA) man/$$i $(MAN_DIR)/$$i; \
 	done
 
 #
 # Clean up after ourselves...
 #
 clean::
-	$(RM) *.o $(CDKLIB) Makefile core
+	$(RM) *.o $(CDKLIB) core
 
-realclean::
+realclean:: clean
 	@(cd examples; make clean; rm Makefile)
 	@(cd demos; make clean; rm Makefile)
-	@make clean
 	@rm Makefile
 
 #
 # Use this to clean the distribution.
 #
-distclean::
+distclean:: realclean
 	$(RM) config.cache config.log config.status
-	$(MAKE) realclean
 
 #
 # Standard .c to .o compile line.
 #
 .c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
 
 #
 # Set up our PHONY tags.
 #
 .PHONY: examples
 .PHONY: demos
+
+$(INCLUDE_DIR) \
+$(LIB_DIR) \
+$(MAN_DIR) : ; $(srcdir)/mkdirs.sh $@

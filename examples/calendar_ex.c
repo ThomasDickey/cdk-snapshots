@@ -100,7 +100,7 @@ int main (int argc, char **argv)
    bindCDKObject (vCALENDAR, calendar, 'R', removeCalendarMarkCB, calendar);
 
    /* Draw the calendar widget. */
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Let the user play with the widget. */
    retVal = activateCDKCalendar (calendar, NULL);
@@ -146,7 +146,7 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
 				calendar->year, 
 				COLOR_PAIR (5) | A_REVERSE);
 
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    return 0;
 }
 
@@ -162,6 +162,6 @@ int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData
 				calendar->month, 
 				calendar->year);
 
-   drawCDKCalendar (calendar, calendar->box);
+   drawCDKCalendar (calendar, ObjOf(calendar)->box);
    return 0;
 }

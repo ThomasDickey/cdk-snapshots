@@ -7,7 +7,7 @@ char *XCursesProgramName="subwindow_ex";
 /*
  * This demo displays the ability to put widgets within a curses subwindow.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen;

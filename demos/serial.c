@@ -22,7 +22,7 @@ char *XCursesProgramName="serial";
 /*
  * This is the working function which probes the serial port.
  */
-boolean probeModem ();
+boolean probeModem (void);
 
 /*
  * Define some global variables.
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 
    /* Set the deault values. */
    strcpy (port, DEFAULT_PORT);
-   
+
    /* Parse up the command line. */
    while (1)
    {
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
  * This probes the modem and determines if we need to update
  * the display.
  */
-boolean probeModem ()
+boolean probeModem (void)
 {
    int lines		= 0;
    char *info[256], temp[256];
@@ -191,7 +191,7 @@ boolean probeModem ()
       {
          info[lines++] = copyChar ("Carrier Detect     :  ");
       }
-   
+
      /*
       * Check for request to send.
       */
@@ -203,7 +203,7 @@ boolean probeModem ()
       {
          info[lines++] = copyChar ("Request To Send    :  ");
       }
-   
+
      /*
       * Check for clear to send.
       */
@@ -227,7 +227,7 @@ boolean probeModem ()
       {
          info[lines++] = copyChar ("Secondary Transmit :  ");
       }
-   
+
      /*
       * Check for secondary receive.
       */
@@ -254,8 +254,8 @@ boolean probeModem ()
    * Keep the current state.
    */
    LLastState = LCurrentState;
-   
-  /* 
+
+  /*
    * Return False to tell X that we want this funtion to be
    * run again.
    */

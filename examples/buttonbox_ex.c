@@ -9,7 +9,7 @@ int entryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 /*
  * This program demonstrates the Cdk buttonbox widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
    char *info			= (char *)NULL;
    int selection;
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -62,8 +62,8 @@ int main (int argc, char **argv)
    destroyCDKButtonbox (buttonWidget);
    destroyCDKEntry (entry);
    destroyCDKScreen (cdkscreen);
-   endCDK();
    delwin (cursesWin);
+   endCDK();
 
    /* Spit out some info. */
    printf ("You typed in (%s) and selected button (%s)\n", info, buttons[selection]);

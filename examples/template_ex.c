@@ -7,7 +7,7 @@ char *XCursesProgramName="template_ex";
 /*
  * This program demonstrates the Cdk template widget.
  */
-int main (int argc, char **argv)
+int main (void)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= (CDKSCREEN *)NULL;
@@ -15,7 +15,7 @@ int main (int argc, char **argv)
    WINDOW *cursesWin		= (WINDOW *)NULL;
    char *title			= "<C>Title";
    char *label			= "</5>Phone Number:<!5>";
-   char *overlay		= "</B/6>(___)<!6> </5>___-____";
+   char *Overlay		= "</B/6>(___)<!6> </5>___-____";
    char *plate			= "(###) ###-####";
    char *info, *mixed, temp[256], *mesg[5];
 
@@ -29,7 +29,7 @@ int main (int argc, char **argv)
    /* Declare the template. */
    phoneNumber = newCDKTemplate (cdkscreen, CENTER, CENTER,
 					title, label,
-					plate, overlay,
+					plate, Overlay,
 					TRUE, TRUE);
 
    /* Is the template pointer NULL? */

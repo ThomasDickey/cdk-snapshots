@@ -1,29 +1,29 @@
 #include "cdk.h"
 
 /*
- * $Author: glovem $
- * $Date: 1998/04/07 16:19:01 $
- * $Revision: 1.28 $
+ * $Author: tom $
+ * $Date: 1999/05/15 13:29:25 $
+ * $Revision: 1.30 $
  */
 
 /*
  * Declare file local prototypes.
  */
-int mapChtype (chtype key);
+static int mapChtype (chtype key);
 
 /*
  * This inserts a binding.
  */
 void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN function, void * data)
 {
-   int index = mapChtype (key);
+   int Index = mapChtype (key);
 
   /*
    * When an alarm is set and this function is entered, a very wild
    * value for the key is provided, and the index gets messed up big time.
    * So we will make sure that index is a valid value before using it.
    */
-   if ((index < 0) || (index > MAX_BINDINGS))
+   if ((Index < 0) || (Index > MAX_BINDINGS))
    {
       return;
    }
@@ -34,73 +34,73 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
     */
    if (cdktype == vENTRY)
    {
-      ((CDKENTRY *)object)->bindFunction[index]		= function;
-      ((CDKENTRY *)object)->bindData[index]		= data;
+      ((CDKENTRY *)object)->bindFunction[Index]		= function;
+      ((CDKENTRY *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vMENTRY)
    {
-      ((CDKMENTRY *)object)->bindFunction[index]	= function;
-      ((CDKMENTRY *)object)->bindData[index]		= data;
+      ((CDKMENTRY *)object)->bindFunction[Index]	= function;
+      ((CDKMENTRY *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vSCROLL)
    {
-      ((CDKSCROLL *)object)->bindFunction[index]	= function;
-      ((CDKSCROLL *)object)->bindData[index]		= data;
+      ((CDKSCROLL *)object)->bindFunction[Index]	= function;
+      ((CDKSCROLL *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vDIALOG)
    {
-      ((CDKDIALOG *)object)->bindFunction[index]	= function;
-      ((CDKDIALOG *)object)->bindData[index]		= data;
+      ((CDKDIALOG *)object)->bindFunction[Index]	= function;
+      ((CDKDIALOG *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vSCALE)
    {
-      ((CDKSCALE *)object)->bindFunction[index]		= function;
-      ((CDKSCALE *)object)->bindData[index]		= data;
+      ((CDKSCALE *)object)->bindFunction[Index]		= function;
+      ((CDKSCALE *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vMENU)
    {
-      ((CDKMENU *)object)->bindFunction[index]		= function;
-      ((CDKMENU *)object)->bindData[index]		= data;
+      ((CDKMENU *)object)->bindFunction[Index]		= function;
+      ((CDKMENU *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vMATRIX)
    {
-      ((CDKMATRIX *)object)->bindFunction[index]	= function;
-      ((CDKMATRIX *)object)->bindData[index]		= data;
+      ((CDKMATRIX *)object)->bindFunction[Index]	= function;
+      ((CDKMATRIX *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vSELECTION)
    {
-      ((CDKSELECTION *)object)->bindFunction[index]	= function;
-      ((CDKSELECTION *)object)->bindData[index]		= data;
+      ((CDKSELECTION *)object)->bindFunction[Index]	= function;
+      ((CDKSELECTION *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vVIEWER)
    {
-      ((CDKVIEWER *)object)->bindFunction[index]	= function;
-      ((CDKVIEWER *)object)->bindData[index]		= data;
+      ((CDKVIEWER *)object)->bindFunction[Index]	= function;
+      ((CDKVIEWER *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vRADIO)
    {
-      ((CDKRADIO *)object)->bindFunction[index]		= function;
-      ((CDKRADIO *)object)->bindData[index]		= data;
+      ((CDKRADIO *)object)->bindFunction[Index]		= function;
+      ((CDKRADIO *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vTEMPLATE)
    {
-      ((CDKTEMPLATE *)object)->bindFunction[index]	= function;
-      ((CDKTEMPLATE *)object)->bindData[index]		= data;
+      ((CDKTEMPLATE *)object)->bindFunction[Index]	= function;
+      ((CDKTEMPLATE *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vSWINDOW)
    {
-      ((CDKSWINDOW *)object)->bindFunction[index]	= function;
-      ((CDKSWINDOW *)object)->bindData[index]		= data;
+      ((CDKSWINDOW *)object)->bindFunction[Index]	= function;
+      ((CDKSWINDOW *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vITEMLIST)
    {
-      ((CDKITEMLIST *)object)->bindFunction[index]	= function;
-      ((CDKITEMLIST *)object)->bindData[index]		= data;
+      ((CDKITEMLIST *)object)->bindFunction[Index]	= function;
+      ((CDKITEMLIST *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vSLIDER)
    {
-      ((CDKSLIDER *)object)->bindFunction[index]	= function;
-      ((CDKSLIDER *)object)->bindData[index]		= data;
+      ((CDKSLIDER *)object)->bindFunction[Index]	= function;
+      ((CDKSLIDER *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vFSELECT)
    {
@@ -112,13 +112,13 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
    }
    else if (cdktype == vCALENDAR)
    {
-      ((CDKCALENDAR *)object)->bindFunction[index]	= function;
-      ((CDKCALENDAR *)object)->bindData[index]		= data;
+      ((CDKCALENDAR *)object)->bindFunction[Index]	= function;
+      ((CDKCALENDAR *)object)->bindData[Index]		= data;
    }
    else if (cdktype == vBUTTONBOX)
    {
-      ((CDKBUTTONBOX *)object)->bindFunction[index]	= function;
-      ((CDKBUTTONBOX *)object)->bindData[index]		= data;
+      ((CDKBUTTONBOX *)object)->bindFunction[Index]	= function;
+      ((CDKBUTTONBOX *)object)->bindData[Index]		= data;
    }
 }
 
@@ -127,14 +127,14 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
  */
 void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
 {
-   int index = mapChtype(key);
+   int Index = mapChtype(key);
 
   /*
    * When an alarm is set and this function is entered, a very wild
    * value for the key is provided, and the index gets messed up big time.
    * So we will make sure that index is a valid value before using it.
    */
-   if ((index < 0) || (index > MAX_BINDINGS))
+   if ((Index < 0) || (Index > MAX_BINDINGS))
    {
       return;
    }
@@ -145,73 +145,73 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
    */
    if (cdktype == vENTRY)
    {
-      ((CDKENTRY *)object)->bindFunction[index]		= (BINDFN)NULL;
-      ((CDKENTRY *)object)->bindData[index]		= (void *)NULL;
+      ((CDKENTRY *)object)->bindFunction[Index]		= (BINDFN)NULL;
+      ((CDKENTRY *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vMENTRY)
    {
-      ((CDKMENTRY *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKMENTRY *)object)->bindData[index]		= (void *)NULL;
+      ((CDKMENTRY *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKMENTRY *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vSCROLL)
    {
-      ((CDKSCROLL *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKSCROLL *)object)->bindData[index]		= (void *)NULL;
+      ((CDKSCROLL *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKSCROLL *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vDIALOG)
    {
-      ((CDKDIALOG *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKDIALOG *)object)->bindData[index]		= (void *)NULL;
+      ((CDKDIALOG *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKDIALOG *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vSCALE)
    {
-      ((CDKSCALE *)object)->bindFunction[index]		= (BINDFN)NULL;
-      ((CDKSCALE *)object)->bindData[index]		= (void *)NULL;
+      ((CDKSCALE *)object)->bindFunction[Index]		= (BINDFN)NULL;
+      ((CDKSCALE *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vMENU)
    {
-      ((CDKMENU *)object)->bindFunction[index]		= (BINDFN)NULL;
-      ((CDKMENU *)object)->bindData[index]		= (void *)NULL;
+      ((CDKMENU *)object)->bindFunction[Index]		= (BINDFN)NULL;
+      ((CDKMENU *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vMATRIX)
    {
-      ((CDKMATRIX *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKMATRIX *)object)->bindData[index]		= (void *)NULL;
+      ((CDKMATRIX *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKMATRIX *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vSELECTION)
    {
-      ((CDKSELECTION *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKSELECTION *)object)->bindData[index]		= (void *)NULL;
+      ((CDKSELECTION *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKSELECTION *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vVIEWER)
    {
-      ((CDKVIEWER *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKVIEWER *)object)->bindData[index]		= (void *)NULL;
+      ((CDKVIEWER *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKVIEWER *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vRADIO)
    {
-      ((CDKRADIO *)object)->bindFunction[index]		= (BINDFN)NULL;
-      ((CDKRADIO *)object)->bindData[index]		= (void *)NULL;
+      ((CDKRADIO *)object)->bindFunction[Index]		= (BINDFN)NULL;
+      ((CDKRADIO *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vTEMPLATE)
    {
-      ((CDKTEMPLATE *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKTEMPLATE *)object)->bindData[index]		= (void *)NULL;
+      ((CDKTEMPLATE *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKTEMPLATE *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vSWINDOW)
    {
-      ((CDKSWINDOW *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKSWINDOW *)object)->bindData[index]		= (void *)NULL;
+      ((CDKSWINDOW *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKSWINDOW *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vITEMLIST)
    {
-      ((CDKITEMLIST *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKITEMLIST *)object)->bindData[index]		= (void *)NULL;
+      ((CDKITEMLIST *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKITEMLIST *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vSLIDER)
    {
-      ((CDKSLIDER *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKSLIDER *)object)->bindData[index]		= (void *)NULL;
+      ((CDKSLIDER *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKSLIDER *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vFSELECT)
    {
@@ -223,13 +223,13 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
    }
    else if (cdktype == vCALENDAR)
    {
-      ((CDKCALENDAR *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKCALENDAR *)object)->bindData[index]		= (void *)NULL;
+      ((CDKCALENDAR *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKCALENDAR *)object)->bindData[Index]		= (void *)NULL;
    }
    else if (cdktype == vBUTTONBOX)
    {
-      ((CDKBUTTONBOX *)object)->bindFunction[index]	= (BINDFN)NULL;
-      ((CDKBUTTONBOX *)object)->bindData[index]		= (void *)NULL;
+      ((CDKBUTTONBOX *)object)->bindFunction[Index]	= (BINDFN)NULL;
+      ((CDKBUTTONBOX *)object)->bindData[Index]		= (void *)NULL;
    }
 }
 
@@ -405,14 +405,14 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
  */
 int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 {
-   int index = mapChtype (key);
+   int Index = mapChtype (key);
 
   /*
    * When an alarm is set and this function is entered, a very wild
    * value for the key is provided, and the index gets messed up big time.
    * So we will make sure that index is a valid value before using it.
    */
-   if ((index < 0) || (index > MAX_BINDINGS))
+   if ((Index < 0) || (Index > MAX_BINDINGS))
    {
       return (TRUE);
    }
@@ -423,154 +423,154 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
    */
    if (cdktype == vENTRY)
    {
-      if ( ((CDKENTRY *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKENTRY *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= (BINDFN) ((CDKENTRY *)object)->bindFunction[index];
-         void * data		= (void *) ((CDKENTRY *)object)->bindData[index];
+         BINDFN function	= (BINDFN) ((CDKENTRY *)object)->bindFunction[Index];
+         void * data		= (void *) ((CDKENTRY *)object)->bindData[Index];
          return function (vENTRY, object, data, key);
       }
    }
    else if (cdktype == vMENTRY)
    {
-      if ( ((CDKMENTRY *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKMENTRY *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKMENTRY *)object)->bindFunction[index];
-         void * data		= ((CDKMENTRY *)object)->bindData[index];
+         BINDFN function	= ((CDKMENTRY *)object)->bindFunction[Index];
+         void * data		= ((CDKMENTRY *)object)->bindData[Index];
          return function (vMENTRY, object, data, key);
       }
    }
    else if (cdktype == vSCROLL)
    {
-      if ( ((CDKSCROLL *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKSCROLL *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKSCROLL *)object)->bindFunction[index];
-         void * data		= ((CDKSCROLL *)object)->bindData[index];
+         BINDFN function	= ((CDKSCROLL *)object)->bindFunction[Index];
+         void * data		= ((CDKSCROLL *)object)->bindData[Index];
          return function (vSCROLL, object, data, key);
       }
    }
    else if (cdktype == vDIALOG)
    {
-      if ( ((CDKDIALOG *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKDIALOG *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKDIALOG *)object)->bindFunction[index];
-         void * data		= ((CDKDIALOG *)object)->bindData[index];
+         BINDFN function	= ((CDKDIALOG *)object)->bindFunction[Index];
+         void * data		= ((CDKDIALOG *)object)->bindData[Index];
          return function (vDIALOG, object, data, key);
       }
    }
    else if (cdktype == vSCALE)
    {
-      if ( ((CDKSCALE *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKSCALE *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKSCALE *)object)->bindFunction[index];
-         void * data		= ((CDKSCALE *)object)->bindData[index];
+         BINDFN function	= ((CDKSCALE *)object)->bindFunction[Index];
+         void * data		= ((CDKSCALE *)object)->bindData[Index];
          return function (vSCALE, object, data, key);
       }
    }
    else if (cdktype == vMENU)
    {
-      if ( ((CDKMENU *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKMENU *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKMENU *)object)->bindFunction[index];
-         void * data		= ((CDKMENU *)object)->bindData[index];
+         BINDFN function	= ((CDKMENU *)object)->bindFunction[Index];
+         void * data		= ((CDKMENU *)object)->bindData[Index];
          return function (vMENU, object, data, key);
       }
    }
    else if (cdktype == vMATRIX)
    {
-      if ( ((CDKMATRIX *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKMATRIX *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKMATRIX *)object)->bindFunction[index];
-         void * data		= ((CDKMATRIX *)object)->bindData[index];
+         BINDFN function	= ((CDKMATRIX *)object)->bindFunction[Index];
+         void * data		= ((CDKMATRIX *)object)->bindData[Index];
          return function (vMATRIX, object, data, key);
       }
    }
    else if (cdktype == vSELECTION)
    {
-      if ( ((CDKSELECTION *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKSELECTION *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKSELECTION *)object)->bindFunction[index];
-         void * data		= ((CDKSELECTION *)object)->bindData[index];
+         BINDFN function	= ((CDKSELECTION *)object)->bindFunction[Index];
+         void * data		= ((CDKSELECTION *)object)->bindData[Index];
          return function (vSELECTION, object, data, key);
       }
    }
    else if (cdktype == vVIEWER)
    {
-      if ( ((CDKVIEWER *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKVIEWER *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKVIEWER *)object)->bindFunction[index];
-         void * data		= ((CDKVIEWER *)object)->bindData[index];
+         BINDFN function	= ((CDKVIEWER *)object)->bindFunction[Index];
+         void * data		= ((CDKVIEWER *)object)->bindData[Index];
          return function (vVIEWER, object, data, key);
       }
    }
    else if (cdktype == vRADIO)
    {
-      if ( ((CDKRADIO *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKRADIO *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKRADIO *)object)->bindFunction[index];
-         void * data		= ((CDKRADIO *)object)->bindData[index];
+         BINDFN function	= ((CDKRADIO *)object)->bindFunction[Index];
+         void * data		= ((CDKRADIO *)object)->bindData[Index];
          return function (vRADIO, object, data, key);
       }
    }
    else if (cdktype == vTEMPLATE)
    {
-      if ( ((CDKTEMPLATE *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKTEMPLATE *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKTEMPLATE *)object)->bindFunction[index];
-         void * data		= ((CDKTEMPLATE *)object)->bindData[index];
+         BINDFN function	= ((CDKTEMPLATE *)object)->bindFunction[Index];
+         void * data		= ((CDKTEMPLATE *)object)->bindData[Index];
          return function (vTEMPLATE, object, data, key);
       }
    }
    else if (cdktype == vSWINDOW)
    {
-      if ( ((CDKSWINDOW *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKSWINDOW *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKSWINDOW *)object)->bindFunction[index];
-         void * data		= ((CDKSWINDOW *)object)->bindData[index];
+         BINDFN function	= ((CDKSWINDOW *)object)->bindFunction[Index];
+         void * data		= ((CDKSWINDOW *)object)->bindData[Index];
          return function (vSWINDOW, object, data, key);
       }
    }
    else if (cdktype == vITEMLIST)
    {
-      if ( ((CDKITEMLIST *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKITEMLIST *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKITEMLIST *)object)->bindFunction[index];
-         void * data		= ((CDKITEMLIST *)object)->bindData[index];
+         BINDFN function	= ((CDKITEMLIST *)object)->bindFunction[Index];
+         void * data		= ((CDKITEMLIST *)object)->bindData[Index];
          return function (vITEMLIST, object, data, key);
       }
    }
    else if (cdktype == vSLIDER)
    {
-      if ( ((CDKSLIDER *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKSLIDER *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKSLIDER *)object)->bindFunction[index];
-         void * data		= ((CDKSLIDER *)object)->bindData[index];
+         BINDFN function	= ((CDKSLIDER *)object)->bindFunction[Index];
+         void * data		= ((CDKSLIDER *)object)->bindData[Index];
          return function (vSLIDER, object, data, key);
       }
    }
    else if (cdktype == vALPHALIST)
    {
-      if ( ((CDKALPHALIST *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKALPHALIST *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKALPHALIST *)object)->bindFunction[index];
-         void * data		= ((CDKALPHALIST *)object)->bindData[index];
+         BINDFN function	= ((CDKALPHALIST *)object)->bindFunction[Index];
+         void * data		= ((CDKALPHALIST *)object)->bindData[Index];
          return function (vALPHALIST, object, data, key);
       }
    }
    else if (cdktype == vCALENDAR)
    {
-      if ( ((CDKCALENDAR *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKCALENDAR *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKCALENDAR *)object)->bindFunction[index];
-         void * data		= ((CDKCALENDAR *)object)->bindData[index];
+         BINDFN function	= ((CDKCALENDAR *)object)->bindFunction[Index];
+         void * data		= ((CDKCALENDAR *)object)->bindData[Index];
          return function (vCALENDAR, object, data, key);
       }
    }
    else if (cdktype == vBUTTONBOX)
    {
-      if ( ((CDKBUTTONBOX *)object)->bindFunction[index] != (BINDFN) NULL )
+      if ( ((CDKBUTTONBOX *)object)->bindFunction[Index] != (BINDFN) NULL )
       {
-         BINDFN function	= ((CDKBUTTONBOX *)object)->bindFunction[index];
-         void * data		= ((CDKBUTTONBOX *)object)->bindData[index];
+         BINDFN function	= ((CDKBUTTONBOX *)object)->bindFunction[Index];
+         void * data		= ((CDKBUTTONBOX *)object)->bindData[Index];
          return function (vBUTTONBOX, object, data, key);
       }
    }
@@ -581,7 +581,7 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
  * This translates non ascii characters like KEY_UP to an 'equivalent'
  * ascii value.
  */
-int mapChtype (chtype key)
+static int mapChtype (chtype key)
 {
    if (key == KEY_UP)
    {
@@ -671,7 +671,7 @@ int mapChtype (chtype key)
    {
        return (278);
    }
-   else 
+   else
    {
       return ((char) key);
    }

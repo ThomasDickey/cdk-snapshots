@@ -9,7 +9,7 @@
  */
 
 /*
- * Copyright (c) 1990 The Regents of the University of California.
+ * Copyright 1999, Mike Glover
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,17 +21,17 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
+ *    must display the following acknowledgment:
+ *      This product includes software developed by Mike Glover
+ *      and contributors.
+ * 4. Neither the name of Mike Glover, nor the names of contributors
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -45,22 +45,22 @@
  * Define the CDK entry widget structure.
  */
 struct SEntry {
-   CDKSCREEN	*screen;
-   WINDOW	*parent;
-   WINDOW	*win;
-   WINDOW	*shadowWin;
-   WINDOW	*labelWin;
-   WINDOW	*fieldWin;
-   chtype	*label;
+   CDKOBJS	obj;
+   WINDOW *	parent;
+   WINDOW *	win;
+   WINDOW *	shadowWin;
+   WINDOW *	labelWin;
+   WINDOW *	fieldWin;
+   chtype *	label;
    int		labelLen;
-   chtype	*title[MAX_LINES];
+   chtype *	title[MAX_LINES];
    int		titlePos[MAX_LINES];
    int		titleLen[MAX_LINES];
    int		titleAdj;
    int		titleLines;
    chtype	fieldAttr;
    int		fieldWidth;
-   char		*info;
+   char *	info;
    int		infoWidth;
    int		screenCol;
    int		leftChar;
@@ -69,8 +69,7 @@ struct SEntry {
    int		boxWidth;
    int		boxHeight;
    EExitType	exitType;
-   EDisplayType	dispType;
-   boolean	box;
+   EDisplayType dispType;
    boolean	shadow;
    chtype	filler;
    chtype	hidden;
@@ -81,10 +80,9 @@ struct SEntry {
    chtype	VChar;
    chtype	HChar;
    chtype	BoxAttrib;
-   int		screenIndex;
    BINDFN	bindFunction[MAX_BINDINGS];
    void *	bindData[MAX_BINDINGS];
-   void	*	callbackfn;
+   void *	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -96,121 +94,195 @@ typedef void (*ENTRYCB) (CDKENTRY *entry, chtype character);
 /*
  * This creates a pointer to a new CDK entry widget.
  */
-CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
-			int xpos, int ypos,
-			char *title, char *label,
-			chtype fieldAttrib, chtype filler,
-			EDisplayType disptype,
-			int fieldWidth, int min, int max,
-			boolean Box, boolean shadow);
+CDKENTRY *newCDKEntry (
+		CDKSCREEN *	/* cdkscreen */,
+		int		/* xpos */,
+		int		/* ypos */,
+		char *		/* title */,
+		char *		/* label */,
+		chtype		/* fieldAttrib */,
+		chtype		/* filler */,
+		EDisplayType	/* disptype */,
+		int		/* fieldWidth */,
+		int		/* min */,
+		int		/* max */,
+		boolean		/* Box */,
+		boolean		/* shadow */);
 
 /*
  * This activates the entry widget.
  */
-char *activateCDKEntry (CDKENTRY *entry, chtype *actions);
+char *activateCDKEntry (
+		CDKENTRY *	/* entry */,
+		chtype *	/* actions */);
 
 /*
  * This injects a single character into the widget.
  */
-char *injectCDKEntry (CDKENTRY *entry, chtype input);
+char *injectCDKEntry (
+		CDKENTRY *	/* entry */,
+		chtype		/* input */);
 
 /*
  * This sets various attributes of the entry field.
  */
-void setCDKEntry (CDKENTRY *entry, char *value, int min, int max, boolean Box);
+void setCDKEntry (
+		CDKENTRY *	/* entry */,
+		char *		/* value */,
+		int		/* min */,
+		int		/* max */,
+		boolean		/* Box */);
 
 /*
  * This sets the value of the entry field.
  */
-void setCDKEntryValue (CDKENTRY *entry, char *value);
-char *getCDKEntryValue (CDKENTRY *entry);
+void setCDKEntryValue (
+		CDKENTRY *	/* entry */,
+		char *		/* value */);
+char *getCDKEntryValue (
+		CDKENTRY *	/* entry */);
 
 /*
  * This sets the maximum length of a string allowable for
  * the given widget.
  */
-void setCDKEntryMax (CDKENTRY *entry, int max);
-int getCDKEntryMax (CDKENTRY *entry);
+void setCDKEntryMax (
+		CDKENTRY *	/* entry */,
+		int		/* max */);
+int getCDKEntryMax (
+		CDKENTRY *	/* entry */);
 
 /*
  * This sets the minimum length of a string allowable for
  * the given widget.
  */
-void setCDKEntryMin (CDKENTRY *entry, int min);
-int getCDKEntryMin (CDKENTRY *entry);
+void setCDKEntryMin (
+		CDKENTRY *	/* entry */,
+		int		/* min */);
+int getCDKEntryMin (
+		CDKENTRY *	/* entry */);
 
 /*
  * This sets the filler character of the entry field.
  */
-void setCDKEntryFillerChar (CDKENTRY *entry, chtype fillerCharacter);
-chtype getCDKEntryFillerChar (CDKENTRY *entry);
+void setCDKEntryFillerChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* fillerCharacter */);
+chtype getCDKEntryFillerChar (
+		CDKENTRY *	/* entry */);
 
 /*
  * This sets the character to use when a hidden type is used.
  */
-void setCDKEntryHiddenChar (CDKENTRY *entry, chtype hiddenCharacter);
-chtype getCDKEntryHiddenChar (CDKENTRY *entry);
+void setCDKEntryHiddenChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* hiddenCharacter */);
+chtype getCDKEntryHiddenChar (
+		CDKENTRY *	/* entry */);
 
 /*
- * This sets the box attibute of the widget.
+ * This sets the box attribute of the widget.
  */
-void setCDKEntryBox (CDKENTRY *entry, boolean Box);
-boolean getCDKEntryBox (CDKENTRY *entry);
+void setCDKEntryBox (
+		CDKENTRY *	/* entry */,
+		boolean		/* Box */);
+boolean getCDKEntryBox (
+		CDKENTRY *	/* entry */);
 
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKEntryULChar (CDKENTRY *entry, chtype character);
-void setCDKEntryURChar (CDKENTRY *entry, chtype character);
-void setCDKEntryLLChar (CDKENTRY *entry, chtype character);
-void setCDKEntryLRChar (CDKENTRY *entry, chtype character);
-void setCDKEntryVerticalChar (CDKENTRY *entry, chtype character);
-void setCDKEntryHorizontalChar (CDKENTRY *entry, chtype character);
-void setCDKEntryBoxAttribute (CDKENTRY *entry, chtype character);
+void setCDKEntryULChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryURChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryLLChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryLRChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryVerticalChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryHorizontalChar (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
+void setCDKEntryBoxAttribute (
+		CDKENTRY *	/* entry */,
+		chtype		/* character */);
 
 /*
  * This sets the background color of the widget.
- */ 
-void setCDKEntryBackgroundColor (CDKENTRY *entry, char *color);
+ */
+void setCDKEntryBackgroundColor (
+		CDKENTRY *	/* entry */,
+		char *		/* color */);
 
 /*
  * This draws the entry field.
  */
-void drawCDKEntry (CDKENTRY *entry, boolean Box);
+void _drawCDKEntry (
+		CDKOBJS *	/* entry */,
+		boolean		/* Box */);
+
+#define drawCDKEntry(entry,box) _drawCDKEntry(ObjOf(entry),box)
 
 /*
  * This erases the widget from the screen.
  */
-void eraseCDKEntry (CDKENTRY *entry);
+void _eraseCDKEntry (
+		CDKOBJS *	/* entry */);
+
+#define eraseCDKEntry(entry) _eraseCDKEntry(ObjOf(entry))
 
 /*
  * This cleans out the value of the entry field.
  */
-void cleanCDKEntry (CDKENTRY *entry);
+void cleanCDKEntry (
+		CDKENTRY *	/* entry */);
 
 /*
  * This moves the widget to the given location.
  */
-void moveCDKEntry (CDKENTRY *entry, int xpos, int ypos, boolean relative, boolean refresh);
+void moveCDKEntry (
+		CDKENTRY *	/* entry */,
+		int		/* xpos */,
+		int		/* ypos */,
+		boolean		/* relative */,
+		boolean		/* refresh */);
 
 /*
  * This is an interactive method of moving the widget.
  */
-void positionCDKEntry (CDKENTRY *entry);
+void positionCDKEntry (
+		CDKENTRY *	/* entry */);
 
 /*
  * This destroys the widget and all the memory associated with the widget.
  */
-void destroyCDKEntry (CDKENTRY *entry);
+void destroyCDKEntry (
+		CDKENTRY *	/* entry */);
 
 /*
  * This sets the callback to the entry fields main handler
  */
-void setCDKEntryCB (CDKENTRY *entry, ENTRYCB callback);
+void setCDKEntryCB (
+		CDKENTRY *	/* entry */,
+		ENTRYCB		/* callback */);
 
 /*
  * These set the callbacks to the pre and post process functions.
  */
-void setCDKEntryPreProcess (CDKENTRY *entry, PROCESSFN callback, void *data);
-void setCDKEntryPostProcess (CDKENTRY *entry, PROCESSFN callback, void *data);
-#endif
+void setCDKEntryPreProcess (
+		CDKENTRY *	/* entry */,
+		PROCESSFN	/* callback */,
+		void *		/* data */);
+void setCDKEntryPostProcess (
+		CDKENTRY *	/* entry */,
+		PROCESSFN	/* callback */,
+		void *		/* data */);
+
+#endif /* CDKENTRY_H */
