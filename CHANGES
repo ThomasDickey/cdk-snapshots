@@ -7,6 +7,17 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/11/18 - T.E.Dickey <dickey@his.com>
+========================================
+	+ correct viewer widget, making it interpret tabs and non-printing
+	  characters for the non-interpreted file viewer case.  The curses
+	  library cannot display control characters in chtype's.
+	+ add cleanCDKViewer().
+	+ rename a few .itemCount members to .listSize for consistency.
+	+ eliminate static list-size limit MAX_LINES from swindow, viewer
+	  widgets.  Renamed .info, .infoPos, .infoLen to .list, .listPos and
+	  .listLen members to be consistent with other widgets.
+
 2003/11/16 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ suppress "." from fselect listing, since it was not useful.

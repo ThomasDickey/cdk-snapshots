@@ -2,13 +2,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:15:48 $
- * $Revision: 1.85 $
+ * $Date: 2003/11/19 01:38:33 $
+ * $Revision: 1.88 $
  */
 
 /*
  * Declare file local prototypes.
  */
+static int createList(CDKSWINDOW *swindow, int listSize);
 static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box);
 
 DeclareCDKObjects(SWINDOW, Swindow, setCdk, Int);
@@ -113,7 +114,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->maxTopLine		= 0;
    swindow->leftChar		= 0;
    swindow->maxLeftChar		= 0;
-   swindow->itemCount		= 0;
+   swindow->listSize		= 0;
    swindow->widestLine		= -1;
    swindow->saveLines		= saveLines;
    swindow->exitType		= vNEVER_ACTIVATED;
@@ -124,10 +125,10 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->postProcessFunction = 0;
    swindow->postProcessData	= 0;
 
-   /* For each line in the window, set the value to null. */
-   for (x=0; x < MAX_LINES; x++)
+   if (!createList(swindow, saveLines))
    {
-      swindow->info[x] = 0;
+      destroyCDKObject(swindow);
+      return (0);
    }
 
    /* Do we need to create a shadow??? */
@@ -149,33 +150,39 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
 /*
  * This sets the lines and the box attribute of the scrolling window.
  */
-void setCDKSwindow (CDKSWINDOW *swindow, char **info, int lines, boolean Box)
+void setCDKSwindow (CDKSWINDOW *swindow, char **list, int lines, boolean Box)
 {
-   setCDKSwindowContents (swindow, info, lines);
+   setCDKSwindowContents (swindow, list, lines);
    setCDKSwindowBox (swindow, Box);
+}
+
+static void setupLine (CDKSWINDOW *swindow, char *list, int x)
+{
+   swindow->list[x]    = char2Chtype (list, &swindow->listLen[x], &swindow->listPos[x]);
+   swindow->listPos[x] = justifyString (swindow->boxWidth, swindow->listLen[x], swindow->listPos[x]);
+   swindow->widestLine = MAXIMUM (swindow->widestLine, swindow->listLen[x]);
 }
 
 /*
  * This sets all the lines inside the scrolling window.
  */
-void setCDKSwindowContents (CDKSWINDOW *swindow, char **info, int lines)
+void setCDKSwindowContents (CDKSWINDOW *swindow, char **list, int listSize)
 {
    int x = 0;
 
    /* First lets clean all the lines in the window. */
    cleanCDKSwindow(swindow);
+   createList(swindow, listSize);
 
    /* Now lets set all the lines inside the window. */
-   for (x=0; x < lines; x++)
+   for (x=0; x < listSize; x++)
    {
-      swindow->info[x]		= char2Chtype (info[x], &swindow->infoLen[x], &swindow->infoPos[x]);
-      swindow->infoPos[x]	= justifyString (swindow->boxWidth, swindow->infoLen[x], swindow->infoPos[x]);
-      swindow->widestLine	= MAXIMUM (swindow->widestLine, swindow->infoLen[x]);
+      setupLine(swindow, list[x], x);
    }
 
    /* Set some of the more important members of the scrolling window. */
-   swindow->itemCount	= lines;
-   swindow->maxTopLine	= swindow->itemCount - swindow->viewSize;
+   swindow->listSize	= listSize;
+   swindow->maxTopLine	= swindow->listSize - swindow->viewSize;
    swindow->maxTopLine	= (swindow->maxTopLine < 0 ? 0 : swindow->maxTopLine);
    swindow->maxLeftChar = swindow->widestLine - (swindow->boxWidth - 2);
    swindow->currentTop	= 0;
@@ -183,8 +190,8 @@ void setCDKSwindowContents (CDKSWINDOW *swindow, char **info, int lines)
 }
 chtype **getCDKSwindowContents (CDKSWINDOW *swindow, int *size)
 {
-   (*size) = swindow->itemCount;
-   return swindow->info;
+   (*size) = swindow->listSize;
+   return swindow->list;
 }
 
 /*
@@ -200,10 +207,19 @@ boolean getCDKSwindowBox (CDKSWINDOW *swindow)
    return ObjOf(swindow)->box;
 }
 
+static void freeLine (CDKSWINDOW *swindow, int x)
+{
+   if (x < swindow->listSize)
+   {
+      freeChtype (swindow->list[x]);
+      swindow->list[x] = 0;
+   }
+}
+
 /*
  * This adds a line to the scrolling window.
  */
-void addCDKSwindow  (CDKSWINDOW *swindow, char *info, int insertPos)
+void addCDKSwindow  (CDKSWINDOW *swindow, char *list, int insertPos)
 {
    int x = 0;
 
@@ -211,83 +227,77 @@ void addCDKSwindow  (CDKSWINDOW *swindow, char *info, int insertPos)
    * If we are at the maximum number of save lines. Erase
    * the first position and bump everything up one spot.
    */
-   if (swindow->itemCount == swindow->saveLines)
+   if (swindow->listSize == swindow->saveLines)
    {
       /* Free up the memory. */
-      freeChtype (swindow->info[0]);
+      freeLine (swindow, 0);
 
       /* Bump everything up one spot. */
-      for (x=0; x < swindow->itemCount; x++)
+      for (x=0; x < swindow->listSize; x++)
       {
-	 swindow->info[x] = swindow->info[x + 1];
-	 swindow->infoPos[x] = swindow->infoPos[x + 1];
-	 swindow->infoLen[x] = swindow->infoLen[x + 1];
+	 swindow->list[x]    = swindow->list[x + 1];
+	 swindow->listPos[x] = swindow->listPos[x + 1];
+	 swindow->listLen[x] = swindow->listLen[x + 1];
       }
 
       /* Clean out the last position. */
-      swindow->info[swindow->itemCount] = '\0';
-      swindow->infoLen[swindow->itemCount] = 0;
-      swindow->infoPos[swindow->itemCount] = 0;
-      swindow->itemCount--;
+      swindow->list[swindow->listSize]    = 0;
+      swindow->listLen[swindow->listSize] = 0;
+      swindow->listPos[swindow->listSize] = 0;
+      swindow->listSize--;
    }
 
    /* Determine where the line is being added. */
    if (insertPos == TOP)
    {
       /* We need to 'bump' everything down one line... */
-      for (x=swindow->itemCount; x > 0; x--)
+      for (x = swindow->listSize; x > 0; x--)
       {
 	 /* Copy in the new row. */
-	 swindow->info[x] = swindow->info[x-1];
-	 swindow->infoPos[x] = swindow->infoPos[x-1];
-	 swindow->infoLen[x] = swindow->infoLen[x-1];
+	 swindow->list[x]    = swindow->list[x - 1];
+	 swindow->listPos[x] = swindow->listPos[x - 1];
+	 swindow->listLen[x] = swindow->listLen[x - 1];
       }
 
       /* Add it into the scrolling window. */
-      swindow->info[0] = char2Chtype (info, &swindow->infoLen[0], &swindow->infoPos[0]);
-      swindow->infoPos[0] = justifyString (swindow->boxWidth, swindow->infoLen[0], swindow->infoPos[0]);
+      setupLine(swindow, list, 0);
 
       /* Set some variables. */
       swindow->currentTop = 0;
-      if (swindow->itemCount < swindow->saveLines)
+      if (swindow->listSize < swindow->saveLines)
       {
-	 swindow->itemCount++;
+	 swindow->listSize++;
       }
 
       /* Set the maximum top line. */
-      swindow->maxTopLine = swindow->itemCount - swindow->viewSize;
+      swindow->maxTopLine = swindow->listSize - swindow->viewSize;
       swindow->maxTopLine = (swindow->maxTopLine < 0 ? 0 : swindow->maxTopLine);
 
-      /* Lets determine the widest line and the maximum leftmost character.  */
-      swindow->widestLine = MAXIMUM (swindow->widestLine, swindow->infoLen[0]);
       swindow->maxLeftChar = swindow->widestLine - (swindow->boxWidth - 2);
    }
    else
    {
       /* Add to the bottom. */
-      swindow->info[swindow->itemCount]	 = char2Chtype (info, &swindow->infoLen[swindow->itemCount], &swindow->infoPos[swindow->itemCount]);
-      swindow->infoPos[swindow->itemCount] = justifyString (swindow->boxWidth, swindow->infoLen[swindow->itemCount], swindow->infoPos[swindow->itemCount]);
+      setupLine(swindow, list, swindow->listSize);
 
-      /* Lets determine the widest line and the maximum leftmost character.  */
-      swindow->widestLine = MAXIMUM (swindow->widestLine, swindow->infoLen[swindow->itemCount]);
       swindow->maxLeftChar = swindow->widestLine - (swindow->boxWidth - 2);
 
       /* Increment the item count and zero out the next row. */
-      if (swindow->itemCount < swindow->saveLines)
+      if (swindow->listSize < swindow->saveLines)
       {
-	 swindow->itemCount++;
-	 freeChtype (swindow->info[swindow->itemCount]);
+	 swindow->listSize++;
+	 freeLine (swindow, swindow->listSize);
       }
 
       /* Set the maximum top line. */
-      if (swindow->itemCount <= swindow->viewSize)
+      if (swindow->listSize <= swindow->viewSize)
       {
 	 swindow->maxTopLine = 0;
 	 swindow->currentTop = 0;
       }
       else
       {
-	 swindow->maxTopLine = (swindow->itemCount - swindow->viewSize);
+	 swindow->maxTopLine = (swindow->listSize - swindow->viewSize);
 	 swindow->currentTop = swindow->maxTopLine;
       }
    }
@@ -304,10 +314,10 @@ void jumpToLineCDKSwindow (CDKSWINDOW *swindow, int line)
   /*
    * Make sure the line is in bounds.
    */
-   if (line == BOTTOM || line >= swindow->itemCount)
+   if (line == BOTTOM || line >= swindow->listSize)
    {
       /* We are moving to the last page. */
-      swindow->currentTop = swindow->itemCount - swindow->viewSize;
+      swindow->currentTop = swindow->listSize - swindow->viewSize;
    }
    else if (line == TOP || line <= 0)
    {
@@ -317,13 +327,13 @@ void jumpToLineCDKSwindow (CDKSWINDOW *swindow, int line)
    else
    {
       /* We are moving in the middle somewhere. */
-      if ((swindow->viewSize + line) < swindow->itemCount)
+      if ((swindow->viewSize + line) < swindow->listSize)
       {
 	 swindow->currentTop = line;
       }
       else
       {
-	 swindow->currentTop = swindow->itemCount - swindow->viewSize;
+	 swindow->currentTop = swindow->listSize - swindow->viewSize;
       }
    }
 
@@ -345,13 +355,13 @@ void cleanCDKSwindow (CDKSWINDOW *swindow)
    int x;
 
    /* Clean up the memory used ... */
-   for (x=0; x < swindow->itemCount; x++)
+   for (x=0; x < swindow->listSize; x++)
    {
-      freeChtype (swindow->info[x]);
+      freeLine (swindow, x);
    }
 
    /* Reset some variables. */
-   swindow->itemCount	= 0;
+   swindow->listSize	= 0;
    swindow->maxLeftChar = 0;
    swindow->widestLine	= 0;
    swindow->currentTop	= 0;
@@ -373,9 +383,9 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
    {
       start = 0;
    }
-   else if (begin >= swindow->itemCount)
+   else if (begin >= swindow->listSize)
    {
-      start = swindow->itemCount-1;
+      start = swindow->listSize-1;
    }
    else
    {
@@ -387,9 +397,9 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
    {
       finish = 0;
    }
-   else if (end >= swindow->itemCount)
+   else if (end >= swindow->listSize)
    {
-      finish = swindow->itemCount-1;
+      finish = swindow->listSize-1;
    }
    else
    {
@@ -405,18 +415,18 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
    /* Start nuking elements from the window. */
    for (x=start; x <=finish; x++)
    {
-      freeChtype (swindow->info[x]);
+      freeLine (swindow, x);
 
-      if (x < swindow->itemCount-1)
+      if (x < swindow->listSize-1)
       {
-	 swindow->info[x] = copyChtype (swindow->info[x + 1]);
-	 swindow->infoPos[x] = swindow->infoPos[x + 1];
-	 swindow->infoLen[x] = swindow->infoLen[x + 1];
+	 swindow->list[x] = copyChtype (swindow->list[x + 1]);
+	 swindow->listPos[x] = swindow->listPos[x + 1];
+	 swindow->listLen[x] = swindow->listLen[x + 1];
       }
    }
 
    /* Adjust the item count correctly. */
-   swindow->itemCount = swindow->itemCount - (end - begin) - 1;
+   swindow->listSize = swindow->listSize - (end - begin) - 1;
 
    /* Redraw the window. */
    drawCDKSwindow (swindow, ObjOf(swindow)->box);
@@ -738,9 +748,9 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
    int lastLine, screenPos, x;
 
    /* Determine the last line to draw. */
-   if (swindow->itemCount < swindow->viewSize)
+   if (swindow->listSize < swindow->viewSize)
    {
-      lastLine = swindow->itemCount;
+      lastLine = swindow->listSize;
    }
    else
    {
@@ -753,23 +763,23 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
    /* Start drawing in each line. */
    for (x=0; x < lastLine; x++)
    {
-      screenPos = swindow->infoPos[x + swindow->currentTop]-swindow->leftChar;
+      screenPos = swindow->listPos[x + swindow->currentTop]-swindow->leftChar;
 
       /* Write in the correct line. */
       if (screenPos >= 0)
       {
 	 writeChtype (swindow->fieldWin, screenPos, x,
-			swindow->info[x + swindow->currentTop],
+			swindow->list[x + swindow->currentTop],
 			HORIZONTAL, 0,
-			swindow->infoLen[x + swindow->currentTop]);
+			swindow->listLen[x + swindow->currentTop]);
       }
       else
       {
 	 writeChtype (swindow->fieldWin, 0, x,
-			swindow->info[x + swindow->currentTop],
+			swindow->list[x + swindow->currentTop],
 			HORIZONTAL,
-			swindow->leftChar - swindow->infoPos[x + swindow->currentTop],
-			swindow->infoLen[x + swindow->currentTop]);
+			swindow->leftChar - swindow->listPos[x + swindow->currentTop],
+			swindow->listLen[x + swindow->currentTop]);
       }
    }
 
@@ -813,6 +823,20 @@ void setCDKSwindowBackgroundAttrib (CDKSWINDOW *swindow, chtype attrib)
 }
 
 /*
+ * Free any storage associated with the info-list.
+ */
+static void destroyInfo(CDKSWINDOW *swindow)
+{
+   CDKfreeChtypes(swindow->list);
+   if (swindow->listPos != 0) free(swindow->listPos);
+   if (swindow->listLen != 0) free(swindow->listLen);
+
+   swindow->list = 0;
+   swindow->listPos = 0;
+   swindow->listLen = 0;
+}
+
+/*
  * This function destroys the scrolling window widget.
  */
 static void _destroyCDKSwindow (CDKOBJS *object)
@@ -820,11 +844,8 @@ static void _destroyCDKSwindow (CDKOBJS *object)
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
    int x;
 
-   /* Clear out the character pointers. */
-   for (x=0; x <= swindow->itemCount; x++)
-   {
-      freeChtype (swindow->info[x]);
-   }
+   destroyInfo(swindow);
+
    for (x=0; x < swindow->titleLines; x++)
    {
       freeChtype (swindow->title[x]);
@@ -1002,7 +1023,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
     * Maye we should check before nuking all the information
     * in the scrolling window...
      */
-   if (swindow->itemCount > 0)
+   if (swindow->listSize > 0)
    {
       /* Create the dialog message. */
       mesg[0] = "<C></B/5>Save Information First";
@@ -1074,16 +1095,16 @@ int dumpCDKSwindow (CDKSWINDOW *swindow, char *filename)
    }
 
    /* Start writing out the file. */
-   for (x=0; x < swindow->itemCount; x++)
+   for (x=0; x < swindow->listSize; x++)
    {
-      rawLine = chtype2Char (swindow->info[x]);
+      rawLine = chtype2Char (swindow->list[x]);
       fprintf (outputFile, "%s\n", rawLine);
       freeChar (rawLine);
    }
 
    /* Close the file and return the number of lines written. */
    fclose (outputFile);
-   return swindow->itemCount;
+   return swindow->listSize;
 }
 
 /*
@@ -1122,4 +1143,38 @@ static void _refreshDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
 static void _saveDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
 {
    /* FIXME */
+}
+
+static int createList(CDKSWINDOW *swindow, int listSize)
+{
+   int status = 0;
+   if (listSize <= 0)
+   {
+      destroyInfo(swindow);
+   }
+   else
+   {
+      chtype **newList = typeCallocN(chtype *, listSize + 1);
+      int *newPos = typeCallocN(int, listSize + 1);
+      int *newLen = typeCallocN(int, listSize + 1);
+
+      if (newList != 0
+       && newPos != 0
+       && newLen != 0)
+      {
+	 status = 1;
+	 destroyInfo(swindow);
+
+	 swindow->list    = newList;
+	 swindow->listPos = newPos;
+	 swindow->listLen = newLen;
+      }
+      if (!status)
+      {
+	 CDKfreeChtypes(newList);
+	 if (newPos != 0) free(newPos);
+	 if (newLen != 0) free(newLen);
+      }
+   }
+   return status;
 }

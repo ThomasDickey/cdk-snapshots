@@ -1,5 +1,5 @@
 /*
- * $Id: swindow.h,v 1.17 2003/11/15 18:11:09 tom Exp $
+ * $Id: swindow.h,v 1.19 2003/11/18 22:41:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -61,15 +63,15 @@ struct SSwindow {
    WINDOW *	win;
    WINDOW *	fieldWin;
    WINDOW *	shadowWin;
-   chtype *	info[MAX_LINES];
-   int		infoPos[MAX_LINES];
-   int		infoLen[MAX_LINES];
+   chtype **	list;
+   int *	listPos;
+   int *	listLen;
    chtype *	title[MAX_LINES];
    int		titlePos[MAX_LINES];
    int		titleLen[MAX_LINES];
    int		titleAdj;
    int		titleLines;
-   int		itemCount;
+   int		listSize;
    int		boxHeight;
    int		boxWidth;
    int		viewSize;

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 16:35:55 $
- * $Revision: 1.55 $
+ * $Date: 2003/11/19 00:18:24 $
+ * $Revision: 1.56 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -162,7 +162,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    itemlist->boxHeight			= boxHeight;
    itemlist->boxWidth			= boxWidth;
    itemlist->fieldWidth			= fieldWidth;
-   itemlist->itemCount			= count;
+   itemlist->listSize			= count;
    itemlist->exitType			= vNEVER_ACTIVATED;
    ObjOf(itemlist)->acceptsFocus	= 1;
    ObjOf(itemlist)->inputWindow		= itemlist->fieldWin;
@@ -175,7 +175,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    setCDKItemlistBox (itemlist, Box);
 
    /* Set then default item. */
-   if (defaultItem >= 0 && defaultItem < itemlist->itemCount)
+   if (defaultItem >= 0 && defaultItem < itemlist->listSize)
    {
       itemlist->currentItem	= defaultItem;
       itemlist->defaultItem	= defaultItem;
@@ -295,7 +295,7 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP : case KEY_RIGHT : case ' ' : case '+' : case 'n' :
-		 if (itemlist->currentItem < itemlist->itemCount - 1)
+		 if (itemlist->currentItem < itemlist->listSize - 1)
 		 {
 		    itemlist->currentItem++;
 		 }
@@ -312,7 +312,7 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 		 }
 		 else
 		 {
-		    itemlist->currentItem = itemlist->itemCount - 1;
+		    itemlist->currentItem = itemlist->listSize - 1;
 		 }
 		 break;
 
@@ -325,7 +325,7 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 		 break;
 
 	    case '$' :
-		 itemlist->currentItem = itemlist->itemCount - 1;
+		 itemlist->currentItem = itemlist->listSize - 1;
 		 break;
 
 	    case KEY_ESC :
@@ -603,7 +603,7 @@ void setCDKItemlistValues (CDKITEMLIST *itemlist, char **item, int count, int de
    if (createList(itemlist, item, count))
    {
       /* Set the default item. */
-      if ((defaultItem >= 0) && (defaultItem < itemlist->itemCount))
+      if ((defaultItem >= 0) && (defaultItem < itemlist->listSize))
       {
 	 itemlist->currentItem = defaultItem;
 	 itemlist->defaultItem = defaultItem;
@@ -616,7 +616,7 @@ void setCDKItemlistValues (CDKITEMLIST *itemlist, char **item, int count, int de
 }
 chtype **getCDKItemlistValues (CDKITEMLIST *itemlist, int *size)
 {
-   (*size) = itemlist->itemCount;
+   (*size) = itemlist->listSize;
    return itemlist->item;
 }
 
@@ -626,7 +626,7 @@ chtype **getCDKItemlistValues (CDKITEMLIST *itemlist, int *size)
 void setCDKItemlistCurrentItem (CDKITEMLIST *itemlist, int currentItem)
 {
    /* Set the default item. */
-   if ((currentItem >= 0) && (currentItem < itemlist->itemCount))
+   if ((currentItem >= 0) && (currentItem < itemlist->listSize))
    {
       itemlist->currentItem = currentItem;
    }
@@ -646,9 +646,9 @@ void setCDKItemlistDefaultItem (CDKITEMLIST *itemlist, int defaultItem)
    {
       itemlist->defaultItem = 0;
    }
-   else if (defaultItem >= itemlist->itemCount)
+   else if (defaultItem >= itemlist->listSize)
    {
-      itemlist->defaultItem = itemlist->itemCount - 1;
+      itemlist->defaultItem = itemlist->listSize - 1;
    }
    else
    {
@@ -728,7 +728,7 @@ static void _refreshDataCDKItemlist(CDKOBJS *object)
 	 {
 	    int i;
 
-	    for (i=0; i < itemlist->itemCount; ++i)
+	    for (i=0; i < itemlist->listSize; ++i)
 	       if (!cmpStrChstr((char*)ReturnOf(itemlist),itemlist->item[i]))
 	       {
 		  itemlist->currentItem = i;
@@ -812,7 +812,7 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
 	 free(itemlist->itemLen);
 
 	 /* Copy in the new information. */
-	 itemlist->itemCount = count;
+	 itemlist->listSize = count;
 	 itemlist->item = newItems;
 	 itemlist->itemPos = newPos;
 	 itemlist->itemLen = newLen;

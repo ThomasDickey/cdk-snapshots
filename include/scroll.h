@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.20 2003/11/16 18:52:47 tom Exp $
+ * $Id: scroll.h,v 1.21 2003/11/19 00:17:59 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -164,7 +164,7 @@ void setCDKScrollCurrent(
 void setCDKScrollItems (
 		CDKSCROLL *	/* scroll */,
 		char **		/* items */,
-		int		/* itemCount */,
+		int		/* listSize */,
 		boolean		/* numbers */);
 
 int getCDKScrollItems (

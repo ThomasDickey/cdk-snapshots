@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:19:25 $
- * $Revision: 1.123 $
+ * $Date: 2003/11/19 01:43:53 $
+ * $Revision: 1.127 $
  */
 
 /*
@@ -15,6 +15,7 @@
 /*
  * Declare file local prototypes.
  */
+static int createList(CDKVIEWER *swindow, int listSize);
 static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction);
 static int jumpToLine (CDKVIEWER *viewer);
 static void popUpLabel (CDKVIEWER *viewer, char **mesg);
@@ -116,7 +117,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    viewer->maxLeftChar		= 0;
    viewer->maxTopLine		= 0;
    viewer->characters		= 0;
-   viewer->infoSize		= -1;
+   viewer->listSize		= -1;
    viewer->showLineInfo		= 1;
    viewer->exitType		= vEARLY_EXIT;
    viewer->titleLines		= 0;
@@ -145,13 +146,13 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
 /*
  * This function sets various attributes of the widget.
  */
-int setCDKViewer (CDKVIEWER *viewer, char *title, char **info, int infoSize, chtype buttonHighlight, boolean attrInterp, boolean showLineInfo, boolean Box)
+int setCDKViewer (CDKVIEWER *viewer, char *title, char **list, int listSize, chtype buttonHighlight, boolean attrInterp, boolean showLineInfo, boolean Box)
 {
    setCDKViewerTitle (viewer, title);
    setCDKViewerHighlight (viewer, buttonHighlight);
    setCDKViewerInfoLine (viewer, showLineInfo);
    setCDKViewerBox (viewer, Box);
-   return setCDKViewerInfo (viewer, info, infoSize, attrInterp);
+   return setCDKViewerInfo (viewer, list, listSize, attrInterp);
 }
 
 /*
@@ -201,47 +202,120 @@ chtype **getCDKViewerTitle (CDKVIEWER *viewer)
    return viewer->title;
 }
 
+static void setupLine (CDKVIEWER *viewer, boolean interpret, char *list, int x)
+{
+   /* Did they ask for attribute interpretation? */
+   if (interpret)
+   {
+      viewer->list[x]    = char2Chtype (list, &viewer->listLen[x], &viewer->listPos[x]);
+      viewer->listPos[x] = justifyString (viewer->boxWidth, viewer->listLen[x], viewer->listPos[x]);
+   }
+   else
+   {
+      int len = (int)strlen (list);
+      int pass;
+      int y;
+      chtype *t = 0;
+
+      /*
+       * We must convert tabs and other nonprinting characters.  The curses
+       * library normally does this, but we are bypassing it by writing
+       * chtype's directly.
+       */
+      for (pass = 0; pass < 2; ++pass)
+      {
+	 len = 0;
+	 for (y = 0; list[y] != '\0'; ++y)
+	 {
+	    if (list[y] == '\t')
+	    {
+	       do
+	       {
+		  if (pass)
+		     t[len] = ' ';
+		  ++len;
+	       } while (len & 7);
+	    }
+	    else if (isprint(list[y]))
+	    {
+	       if (pass)
+		  t[len] = CharOf(list[y]);
+	       ++len;
+	    }
+	    else
+	    {
+	       const char *s = unctrl(list[y]);
+	       while (*s != 0)
+	       {
+		  if (pass)
+		     t[len] = CharOf(*s++);
+		  ++len;
+	       }
+	    }
+	 }
+	 if (!pass)
+	 {
+	    viewer->list[x] = t = typeCallocN(chtype, len + 3);
+	    if (t == 0)
+	    {
+	       len = 0;
+	       break;
+	    }
+	 }
+      }
+      viewer->listLen[x] = len;
+      viewer->listPos[x] = 0;
+   }
+   viewer->widestLine = MAXIMUM (viewer->widestLine, viewer->listLen[x]);
+}
+
+static void freeLine (CDKVIEWER *viewer, int x)
+{
+   if (x < viewer->listSize)
+   {
+      freeChtype (viewer->list[x]);
+      viewer->list[x] = 0;
+   }
+}
+
 /*
  * This function sets the contents of the viewer.
  */
-int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean interpret)
+int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean interpret)
 {
    char filename[512];
-   int widestLine	= -1;
    int currentLine	= 0;
    int x		= 0;
 
-   infoSize = MINIMUM(infoSize, MAX_LINES - 4);
+   listSize = MINIMUM(listSize, MAX_LINES - 4);
 
    /* Clean out the old viewer info. (if there is any) */
-   for (x=0; x < viewer->infoSize; x++)
-   {
-      freeChtype (viewer->info[x]);
-      viewer->info[x] = 0;
-   }
+   cleanCDKViewer(viewer);
+   createList(viewer, listSize);
    memset (filename, '\0', 512);
 
-   /* Keep some semi-perinant info. */
+   /* Keep some semi-permanent info. */
    viewer->interpret = interpret;
 
    /* Copy the information given. */
    currentLine = 0;
-   for (x=0; x <= infoSize; x++)
+   for (x=0; x <= listSize; x++)
    {
-      if (info[x] == 0)
+      if (list[x] == 0)
       {
-	 viewer->info[currentLine]	= 0;
-	 viewer->infoLen[currentLine]	= 0;
-	 viewer->infoPos[currentLine]	= 0;
+	 viewer->list[currentLine]	= 0;
+	 viewer->listLen[currentLine]	= 0;
+	 viewer->listPos[currentLine]	= 0;
 	 currentLine++;
       }
       else
       {
 	 /* Check if we have a file link in this line. */
-	 if (checkForLink (info[x], filename) == 1)
+	 if (checkForLink (list[x], filename) == 1)
 	 {
 	    /* We have a link, open the file. */
-	    char **fileContents = 0, temp[256];
+	    char temp[256];
+	    char **fileContents = 0;
 	    int fileLen		= 0;
 	    int fileLine	= 0;
 
@@ -249,43 +323,22 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 	    fileLen = CDKreadFile (filename, &fileContents);
 	    if (fileLen == -1)
 	    {
-		int adj		= 0;
-		int len		= 0;
-
 	       /* Could not open the file. */
 #ifdef HAVE_START_COLOR
 	       sprintf (temp, "<C></16>Link Failed: Could not open the file %s", filename);
 #else
 	       sprintf (temp, "<C></K>Link Failed: Could not open the file %s", filename);
 #endif
-	       viewer->info[currentLine]	= char2Chtype (temp, &len, &adj);
-	       viewer->infoPos[currentLine]	= justifyString (viewer->boxWidth, len, adj);
-	       viewer->infoLen[currentLine]	= len;
-	       widestLine = MAXIMUM(widestLine, viewer->infoLen[currentLine]);
-	       currentLine++;
+	       setupLine(viewer, TRUE, temp, currentLine++);
 	    }
 	    else
 	    {
 	       /* For each line read, copy it into the viewer. */
-	       fileLen = MINIMUM(fileLen, MAX_LINES - 1);
+	       fileLen = MINIMUM(fileLen, (listSize - (currentLine + 1)));
 	       for (fileLine=0; fileLine < fileLen ; fileLine++)
 	       {
-		  int len = (int)strlen (fileContents[fileLine]);
-		  int y;
-
-		  /* Init memory and clean it. */
-		  viewer->info[currentLine] = typeCallocN(chtype, len + 3);
-		  cleanChtype (viewer->info[currentLine], len + 3, '\0');
-
-		  /* Copy from one to the other. */
-		  for (y=0; y < len; y++)
-		  {
-		     viewer->info[currentLine][y] = fileContents[fileLine][y];
-		  }
-		  viewer->infoLen[currentLine]	= len;
-		  viewer->infoPos[currentLine]	= 0;
-		  widestLine			= MAXIMUM(widestLine, len);
-		  viewer->characters		+= len;
+		  setupLine(viewer, FALSE, fileContents[fileLine], currentLine);
+		  viewer->characters += viewer->listLen[currentLine];
 		  currentLine++;
 	       }
 	       CDKfreeStrings (fileContents);
@@ -293,39 +346,9 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
 	 }
 	 else
 	 {
-	    /* Did they ask for attribute interpretation? */
-	    if (!viewer->interpret)
-	    {
-	       int len = (int)strlen (info[x]);
-	       int y;
-
-	       /* Init memory and clean it. */
-	       viewer->info[currentLine] = typeCallocN(chtype, len + 3);
-	       cleanChtype (viewer->info[currentLine], len + 3, '\0');
-
-	       /* Copy from one to the other. */
-	       for (y=0; y < len; y++)
-	       {
-		  viewer->info[currentLine][y] = info[x][y];
-	       }
-	       viewer->infoLen[currentLine]	= len;
-	       viewer->infoPos[currentLine]	= 0;
-	       widestLine			= MAXIMUM(widestLine, len);
-	       viewer->characters		+= len;
-	       currentLine++;
-	    }
-	    else
-	    {
-	       viewer->info[currentLine] = char2Chtype (info[x],
-						&viewer->infoLen[currentLine],
-						&viewer->infoPos[currentLine]);
-	       viewer->infoPos[currentLine] = justifyString (viewer->boxWidth,
-						viewer->infoLen[currentLine],
-						viewer->infoPos[currentLine]);
-	       widestLine = MAXIMUM(widestLine, viewer->infoLen[currentLine]);
-	       viewer->characters += viewer->infoLen[currentLine];
-	       currentLine++;
-	    }
+	    setupLine(viewer, viewer->interpret, list[x], currentLine);
+	    viewer->characters += viewer->listLen[currentLine];
+	    currentLine++;
 	 }
       }
    }
@@ -334,9 +357,9 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
    * Determine how many characters we can shift to the right
    * before all the items have been viewer off the screen.
    */
-   if (widestLine > viewer->boxWidth)
+   if (viewer->widestLine > viewer->boxWidth)
    {
-      viewer->maxLeftChar = (widestLine - viewer->boxWidth) + 1;
+      viewer->maxLeftChar = (viewer->widestLine - viewer->boxWidth) + 1;
    }
    else
    {
@@ -344,21 +367,21 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
    }
 
    /* Set up the needed vars for the viewer list. */
-   viewer->infoSize = currentLine-1;
-   if (viewer->infoSize <= viewer->viewSize)
+   viewer->listSize = currentLine-1;
+   if (viewer->listSize <= viewer->viewSize)
    {
       viewer->maxTopLine = -1;
    }
    else
    {
-      viewer->maxTopLine = viewer->infoSize-1;
+      viewer->maxTopLine = viewer->listSize-1;
    }
-   return viewer->infoSize;
+   return viewer->listSize;
 }
 chtype **getCDKViewerInfo (CDKVIEWER *viewer, int *size)
 {
-   (*size) = viewer->infoSize;
-   return viewer->info;
+   (*size) = viewer->listSize;
+   return viewer->list;
 }
 
 /*
@@ -399,6 +422,30 @@ boolean getCDKViewerBox (CDKVIEWER *viewer)
 }
 
 /*
+ * This removes all the lines inside the scrolling window.
+ */
+void cleanCDKViewer (CDKVIEWER *viewer)
+{
+   int x;
+
+   /* Clean up the memory used ... */
+   for (x=0; x < viewer->listSize; x++)
+   {
+      freeLine (viewer, x);
+   }
+
+   /* Reset some variables. */
+   viewer->listSize	= 0;
+   viewer->maxLeftChar  = 0;
+   viewer->widestLine	= 0;
+   viewer->currentTop	= 0;
+   viewer->maxTopLine	= 0;
+
+   /* Redraw the window. */
+   drawCDKViewer (viewer, ObjOf(viewer)->box);
+}
+
+/*
  * This function actually controls the viewer...
  */
 int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
@@ -413,9 +460,9 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
    fileInfo[0] = copyChar(temp);
    sprintf (temp, "</5>                          <!5>");
    fileInfo[1] = copyChar(temp);
-   sprintf (temp, "</5/R>Character Count:<!R> %-4d     <!5>", viewer->characters);
+   sprintf (temp, "</5/R>Character Count:<!R> %-4ld     <!5>", viewer->characters);
    fileInfo[2] = copyChar(temp);
-   sprintf (temp, "</5/R>Line Count     :<!R> %-4d     <!5>", viewer->infoSize);
+   sprintf (temp, "</5/R>Line Count     :<!R> %-4d     <!5>", viewer->listSize);
    fileInfo[3] = copyChar(temp);
    sprintf (temp, "</5>                          <!5>");
    fileInfo[4] = copyChar(temp);
@@ -585,7 +632,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 		 break;
 
 	    case 'L' :
-		 x = (int) ((viewer->infoSize + viewer->currentTop) / 2);
+		 x = (int) ((viewer->listSize + viewer->currentTop) / 2);
 		 if (x < viewer->maxTopLine)
 		 {
 		    viewer->currentTop = x;
@@ -694,7 +741,7 @@ static void getAndStorePattern (CDKSCREEN *screen)
 {
    CDKENTRY *getPattern = 0;
    char *temp		= 0;
-   char *info		= 0;
+   char *list		= 0;
 
    /* Check the direction. */
    if (SearchDirection == UP)
@@ -721,12 +768,12 @@ static void getAndStorePattern (CDKSCREEN *screen)
    freeChar (SearchPattern);
 
    /* Activate this baby. */
-   info = activateCDKEntry (getPattern, 0);
+   list = activateCDKEntry (getPattern, 0);
 
-   /* Save the info. */
-   if ((info != 0) || (strlen (info) != 0))
+   /* Save the list. */
+   if ((list != 0) || (strlen (list) != 0))
    {
-      SearchPattern = copyChar (info);
+      SearchPattern = copyChar (list);
    }
 
    /* Clean up. */
@@ -751,18 +798,18 @@ static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
    if (direction == DOWN)
    {
       /* Start looking from 'here' down. */
-      for (x = viewer->currentTop + 1; x < viewer->infoSize; x++)
+      for (x = viewer->currentTop + 1; x < viewer->listSize; x++)
       {
 	/*
 	 * Start looking. If we find it, then set the value of
 	 * viewer->currentTop and possibly even leftChar...
 	 */
-	 len	= chlen (viewer->info[x]);
+	 len	= chlen (viewer->list[x]);
 	 pos	= 0;
 	 for (y=0; y < len; y++)
 	 {
 	    /* We have to tear the attributes from the chtype. */
-	    char plainChar	= viewer->info[x][y] & A_CHARTEXT;
+	    char plainChar	= viewer->list[x][y] & A_CHARTEXT;
 
 	    /* We have found the word at this point. */
 	    if (pos == plen)
@@ -789,12 +836,12 @@ static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
 	 * Start looking. If we find it, then set the value of
 	 * viewer->currentTop and possibly even leftChar...
 	 */
-	 len	= chlen (viewer->info[x]);
+	 len	= chlen (viewer->list[x]);
 	 pos	= 0;
 	 for (y=0; y < len; y++)
 	 {
 	    /* We have to tear the attributes from the chtype. */
-	    char plainChar	= viewer->info[x][y] & A_CHARTEXT;
+	    char plainChar	= viewer->list[x][y] & A_CHARTEXT;
 
 	    /* We have found the word at this point. */
 	    if (pos == plen)
@@ -934,8 +981,8 @@ static void drawCDKViewerButtons (CDKVIEWER *viewer)
    for (x=0; x < viewer->buttonCount; x++)
    {
       writeChtype (viewer->win, viewer->buttonPos[x],
-			viewer->boxHeight-2, viewer->button[x], HORIZONTAL,
-			0, viewer->buttonLen[x]);
+		   viewer->boxHeight-2, viewer->button[x], HORIZONTAL,
+		   0, viewer->buttonLen[x]);
    }
 
    /* Highlight the current button. */
@@ -969,13 +1016,8 @@ void setCDKViewerBackgroundColor (CDKVIEWER *viewer, char *color)
       return;
    }
 
-   /* Convert the value of the environment variable to a chtype. */
    holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
    setCDKViewerBackgroundAttrib (viewer, holder[0]);
-
-   /* Clean up. */
    freeChtype (holder);
 }
 
@@ -984,8 +1026,21 @@ void setCDKViewerBackgroundColor (CDKVIEWER *viewer, char *color)
  */
 void setCDKViewerBackgroundAttrib (CDKVIEWER *viewer, chtype attrib)
 {
-   /* Set the widgets background attribute. */
    wbkgd (viewer->win, attrib);
+}
+
+/*
+ * Free any storage associated with the info-list.
+ */
+static void destroyInfo(CDKVIEWER *viewer)
+{
+   CDKfreeChtypes(viewer->list);
+   if (viewer->listPos != 0) free(viewer->listPos);
+   if (viewer->listLen != 0) free(viewer->listLen);
+
+   viewer->list = 0;
+   viewer->listPos = 0;
+   viewer->listLen = 0;
 }
 
 /*
@@ -996,14 +1051,12 @@ static void _destroyCDKViewer (CDKOBJS *object)
    CDKVIEWER *viewer = (CDKVIEWER *)object;
    int x;
 
+   destroyInfo(viewer);
+
    /* Clear up the char pointers. */
    for (x=0; x < viewer->titleLines; x++)
    {
       freeChtype (viewer->title[x]);
-   }
-   for (x=0; x <= viewer->infoSize; x++)
-   {
-      freeChtype (viewer->info[x]);
    }
    for (x=0; x < viewer->buttonCount; x++)
    {
@@ -1037,7 +1090,7 @@ static void _eraseCDKViewer (CDKOBJS *object)
  */
 static void drawCDKViewerInfo (CDKVIEWER *viewer)
 {
-   int infoAdjust	= 0;
+   int listAdjust	= 0;
    int lastLine		= 0;
    char temp[256];
    int x;
@@ -1051,11 +1104,11 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
       for (x=0; x < viewer->titleLines; x++)
       {
 	 writeChtype (viewer->win,
-			viewer->titlePos[x] + BorderOf(viewer),
-			x + 1,
-			viewer->title[x],
-			HORIZONTAL, 0,
-			viewer->titleLen[x]);
+		      viewer->titlePos[x] + BorderOf(viewer),
+		      x + 1,
+		      viewer->title[x],
+		      HORIZONTAL, 0,
+		      viewer->titleLen[x]);
       }
    }
 
@@ -1063,12 +1116,12 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
    if (viewer->showLineInfo == TRUE)
    {
       /* Set up the info line and draw it. */
-      if (viewer->infoSize != 0)
+      if (viewer->listSize != 0)
       {
 	 sprintf (temp, "%d/%d %2.0f%%",
 			(viewer->currentTop + 1),
-			viewer->infoSize,
-			((float)(viewer->currentTop + 1)/(float)viewer->infoSize) * 100);
+			viewer->listSize,
+			((float)(viewer->currentTop + 1)/(float)viewer->listSize) * 100);
       }
       else
       {
@@ -1076,7 +1129,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
       }
 
      /*
-      * The infoAdjust variable tells us if we have to shift down
+      * The listAdjust variable tells us if we have to shift down
       * one line because the person asked for the line X of Y line
       * at the top of the screen. We only want to set this to 1 if
       * they asked for the info line and there is no title, or if the
@@ -1085,38 +1138,40 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
       if (viewer->titleLines == 0
        || viewer->titlePos[0] < ((int)strlen(temp) + 2))
       {
-	 infoAdjust = 1;
+	 listAdjust = 1;
       }
-      writeChar (viewer->win, 1, (infoAdjust ? viewer->titleLines : 0) + 1,
+      writeChar (viewer->win, 1, (listAdjust ? viewer->titleLines : 0) + 1,
 		 temp, HORIZONTAL, 0, (int)strlen(temp));
    }
 
    /* Determine the last line to draw. */
-   lastLine = (viewer->infoSize <= viewer->viewSize ? viewer->infoSize : viewer->viewSize);
-   lastLine -= infoAdjust;
+   lastLine = (viewer->listSize <= viewer->viewSize
+		? viewer->listSize
+		: viewer->viewSize);
+   lastLine -= listAdjust;
 
    /* Redraw the list. */
    for (x=0; x < lastLine; x++)
    {
-      if (viewer->currentTop + x < viewer->infoSize)
+      if (viewer->currentTop + x < viewer->listSize)
       {
-	 int screenPos = viewer->infoPos[viewer->currentTop + x] + 1 - viewer->leftChar;
+	 int screenPos = viewer->listPos[viewer->currentTop + x] + 1 - viewer->leftChar;
 	 if (screenPos >= 0)
 	 {
 	    writeChtype (viewer->win, screenPos,
-				x + viewer->titleLines + infoAdjust + 1,
-				viewer->info[x + viewer->currentTop],
-				HORIZONTAL, 0,
-				viewer->infoLen[x + viewer->currentTop]);
+			 x + viewer->titleLines + listAdjust + 1,
+			 viewer->list[x + viewer->currentTop],
+			 HORIZONTAL, 0,
+			 viewer->listLen[x + viewer->currentTop]);
 	 }
 	 else
 	 {
 	    writeChtype (viewer->win, 1,
-				x + viewer->titleLines + infoAdjust + 1,
-				viewer->info[x + viewer->currentTop],
-				HORIZONTAL,
-				viewer->leftChar - viewer->infoPos[viewer->currentTop + x],
-				viewer->infoLen[x + viewer->currentTop]);
+			 x + viewer->titleLines + listAdjust + 1,
+			 viewer->list[x + viewer->currentTop],
+			 HORIZONTAL,
+			 viewer->leftChar - viewer->listPos[viewer->currentTop + x],
+			 viewer->listLen[x + viewer->currentTop]);
 	 }
       }
    }
@@ -1159,17 +1214,54 @@ static void _focusCDKViewer(CDKOBJS *object GCC_UNUSED)
    /* FIXME */
 }
 
-static void _unfocusCDKViewer(CDKOBJS *entry GCC_UNUSED)
+static void _unfocusCDKViewer(CDKOBJS *object GCC_UNUSED)
 {
    /* FIXME */
 }
 
-static void _refreshDataCDKViewer(CDKOBJS *entry GCC_UNUSED)
+static void _refreshDataCDKViewer(CDKOBJS *object GCC_UNUSED)
 {
    /* FIXME */
 }
 
-static void _saveDataCDKViewer(CDKOBJS *entry GCC_UNUSED)
+static void _saveDataCDKViewer(CDKOBJS *object GCC_UNUSED)
 {
    /* FIXME */
+}
+
+/*
+ * The listSize may be negative, to assign no definite limit.
+ */
+static int createList(CDKVIEWER *swindow, int listSize)
+{
+   int status = 0;
+   if (listSize <= 0)
+   {
+      destroyInfo(swindow);
+   }
+   else
+   {
+      chtype **newList = typeCallocN(chtype *, listSize + 1);
+      int *newPos = typeCallocN(int, listSize + 1);
+      int *newLen = typeCallocN(int, listSize + 1);
+
+      if (newList != 0
+       && newPos != 0
+       && newLen != 0)
+      {
+	 status = 1;
+	 destroyInfo(swindow);
+
+	 swindow->list    = newList;
+	 swindow->listPos = newPos;
+	 swindow->listLen = newLen;
+      }
+      if (!status)
+      {
+	 CDKfreeChtypes(newList);
+	 if (newPos != 0) free(newPos);
+	 if (newLen != 0) free(newLen);
+      }
+   }
+   return status;
 }

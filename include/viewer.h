@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.16 2003/11/15 18:11:09 tom Exp $
+ * $Id: viewer.h,v 1.17 2003/11/19 00:25:02 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -65,15 +67,15 @@ struct SViewer {
    int		buttonPos[MAX_BUTTONS];
    int		buttonCount;
    chtype	buttonHighlight;
-   chtype *	info[MAX_LINES];
-   int		infoLen[MAX_LINES];
-   int		infoPos[MAX_LINES];
+   chtype **	list;
+   int *	listLen;
+   int *	listPos;
    chtype*	title[MAX_LINES];
    int		titlePos[MAX_LINES];
    int		titleLen[MAX_LINES];
    int		titleAdj;
    int		titleLines;
-   int		infoSize;
+   int		listSize;
    int		boxHeight;
    int		boxWidth;
    int		viewSize;
@@ -83,7 +85,8 @@ struct SViewer {
    int		length;
    int		maxLeftChar;
    int		maxTopLine;
-   int		characters;
+   int		widestLine;
+   long		characters;
    boolean	showLineInfo;
    boolean	interpret;
    EExitType	exitType;
@@ -214,6 +217,12 @@ void setCDKViewerBackgroundAttrib (
  * This erases the widget from the screen.
  */
 #define eraseCDKViewer(obj) eraseCDKObject(obj)
+
+/*
+ * This cleans out all of the information from the viewer.
+ */
+void cleanCDKViewer (
+		CDKVIEWER *	/* viewer */);
 
 /*
  * This moves the widget to the given location.

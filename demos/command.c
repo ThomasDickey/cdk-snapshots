@@ -280,7 +280,7 @@ static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cli
 			"<C>Jump To Which Line",
 			"Line",
 			A_NORMAL, 5,
-			0, 0, swindow->itemCount, 1, 2, TRUE, FALSE);
+			0, 0, swindow->listSize, 1, 2, TRUE, FALSE);
 
    /* Get the line. */
    line = activateCDKScale (scale, 0);
