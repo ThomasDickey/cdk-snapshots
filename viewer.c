@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.98 $
+ * $Date: 1999/06/05 17:31:04 $
+ * $Revision: 1.99 $
  */
 
 /*
@@ -163,7 +163,7 @@ int setCDKViewer (CDKVIEWER *viewer, char *title, char **info, int infoSize, cht
  */
 void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
 {
-   char *temp[MAX_LINES];
+   char **temp;
    int x;
 
    /* Clean out the old title. */
@@ -178,19 +178,19 @@ void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
    viewer->titleAdj = 0;
 
    /* Create the new title if there is one. */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      viewer->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      viewer->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < viewer->titleLines; x++)
       {
          viewer->title[x]	= char2Chtype (temp[x], &viewer->titleLen[x], &viewer->titlePos[x]);
          viewer->titlePos[x]	= justifyString (viewer->boxWidth, viewer->titleLen[x], viewer->titlePos[x]);
-         freeChar (temp[x]);
       }
       viewer->titleAdj = viewer->titleLines;
+      CDKfreeStrings(temp);
    }
 
    /* Need to set viewer->viewSize. */

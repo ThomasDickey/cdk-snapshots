@@ -168,13 +168,18 @@ void stripWhiteSpace (
 		char *		/* string */);
 
 /*
- * This splits the given string on the splitChar; stores the
- * results in 'items' * and returns the number of splits found.
+ * These functions are used to manage a string which is split into parts, e.g.,
+ * a file which is read into memory.
  */
-int splitString (
-		char *		/* string */,
-		char *		/* items */ [],
-		char		/* splitChar */);
+char **CDKsplitString(
+   		char *		/* string */,
+		int		/* separator */);
+
+unsigned CDKcountStrings(
+   		char **		/* list */);
+
+void CDKfreeStrings(
+   		char **		/* list */);
 
 /*
  * This returns the length of an integer.

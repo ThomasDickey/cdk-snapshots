@@ -6,6 +6,17 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/6/5 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ correct reference to uninitialized memory in bindCDKObject()
+	+ add/use BINDFN_PROTO macro to simplify maintenance of Perl extension,
+	  corrected corresponding functions to be typed void.
+	+ shorten/simplify mapChtype by making it table-driven.
+	+ shorten/simplify char2DisplayType by making it table-driven.
+	+ replace splitString() by CDKsplitString() and CDKcountStrings() to
+	  eliminate buffer-limits.
+	+ simplify char2Chtype, eliminate fixed-buffer limits.
+
 1999/5/29 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ remove bindFunction and bindData arrays from individual widgets

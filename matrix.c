@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.119 $
+ * $Date: 1999/06/05 17:16:56 $
+ * $Revision: 1.120 $
  */
 
 /*
@@ -46,7 +46,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    int begx		= 0;
    int begy		= 0;
    int cellWidth	= 0;
-   char *temp[MAX_LINES];
+   char **temp		= 0;
    int x, y, z, w, len, junk2;
 
    /* Make sure that the number of rows/cols/vrows/vcols is not zero. */
@@ -69,15 +69,15 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    /* We need to determine the width of the matrix box. */
    if (title != (char *)NULL)
    {
-      /* We need to split the title on \n. */
-      matrix->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      matrix->titleLines = CDKcountStrings (temp);
       for (x=0; x < matrix->titleLines; x++)
       {
          junk = char2Chtype (temp[x], &len, &junk2);
          maxWidth = MAXIMUM (maxWidth, len);
          freeChtype (junk);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {
@@ -127,18 +127,18 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    boxWidth = MAXIMUM (maxWidth, boxWidth);
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      matrix->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      matrix->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < matrix->titleLines; x++)
       {
          matrix->title[x]	= char2Chtype (temp[x], &matrix->titleLen[x], &matrix->titlePos[x]);
          matrix->titlePos[x]	= justifyString (boxWidth, matrix->titleLen[x], matrix->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
 
   /*

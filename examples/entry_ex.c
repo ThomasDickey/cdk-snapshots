@@ -4,7 +4,7 @@
 char *XCursesProgramName="entry_ex";
 #endif
 
-int XXXCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static BINDFN_PROTO(XXXCB);
 
 /*
  * This demonstrates the Cdk entry field widget.
@@ -84,7 +84,6 @@ int main (int argc GCC_UNUSED, char **argv)
    exit (0);
 }
 
-int XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static void  XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
-   return 1;
 }

@@ -20,11 +20,11 @@ struct history_st {
 /* Define some local prototypes. */
 char *uc (char *word);
 void help (CDKENTRY *entry);
-int historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-int historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-int viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-int listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-int jumpWindowCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static BINDFN_PROTO(historyUpCB);
+static BINDFN_PROTO(historyDownCB);
+static BINDFN_PROTO(viewHistoryCB);
+static BINDFN_PROTO(listHistoryCB);
+static BINDFN_PROTO(jumpWindowCB);
 
 /*
  * Written by:	Mike Glover
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
          case 'p':
               prompt = copyChar (optarg);
               break;
- 
+
          case 't':
               title = copyChar (optarg);
               break;
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
       }
    }
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 /*
  * This is the callback for the down arrow.
  */
-int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -205,7 +205,7 @@ int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData,
    if (history->current == 0)
    {
       Beep();
-      return 0;
+      return;
    }
 
    /* Decrement the counter. */
@@ -214,13 +214,12 @@ int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData,
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
-   return 0;
 }
 
 /*
  * This is the callback for the down arrow.
  */
-int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -229,7 +228,7 @@ int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientDat
    if (history->current == history->count)
    {
       Beep();
-      return 0;
+      return;
    }
 
    /* Increment the counter... */
@@ -240,19 +239,17 @@ int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientDat
    {
       cleanCDKEntry (entry);
       drawCDKEntry (entry, ObjOf(entry)->box);
-      return 0;
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
-   return 0;
 }
 
 /*
  * This callback allows the user to play with the scrolling window.
  */
-int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
    CDKENTRY *entry	= (CDKENTRY *)object;
@@ -262,24 +259,23 @@ int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientDat
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf(entry)->box);
-   return 0;
 }
 
 /*
  * This callback jumps to a line in the scrolling window.
  */
-int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
    CDKSCALE *scale	= (CDKSCALE *)NULL;
    int line;
-   
+
    /* Ask them which line they want to jump to. */
    scale = newCDKScale (ScreenOf(entry), CENTER, CENTER,
 			"<C>Jump To Which Line",
 			"Line",
-			A_NORMAL, 5, 
+			A_NORMAL, 5,
 			0, 0, swindow->itemCount, 1, 2, TRUE, FALSE);
 
    /* Get the line. */
@@ -293,14 +289,13 @@ int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData
 
    /* Redraw the widgets. */
    drawCDKEntry (entry, ObjOf(entry)->box);
-   return 0;
 }
 
 /*
  * This callback allows the user to pick from the history list from a
  * scrolling list.
  */
-int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -320,7 +315,7 @@ int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientDat
       drawCDKScreen (ScreenOf(entry));
 
       /* And leave... */
-      return 0;
+      return;
    }
 
    /* Create the scrolling list of previous commands. */
@@ -343,7 +338,6 @@ int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientDat
    /* Redraw the screen. */
    eraseCDKEntry (entry);
    drawCDKScreen (ScreenOf(entry));
-   return 0;
 }
 
 /*

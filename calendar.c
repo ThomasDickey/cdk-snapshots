@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.36 $
+ * $Date: 1999/06/05 16:43:53 $
+ * $Revision: 1.37 $
  */
 
 /*
@@ -49,16 +49,17 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    int len			= 0;
    int maxWidth			= INT_MIN;
    chtype *junk			= (chtype *)NULL;
-   char *temp[MAX_LINES];
+   char **temp			= 0;
    int x, y, z, junk2;
    struct tm *dateInfo;
    time_t clck;
 
    /* We need to determine the width of the calendar box. */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       /* We need to split the title on \n. */
-      calendar->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      calendar->titleLines = CDKcountStrings (temp);
 
       /* For each element, determine the width. */
       for (x=0; x < calendar->titleLines; x++)
@@ -77,8 +78,8 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
       {
          calendar->title[x]	= char2Chtype (temp[x], &calendar->titleLen[x], &calendar->titlePos[x]);
          calendar->titlePos[x]	= justifyString (boxWidth, calendar->titleLen[x], calendar->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

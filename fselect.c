@@ -2,16 +2,16 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.21 $
+ * $Date: 1999/06/05 14:31:19 $
+ * $Revision: 1.22 $
  */
 
 /*
  * Declare file local prototypes.
  */
-static int fselectAdjustScrollCB (EObjectType objectType, void *object, void *clientData, chtype key);
-static int displayFileInfoCB (EObjectType objectType, void *object, void *clientData, chtype key);
-static int completeFilenameCB (EObjectType objectType, void *object, void *clientData, chtype key);
+static BINDFN_PROTO(fselectAdjustScrollCB);
+static BINDFN_PROTO(completeFilenameCB);
+static BINDFN_PROTO(displayFileInfoCB);
 static char *expandFilename (char *filename);
 
 /*
@@ -865,7 +865,7 @@ void destroyCDKFselect (CDKFSELECT *fselect)
  * This is a callback to the scrolling list which displays information
  * about the current file. (and the whole directory as well)
  */
-static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static void displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKENTRY		*entry		= (CDKENTRY *)object;
@@ -975,13 +975,12 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, v
 
    /* Redraw the file selector. */
    drawCDKFselect (fselect, ObjOf(fselect)->box);
-   return (TRUE);
 }
 
 /*
  * This tires to complete the filename.
  */
-static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key GCC_UNUSED)
+static void completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key GCC_UNUSED)
 {
    CDKFSELECT *fselect	= (CDKFSELECT *)clientData;
    CDKSCROLL *scrollp	= (CDKSCROLL *)fselect->scrollField;
@@ -1008,7 +1007,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object G
    if (filename == (char *)NULL)
    {
       Beep();
-      return (TRUE);
+      return;
    }
    filenameLen = (int)strlen (filename);
 
@@ -1016,7 +1015,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object G
    if (filenameLen == 0)
    {
       Beep();
-      return (TRUE);
+      return;
    }
 
    /* Try to expand the filename if it starts with a ~ */
@@ -1119,7 +1118,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object G
       }
       freeChar (filename);
       Beep();
-      return (TRUE);
+      return;
    }
 
    /* Create the filename of the found file. */
@@ -1139,7 +1138,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object G
          freeChar (list[x]);
       }
       freeChar (filename);
-      return (TRUE);
+      return;
    }
 
    /* Move to the current item in the scrolling list. */
@@ -1219,7 +1218,6 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED, void *object G
       freeChar (list[x]);
    }
    freeChar (filename);
-   return (TRUE);
 }
 
 /*
@@ -1307,7 +1305,7 @@ void setCDKFselectPostProcess (CDKFSELECT *fselect, PROCESSFN callback, void *da
 /*
  * Start of callback functions.
  */
-static int fselectAdjustScrollCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static void fselectAdjustScrollCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKFSELECT *fselect	= (CDKFSELECT *)clientData;
    CDKSCROLL *scrollp	= (CDKSCROLL *)fselect->scrollField;
@@ -1337,7 +1335,6 @@ static int fselectAdjustScrollCB (EObjectType objectType GCC_UNUSED, void *objec
    /* Set the value in the entry field. */
    setCDKEntryValue (entry, temp);
    drawCDKEntry (entry, ObjOf(entry)->box);
-   return (TRUE);
 }
 
 /*

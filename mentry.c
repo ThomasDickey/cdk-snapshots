@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.108 $
+ * $Date: 1999/06/05 17:28:07 $
+ * $Revision: 1.109 $
  */
 
 /*
@@ -37,7 +37,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int horizontalAdjust	= 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   char *temp[256];
+   char **temp		= 0;
    int x, len, junk, junk2;
 
   /*
@@ -69,10 +69,10 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    boxWidth = mentry->labelLen + fieldWidth + 2;
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      mentry->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      mentry->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < mentry->titleLines; x++)
@@ -97,8 +97,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       {
          mentry->title[x]	= char2Chtype (temp[x], &mentry->titleLen[x], &mentry->titlePos[x]);
          mentry->titlePos[x]	= justifyString (boxWidth, mentry->titleLen[x], mentry->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

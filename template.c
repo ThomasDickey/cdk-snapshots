@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.81 $
+ * $Date: 1999/06/05 17:50:33 $
+ * $Revision: 1.82 $
  */
 
 /*
@@ -40,7 +40,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    int fieldWidth		= 0;
    int plateLen			= 0;
    int junk			= 0;
-   char *temp[256];
+   char **temp			= 0;
    int x, len, junk2;
 
    /* Make sure the plate is not NULL. */
@@ -82,8 +82,8 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Translate the char * items to chtype * */
    if (title != (char *)NULL)
    {
-      /* We need to split the title on \n. */
-      cdktemplate->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      cdktemplate->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < cdktemplate->titleLines; x++)
@@ -106,10 +106,10 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < cdktemplate->titleLines; x++)
       {
-         cdktemplate->title[x]	= char2Chtype (temp[x], &cdktemplate->titleLen[x], &cdktemplate->titlePos[x]);
-         cdktemplate->titlePos[x]	= justifyString (boxWidth, cdktemplate->titleLen[x], cdktemplate->titlePos[x]);
-         freeChar (temp[x]);
+         cdktemplate->title[x]    = char2Chtype (temp[x], &cdktemplate->titleLen[x], &cdktemplate->titlePos[x]);
+         cdktemplate->titlePos[x] = justifyString (boxWidth, cdktemplate->titleLen[x], cdktemplate->titlePos[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

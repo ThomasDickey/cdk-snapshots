@@ -41,13 +41,16 @@
  */
 
 /*
- * This is the key binding prototype.
+ * This is the key binding prototype, typed for use with Perl.
  */
-typedef int (*BINDFN) (
-		EObjectType	/* cdktype */,
-		void *		/* object */,
-		void *		/* clientData */,
+#define BINDFN_PROTO(func)  \
+	void (func) ( \
+		EObjectType	/* cdktype */, \
+		void *		/* object */, \
+		void *		/* clientData */, \
 		chtype		/* input */);
+
+typedef BINDFN_PROTO((*BINDFN));
 
 /*
  * This is the prototype for the process callback functions.

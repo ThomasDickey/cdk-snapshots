@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.52 $
+ * $Date: 1999/06/05 16:46:06 $
+ * $Revision: 1.53 $
  */
 
 DeclareCDKObjects(my_funcs,Graph)
@@ -22,7 +22,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    int boxHeight	= height;
    int xpos		= xplace;
    int ypos		= yplace;
-   char *temp[256];
+   char **temp		= 0;
    int x;
 
   /*
@@ -50,15 +50,16 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    if (title != (char *)NULL)
    {
       /* We need to split the title on \n. */
-      graph->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      graph->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < graph->titleLines; x++)
       {
          graph->title[x]	= char2Chtype (temp[x], &graph->titleLen[x], &graph->titlePos[x]);
          graph->titlePos[x]	= justifyString (boxWidth, graph->titleLen[x], graph->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 02:42:46 $
- * $Revision: 1.32 $
+ * $Date: 1999/06/05 17:31:49 $
+ * $Revision: 1.36 $
  */
 
 /*
@@ -38,14 +38,17 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
       {
 	 if (Index >= obj->bindingCount)
 	 {
-	    unsigned need = (Index + 1) * sizeof(CDKBINDING);
+	    unsigned next = (Index + 1);
+	    unsigned need = next * sizeof(CDKBINDING);
 
 	    if (obj->bindingList != 0)
 	       obj->bindingList = (CDKBINDING *)realloc(obj->bindingList, need);
 	    else
 	       obj->bindingList = (CDKBINDING *)malloc(need);
 
-	    obj->bindingCount = Index + 1;
+	    memset(&(obj->bindingList[obj->bindingCount]), 0,
+	           (next - obj->bindingCount) * sizeof(CDKBINDING));
+	    obj->bindingCount = next;
 	 }
 
 	 if (obj->bindingList != 0)
@@ -137,7 +140,8 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
       {
          BINDFN function	= obj->bindingList[Index].bindFunction;
          void * data		= obj->bindingList[Index].bindData;
-         return function (cdktype, object, data, key);
+         function (cdktype, object, data, key);
+         return TRUE;
       }
    }
    return (FALSE);
@@ -149,96 +153,42 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
  */
 static int mapChtype (chtype key)
 {
-   if (key == KEY_UP)
+   static const struct {
+      int key_out;
+      chtype key_in;
+   } table[] = {
+      { 257, KEY_UP },
+      { 258, KEY_DOWN },
+      { 259, KEY_LEFT },
+      { 260, KEY_RIGHT },
+      { 261, KEY_NPAGE },
+      { 262, KEY_PPAGE },
+      { 263, KEY_HOME },
+      { 264, KEY_END },
+      { 265, KEY_F0 },
+      { 266, KEY_F1 },
+      { 267, KEY_F2 },
+      { 268, KEY_F3 },
+      { 269, KEY_F4 },
+      { 270, KEY_F5 },
+      { 271, KEY_F6 },
+      { 272, KEY_F7 },
+      { 273, KEY_A1 },
+      { 274, KEY_A3 },
+      { 275, KEY_B2 },
+      { 276, KEY_C1 },
+      { 277, KEY_C3 },
+      { 278, KEY_ESC },
+   };
+   unsigned n;
+
+   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++)
    {
-       return (257);
+      if (table[n].key_in == key)
+      {
+	 key = table[n].key_out;
+	 break;
+      }
    }
-   else if (key == KEY_DOWN)
-   {
-       return (258);
-   }
-   else if (key == KEY_LEFT)
-   {
-       return (259);
-   }
-   else if (key == KEY_RIGHT)
-   {
-       return (260);
-   }
-   else if (key == KEY_NPAGE)
-   {
-       return (261);
-   }
-   else if (key == KEY_PPAGE)
-   {
-       return (262);
-   }
-   else if (key == KEY_HOME)
-   {
-       return (263);
-   }
-   else if (key == KEY_END)
-   {
-       return (264);
-   }
-   else if (key == KEY_F0)
-   {
-       return (265);
-   }
-   else if (key == KEY_F1)
-   {
-       return (266);
-   }
-   else if (key == KEY_F2)
-   {
-       return (267);
-   }
-   else if (key == KEY_F3)
-   {
-       return (268);
-   }
-   else if (key == KEY_F4)
-   {
-       return (269);
-   }
-   else if (key == KEY_F5)
-   {
-       return (270);
-   }
-   else if (key == KEY_F6)
-   {
-       return (271);
-   }
-   else if (key == KEY_F7)
-   {
-       return (272);
-   }
-   else if (key == KEY_A1)
-   {
-       return (273);
-   }
-   else if (key == KEY_A3)
-   {
-       return (274);
-   }
-   else if (key == KEY_B2)
-   {
-       return (275);
-   }
-   else if (key == KEY_C1)
-   {
-       return (276);
-   }
-   else if (key == KEY_C3)
-   {
-       return (277);
-   }
-   else if (key == KEY_ESC)
-   {
-       return (278);
-   }
-   else
-   {
-      return ((char) key);
-   }
+   return (key);
 }

@@ -4,7 +4,7 @@
 char *XCursesProgramName="buttonbox_ex";
 #endif
 
-int entryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static BINDFN_PROTO(entryCB);
 
 /*
  * This program demonstrates the Cdk buttonbox widget.
@@ -70,9 +70,8 @@ int main (void)
    exit (0);
 }
 
-int entryCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static void entryCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);
-   return 0;
 }

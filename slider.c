@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.41 $
+ * $Date: 1999/06/05 17:30:01 $
+ * $Revision: 1.42 $
  */
 
 /*
@@ -31,7 +31,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int xpos		= xplace;
    int ypos		= yplace;
    int highValueLen	= intlen (high);
-   char *temp[256];
+   char **temp		= 0;
    int x, len, junk, junk2;
 
    /* Set some basic values of the slider field. */
@@ -59,10 +59,10 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    }
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      slider->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      slider->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < slider->titleLines; x++)
@@ -87,8 +87,8 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       {
          slider->title[x]	= char2Chtype (temp[x], &slider->titleLen[x], &slider->titlePos[x]);
          slider->titlePos[x]	= justifyString (boxWidth, slider->titleLen[x], slider->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

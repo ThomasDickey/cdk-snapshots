@@ -55,11 +55,11 @@ typedef struct _phone_data_st SPhoneData;
 /* 
  * Define the callback prototypes.
  */
-int helpCB (EObjectType cdkType, void *object, void *clientData, chtype key);
-int groupInfoCB (EObjectType cdkType, void *object, void *clientData, chtype key);
-int insertPhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key);
-int deletePhoneEntryCB (EObjectType cdkType, void *object, void *clientData, chtype key);
-int phoneEntryHelpCB (EObjectType cdkType, void *object, void *clientData, chtype key);
+BINDFN_PROTO(helpCB);
+BINDFN_PROTO(groupInfoCB);
+BINDFN_PROTO(insertPhoneEntryCB);
+BINDFN_PROTO(deletePhoneEntryCB);
+BINDFN_PROTO(phoneEntryHelpCB);
 int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chtype input);
 
 /* 
