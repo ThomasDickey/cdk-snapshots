@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/06/28 23:59:06 $
- * $Revision: 1.39 $
+ * $Date: 2001/12/30 23:10:57 $
+ * $Revision: 1.40 $
  */
 
 /*
@@ -355,7 +355,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,getmaxx(window)-1);
+      display = MINIMUM(diff,getmaxx(window)-xpos);
       for (x=0; x < display; x++)
       {
 	 mvwaddch (window, ypos, xpos+x, string[x+start]);
@@ -364,7 +364,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,getmaxy(window)-1);
+      display = MINIMUM(diff,getmaxy(window)-ypos);
       for (x=0; x < display; x++)
       {
 	 mvwaddch (window, ypos+x, xpos, string[x+start]);
@@ -394,7 +394,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,getmaxx(window)-1);
+      display = MINIMUM(diff,getmaxx(window)-xpos);
       for (x=0; x < display; x++)
       {
 	 plain = string[x+start] & A_CHARTEXT;
@@ -404,7 +404,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,getmaxy(window)-1);
+      display = MINIMUM(diff,getmaxy(window)-ypos);
       for (x=0; x < display; x++)
       {
 	 plain = string[x+start] & A_CHARTEXT;

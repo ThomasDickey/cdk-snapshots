@@ -2,7 +2,7 @@
 
 #
 # Description:
-# 		This demonstrates the CDK command line
+#		This demonstrates the CDK command line
 # interface to the alphalist widget.
 #
 
@@ -95,16 +95,18 @@ awk 'BEGIN {FS=":"} {printf "%s\n", $1}' $tmpPass | sort > ${userAccounts}
 #
 # Create the scrolling list.
 #
-${CDK_ALPHALIST} -T "${title}" -f ${userAccounts} -H -10 -W -20 -B 2> ${output}
+${CDK_ALPHALIST} -T "${title}" -f ${userAccounts} -H -10 -W -20 2> ${output}
 if [ $? -lt 0 ]; then
    exit;
 fi
-answer=`cat ${output}`
+answer=`sed -e 's/^[ ]*//' -e 's/[ ]*$//' ${output}`
 
 #
 # Display the account information.
 #
-displayAccountInformation $answer $tmpPass
+if [ -n "$answer" ]; then
+    displayAccountInformation $answer $tmpPass
+fi
 
 #
 # Clean up.

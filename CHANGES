@@ -7,8 +7,20 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
-2001/12/04 - T.E.Dickey <dickey@herndon4.his.com>
+2001/12/30 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
+	+ remove some redundant wrefresh() calls in various widgets.
+	+ correct an uninitialized pointer in cli/cdkalphalist.c
+	+ modify cli/samples/alphalist.sh to check for non-empty return from
+	  the selection rather than hang attempting to find that account.
+	+ remove -B option from cli/samples/alphalist.sh since it should have a
+	  value, but does not.
+	+ corrected some display-limits in writeChtype() and
+	  writeChtypeAttrib().
+	+ modify CDKreadFile() to trim newlines from file as read, making it
+	  more like the original readFile().  This is needed to prevent the
+	  trailing newlines loaded into label widgets from clearing the rest
+	  of the line when they are drawn.
 	+ add floatized-scale widget (Lutz Mueller <urc8@rz.uni-karlsruhe.de>).
 	+ modify headers.sh script to remove gzip'd versions of the manpages
 	  just in case some were previously installed that way, i.e., by

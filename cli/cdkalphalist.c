@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.5 2001/04/20 22:49:32 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.6 2001/12/20 00:47:51 tom Exp $ */
 
 #include <cdk.h>
 
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
    boolean boxWidget		= TRUE;
    boolean shadowWidget		= FALSE;
    FILE *fp			= stderr;
-   char **scrollList;
+   char **scrollList		= 0;
    char **buttonList		= 0;
    int j1, j2;
 

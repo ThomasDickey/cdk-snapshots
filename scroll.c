@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2001/01/06 19:39:43 $
- * $Revision: 1.81 $
+ * $Date: 2001/12/20 01:42:56 $
+ * $Revision: 1.82 $
  */
 
 /*
@@ -780,7 +780,6 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 		scrollp->LLChar, scrollp->LRChar,
 		scrollp->HChar,	 scrollp->VChar,
 		scrollp->BoxAttrib);
-      wrefresh (scrollp->win);
    }
 
    /* Refresh the window. */
