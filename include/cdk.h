@@ -60,6 +60,20 @@
 #define GCC_UNUSED /*nothing*/
 #endif
 
+#if HAVE_LIBDMALLOC
+#include <dmalloc.h>    /* Gray Watson's library */
+#else
+#undef  HAVE_LIBDMALLOC
+#define HAVE_LIBDMALLOC 0
+#endif
+
+#if HAVE_LIBDBMALLOC
+#include <dbmalloc.h>   /* Conor Cahill's library */
+#else
+#undef  HAVE_LIBDBMALLOC
+#define HAVE_LIBDBMALLOC 0
+#endif
+
 /*
  * This enumerated typedef lists all the CDK widget types.
  */

@@ -6,6 +6,12 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/6/26 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ add configure options --with-dbmalloc and --with-dmalloc to simplify
+	  testing with those libraries.
+	+ correct error in rewrite of char2Chtype which broke repeat-counts.
+
 1999/6/5 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ correct reference to uninitialized memory in bindCDKObject()
@@ -16,6 +22,7 @@ were fixed from release to release.
 	+ replace splitString() by CDKsplitString() and CDKcountStrings() to
 	  eliminate buffer-limits.
 	+ simplify char2Chtype, eliminate fixed-buffer limits.
+	+ prevent recursion in segvTrap.
 
 1999/5/29 - T.E.Dickey <dickey@clark.net>
 ==========================================

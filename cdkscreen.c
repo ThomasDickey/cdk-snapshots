@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/23 01:18:49 $
- * $Revision: 1.57 $
+ * $Date: 1999/06/06 00:30:14 $
+ * $Revision: 1.58 $
  */
 
 static void segvTrap (int sig);
@@ -267,6 +267,11 @@ void endCDK(void)
  */
 static void segvTrap (int sig)
 {
-   endCDK();
-   printf ("core dumped. your fault! (signal %d)\n", sig);
+   static int nested;
+   if (!nested++)
+   {
+      endCDK();
+      printf ("core dumped. your fault! (signal %d)\n", sig);
+   }
+   abort();
 }

@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 21:44:46 $
- * $Revision: 1.149 $
+ * $Date: 1999/06/27 01:32:25 $
+ * $Revision: 1.152 $
  */
 
-char *GPasteBuffer = (char *)NULL;
+char *GPasteBuffer = 0;
 
 /*
  * This beeps then flushes the stdout stream.
@@ -136,16 +136,16 @@ int justifyString (int boxWidth, int mesgLength, int justify)
  */
 char *substring (char *string, int start, int width)
 {
-   char *newstring	= (char *)NULL;
+   char *newstring	= 0;
    int mesglen		= 0;
    int y		= 0;
    int x		= 0;
    int lastchar		= 0;
 
-   /* Make sure the string isn't NULL. */
-   if (string == (char *)NULL)
+   /* Make sure the string isn't null. */
+   if (string == 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    mesglen = (int)strlen (string);
 
@@ -184,24 +184,24 @@ char *substring (char *string, int start, int width)
  */
 void freeChar (char *string)
 {
-   if (string != (char *)NULL)
+   if (string != 0)
    {
       free (string);
-      string = (char *)NULL;
+      string = 0;
    }
 }
 
 void freeChtype (chtype *string)
 {
-   if (string != (chtype *)NULL)
+   if (string != 0)
    {
       free (string);
-      string = (chtype *)NULL;
+      string = 0;
    }
 }
 
 /*
- * This performs a safe copy of a string. This means it adds the NULL
+ * This performs a safe copy of a string. This means it adds the null
  * terminator on the end of the string.
  */
 char *copyChar (char *original)
@@ -209,10 +209,10 @@ char *copyChar (char *original)
    /* Declare local variables.  */
    char *newstring;
 
-   /* Make sure the string is not NULL.  */
-   if (original == (char *)NULL)
+   /* Make sure the string is not null.  */
+   if (original == 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    newstring = (char *)malloc (sizeof (char) * ((int)(strlen(original) + 1)));
 
@@ -229,16 +229,16 @@ chtype *copyChtype (chtype *original)
    chtype *newstring;
    int len, x;
 
-   /* Make sure the string is not NULL.  */
-   if (original == (chtype *)NULL)
+   /* Make sure the string is not null.  */
+   if (original == 0)
    {
-      return (chtype *)NULL;
+      return 0;
    }
 
    /* Create the new string.  */
    len		= chlen (original);
    newstring	= (chtype *)malloc (sizeof(chtype) * (len + 4));
-   if (newstring == (chtype *)NULL)
+   if (newstring == 0)
    {
       return (original);
    }
@@ -265,13 +265,13 @@ int readFile (char *filename, char **array, int maxlines)
    int	lines	= 0;
 
    /* Can we open the file?  */
-   if ((fd = fopen (filename, "r")) == NULL)
+   if ((fd = fopen (filename, "r")) == 0)
    {
       return (-1);
    }
 
    /* Start reading the file in.  */
-   while ((fgets (temp, sizeof(temp), fd) != (char *)NULL) && lines < maxlines)
+   while ((fgets (temp, sizeof(temp), fd) != 0) && lines < maxlines)
    {
       array[lines]	= copyChar (temp);
       lines++;
@@ -557,18 +557,19 @@ chtype *char2Chtype (char *string, int *to, int *align)
 		  {
 		     adjust = 1;
 		     from += 2;
-		  }
-		  else if (string[from + 1] == '(')
-		  /* Check for a possible numeric modifier.  */
-		  {
-		     from++;
-		     adjust = 0;
 
-		     while (string[++from] != ')' && string[from] != 0)
+		     if (string[from + 1] == '(')
+		     /* Check for a possible numeric modifier.  */
 		     {
-			if (isdigit((int)string[from]))
+			from++;
+			adjust = 0;
+
+			while (string[++from] != ')' && string[from] != 0)
 			{
-			   adjust = (adjust * 10) + DigitOf(string[from]);
+			   if (isdigit((int)string[from]))
+			   {
+			      adjust = (adjust * 10) + DigitOf(string[from]);
+			   }
 			}
 		     }
 		  }
@@ -639,10 +640,10 @@ char *chtype2Char (chtype *string)
    int len = 0;
    int x;
 
-   /* Is the string NULL?  */
-   if (string == (chtype *)NULL)
+   /* Is the string null?  */
+   if (string == 0)
    {
-      return ((char *)NULL);
+      return (0);
    }
 
    /* Get the length of the string.  */
@@ -658,7 +659,7 @@ char *chtype2Char (chtype *string)
       newstring[x] = (char)(string[x] & A_CHARTEXT);
    }
 
-   /* Force a NULL character on the end of the string.  */
+   /* Force a null character on the end of the string.  */
    newstring[len] = '\0';
 
    /* Return it.  */
@@ -690,7 +691,7 @@ EDisplayType char2DisplayType (char *string)
       { "UHMIXED",	vUHMIXED },
       { "LHMIXED",	vLHMIXED },
       { "VIEWONLY",	vVIEWONLY },
-      { NULL, 		vINVALID },
+      { 0, 		vINVALID },
    };
 
    /* Make sure we cover our bases... */
@@ -759,8 +760,8 @@ void stripWhiteSpace (EStripType stripType, char *string)
    int alphaChar = 0;
    int x = 0;
 
-   /* Make sure the string is not NULL.  */
-   if (string == (char *)NULL)
+   /* Make sure the string is not null.  */
+   if (string == 0)
    {
       return;
    }
@@ -1062,13 +1063,13 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
    dp = opendir (directory);
 
    /* Could we open the directory?  */
-   if (dp == NULL)
+   if (dp == 0)
    {
       return -1;
    }
 
    /* Read the directory.  */
-   while ((dirStruct = readdir (dp)) != NULL)
+   while ((dirStruct = readdir (dp)) != 0)
    {
       if (counter <= maxListSize)
       {
@@ -1096,8 +1097,8 @@ int searchList (char **list, int listSize, char *pattern)
    int Index	= -1;
    int x, ret;
 
-   /* Make sure the pattern isn't NULL. */
-   if (pattern == (char *)NULL)
+   /* Make sure the pattern isn't null. */
+   if (pattern == 0)
    {
       return Index;
    }
@@ -1143,8 +1144,8 @@ int checkForLink (char *line, char *filename)
    int fPos	= 0;
    int x	= 3;
 
-   /* Make sure the line isn't NULL. */
-   if ((line == (char *)NULL) || (strlen (line) == 0))
+   /* Make sure the line isn't null. */
+   if ((line == 0) || (strlen (line) == 0))
    {
       return -1;
    }
@@ -1175,16 +1176,16 @@ int checkForLink (char *line, char *filename)
  */
 char *baseName (char *pathname)
 {
-   char *base		= (char *)NULL;
+   char *base		= 0;
    int pathLen		= 0;
    int pos		= 0;
    int Index		= -1;
    int x		= 0;
 
-   /* Check if the string is NULL.  */
-   if (pathname == (char *)NULL)
+   /* Check if the string is null.  */
+   if (pathname == 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    base = copyChar (pathname);
    pathLen = (int)strlen (pathname);
@@ -1231,14 +1232,14 @@ char *baseName (char *pathname)
  */
 char *dirName (char *pathname)
 {
-   char *dir		= (char *)NULL;
+   char *dir		= 0;
    int pathLen		= 0;
    int x		= 0;
 
-   /* Check if the string is NULL.  */
-   if (pathname == (char *)NULL)
+   /* Check if the string is null.  */
+   if (pathname == 0)
    {
-      return (char *)NULL;
+      return 0;
    }
    dir = copyChar (pathname);
    pathLen = (int)strlen (pathname);
@@ -1306,7 +1307,7 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
  */
 void eraseCursesWindow (WINDOW *window)
 {
-   if (window != (WINDOW *)NULL)
+   if (window != 0)
    {
       werase (window);
       touchwin (window);
@@ -1319,10 +1320,10 @@ void eraseCursesWindow (WINDOW *window)
  */
 void deleteCursesWindow (WINDOW *window)
 {
-   if (window != (WINDOW *)NULL)
+   if (window != 0)
    {
       delwin (window);
-      window = (WINDOW *)NULL;
+      window = 0;
    }
 }
 
