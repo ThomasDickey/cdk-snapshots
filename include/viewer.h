@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.15 2002/07/14 21:49:37 moloney Exp $
+ * $Id: viewer.h,v 1.16 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -84,13 +84,6 @@ struct SViewer {
    int		maxLeftChar;
    int		maxTopLine;
    int		characters;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    boolean	showLineInfo;
    boolean	interpret;
    EExitType	exitType;
@@ -188,35 +181,15 @@ boolean getCDKViewerBox (
 		CDKVIEWER *	/* viewer */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKViewerULChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerURChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerLLChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerLRChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerVerticalChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerHorizontalChar (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
-
-void setCDKViewerBoxAttribute (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* character */);
+#define setCDKViewerULChar(w,c)            setULCharOf(w,c)
+#define setCDKViewerURChar(w,c)            setURCharOf(w,c)
+#define setCDKViewerLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKViewerLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKViewerVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKViewerHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKViewerBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

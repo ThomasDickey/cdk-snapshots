@@ -1,5 +1,5 @@
 /*
- * $Id: slider.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
+ * $Id: slider.h,v 1.17 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -85,13 +85,6 @@ struct SSlider {
    int		width;
    int		boxHeight;
    int		boxWidth;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    PROCESSFN	preProcessFunction;
@@ -174,35 +167,15 @@ boolean getCDKSliderBox (
 		CDKSLIDER *	/* slider */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKSliderULChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderURChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderLLChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderLRChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderVerticalChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderHorizontalChar (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
-
-void setCDKSliderBoxAttribute (
-		CDKSLIDER *	/* slider */,
-		chtype		/* character */);
+#define setCDKSliderULChar(w,c)            setULCharOf(w,c)
+#define setCDKSliderURChar(w,c)            setURCharOf(w,c)
+#define setCDKSliderLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKSliderLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKSliderVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKSliderHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKSliderBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

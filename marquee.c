@@ -1,25 +1,29 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 15:33:41 $
- * $Revision: 1.58 $
+ * $Date: 2003/11/16 22:01:18 $
+ * $Revision: 1.63 $
  */
 
-DeclareCDKObjects(MARQUEE, Marquee, Unknown);
+DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
 
 /*
  * This creates a marquee widget.
  */
 CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean Box, boolean shadow)
 {
-   CDKMARQUEE *marquee	= newCDKObject(CDKMARQUEE, &my_funcs);
+   CDKMARQUEE *marquee	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int xpos		= xplace;
    int ypos		= yplace;
    int boxHeight	= 3;
    int boxWidth		= width;
-   int borderSize       = 1;
+
+   if ((marquee = newCDKObject(CDKMARQUEE, &my_funcs)) == 0)
+      return (0);
+
+   setCDKMarqueeBox (marquee, Box);
 
   /*
    * If the width is a negative value, the width will
@@ -29,12 +33,10 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(marquee));
 
    /* Create the marquee pointer. */
    ScreenOf(marquee)	= cdkscreen;
-   ObjOf(marquee)->box	= Box;
-   ObjOf(marquee)->borderSize = borderSize;
    marquee->parent	= cdkscreen->window;
    marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    marquee->boxHeight	= boxHeight;
@@ -43,22 +45,12 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
    marquee->active	= TRUE;
    marquee->width	= width;
    marquee->shadow	= shadow;
-   marquee->ULChar	= ACS_ULCORNER;
-   marquee->URChar	= ACS_URCORNER;
-   marquee->LLChar	= ACS_LLCORNER;
-   marquee->LRChar	= ACS_LRCORNER;
-   marquee->HChar	= ACS_HLINE;
-   marquee->VChar	= ACS_VLINE;
-   marquee->BoxAttrib	= A_NORMAL;
 
    /* Is the window null??? */
    if (marquee->win == 0)
    {
-      /* Clean up any memory. */
-      free (marquee);
-
-      /* Return a null pointer. */
-      return ( 0 );
+      destroyCDKObject(marquee);
+      return (0);
    }
    keypad (marquee->win, TRUE);
 
@@ -74,7 +66,6 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
  */
 int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, boolean Box)
 {
-   /* Declear local variables. */
    chtype *message;
    int mesgLength	= 0;
    int startPos		= 0;
@@ -217,7 +208,6 @@ void deactivateCDKMarquee (CDKMARQUEE *marquee)
 static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKMARQUEE *marquee = (CDKMARQUEE *)object;
-   /* Declare local variables. */
    int currentX = getbegx(marquee->win);
    int currentY = getbegy(marquee->win);
    int xpos	= xplace;
@@ -276,11 +266,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
    /* Box it if needed. */
    if (Box)
    {
-      attrbox (marquee->win,
-		marquee->ULChar, marquee->URChar,
-		marquee->LLChar, marquee->LRChar,
-		marquee->HChar,	 marquee->VChar,
-		marquee->BoxAttrib);
+      drawObjBox (marquee->win, ObjOf(marquee));
    }
 
    /* Refresh the window. */
@@ -318,35 +304,16 @@ static void _eraseCDKMarquee (CDKOBJS *object)
 }
 
 /*
- * These functions set the drawing characters of the widget.
+ * This sets the widgets box attribute.
  */
-void setCDKMarqueeULChar (CDKMARQUEE *marquee, chtype character)
+void setCDKMarqueeBox (CDKMARQUEE *marquee, boolean Box)
 {
-   marquee->ULChar = character;
+   ObjOf(marquee)->box = Box;
+   ObjOf(marquee)->borderSize = Box ? 1 : 0;
 }
-void setCDKMarqueeURChar (CDKMARQUEE *marquee, chtype character)
+boolean getCDKMarqueeBox (CDKMARQUEE *marquee)
 {
-   marquee->URChar = character;
-}
-void setCDKMarqueeLLChar (CDKMARQUEE *marquee, chtype character)
-{
-   marquee->LLChar = character;
-}
-void setCDKMarqueeLRChar (CDKMARQUEE *marquee, chtype character)
-{
-   marquee->LRChar = character;
-}
-void setCDKMarqueeVerticalChar (CDKMARQUEE *marquee, chtype character)
-{
-   marquee->VChar = character;
-}
-void setCDKMarqueeHorizontalChar (CDKMARQUEE *marquee, chtype character)
-{
-   marquee->HChar = character;
-}
-void setCDKMarqueeBoxAttribute (CDKMARQUEE *marquee, chtype character)
-{
-   marquee->BoxAttrib = character;
+   return ObjOf(marquee)->box;
 }
 
 /*

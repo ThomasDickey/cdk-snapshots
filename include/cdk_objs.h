@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.20 2002/07/26 23:33:16 tom Exp $
+ * $Id: cdk_objs.h,v 1.22 2003/11/15 19:21:26 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2001,2002, Thomas Dickey
+ * Copyright 1999-2002,2003, Thomas Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -97,6 +97,14 @@ typedef struct CDKFUNCS {
    void         (*saveDataObj)     (struct CDKOBJS *);
    void         (*refreshDataObj)  (struct CDKOBJS *);
    void         (*destroyObj)      (struct CDKOBJS *);
+   /* line-drawing */
+   void         (*setULcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setURcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setLLcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setLRcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setVTcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setHZcharObj)    (struct CDKOBJS *, chtype);
+   void         (*setBXattrObj)    (struct CDKOBJS *, chtype);
 } CDKFUNCS;
 
 /* The cast is needed because traverse.c wants to use CDKOBJS pointers */
@@ -139,14 +147,39 @@ typedef struct CDKOBJS {
    CDKDataUnion resultData;
    int          bindingCount;
    CDKBINDING * bindingList;
+   /* line-drawing (see 'box') */
+   chtype       ULChar;
+   chtype       URChar;
+   chtype       LLChar;
+   chtype       LRChar;
+   chtype       VTChar;
+   chtype       HZChar;
+   chtype       BXAttr;
 } CDKOBJS;
 
-#define ObjOf(ptr)    (&(ptr)->obj)
-#define MethodOf(ptr) (ObjOf(ptr)->fn)
-#define ScreenOf(ptr) (ObjOf(ptr)->screen)
-#define WindowOf(ptr) (ScreenOf(ptr)->window)
-#define BorderOf(p)   (ObjOf(p)->borderSize)
-#define ResultOf(p)   (ObjOf(p)->resultData)
+#define ObjOf(ptr)              (&(ptr)->obj)
+#define MethodOf(ptr)           (ObjOf(ptr)->fn)
+#define ScreenOf(ptr)           (ObjOf(ptr)->screen)
+#define WindowOf(ptr)           (ScreenOf(ptr)->window)
+#define BorderOf(p)             (ObjOf(p)->borderSize)
+#define ResultOf(p)             (ObjOf(p)->resultData)
+
+/* line-drawing characters */
+#define ULCharOf(w)             ObjOf(w)->ULChar
+#define URCharOf(w)             ObjOf(w)->URChar
+#define LLCharOf(w)             ObjOf(w)->LLChar
+#define LRCharOf(w)             ObjOf(w)->LRChar
+#define VTCharOf(w)             ObjOf(w)->VTChar
+#define HZCharOf(w)             ObjOf(w)->HZChar
+#define BXAttrOf(w)             ObjOf(w)->BXAttr
+
+#define setULCharOf(o,c)        MethodOf(o)->setULcharObj(ObjOf(o),c)
+#define setURCharOf(o,c)        MethodOf(o)->setURcharObj(ObjOf(o),c)
+#define setLLCharOf(o,c)        MethodOf(o)->setLLcharObj(ObjOf(o),c)
+#define setLRCharOf(o,c)        MethodOf(o)->setLRcharObj(ObjOf(o),c)
+#define setVTCharOf(o,c)        MethodOf(o)->setVTcharObj(ObjOf(o),c)
+#define setHZCharOf(o,c)        MethodOf(o)->setHZcharObj(ObjOf(o),c)
+#define setBXAttrOf(o,c)        MethodOf(o)->setBXattrObj(ObjOf(o),c)
 
 /* FIXME - remove this */
 #define ReturnOf(p)   (ObjPtr(p)->dataPtr)
@@ -165,7 +198,21 @@ void _destroyCDKObject (CDKOBJS *);
 #define moveCDKObject(o,x,y,rel,ref)   MethodOf(o)->moveObj       (ObjOf(o),x,y,rel,ref)
 #define injectCDKObject(o,c,type)      (MethodOf(o)->injectObj    (ObjOf(o),c) ? ResultOf(o).value ## type : unknown ## type)
 
-#define DeclareCDKObjects(upper, mixed, type) \
+/* functions to set line-drawing are bound to cdk_objs.c if the widget is
+ * simple, but are built into the widget for complex widgets.
+ */
+#define DeclareSetXXchar(storage,line) \
+storage void line ## ULchar(struct CDKOBJS *, chtype); \
+storage void line ## URchar(struct CDKOBJS *, chtype); \
+storage void line ## LLchar(struct CDKOBJS *, chtype); \
+storage void line ## LRchar(struct CDKOBJS *, chtype); \
+storage void line ## VTchar(struct CDKOBJS *, chtype); \
+storage void line ## HZchar(struct CDKOBJS *, chtype); \
+storage void line ## BXattr(struct CDKOBJS *, chtype)
+
+DeclareSetXXchar(extern,setCdk);
+
+#define DeclareCDKObjects(upper, mixed, line, type) \
 static int  _injectCDK ## mixed        (struct CDKOBJS *, chtype); \
 static void _destroyCDK ## mixed       (struct CDKOBJS *); \
 static void _drawCDK ## mixed          (struct CDKOBJS *, boolean); \
@@ -176,17 +223,24 @@ static void _refreshDataCDK ## mixed   (struct CDKOBJS *); \
 static void _saveDataCDK ## mixed      (struct CDKOBJS *); \
 static void _unfocusCDK ## mixed       (struct CDKOBJS *); \
 static const CDKFUNCS my_funcs = { \
-    v ## upper, \
-    DataType ## type, \
-    _drawCDK ## mixed, \
-    _eraseCDK ## mixed, \
-    _moveCDK ## mixed, \
-    _injectCDK ## mixed, \
-    _focusCDK ## mixed, \
-    _unfocusCDK ## mixed, \
-    _saveDataCDK ## mixed, \
-    _refreshDataCDK ## mixed, \
-    _destroyCDK ## mixed, \
+   v ## upper, \
+   DataType ## type, \
+   _drawCDK ## mixed, \
+   _eraseCDK ## mixed, \
+   _moveCDK ## mixed, \
+   _injectCDK ## mixed, \
+   _focusCDK ## mixed, \
+   _unfocusCDK ## mixed, \
+   _saveDataCDK ## mixed, \
+   _refreshDataCDK ## mixed, \
+   _destroyCDK ## mixed, \
+   line ## ULchar, \
+   line ## URchar, \
+   line ## LLchar, \
+   line ## LRchar, \
+   line ## VTchar, \
+   line ## HZchar, \
+   line ## BXattr, \
 }
 
 extern int getcCDKObject (CDKOBJS *);

@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2003/04/17 22:18:01 $
- * $Revision: 1.138 $
+ * $Date: 2003/11/16 22:03:22 $
+ * $Revision: 1.145 $
  */
 
 /*
@@ -17,20 +17,14 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
 			chtype attr, boolean Box);
 static void redrawTitles (CDKMATRIX *matrix, int row, int col);
 
-/*
- * Declare file local variables.
- */
-extern char *GPasteBuffer;
-
-DeclareCDKObjects(MATRIX, Matrix, Int);
+DeclareCDKObjects(MATRIX, Matrix, setCdk, Int);
 
 /*
  * This function creates the matrix widget.
  */
 CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows, int cols, int vrows, int vcols, char *title, char **rowtitles, char **coltitles, int *colwidths, int *colvalues, int rspace, int cspace, chtype filler, int dominant, boolean Box, boolean boxCell, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKMATRIX *matrix	= newCDKObject(CDKMATRIX, &my_funcs);
+   CDKMATRIX *matrix	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    chtype *junk		= 0;
@@ -38,7 +32,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    int boxWidth		= 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   int borderSize       = 1;
    int maxWidth		= INT_MIN;
    int maxRowTitleWidth = 0;
    int rowSpace		= MAXIMUM (0, rspace);
@@ -47,14 +40,17 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    int begy		= 0;
    int cellWidth	= 0;
    char **temp		= 0;
-   int x, y, z, w, len, junk2;
+   int x, y, len, junk2;
+
+   if ((matrix = newCDKObject(CDKMATRIX, &my_funcs)) == 0)
+      return (0);
+
+   setCDKMatrixBox (matrix, Box);
 
    /* Make sure that the number of rows/cols/vrows/vcols is not zero. */
    if (rows == 0 || cols == 0 || vrows == 0 || vcols == 0)
    {
-      /* Free up any used memory. */
-      free (matrix);
-
+      destroyCDKObject(matrix);
       return (0);
    }
 
@@ -128,14 +124,17 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       matrix->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(matrix));
       for (x=0; x < matrix->titleLines; x++)
       {
 	 matrix->title[x]	= char2Chtype (temp[x], &matrix->titleLen[x], &matrix->titlePos[x]);
-	 matrix->titlePos[x]	= justifyString (boxWidth, matrix->titleLen[x], matrix->titlePos[x]);
+	 matrix->titlePos[x]	= justifyString (titleWidth, matrix->titleLen[x], matrix->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -148,20 +147,14 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(matrix));
 
    /* Make the pop-up window. */
    matrix->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    if (matrix->win == 0)
    {
-      /* Free up any used memory. */
-      for (z=1; z <= rows; z++)
-      {
-	 freeChtype (matrix->rowtitle[z]);
-      }
-      free (matrix);
-
+      destroyCDKObject(matrix);
       return (0);
    }
 
@@ -181,19 +174,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
       if (matrix->cell[0][x] == 0)
       {
-	 /* Free up any used memory. */
-	 for (z=1; z <= rows; z++)
-	 {
-	    freeChtype (matrix->rowtitle[z]);
-	 }
-
-	 /* We have to delete any windows created so far. */
-	 for (z=1; z < x; z++)
-	 {
-	    deleteCursesWindow (matrix->cell[0][z]);
-	 }
-	 free (matrix);
-
+	 destroyCDKObject(matrix);
 	 return (0);
       }
       begx +=  cellWidth + colSpace - 1;
@@ -208,23 +189,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
       if (matrix->cell[x][0] == 0)
       {
-	 /* Free up any used memory. */
-	 for (z=1; z <= rows; z++)
-	 {
-	    freeChtype (matrix->rowtitle[z]);
-	 }
-
-	 /* We have to delete any windows created so far. */
-	 for (z=1; z <= vcols; z++)
-	 {
-	    deleteCursesWindow (matrix->cell[0][z]);
-	 }
-	 for (z=1; z < x ; z++)
-	 {
-	    deleteCursesWindow (matrix->cell[z][0]);
-	 }
-	 free (matrix);
-
+	 destroyCDKObject(matrix);
 	 return (0);
       }
 
@@ -239,30 +204,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
 	 if (matrix->cell[x][y] == 0)
 	 {
-	    /* Free up any used memory. */
-	    for (y=1; y <= rows; y++)
-	    {
-	       freeChtype (matrix->rowtitle[y]);
-	    }
-
-	    /* We have to delete any windows created so far. */
-	    for (y=1; y <= vcols; y++)
-	    {
-	       deleteCursesWindow (matrix->cell[0][y]);
-	    }
-	    for (y=1; y < vrows ; y++)
-	    {
-	       deleteCursesWindow (matrix->cell[y][0]);
-	    }
-	    for (w=1; w <= vrows; w++)
-	    {
-	       for (z=1; z <= y; z++)
-	       {
-		  deleteCursesWindow (matrix->cell[w][z]);
-	       }
-	    }
-	    free (matrix);
-
+	    destroyCDKObject(matrix);
 	    return (0);
 	 }
 	 begx += cellWidth + colSpace - 1;
@@ -276,7 +218,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    for (x=1; x <= cols; x++)
    {
       matrix->coltitle[x]	= char2Chtype (coltitles[x], &matrix->coltitleLen[x], &matrix->coltitlePos[x]);
-      matrix->coltitlePos[x]	= borderSize + justifyString (colwidths[x], matrix->coltitleLen[x], matrix->coltitlePos[x]);
+      matrix->coltitlePos[x]	= BorderOf(matrix) + justifyString (colwidths[x], matrix->coltitleLen[x], matrix->coltitlePos[x]);
       matrix->colwidths[x]	= colwidths[x];
    }
 
@@ -294,8 +236,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
    /* Keep the rest of the info. */
    ScreenOf(matrix)		= cdkscreen;
-   ObjOf(matrix)->box		= Box;
-   ObjOf(matrix)->borderSize	= borderSize;
    ObjOf(matrix)->inputWindow	= matrix->win;
    matrix->parent		= cdkscreen->window;
    matrix->rows			= rows;
@@ -322,13 +262,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    matrix->boxCell		= boxCell;
    matrix->shadow		= shadow;
    matrix->highlight		= A_REVERSE;
-   matrix->ULChar		= ACS_ULCORNER;
-   matrix->URChar		= ACS_URCORNER;
-   matrix->LLChar		= ACS_LLCORNER;
-   matrix->LRChar		= ACS_LRCORNER;
-   matrix->HChar		= ACS_HLINE;
-   matrix->VChar		= ACS_VLINE;
-   matrix->BoxAttrib		= A_NORMAL;
    matrix->callbackfn		= CDKMatrixCallBack;
    matrix->preProcessFunction	= 0;
    matrix->preProcessData	= 0;
@@ -357,7 +290,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
  */
 int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
 {
-   /* Declare local variables. */
    int ret;
 
    /* Draw the matrix */
@@ -406,7 +338,6 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
 static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 {
    CDKMATRIX *matrix = (CDKMATRIX *)object;
-   /* Declare local variables. */
    int refreshCells	= FALSE;
    int movedCell	= FALSE;
    int charcount	= (int)strlen (matrix->info[matrix->row][matrix->col]);
@@ -905,7 +836,6 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
  */
 static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
 {
-   /* Declare local variables. */
    EDisplayType disptype	= (EDisplayType)matrix->colvalues[matrix->col];
    int charcount		= (int)strlen (matrix->info[matrix->row][matrix->col]);
    chtype newchar		= 0;
@@ -966,7 +896,6 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
  */
 static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 {
-   /* Declare local variables. */
    chtype highlight	= matrix->highlight;
    int x		= 0;
    int infolen		= (int)strlen (matrix->info[matrix->row][matrix->col]);
@@ -1003,7 +932,6 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKMATRIX *matrix = (CDKMATRIX *)object;
-   /* Declare local variables. */
    int currentX = getbegx(matrix->win);
    int currentY = getbegy(matrix->win);
    int xpos	= xplace;
@@ -1058,7 +986,6 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
  */
 static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, int vcol, chtype attr, boolean Box)
 {
-   /* Declare local variables. */
    WINDOW *cell		= matrix->cell[row][col];
    chtype highlight	= matrix->filler & A_ATTRIBUTES;
    int rows		= matrix->vrows;
@@ -1274,11 +1201,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    /* Should we box the matrix??? */
    if (Box)
    {
-      attrbox (matrix->win,
-		matrix->ULChar, matrix->URChar,
-		matrix->LLChar, matrix->LRChar,
-		matrix->HChar,	matrix->VChar,
-		matrix->BoxAttrib);
+      drawObjBox (matrix->win, ObjOf(matrix));
    }
 
    /* Draw in the title. */
@@ -1287,7 +1210,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
       for (x=0; x < matrix->titleLines; x++)
       {
 	 writeChtype (matrix->win,
-			matrix->titlePos[x],
+			matrix->titlePos[x] + BorderOf(matrix),
 			x + 1,
 			matrix->title[x],
 			HORIZONTAL, 0,
@@ -1346,7 +1269,6 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
 static void _destroyCDKMatrix (CDKOBJS *object)
 {
    CDKMATRIX *matrix = (CDKMATRIX *)object;
-   /* Declare local variables. */
    int x = 0;
    int y = 0;
 
@@ -1442,7 +1364,6 @@ static void _eraseCDKMatrix (CDKOBJS *object)
  */
 void setCDKMatrix (CDKMATRIX *matrix, char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COLS], int rows, int *subSize)
 {
-   /* Declare local variables. */
    int x	= 0;
    int y	= 0;
 
@@ -1475,11 +1396,23 @@ void setCDKMatrix (CDKMATRIX *matrix, char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COL
 }
 
 /*
+ * This sets the widgets box attribute.
+ */
+void setCDKMatrixBox (CDKMATRIX *matrix, boolean Box)
+{
+   ObjOf(matrix)->box = Box;
+   ObjOf(matrix)->borderSize = Box ? 1 : 0;
+}
+boolean getCDKMatrixBox (CDKMATRIX *matrix)
+{
+   return ObjOf(matrix)->box;
+}
+
+/*
  * This cleans out the information cells in the matrix widget.
  */
 void cleanCDKMatrix (CDKMATRIX *matrix)
 {
-   /* Declare local variables. */
    int x	= 0;
    int y	= 0;
 
@@ -1497,7 +1430,6 @@ void cleanCDKMatrix (CDKMATRIX *matrix)
  */
 int jumpToCell (CDKMATRIX *matrix, int row, int col)
 {
-   /* Declare local variables. */
    CDKSCALE *scale	= 0;
    int newRow		= row;
    int newCol		= col;
@@ -1552,7 +1484,6 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
  */
 int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
 {
-   /* Declare local variables. */
    int rowShift = newrow - matrix->row;
    int colShift = newcol - matrix->col;
 
@@ -1687,7 +1618,6 @@ int moveToCDKMatrixCell (CDKMATRIX *matrix, int newrow, int newcol)
  */
 static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
 {
-   /* Declare local variables. */
    int x = 0;
 
    /* Redraw the row titles. */
@@ -1763,38 +1693,6 @@ int getCDKMatrixCol (CDKMATRIX *matrix)
 int getCDKMatrixRow (CDKMATRIX *matrix)
 {
    return matrix->row;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKMatrixULChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->ULChar = character;
-}
-void setCDKMatrixURChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->URChar = character;
-}
-void setCDKMatrixLLChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->LLChar = character;
-}
-void setCDKMatrixLRChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->LRChar = character;
-}
-void setCDKMatrixVerticalChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->VChar = character;
-}
-void setCDKMatrixHorizontalChar (CDKMATRIX *matrix, chtype character)
-{
-   matrix->HChar = character;
-}
-void setCDKMatrixBoxAttribute (CDKMATRIX *matrix, chtype character)
-{
-   matrix->BoxAttrib = character;
 }
 
 /*

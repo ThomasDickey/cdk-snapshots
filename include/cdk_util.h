@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.20 2002/07/14 22:09:15 moloney Exp $
+ * $Id: cdk_util.h,v 1.21 2003/11/16 15:17:40 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2001,2002, Thomas Dickey
+ * Copyright 1999-2002,2003, Thomas E. Dickey
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -199,6 +199,12 @@ void CDKfreeStrings(
    		char **		/* list */);
 
 /*
+ * Free a list of chtype-strings, terminated by a null pointer.
+ */
+void CDKfreeChtypes(
+		chtype **	/* list */);
+
+/*
  * This returns the length of an integer.
  */
 int intlen (
@@ -249,6 +255,13 @@ void freeChtype (
  */
 void freeCharList (
 		char **		/* list */,
+		unsigned	/* size */);
+
+/*
+ * This frees the memory used by the given list of strings.
+ */
+void freeChtypeList (
+		chtype **	/* list */,
 		unsigned	/* size */);
 
 /*

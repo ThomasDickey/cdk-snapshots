@@ -1,5 +1,5 @@
 /*
- * $Id: draw.h,v 1.7 2002/07/17 10:04:54 tom Exp $
+ * $Id: draw.h,v 1.8 2003/11/15 19:15:43 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -143,6 +143,13 @@ void attrbox (
 		chtype		/* hor */,
 		chtype		/* vert */,
 		chtype		/* type */);
+
+/*
+ * This boxes a window using the object's characters.
+ */
+void drawObjBox (
+   		WINDOW *	/* win */,
+		CDKOBJS *	/* object */);
 
 /*
  * This draws the shadow window of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: histogram.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
+ * $Id: histogram.h,v 1.15 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -88,13 +88,6 @@ struct SHistogram {
    int				highy;
    int				boxWidth;
    int				boxHeight;
-   chtype			ULChar;
-   chtype			URChar;
-   chtype			LLChar;
-   chtype			LRChar;
-   chtype			VChar;
-   chtype			HChar;
-   chtype			BoxAttrib;
    boolean			shadow;
 };
 typedef struct SHistogram CDKHISTOGRAM;
@@ -204,35 +197,15 @@ boolean getCDKHistogramBox (
 		CDKHISTOGRAM *	/* histogram */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKHistogramULChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramURChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramLLChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramLRChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramVerticalChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramHorizontalChar (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
-
-void setCDKHistogramBoxAttribute (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* character */);
+#define setCDKHistogramULChar(w,c)         setULCharOf(w,c)
+#define setCDKHistogramURChar(w,c)         setURCharOf(w,c)
+#define setCDKHistogramLLChar(w,c)         setLLCharOf(w,c)
+#define setCDKHistogramLRChar(w,c)         setLRCharOf(w,c)
+#define setCDKHistogramVerticalChar(w,c)   setVTCharOf(w,c)
+#define setCDKHistogramHorizontalChar(w,c) setHZCharOf(w,c)
+#define setCDKHistogramBoxAttribute(w,c)   setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

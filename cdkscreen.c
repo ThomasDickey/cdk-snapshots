@@ -1,4 +1,4 @@
-#include <cdk.h>
+#include <cdk_int.h>
 #include <signal.h>
 
 #ifdef HAVE_SETLOCALE
@@ -7,8 +7,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/04/18 21:30:20 $
- * $Revision: 1.69 $
+ * $Date: 2003/11/16 18:48:24 $
+ * $Revision: 1.72 $
  */
 
 typedef struct _all_screens
@@ -107,11 +107,15 @@ bool validCDKObject (CDKOBJS * obj)
    return result;
 }
 
+/*
+ * Create a new object begining with a CDKOBJS struct.  The whole object is
+ * initialized to zeroes except for special cases which have known values.
+ */
 void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
 {
    ALL_OBJECTS *item;
    CDKOBJS *result = 0;
-   if ((item = (ALL_OBJECTS *) calloc (1, sizeof (ALL_OBJECTS))) != 0)
+   if ((item = typeCalloc(ALL_OBJECTS)) != 0)
    {
       if ((result = (CDKOBJS *) calloc (1, size)) != 0)
       {
@@ -121,6 +125,15 @@ void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
 	 item->link = all_objects;
 	 item->object = result;
 	 all_objects = item;
+
+	 /* set default line-drawing characters */
+	 result->ULChar = ACS_ULCORNER;
+	 result->URChar = ACS_URCORNER;
+	 result->LLChar = ACS_LLCORNER;
+	 result->LRChar = ACS_LRCORNER;
+	 result->HZChar = ACS_HLINE;
+	 result->VTChar = ACS_VLINE;
+	 result->BXAttr = A_NORMAL;
       }
       else
       {
@@ -148,6 +161,7 @@ void _destroyCDKObject (CDKOBJS * obj)
 
 	    MethodPtr (obj, destroyObj) (obj);
 	    free (obj);
+	    free (p);
 	    break;
 	 }
       }
@@ -179,7 +193,7 @@ CDKSCREEN *initCDKScreen (WINDOW *window)
 
    if ((item = (ALL_SCREENS *) malloc (sizeof (ALL_SCREENS))) != 0)
    {
-      if ((screen = (CDKSCREEN *)calloc (1, sizeof (CDKSCREEN))) != 0)
+      if ((screen = typeCalloc(CDKSCREEN)) != 0)
       {
 	 item->link = all_screens;
 	 item->screen = screen;
@@ -232,22 +246,25 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
    if (validObjType (obj, cdktype) && obj->screenIndex >= 0)
    {
       screen = (obj)->screen;
-      Index = (obj)->screenIndex;
-      obj->screenIndex = -1;
-
-      /*
-       * If this is the last object -1 then this is the last. If not
-       * we have to shuffle all the other objects to the left.
-       */
-      for (x = Index; x < screen->objectCount - 1; x++)
+      if (screen != 0)
       {
-	 screen->object[x] = screen->object[x + 1];
-	 (screen->object[x])->screenIndex = x;
-      }
+	 Index = (obj)->screenIndex;
+	 obj->screenIndex = -1;
 
-      /* Clear out the last widget on the screen list. */
-      x = screen->objectCount--;
-      screen->object[x] = 0;
+	 /*
+	  * If this is the last object -1 then this is the last. If not
+	  * we have to shuffle all the other objects to the left.
+	  */
+	 for (x = Index; x < screen->objectCount - 1; x++)
+	 {
+	    screen->object[x] = screen->object[x + 1];
+	    (screen->object[x])->screenIndex = x;
+	 }
+
+	 /* Clear out the last widget on the screen list. */
+	 x = screen->objectCount--;
+	 screen->object[x] = 0;
+      }
    }
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: fscale.h,v 1.6 2002/07/14 21:49:37 moloney Exp $
+ * $Id: fscale.h,v 1.7 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -82,13 +82,6 @@ struct SFScale {
    int		digits;
    EExitType	exitType;
    boolean	shadow;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
@@ -183,35 +176,15 @@ boolean getCDKFScaleBox (
 		CDKFSCALE *	/* scale */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKFScaleULChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleURChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleLLChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleLRChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleVerticalChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleHorizontalChar (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
-
-void setCDKFScaleBoxAttribute (
-		CDKFSCALE *	/* scale */,
-		chtype		/* character */);
+#define setCDKFScaleULChar(w,c)            setULCharOf(w,c)
+#define setCDKFScaleURChar(w,c)            setURCharOf(w,c)
+#define setCDKFScaleLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKFScaleLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKFScaleVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKFScaleHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKFScaleBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

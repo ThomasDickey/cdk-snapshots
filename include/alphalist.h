@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.16 2002/07/14 21:49:37 moloney Exp $
+ * $Id: alphalist.h,v 1.18 2003/11/16 14:14:17 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -65,7 +67,7 @@ struct SAlphalist {
    WINDOW *	shadowWin;
    CDKENTRY *	entryField;
    CDKSCROLL *	scrollField;
-   char *	list[MAX_ITEMS];
+   char **	list;
    int		listSize;
    int		xpos;
    int		ypos;
@@ -170,33 +172,13 @@ boolean getCDKAlphalistBox (
 /*
  * These functions set the drawing characters of the widget.
  */
-void setCDKAlphalistULChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistURChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistLLChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistLRChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistVerticalChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistHorizontalChar (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
-
-void setCDKAlphalistBoxAttribute (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* character */);
+#define setCDKAlphalistULChar(w,c)         setULCharOf(w,c)
+#define setCDKAlphalistURChar(w,c)         setURCharOf(w,c)
+#define setCDKAlphalistLLChar(w,c)         setLLCharOf(w,c)
+#define setCDKAlphalistLRChar(w,c)         setLRCharOf(w,c)
+#define setCDKAlphalistVerticalChar(w,c)   setVTCharOf(w,c)
+#define setCDKAlphalistHorizontalChar(w,c) setHZCharOf(w,c)
+#define setCDKAlphalistBoxAttribute(w,c)   setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

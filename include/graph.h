@@ -1,5 +1,5 @@
 /*
- * $Id: graph.h,v 1.15 2002/07/14 21:49:37 moloney Exp $
+ * $Id: graph.h,v 1.16 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -67,13 +67,6 @@ struct SGraph {
    int			titleLines;
    chtype *		graphChar;
    boolean		shadow;
-   chtype		ULChar;
-   chtype		URChar;
-   chtype		LLChar;
-   chtype		LRChar;
-   chtype		VChar;
-   chtype		HChar;
-   chtype		BoxAttrib;
    int			boxHeight;
    int			boxWidth;
    chtype *		xtitle;
@@ -189,35 +182,15 @@ boolean getCDKGraphBox (
 		CDKGRAPH *	/* graph */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKGraphULChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphURChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphLLChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphLRChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphVerticalChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphHorizontalChar (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
-
-void setCDKGraphBoxAttribute (
-		CDKGRAPH *	/* graph */,
-		chtype		/* character */);
+#define setCDKGraphULChar(w,c)             setULCharOf(w,c)
+#define setCDKGraphURChar(w,c)             setURCharOf(w,c)
+#define setCDKGraphLLChar(w,c)             setLLCharOf(w,c)
+#define setCDKGraphLRChar(w,c)             setLRCharOf(w,c)
+#define setCDKGraphVerticalChar(w,c)       setVTCharOf(w,c)
+#define setCDKGraphHorizontalChar(w,c)     setHZCharOf(w,c)
+#define setCDKGraphBoxAttribute(w,c)       setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

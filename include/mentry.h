@@ -1,5 +1,5 @@
 /*
- * $Id: mentry.h,v 1.16 2002/07/27 16:37:27 tom Exp $
+ * $Id: mentry.h,v 1.17 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -88,13 +88,6 @@ struct SMentry {
    int		logicalRows;
    EExitType	exitType;
    boolean	shadow;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    chtype	filler;
    chtype	hidden;
    MENTRYCB	callbackfn;
@@ -195,35 +188,15 @@ boolean getCDKMentryBox (
 		CDKMENTRY *	/* mentry */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKMentryULChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryURChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryLLChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryLRChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryVerticalChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryHorizontalChar (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
-
-void setCDKMentryBoxAttribute (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* character */);
+#define setCDKMentryULChar(w,c)            setULCharOf(w,c)
+#define setCDKMentryURChar(w,c)            setURCharOf(w,c)
+#define setCDKMentryLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKMentryLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKMentryVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKMentryHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKMentryBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

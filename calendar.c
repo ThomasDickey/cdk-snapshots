@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 14:59:08 $
- * $Revision: 1.49 $
+ * $Date: 2003/11/16 21:47:59 $
+ * $Revision: 1.56 $
  */
 
 /*
@@ -30,7 +30,7 @@ static void incrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void decrementCalendarYear (CDKCALENDAR *calendar, int adjust);
 static void drawCDKCalendarField (CDKCALENDAR *calendar);
 
-DeclareCDKObjects(CALENDAR, Calendar, Int);
+DeclareCDKObjects(CALENDAR, Calendar, setCdk, Int);
 
 /*
  * This creates a calendar widget.
@@ -38,7 +38,7 @@ DeclareCDKObjects(CALENDAR, Calendar, Int);
 CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, int day, int month, int year, chtype dayAttrib, chtype monthAttrib, chtype yearAttrib, chtype highlight, boolean Box, boolean shadow)
 {
    /* Maintain the calendar information. */
-   CDKCALENDAR *calendar	= newCDKObject(CDKCALENDAR, &my_funcs);
+   CDKCALENDAR *calendar	= 0;
    int parentWidth		= getmaxx(cdkscreen->window) - 1;
    int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= 24;
@@ -53,9 +53,16 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    struct tm *dateInfo;
    time_t clck;
 
+   if ((calendar = newCDKObject(CDKCALENDAR, &my_funcs)) == 0)
+      return (0);
+
+   setCDKCalendarBox (calendar, Box);
+
    /* We need to determine the width of the calendar box. */
    if (title != 0)
    {
+      int titleWidth;
+
       /* We need to split the title on \n. */
       temp = CDKsplitString (title, '\n');
       calendar->titleLines = CDKcountStrings (temp);
@@ -73,10 +80,11 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
       boxWidth = MAXIMUM (maxWidth, boxWidth);
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(calendar));
       for (x=0; x < calendar->titleLines; x++)
       {
 	 calendar->title[x]	= char2Chtype (temp[x], &calendar->titleLen[x], &calendar->titlePos[x]);
-	 calendar->titlePos[x]	= justifyString (boxWidth, calendar->titleLen[x], calendar->titlePos[x]);
+	 calendar->titlePos[x]	= justifyString (titleWidth, calendar->titleLen[x], calendar->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -102,10 +110,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    /* Is the window null? */
    if (calendar->win == 0)
    {
-      /* Clean up the pointers. */
-      free (calendar);
-
-      /* Exit with null. */
+      _destroyCDKCalendar (ObjOf(calendar));
       return (0);
    }
    keypad (calendar->win, TRUE);
@@ -132,21 +137,15 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    calendar->yearAttrib			= yearAttrib;
    calendar->highlight			= highlight;
    calendar->width			= boxWidth;
-   calendar->ULChar			= ACS_ULCORNER;
-   calendar->URChar			= ACS_URCORNER;
-   calendar->LLChar			= ACS_LLCORNER;
-   calendar->LRChar			= ACS_LRCORNER;
-   calendar->HChar			= ACS_HLINE;
-   calendar->VChar			= ACS_VLINE;
-   calendar->BoxAttrib			= A_NORMAL;
    calendar->exitType			= vNEVER_ACTIVATED;
-   ObjOf(calendar)->box			= Box;
-   ObjOf(calendar)->inputWindow  	= calendar->win;
+   ObjOf(calendar)->inputWindow		= calendar->win;
    calendar->shadow			= shadow;
    calendar->preProcessFunction		= 0;
    calendar->preProcessData		= 0;
    calendar->postProcessFunction	= 0;
    calendar->postProcessData		= 0;
+
+   setCDKCalendarBox (calendar, Box);
 
    /* Clear out the markers. */
    for (z=0; z < MAX_YEARS; z++)
@@ -419,11 +418,7 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (calendar->win,
-		calendar->ULChar, calendar->URChar,
-		calendar->LLChar, calendar->LRChar,
-		calendar->HChar,  calendar->VChar,
-		calendar->BoxAttrib);
+      drawObjBox (calendar->win, ObjOf(calendar));
    }
 
    /* Draw in the title. */
@@ -432,7 +427,7 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
       for (x=0; x < calendar->titleLines; x++)
       {
 	 writeChtype (calendar->win,
-			calendar->titlePos[x],
+			calendar->titlePos[x] + BorderOf(calendar),
 			x + 1,
 			calendar->title[x],
 			HORIZONTAL, 0,
@@ -658,42 +653,11 @@ chtype getCDKCalendarHighlight (CDKCALENDAR *calendar)
 void setCDKCalendarBox (CDKCALENDAR *calendar, boolean Box)
 {
    ObjOf(calendar)->box = Box;
+   ObjOf(calendar)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKCalendarBox (CDKCALENDAR *calendar)
 {
    return ObjOf(calendar)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKCalendarULChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->ULChar = character;
-}
-void setCDKCalendarURChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->URChar = character;
-}
-void setCDKCalendarLLChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->LLChar = character;
-}
-void setCDKCalendarLRChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->LRChar = character;
-}
-void setCDKCalendarVerticalChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->VChar = character;
-}
-void setCDKCalendarHorizontalChar (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->HChar = character;
-}
-void setCDKCalendarBoxAttribute (CDKCALENDAR *calendar, chtype character)
-{
-   calendar->BoxAttrib = character;
 }
 
 /*

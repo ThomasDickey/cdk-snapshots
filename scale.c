@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:06:34 $
- * $Revision: 1.91 $
+ * $Date: 2003/11/16 22:09:02 $
+ * $Revision: 1.96 $
  */
 
 /*
@@ -11,27 +11,33 @@
  */
 static void drawCDKScaleField (CDKSCALE *scale);
 
-DeclareCDKObjects(SCALE, Scale, Int);
+DeclareCDKObjects(SCALE, Scale, setCdk, Int);
 
 /*
  * This function creates a scale widget.
  */
 CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, int start, int low, int high, int inc, int fastinc, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKSCALE *scale	= newCDKObject(CDKSCALE, &my_funcs);
+   CDKSCALE *scale	= 0;
    chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
-   int borderSize       = Box ? 1 : 0;
-   int boxHeight	= (borderSize * 2) + 1;
-   int boxWidth		= fieldWidth + 2*borderSize;
+   int boxHeight;
+   int boxWidth;
    int maxWidth		= INT_MIN;
    int horizontalAdjust = 0;
    int xpos		= xplace;
    int ypos		= yplace;
    char **temp		= 0;
    int x, len, junk, junk2;
+
+   if ((scale = newCDKObject(CDKSCALE, &my_funcs)) == 0)
+      return (0);
+
+   setCDKScaleBox (scale, Box);
+
+   boxHeight		= (BorderOf(scale) * 2) + 1;
+   boxWidth		= fieldWidth + 2*BorderOf(scale);
 
    /* Set some basic values of the scale field. */
    scale->label		= 0;
@@ -45,7 +51,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    * given width.
    */
    fieldWidth = setWidgetDimension (parentWidth, fieldWidth, 0);
-   boxWidth = fieldWidth + 2*borderSize;
+   boxWidth = fieldWidth + 2*BorderOf(scale);
 
    /* Translate the label char *pointer to a chtype pointer. */
    if (label != 0)
@@ -57,6 +63,8 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       scale->titleLines = CDKcountStrings (temp);
 
@@ -75,14 +83,15 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
        if (maxWidth > boxWidth)
        {
 	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2 * borderSize;
+          boxWidth = maxWidth + 2 * BorderOf(scale);
        }
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(scale));
       for (x=0; x < scale->titleLines; x++)
       {
 	 scale->title[x]	= char2Chtype (temp[x], &scale->titleLen[x], &scale->titlePos[x]);
-         scale->titlePos[x]	= justifyString (boxWidth-2*borderSize, scale->titleLen[x], scale->titlePos[x]);
+         scale->titlePos[x]	= justifyString (titleWidth, scale->titleLen[x], scale->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -98,10 +107,10 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    */
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = (fieldWidth > (boxWidth - scale->labelLen - 2*borderSize) ? (boxWidth - scale->labelLen - 2*borderSize) : fieldWidth);
+   fieldWidth = (fieldWidth > (boxWidth - scale->labelLen - 2*BorderOf(scale)) ? (boxWidth - scale->labelLen - 2*BorderOf(scale)) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(scale));
 
    /* Make the scale window. */
    scale->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -109,10 +118,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Is the main window null??? */
    if (scale->win == 0)
    {
-      freeChtype (scale->label);
-      free (scale);
-
-      /* Return a null pointer. */
+      destroyCDKObject(scale);
       return (0);
    }
 
@@ -121,21 +127,19 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    {
       scale->labelWin = subwin (scale->win, 1,
 				scale->labelLen,
-				ypos + scale->titleLines + borderSize,
-				xpos + horizontalAdjust + borderSize);
+				ypos + scale->titleLines + BorderOf(scale),
+				xpos + horizontalAdjust + BorderOf(scale));
    }
 
    /* Create the scale field window. */
    scale->fieldWin = subwin (scale->win, 1, fieldWidth,
-				ypos + scale->titleLines + borderSize,
-				xpos + scale->labelLen + horizontalAdjust + borderSize);
+				ypos + scale->titleLines + BorderOf(scale),
+				xpos + scale->labelLen + horizontalAdjust + BorderOf(scale));
    keypad (scale->fieldWin, TRUE);
    keypad (scale->win, TRUE);
 
    /* Create the scale field. */
    ScreenOf(scale)		= cdkscreen;
-   ObjOf(scale)->box		= Box;
-   ObjOf(scale)->borderSize	= borderSize;;
    ObjOf(scale)->inputWindow	= scale->win;
    scale->parent		= cdkscreen->window;
    scale->shadowWin		= 0;
@@ -155,13 +159,6 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    scale->preProcessData	= 0;
    scale->postProcessFunction	= 0;
    scale->postProcessData	= 0;
-   scale->ULChar		= ACS_ULCORNER;
-   scale->URChar		= ACS_URCORNER;
-   scale->LLChar		= ACS_LLCORNER;
-   scale->LRChar		= ACS_LRCORNER;
-   scale->HChar			= ACS_HLINE;
-   scale->VChar			= ACS_VLINE;
-   scale->BoxAttrib		= A_NORMAL;
 
    /* Do we want a shadow??? */
    if (shadow)
@@ -184,7 +181,6 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
  */
 int activateCDKScale (CDKSCALE *scale, chtype *actions)
 {
-   /* Declare local variables. */
    int ret;
 
    /* Draw the scale widget. */
@@ -234,7 +230,6 @@ int activateCDKScale (CDKSCALE *scale, chtype *actions)
 static int _injectCDKScale (CDKOBJS *object, chtype input)
 {
    CDKSCALE *scale = (CDKSCALE *)object;
-   /* Declare some local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -361,7 +356,6 @@ static int _injectCDKScale (CDKOBJS *object, chtype input)
 static void _moveCDKScale (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKSCALE *scale = (CDKSCALE *)object;
-   /* Declare local variables. */
    int currentX = getbegx(scale->win);
    int currentY = getbegy(scale->win);
    int xpos	= xplace;
@@ -410,7 +404,6 @@ static void _drawCDKScale (CDKOBJS *object, boolean Box)
 {
    CDKSCALE *scale = (CDKSCALE *)object;
    int x;
-   int borderSize = object->borderSize;
 
    /* Draw the shadow. */
    if (scale->shadowWin != 0)
@@ -421,11 +414,7 @@ static void _drawCDKScale (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (scale->win,
-		scale->ULChar, scale->URChar,
-		scale->LLChar, scale->LRChar,
-		scale->HChar,  scale->VChar,
-		scale->BoxAttrib);
+      drawObjBox (scale->win, ObjOf(scale));
    }
 
    /* Draw in the title if there is one. */
@@ -434,8 +423,8 @@ static void _drawCDKScale (CDKOBJS *object, boolean Box)
       for (x=0; x < scale->titleLines; x++)
       {
 	 writeChtype (scale->win,
-			scale->titlePos[x] + borderSize,
-			x + borderSize,
+			scale->titlePos[x] + BorderOf(scale),
+			x + BorderOf(scale),
 			scale->title[x],
 			HORIZONTAL, 0,
 			scale->titleLen[x]);
@@ -462,7 +451,6 @@ static void _drawCDKScale (CDKOBJS *object, boolean Box)
  */
 static void drawCDKScaleField (CDKSCALE *scale)
 {
-   /* Declare the local variables. */
    char temp[256];
 
    /* Erase the field. */
@@ -479,38 +467,6 @@ static void drawCDKScaleField (CDKSCALE *scale)
    /* Refresh the field window. */
    touchwin (scale->fieldWin);
    wrefresh (scale->fieldWin);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKScaleULChar (CDKSCALE *scale, chtype character)
-{
-   scale->ULChar = character;
-}
-void setCDKScaleURChar (CDKSCALE *scale, chtype character)
-{
-   scale->URChar = character;
-}
-void setCDKScaleLLChar (CDKSCALE *scale, chtype character)
-{
-   scale->LLChar = character;
-}
-void setCDKScaleLRChar (CDKSCALE *scale, chtype character)
-{
-   scale->LRChar = character;
-}
-void setCDKScaleVerticalChar (CDKSCALE *scale, chtype character)
-{
-   scale->VChar = character;
-}
-void setCDKScaleHorizontalChar (CDKSCALE *scale, chtype character)
-{
-   scale->HChar = character;
-}
-void setCDKScaleBoxAttribute (CDKSCALE *scale, chtype character)
-{
-   scale->BoxAttrib = character;
 }
 
 /*
@@ -649,6 +605,7 @@ int getCDKScaleValue (CDKSCALE *scale)
 void setCDKScaleBox (CDKSCALE *scale, boolean Box)
 {
    ObjOf(scale)->box = Box;
+   ObjOf(scale)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKScaleBox (CDKSCALE *scale)
 {

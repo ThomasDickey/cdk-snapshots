@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.9 $
+ * $Date: 2003/11/16 21:08:13 $
+ * $Revision: 1.10 $
  */
 
 FILE	*CDKDEBUG;

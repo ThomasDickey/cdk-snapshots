@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.16 2003/04/18 00:16:08 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.17 2003/11/16 12:21:26 tom Exp $"
 .TH cdk_alphalist 3
 .SH NAME
 activateCDKAlphalist,
@@ -278,7 +278,8 @@ parameter is the string which will be displayed in the label of the entry field.
 The parameter \fBlist\fR is the list of words which will be displayed in the
 scrolling list.
 This list does not have to be sorted, this widget automatically
-sorts the list.
+sorts the list
+(note that it modifies the caller's copy of the list to do this).
 The parameter \fBlistSize\fR tells the widget how large the word
 list is.
 The field \fBfillerCharacter\fR is the character which is to be displayed
@@ -314,7 +315,8 @@ sets whether the widget will be drawn with a box around it.
 sets the attribute of the box.
 .TP 5
 .B setCDKAlphalistContents
-sets the contents of the alphalist widget.
+sets the contents of the alphalist widget
+(note that it sorts the caller's copy of the list).
 .TP 5
 .B setCDKAlphalistFillerChar
 sets the character to use when drawing the entry field portion of the widget.

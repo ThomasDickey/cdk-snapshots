@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.18 2002/07/27 16:34:02 tom Exp $
+ * $Id: entry.h,v 1.19 2003/11/15 16:22:11 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -87,13 +87,6 @@ struct SEntry {
    boolean	shadow;
    chtype	filler;
    chtype	hidden;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    ENTRYCB	callbackfn;
    PROCESSFN	preProcessFunction;
    void *	preProcessData;
@@ -198,29 +191,15 @@ boolean getCDKEntryBox (
 		CDKENTRY *	/* entry */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKEntryULChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryURChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryLLChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryLRChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryVerticalChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryHorizontalChar (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
-void setCDKEntryBoxAttribute (
-		CDKENTRY *	/* entry */,
-		chtype		/* character */);
+#define setCDKEntryULChar(w,c)             setULCharOf(w,c)
+#define setCDKEntryURChar(w,c)             setURCharOf(w,c)
+#define setCDKEntryLLChar(w,c)             setLLCharOf(w,c)
+#define setCDKEntryLRChar(w,c)             setLRCharOf(w,c)
+#define setCDKEntryVerticalChar(w,c)       setVTCharOf(w,c)
+#define setCDKEntryHorizontalChar(w,c)     setHZCharOf(w,c)
+#define setCDKEntryBoxAttribute(w,c)       setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

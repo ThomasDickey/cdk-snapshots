@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 15:02:06 $
- * $Revision: 1.68 $
+ * $Date: 2003/11/16 22:06:11 $
+ * $Revision: 1.70 $
  */
 
 /*
@@ -11,18 +11,21 @@
  */
 static void cleanUpMenu (CDKMENU *menu);
 
-DeclareCDKObjects(MENU, Menu, Int);
+DeclareCDKObjects(MENU, Menu, setCdk, Int);
 
 /*
  * This creates a new menu widget.
  */
 CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], int menuItems, int *subsize, int *menuloc, int menuPos, chtype titleAttr, chtype subtitleAttr)
 {
-   CDKMENU *menu	= newCDKObject(CDKMENU, &my_funcs);
+   CDKMENU *menu	= 0;
    int rightcount	= menuItems-1;
    int rightloc		= getmaxx((cdkscreen->window)) - 1;
    int leftloc		= 0;
    int x, y, max, junk;
+
+   if ((menu = newCDKObject(CDKMENU, &my_funcs)) == 0)
+      return (0);
 
    /* Start making a copy of the information. */
    ScreenOf(menu)		= cdkscreen;
@@ -434,8 +437,6 @@ static void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
 static void _moveCDKMenu (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKMENU *menu = (CDKMENU *)object;
-
-   /* Declare local variables. */
    int currentX = getbegx(WindowOf(menu));
    int currentY = getbegy(WindowOf(menu));
    int xpos	= xplace;

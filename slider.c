@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:05:01 $
- * $Revision: 1.52 $
+ * $Date: 2003/11/16 22:13:21 $
+ * $Revision: 1.58 $
  */
 
 /*
@@ -11,20 +11,18 @@
  */
 static void drawCDKSliderField (CDKSLIDER *slider);
 
-DeclareCDKObjects(SLIDER, Slider, Int);
+DeclareCDKObjects(SLIDER, Slider, setCdk, Int);
 
 /*
  * This function creates a slider widget.
  */
 CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype filler, int fieldWidth, int start, int low, int high, int inc, int fastInc, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKSLIDER *slider	= newCDKObject(CDKSLIDER, &my_funcs);
+   CDKSLIDER *slider	= 0;
    chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
-   int borderSize       = Box ? 1 : 0;
-   int boxHeight	= (borderSize * 2) + 1;
+   int boxHeight;
    int boxWidth		= 0;
    int maxWidth		= INT_MIN;
    int horizontalAdjust = 0;
@@ -33,6 +31,12 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int highValueLen	= intlen (high);
    char **temp		= 0;
    int x, len, junk, junk2;
+
+   if ((slider = newCDKObject(CDKSLIDER, &my_funcs)) == 0)
+      return (0);
+
+   setCDKSliderBox (slider, Box);
+   boxHeight		= (BorderOf(slider) * 2) + 1;
 
    /* Set some basic values of the slider field. */
    slider->label	= 0;
@@ -51,16 +55,18 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    if (label != 0)
    {
       slider->label	= char2Chtype (label, &slider->labelLen, &junk);
-      boxWidth		= slider->labelLen + fieldWidth + highValueLen + 2*borderSize;
+      boxWidth		= slider->labelLen + fieldWidth + highValueLen + 2 * BorderOf(slider);
    }
    else
    {
-      boxWidth = fieldWidth + highValueLen + 2*borderSize;
+      boxWidth = fieldWidth + highValueLen + 2*BorderOf(slider);
    }
 
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       slider->titleLines = CDKcountStrings (temp);
 
@@ -79,14 +85,15 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
        if (maxWidth > boxWidth)
        {
 	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2*borderSize;
+          boxWidth = maxWidth + 2 * BorderOf(slider);
        }
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(slider));
       for (x=0; x < slider->titleLines; x++)
       {
 	 slider->title[x]	= char2Chtype (temp[x], &slider->titleLen[x], &slider->titlePos[x]);
-         slider->titlePos[x]	= justifyString (boxWidth-2*borderSize, slider->titleLen[x], slider->titlePos[x]);
+         slider->titlePos[x]	= justifyString (titleWidth, slider->titleLen[x], slider->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -106,7 +113,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
                  (boxWidth-slider->labelLen-highValueLen-1) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(slider));
 
    /* Make the slider window. */
    slider->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -114,10 +121,7 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Is the main window null??? */
    if (slider->win == 0)
    {
-      freeChtype (slider->label);
-      free (slider);
-
-      /* Return a null pointer. */
+      destroyCDKObject(slider);
       return (0);
    }
    keypad (slider->win, TRUE);
@@ -127,15 +131,25 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    {
       slider->labelWin = subwin (slider->win, 1,
 					slider->labelLen,
-					ypos + slider->titleLines + borderSize,
-					xpos + horizontalAdjust + borderSize);
+					ypos + slider->titleLines + BorderOf(slider),
+					xpos + horizontalAdjust + BorderOf(slider));
+      if (slider->labelWin == 0)
+      {
+	 destroyCDKObject(slider);
+	 return (0);
+      }
    }
 
    /* Create the slider field window. */
    slider->fieldWin = subwin (slider->win, 1,
 				fieldWidth + highValueLen-1,
-				ypos + slider->titleLines + borderSize,
-				xpos + slider->labelLen + horizontalAdjust + borderSize);
+				ypos + slider->titleLines + BorderOf(slider),
+				xpos + slider->labelLen + horizontalAdjust + BorderOf(slider));
+   if (slider->fieldWin == 0)
+   {
+      destroyCDKObject(slider);
+      return (0);
+   }
    keypad (slider->fieldWin, TRUE);
 
    /* Create the slider field. */
@@ -153,21 +167,12 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    slider->fastinc		= fastInc;
    slider->barFieldWidth	= fieldWidth - highValueLen;
    slider->exitType		= vNEVER_ACTIVATED;
-   ObjOf(slider)->box		= Box;
-   ObjOf(slider)->borderSize	= borderSize;
    ObjOf(slider)->inputWindow	= slider->win;
    slider->shadow		= shadow;
    slider->preProcessFunction	= 0;
    slider->preProcessData	= 0;
    slider->postProcessFunction	= 0;
    slider->postProcessData	= 0;
-   slider->ULChar		= ACS_ULCORNER;
-   slider->URChar		= ACS_URCORNER;
-   slider->LLChar		= ACS_LLCORNER;
-   slider->LRChar		= ACS_LRCORNER;
-   slider->HChar		= ACS_HLINE;
-   slider->VChar		= ACS_VLINE;
-   slider->BoxAttrib		= A_NORMAL;
 
    /* Determine the step value. */
    slider->step = (float)((float)slider->fieldWidth/(float)(high-low));
@@ -182,6 +187,11 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    if (shadow)
    {
       slider->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
+      if (slider->shadowWin == 0)
+      {
+	 destroyCDKObject(slider);
+	 return (0);
+      }
    }
 
    /* Clean the key bindings. */
@@ -199,7 +209,6 @@ CDKSLIDER *newCDKSlider (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
  */
 int activateCDKSlider (CDKSLIDER *slider, chtype *actions)
 {
-   /* Declare local variables. */
    int ret;
 
    /* Draw the slider widget. */
@@ -249,7 +258,6 @@ int activateCDKSlider (CDKSLIDER *slider, chtype *actions)
 static int _injectCDKSlider (CDKOBJS *object, chtype input)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
-   /* Declare some local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -375,7 +383,6 @@ static int _injectCDKSlider (CDKOBJS *object, chtype input)
 static void _moveCDKSlider (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
-   /* Declare local variables. */
    int currentX = getbegx(slider->win);
    int currentY = getbegy(slider->win);
    int xpos	= xplace;
@@ -424,7 +431,6 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
 {
    CDKSLIDER *slider = (CDKSLIDER *)object;
    int x;
-   int borderSize = object->borderSize;
 
    /* Draw the shadow. */
    if (slider->shadowWin != 0)
@@ -435,11 +441,7 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (slider->win,
-		slider->ULChar, slider->URChar,
-		slider->LLChar, slider->LRChar,
-		slider->HChar,	slider->VChar,
-		slider->BoxAttrib);
+      drawObjBox (slider->win, ObjOf(slider));
    }
 
    /* Draw in the title if there is one. */
@@ -448,8 +450,8 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
       for (x=0; x < slider->titleLines; x++)
       {
 	 writeChtype (slider->win,
-			slider->titlePos[x],
-			x + borderSize,
+			slider->titlePos[x] + BorderOf(slider),
+			x + BorderOf(slider),
 			slider->title[x],
 			HORIZONTAL, 0,
 			slider->titleLen[x]);
@@ -473,7 +475,6 @@ static void _drawCDKSlider (CDKOBJS *object, boolean Box)
  */
 static void drawCDKSliderField (CDKSLIDER *slider)
 {
-   /* Declare the local variables. */
    int fillerCharacters, len, x;
    char temp[256];
 
@@ -498,38 +499,6 @@ static void drawCDKSliderField (CDKSLIDER *slider)
    /* Redraw the field. */
    touchwin (slider->fieldWin);
    wrefresh (slider->fieldWin);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKSliderULChar (CDKSLIDER *slider, chtype character)
-{
-   slider->ULChar = character;
-}
-void setCDKSliderURChar (CDKSLIDER *slider, chtype character)
-{
-   slider->URChar = character;
-}
-void setCDKSliderLLChar (CDKSLIDER *slider, chtype character)
-{
-   slider->LLChar = character;
-}
-void setCDKSliderLRChar (CDKSLIDER *slider, chtype character)
-{
-   slider->LRChar = character;
-}
-void setCDKSliderVerticalChar (CDKSLIDER *slider, chtype character)
-{
-   slider->VChar = character;
-}
-void setCDKSliderHorizontalChar (CDKSLIDER *slider, chtype character)
-{
-   slider->HChar = character;
-}
-void setCDKSliderBoxAttribute (CDKSLIDER *slider, chtype character)
-{
-   slider->BoxAttrib = character;
 }
 
 /*
@@ -681,6 +650,7 @@ int getCDKSliderHighValue (CDKSLIDER *slider)
 void setCDKSliderBox (CDKSLIDER *slider, boolean Box)
 {
    ObjOf(slider)->box = Box;
+   ObjOf(slider)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKSliderBox (CDKSLIDER *slider)
 {

@@ -1,12 +1,12 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:04:09 $
- * $Revision: 1.68 $
+ * $Date: 2003/11/16 22:00:05 $
+ * $Revision: 1.73 $
  */
 
-DeclareCDKObjects(LABEL, Label, Unknown);
+DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
 
 /*
  * This creates a label widget.
@@ -14,15 +14,20 @@ DeclareCDKObjects(LABEL, Label, Unknown);
 CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, boolean Box, boolean shadow)
 {
    /* Maintain the label information. */
-   CDKLABEL *label	= newCDKObject(CDKLABEL, &my_funcs);
+   CDKLABEL *label	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= INT_MIN;
-   int borderSize       = Box ? 1 : 0;
-   int boxHeight	= rows + 2*borderSize;
+   int boxHeight;
    int xpos		= xplace;
    int ypos		= yplace;
    int x		= 0;
+
+   if ((label = newCDKObject(CDKLABEL, &my_funcs)) == 0)
+      return (0);
+
+   setCDKLabelBox (label, Box);
+   boxHeight		= rows + 2 * BorderOf(label);
 
    /* Determine the box width. */
    for (x=0; x < rows; x++)
@@ -31,12 +36,12 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
       label->info[x] = char2Chtype (mesg[x], &label->infoLen[x], &label->infoPos[x]);
       boxWidth = MAXIMUM (boxWidth, label->infoLen[x]);
    }
-   boxWidth += 2*borderSize;
+   boxWidth += 2 * BorderOf(label);
 
    /* Create the string alignments. */
    for (x=0; x < rows; x++)
    {
-      label->infoPos[x]	= justifyString (boxWidth-2*borderSize, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x]	= justifyString (boxWidth - 2 * BorderOf(label), label->infoLen[x], label->infoPos[x]);
    }
 
   /*
@@ -46,7 +51,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(label));
 
    /* Create the label. */
    ScreenOf(label)	= cdkscreen;
@@ -58,30 +63,14 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    label->rows		= rows;
    label->boxWidth	= boxWidth;
    label->boxHeight	= boxHeight;
-   ObjOf(label)->box	= Box;
-   ObjOf(label)->borderSize = borderSize;
    ObjOf(label)->inputWindow  = label->win;
    label->shadow	= shadow;
-   label->ULChar	= ACS_ULCORNER;
-   label->URChar	= ACS_URCORNER;
-   label->LLChar	= ACS_LLCORNER;
-   label->LRChar	= ACS_LRCORNER;
-   label->HChar		= ACS_HLINE;
-   label->VChar		= ACS_VLINE;
-   label->BoxAttrib	= A_NORMAL;
 
    /* Is the window null? */
    if (label->win == 0)
    {
-      /* Free up any memory used. */
-      for (x=0; x < rows; x++)
-      {
-	 freeChtype (label->info[x]);
-      }
-      free(label);
-
-      /* Return a null pointer. */
-      return ( 0 );
+      destroyCDKObject(label);
+      return (0);
    }
    keypad (label->win, TRUE);
 
@@ -121,7 +110,6 @@ void setCDKLabel (CDKLABEL *label, char **mesg, int lines, boolean Box)
 void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
 {
    int x;
-   int borderSize = BorderOf(label);
 
    /* Clean out the old message. */
    for (x=0; x < label->rows; x++)
@@ -136,7 +124,7 @@ void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
    for (x=0; x < label->rows; x++)
    {
       label->info[x]	= char2Chtype (info[x], &label->infoLen[x], &label->infoPos[x]);
-      label->infoPos[x]	= justifyString (label->boxWidth-2*borderSize, label->infoLen[x], label->infoPos[x]);
+      label->infoPos[x]	= justifyString (label->boxWidth - 2 * BorderOf(label), label->infoLen[x], label->infoPos[x]);
    }
 
    /* Redraw the label widget. */
@@ -155,42 +143,11 @@ chtype **getCDKLabelMessage (CDKLABEL *label, int *size)
 void setCDKLabelBox (CDKLABEL *label, boolean Box)
 {
    ObjOf(label)->box = Box;
+   ObjOf(label)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKLabelBox (CDKLABEL *label)
 {
    return ObjOf(label)->box;
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKLabelULChar (CDKLABEL *label, chtype character)
-{
-   label->ULChar = character;
-}
-void setCDKLabelURChar (CDKLABEL *label, chtype character)
-{
-   label->URChar = character;
-}
-void setCDKLabelLLChar (CDKLABEL *label, chtype character)
-{
-   label->LLChar = character;
-}
-void setCDKLabelLRChar (CDKLABEL *label, chtype character)
-{
-   label->LRChar = character;
-}
-void setCDKLabelVerticalChar (CDKLABEL *label, chtype character)
-{
-   label->VChar = character;
-}
-void setCDKLabelHorizontalChar (CDKLABEL *label, chtype character)
-{
-   label->HChar = character;
-}
-void setCDKLabelBoxAttribute (CDKLABEL *label, chtype character)
-{
-   label->BoxAttrib = character;
 }
 
 /*
@@ -233,7 +190,6 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKLABEL *label = (CDKLABEL *)object;
    int x = 0;
-   int borderSize = object->borderSize;
 
    /* Is there a shadow? */
    if (label->shadowWin != 0)
@@ -244,17 +200,13 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    /* Box the widget if asked. */
    if (ObjOf(label)->box)
    {
-      attrbox (label->win,
-		label->ULChar, label->URChar,
-		label->LLChar, label->LRChar,
-		label->HChar,  label->VChar,
-		label->BoxAttrib);
+      drawObjBox (label->win, ObjOf(label));
    }
 
    /* Draw in the message. */
    for (x=0; x < label->rows; x++)
    {
-      writeChtype (label->win, label->infoPos[x]+borderSize, x+borderSize, label->info[x], HORIZONTAL, 0, label->infoLen[x]);
+      writeChtype (label->win, label->infoPos[x] + BorderOf(label), x + BorderOf(label), label->info[x], HORIZONTAL, 0, label->infoLen[x]);
    }
 
    /* Refresh the window. */

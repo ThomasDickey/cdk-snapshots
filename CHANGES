@@ -7,6 +7,22 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/11/16 - T.E.Dickey <dickey@his.com>
+========================================
+	+ suppress "." from fselect listing, since it was not useful.
+	+ eliminate static list-size limit MAX_ITEMS from alphalist, fselect
+	  itemlist, radio, scroll and selection widgets (request by Mike Leib).
+	+ change functions that set line-drawing characters to macros, mapping
+	  those to method calls in CDKOBJS.
+	+ add setCDKEntryBox().
+	+ add setCDKMarqueeBox() and getCDKMarqueeBox().
+	+ add setCDKMatrixBox() and getCDKMatrixBox().
+	+ adjust some title lines to be offset by the borderSize rather than
+	  a hardcoded "1" (report by Max Mikhanosha).
+	+ strip trailing newlines from text read via pipe in execCDKSwindow(),
+	  lost in original cleanup (report by Max Mikhanosha
+	  <max@openchat.com>).
+
 2003/04/18 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
 	+ for variants built with ncursesw and pdcurses, name the libraries

@@ -1,5 +1,5 @@
 /*
- * $Id: button.h,v 1.5 2002/07/10 22:19:03 moloney Exp $
+ * $Id: button.h,v 1.7 2003/11/16 21:44:06 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -18,7 +18,7 @@
 #endif
 
 /*
- * Copyright 2002, Thomas Dickey
+ * Copyright 2002,2003, Thomas Dickey
  * Copyright 1999, Grant Edwards
  * All rights reserved.
  *
@@ -72,13 +72,6 @@ struct SButton {
    int		xpos;
    int		ypos;
    int		rows;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
 };
@@ -146,35 +139,15 @@ boolean getCDKButtonBox (
 #define drawCDKButton(obj,Box) drawCDKObject(obj,Box)
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKButtonULChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonURChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonLLChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonLRChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonVerticalChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonHorizontalChar (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
-
-void setCDKButtonBoxAttribute (
-		CDKBUTTON *	/* button */,
-		chtype		/* character */);
+#define setCDKButtonULChar(w,c)            setULCharOf(w,c)
+#define setCDKButtonURChar(w,c)            setURCharOf(w,c)
+#define setCDKButtonLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKButtonLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKButtonVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKButtonHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKButtonBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

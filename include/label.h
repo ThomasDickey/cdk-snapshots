@@ -1,5 +1,5 @@
 /*
- * $Id: label.h,v 1.14 2002/07/14 21:49:37 moloney Exp $
+ * $Id: label.h,v 1.15 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -73,13 +73,6 @@ struct SLabel {
    int		xpos;
    int		ypos;
    int		rows;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    boolean	shadow;
 };
 typedef struct SLabel CDKLABEL;
@@ -139,35 +132,15 @@ boolean getCDKLabelBox (
 #define drawCDKLabel(obj,Box) drawCDKObject(obj,Box)
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKLabelULChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelURChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelLLChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelLRChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelVerticalChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelHorizontalChar (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
-
-void setCDKLabelBoxAttribute (
-		CDKLABEL *	/* label */,
-		chtype		/* character */);
+#define setCDKLabelULChar(w,c)             setULCharOf(w,c)
+#define setCDKLabelURChar(w,c)             setURCharOf(w,c)
+#define setCDKLabelLLChar(w,c)             setLLCharOf(w,c)
+#define setCDKLabelLRChar(w,c)             setLRCharOf(w,c)
+#define setCDKLabelVerticalChar(w,c)       setVTCharOf(w,c)
+#define setCDKLabelHorizontalChar(w,c)     setHZCharOf(w,c)
+#define setCDKLabelBoxAttribute(w,c)       setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.17 2002/07/27 16:36:19 tom Exp $
+ * $Id: matrix.h,v 1.19 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -107,13 +107,6 @@ struct SMatrix {
    EExitType	exitType;
    boolean	boxCell;
    boolean	shadow;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    chtype	highlight;
    int		dominant;
    chtype	filler;
@@ -193,35 +186,15 @@ int getCDKMatrixRow (
 		CDKMATRIX *	/* matrix */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKMatrixULChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixURChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixLLChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixLRChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixVerticalChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixHorizontalChar (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
-
-void setCDKMatrixBoxAttribute (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* character */);
+#define setCDKMatrixULChar(w,c)            setULCharOf(w,c)
+#define setCDKMatrixURChar(w,c)            setURCharOf(w,c)
+#define setCDKMatrixLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKMatrixLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKMatrixVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKMatrixHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKMatrixBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.
@@ -267,6 +240,16 @@ int moveToCDKMatrixCell (
 		CDKMATRIX *	/* matrix */,
 		int		/* newrow */,
 		int		/* newcol */);
+
+/*
+ * This sets the box attribute of the matrix widget.
+ */
+void setCDKMatrixBox (
+		CDKMATRIX *	/* matrix */,
+		boolean		/* Box */);
+
+boolean getCDKMatrixBox (
+		CDKMATRIX *	/* matrix */);
 
 /*
  * This moves the matrix on the screen to the given location.

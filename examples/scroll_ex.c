@@ -31,7 +31,7 @@ int main (void)
    /* Create the scrolling list. */
    scrollList = newCDKScroll (cdkscreen, CENTER, CENTER, RIGHT,
 				10, 50, title, item, count,
-				FALSE, A_REVERSE, TRUE, FALSE);
+				TRUE, A_REVERSE, TRUE, FALSE);
 
    /* Is the scrolling list null? */
    if (scrollList == 0)
@@ -87,6 +87,7 @@ int main (void)
    }
 
    /* Clean up. */
+   CDKfreeStrings (item);
    destroyCDKScroll (scrollList);
    destroyCDKScreen (cdkscreen);
    delwin (cursesWin);

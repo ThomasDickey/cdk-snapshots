@@ -76,6 +76,7 @@ int main(void)
 
    /* Clean up. */
    destroyCDKAlphalist (alphaList);
+   destroyCDKScreen (cdkscreen);
    delwin (cursesWin);
    endCDK();
    exit (0);

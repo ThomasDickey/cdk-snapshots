@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
+ * $Id: selection.h,v 1.19 2003/11/16 20:16:39 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -71,15 +73,15 @@ struct SSelection {
    int		titleLen[MAX_LINES];
    int		titleAdj;
    int		titleLines;
-   chtype *	item[MAX_ITEMS];
-   int		itemLen[MAX_ITEMS];
-   int		itemPos[MAX_ITEMS];
+   chtype **	item;
+   int *	itemLen;
+   int *	itemPos;
    chtype *	choice[MAX_CHOICES];
    int		choicelen[MAX_CHOICES];
    int		choiceCount;
    int		maxchoicelen;
-   int		selections[MAX_ITEMS];
-   int		mode[MAX_ITEMS];
+   int *	selections;
+   int *	mode;
    int		maxTopItem;
    int		maxLeftChar;
    int		leftChar;
@@ -96,13 +98,6 @@ struct SSelection {
    int		boxWidth;
    int		boxHeight;
    int		viewSize;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
@@ -270,35 +265,15 @@ boolean getCDKSelectionBox (
 		CDKSELECTION *	/* selection */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKSelectionULChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionURChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionLLChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionLRChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionVerticalChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionHorizontalChar (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
-
-void setCDKSelectionBoxAttribute (
-		CDKSELECTION *	/* selection */,
-		chtype		/* character */);
+#define setCDKSelectionULChar(w,c)         setULCharOf(w,c)
+#define setCDKSelectionURChar(w,c)         setURCharOf(w,c)
+#define setCDKSelectionLLChar(w,c)         setLLCharOf(w,c)
+#define setCDKSelectionLRChar(w,c)         setLRCharOf(w,c)
+#define setCDKSelectionVerticalChar(w,c)   setVTCharOf(w,c)
+#define setCDKSelectionHorizontalChar(w,c) setHZCharOf(w,c)
+#define setCDKSelectionBoxAttribute(w,c)   setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

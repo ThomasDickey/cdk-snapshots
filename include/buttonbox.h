@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.17 2002/07/16 00:54:51 moloney Exp $
+ * $Id: buttonbox.h,v 1.18 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -78,13 +78,6 @@ struct SButtonBox {
    int		rowAdjust;
    int		boxWidth;
    int		boxHeight;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    chtype	ButtonAttrib;
    EExitType	exitType;
    boolean	shadow;
@@ -165,35 +158,15 @@ boolean getCDKButtonboxBox (
 		CDKBUTTONBOX *	/* buttonbox */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKButtonboxULChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxURChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxLLChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxLRChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxVerticalChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxHorizontalChar (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
-void setCDKButtonboxBoxAttribute (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
+#define setCDKButtonboxULChar(w,c)         setULCharOf(w,c)
+#define setCDKButtonboxURChar(w,c)         setURCharOf(w,c)
+#define setCDKButtonboxLLChar(w,c)         setLLCharOf(w,c)
+#define setCDKButtonboxLRChar(w,c)         setLRCharOf(w,c)
+#define setCDKButtonboxVerticalChar(w,c)   setVTCharOf(w,c)
+#define setCDKButtonboxHorizontalChar(w,c) setHZCharOf(w,c)
+#define setCDKButtonboxBoxAttribute(w,c)   setBXAttrOf(w,c)
 
 void setCDKButtonboxButtonAttrib (
 		CDKBUTTONBOX *	/* buttonbox */,

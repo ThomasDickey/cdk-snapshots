@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.18 2002/07/14 21:49:37 moloney Exp $
+ * $Id: scroll.h,v 1.20 2003/11/16 18:52:47 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -73,9 +75,9 @@ struct SScroll {
    int		titleLen[MAX_LINES];
    int		titleAdj;
    int		titleLines;
-   chtype	*item[MAX_ITEMS];
-   int		itemPos[MAX_ITEMS];
-   int		itemLen[MAX_ITEMS];
+   chtype **	item;
+   int *	itemPos;
+   int *	itemLen;
    int		maxTopItem;
    int		maxLeftChar;
    int		leftChar;
@@ -92,13 +94,6 @@ struct SScroll {
    int		toggleSize;
    int		togglePos;
    float	step;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    boolean	numbers;
@@ -198,35 +193,15 @@ boolean getCDKScrollBox (
 		CDKSCROLL *	/* scroll */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKScrollULChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollURChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollLLChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollLRChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollVerticalChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollHorizontalChar (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
-
-void setCDKScrollBoxAttribute (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* character */);
+#define setCDKScrollULChar(w,c)            setULCharOf(w,c)
+#define setCDKScrollURChar(w,c)            setURCharOf(w,c)
+#define setCDKScrollLLChar(w,c)            setLLCharOf(w,c)
+#define setCDKScrollLRChar(w,c)            setLRCharOf(w,c)
+#define setCDKScrollVerticalChar(w,c)      setVTCharOf(w,c)
+#define setCDKScrollHorizontalChar(w,c)    setHZCharOf(w,c)
+#define setCDKScrollBoxAttribute(w,c)      setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

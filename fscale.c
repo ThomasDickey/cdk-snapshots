@@ -1,9 +1,9 @@
-#include <cdk.h>
+#include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2003/04/18 17:44:36 $
- * $Revision: 1.10 $
+ * $Date: 2003/11/16 21:53:21 $
+ * $Revision: 1.16 $
  */
 
 /*
@@ -11,27 +11,30 @@
  */
 static void drawCDKFScaleField (CDKFSCALE *scale);
 
-DeclareCDKObjects(FSCALE, FScale, Float);
+DeclareCDKObjects(FSCALE, FScale, setCdk, Float);
 
 /*
  * This function creates a scale widget.
  */
 CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, float start, float low, float high, float inc, float fastinc, int digits, boolean Box, boolean shadow)
 {
-   /* Declare local variables. */
-   CDKFSCALE *scale	= newCDKObject(CDKFSCALE, &my_funcs);
+   CDKFSCALE *scale	= 0;
    chtype *holder	= 0;
    int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxHeight	= 3;
    int boxWidth		= fieldWidth + 2;
-   int borderSize       = Box ? 1 : 0;
    int maxWidth		= INT_MIN;
    int horizontalAdjust = 0;
    int xpos		= xplace;
    int ypos		= yplace;
    char **temp		= 0;
    int x, len, junk, junk2;
+
+   if ((scale = newCDKObject(CDKFSCALE, &my_funcs)) == 0)
+      return (0);
+
+   setCDKFScaleBox (scale, Box);
 
    /* Set some basic values of the scale field. */
    scale->label		= 0;
@@ -57,6 +60,8 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Translate the char * items to chtype * */
    if (title != 0)
    {
+      int titleWidth;
+
       temp = CDKsplitString (title, '\n');
       scale->titleLines = CDKcountStrings (temp);
 
@@ -79,10 +84,11 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
        }
 
       /* For each line in the title, convert from char * to chtype * */
+      titleWidth = boxWidth - (2 * BorderOf(scale));
       for (x=0; x < scale->titleLines; x++)
       {
 	 scale->title[x]	= char2Chtype (temp[x], &scale->titleLen[x], &scale->titlePos[x]);
-	 scale->titlePos[x]	= justifyString (boxWidth, scale->titleLen[x], scale->titlePos[x]);
+	 scale->titlePos[x]	= justifyString (titleWidth, scale->titleLen[x], scale->titlePos[x]);
       }
       CDKfreeStrings(temp);
    }
@@ -101,7 +107,7 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    fieldWidth = (fieldWidth > (boxWidth - scale->labelLen - 2) ? (boxWidth - scale->labelLen - 2) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, borderSize);
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(scale));
 
    /* Make the scale window. */
    scale->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -109,10 +115,7 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Is the main window null??? */
    if (scale->win == 0)
    {
-      freeChtype (scale->label);
-      free (scale);
-
-      /* Return a null pointer. */
+      destroyCDKObject(scale);
       return (0);
    }
 
@@ -134,8 +137,7 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
 
    /* Create the scale field. */
    ScreenOf(scale)		= cdkscreen;
-   ObjOf(scale)->box		= Box;
-   ObjOf(scale)->inputWindow  	= scale->win;
+   ObjOf(scale)->inputWindow	= scale->win;
    scale->parent		= cdkscreen->window;
    scale->shadowWin		= 0;
    scale->boxWidth		= boxWidth;
@@ -155,13 +157,6 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    scale->preProcessData	= 0;
    scale->postProcessFunction	= 0;
    scale->postProcessData	= 0;
-   scale->ULChar		= ACS_ULCORNER;
-   scale->URChar		= ACS_URCORNER;
-   scale->LLChar		= ACS_LLCORNER;
-   scale->LRChar		= ACS_LRCORNER;
-   scale->HChar			= ACS_HLINE;
-   scale->VChar			= ACS_VLINE;
-   scale->BoxAttrib		= A_NORMAL;
 
    /* Do we want a shadow??? */
    if (shadow)
@@ -184,7 +179,6 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
  */
 float activateCDKFScale (CDKFSCALE *scale, chtype *actions)
 {
-   /* Declare local variables. */
    float ret;
 
    /* Draw the scale widget. */
@@ -368,7 +362,6 @@ static int _injectCDKFScale (CDKOBJS *object, chtype input)
 static void _moveCDKFScale (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKFSCALE *scale = (CDKFSCALE *)object;
-   /* Declare local variables. */
    int currentX = getbegx(scale->win);
    int currentY = getbegy(scale->win);
    int xpos	= xplace;
@@ -427,11 +420,7 @@ static void _drawCDKFScale (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      attrbox (scale->win,
-		scale->ULChar, scale->URChar,
-		scale->LLChar, scale->LRChar,
-		scale->HChar,  scale->VChar,
-		scale->BoxAttrib);
+      drawObjBox (scale->win, ObjOf(scale));
    }
 
    /* Draw in the title if there is one. */
@@ -440,7 +429,7 @@ static void _drawCDKFScale (CDKOBJS *object, boolean Box)
       for (x=0; x < scale->titleLines; x++)
       {
 	 writeChtype (scale->win,
-			scale->titlePos[x],
+			scale->titlePos[x] + BorderOf(scale),
 			x + 1,
 			scale->title[x],
 			HORIZONTAL, 0,
@@ -468,7 +457,6 @@ static void _drawCDKFScale (CDKOBJS *object, boolean Box)
  */
 static void drawCDKFScaleField (CDKFSCALE *scale)
 {
-   /* Declare the local variables. */
    char temp[256], format[256];
 
    /* Erase the field. */
@@ -486,38 +474,6 @@ static void drawCDKFScaleField (CDKFSCALE *scale)
    /* Refresh the field window. */
    touchwin (scale->fieldWin);
    wrefresh (scale->fieldWin);
-}
-
-/*
- * These functions set the drawing characters of the widget.
- */
-void setCDKFScaleULChar (CDKFSCALE *scale, chtype character)
-{
-   scale->ULChar = character;
-}
-void setCDKFScaleURChar (CDKFSCALE *scale, chtype character)
-{
-   scale->URChar = character;
-}
-void setCDKFScaleLLChar (CDKFSCALE *scale, chtype character)
-{
-   scale->LLChar = character;
-}
-void setCDKFScaleLRChar (CDKFSCALE *scale, chtype character)
-{
-   scale->LRChar = character;
-}
-void setCDKFScaleVerticalChar (CDKFSCALE *scale, chtype character)
-{
-   scale->VChar = character;
-}
-void setCDKFScaleHorizontalChar (CDKFSCALE *scale, chtype character)
-{
-   scale->HChar = character;
-}
-void setCDKFScaleBoxAttribute (CDKFSCALE *scale, chtype character)
-{
-   scale->BoxAttrib = character;
 }
 
 /*
@@ -669,6 +625,7 @@ float getCDKFScaleValue (CDKFSCALE *scale)
 void setCDKFScaleBox (CDKFSCALE *scale, boolean Box)
 {
    ObjOf(scale)->box = Box;
+   ObjOf(scale)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKFScaleBox (CDKFSCALE *scale)
 {

@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.19 2002/07/14 21:49:37 moloney Exp $
+ * $Id: calendar.h,v 1.20 2003/11/15 18:11:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -92,13 +92,6 @@ struct SCalendar {
    int		boxWidth;
    int		boxHeight;
    int		xOffset;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    PROCESSFN	preProcessFunction;
@@ -218,35 +211,15 @@ boolean getCDKCalendarBox (
 		CDKCALENDAR *	/* calendar */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKCalendarULChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarURChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarLLChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarLRChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarVerticalChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarHorizontalChar (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
-
-void setCDKCalendarBoxAttribute (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* character */);
+#define setCDKCalendarULChar(w,c)          setULCharOf(w,c)
+#define setCDKCalendarURChar(w,c)          setURCharOf(w,c)
+#define setCDKCalendarLLChar(w,c)          setLLCharOf(w,c)
+#define setCDKCalendarLRChar(w,c)          setLRCharOf(w,c)
+#define setCDKCalendarVerticalChar(w,c)    setVTCharOf(w,c)
+#define setCDKCalendarHorizontalChar(w,c)  setHZCharOf(w,c)
+#define setCDKCalendarBoxAttribute(w,c)    setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.17 2002/07/14 21:49:37 moloney Exp $
+ * $Id: radio.h,v 1.19 2003/11/16 16:40:11 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -65,9 +67,9 @@ struct SRadio {
    int		titlePos[MAX_LINES];
    int		titleLen[MAX_LINES];
    int		titleLines;
-   chtype *	item[MAX_ITEMS];
-   int		itemLen[MAX_ITEMS];
-   int		itemPos[MAX_ITEMS];
+   chtype **	item;
+   int *	itemLen;
+   int *	itemPos;
    int		titleAdj;
    chtype	choiceChar;
    chtype	leftBoxChar;
@@ -91,13 +93,6 @@ struct SRadio {
    int		boxHeight;
    int		viewSize;
    int		defItem;
-   chtype	ULChar;
-   chtype	URChar;
-   chtype	LLChar;
-   chtype	LRChar;
-   chtype	VChar;
-   chtype	HChar;
-   chtype	BoxAttrib;
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
@@ -209,35 +204,15 @@ boolean getCDKRadioBox (
 		CDKRADIO *	/* radio */);
 
 /*
- * These functions set the drawing characters of the widget.
+ * These set the drawing characters of the widget.
  */
-void setCDKRadioULChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioURChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioLLChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioLRChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioVerticalChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioHorizontalChar (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
-
-void setCDKRadioBoxAttribute (
-		CDKRADIO *	/* radio */,
-		chtype		/* character */);
+#define setCDKRadioULChar(w,c)             setULCharOf(w,c)
+#define setCDKRadioURChar(w,c)             setURCharOf(w,c)
+#define setCDKRadioLLChar(w,c)             setLLCharOf(w,c)
+#define setCDKRadioLRChar(w,c)             setLRCharOf(w,c)
+#define setCDKRadioVerticalChar(w,c)       setVTCharOf(w,c)
+#define setCDKRadioHorizontalChar(w,c)     setHZCharOf(w,c)
+#define setCDKRadioBoxAttribute(w,c)       setBXAttrOf(w,c)
 
 /*
  * This sets the background color of the widget.
