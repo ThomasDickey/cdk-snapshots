@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.h,v 1.18 2003/11/15 18:11:09 tom Exp $
+ * $Id: dialog.h,v 1.20 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -55,8 +57,8 @@ extern "C" {
 /*
  * Declare definitions the dialog box may need.
  */
-#define MAX_DIALOG_ROWS		50
-#define MAX_DIALOG_BUTTONS	25
+#define MAX_DIALOG_ROWS		50	/* unused by widgets */
+#define MAX_DIALOG_BUTTONS	25	/* unused by widgets */
 #define MIN_DIALOG_WIDTH	10
 
 /*
@@ -67,12 +69,12 @@ struct SDialogBox {
    WINDOW *	parent;
    WINDOW *	win;
    WINDOW *	shadowWin;
-   chtype *	info[MAX_DIALOG_ROWS];
-   int		infoLen[MAX_DIALOG_ROWS];
-   int		infoPos[MAX_DIALOG_ROWS];
-   chtype *	buttonLabel[MAX_DIALOG_BUTTONS];
-   int		buttonLen[MAX_DIALOG_ROWS];
-   int		buttonPos[MAX_DIALOG_ROWS];
+   chtype **	info;
+   int *	infoLen;
+   int *	infoPos;
+   chtype **	buttonLabel;
+   int *	buttonLen;
+   int *	buttonPos;
    int		messageRows;
    int		buttonCount;
    int		currentButton;

@@ -1,5 +1,5 @@
 /*
- * $Id: fscale.h,v 1.8 2003/11/27 14:55:27 tom Exp $
+ * $Id: fscale.h,v 1.9 2003/12/06 16:28:18 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 2001, Lutz Mueller
  * All rights reserved.
  *

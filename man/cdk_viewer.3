@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.18 2003/11/25 01:15:37 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.19 2003/12/11 01:27:40 tom Exp $
 .TH cdk_viewer 3
 .SH NAME
 activateCDKViewer,
@@ -16,6 +16,7 @@ moveCDKViewer,
 newCDKViewer,
 positionCDKViewer,
 setCDKViewer,
+setCDKViewerBackgroundAttrib,
 setCDKViewerBackgroundColor,
 setCDKViewerBox,
 setCDKViewerBoxAttribute,
@@ -102,6 +103,10 @@ setCDKViewerVerticalChar \- curses viewer list widget.
 .BI "boolean " "interpret",
 .BI "boolean " "showLineInfo",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKViewerBackgroundAttrib ("
+.BI "CDKVIEWER *" "viewer",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKViewerBackgroundColor ("
 .BI "CDKVIEWER *" "viewer",
@@ -281,6 +286,10 @@ The \fBshowLineInfo\fR boolean flag tells the viewer to show to show the
 line number and percentage in the top left corner of the viewer window.
 The parameters \fBbox\fR and \fBshadow\fR are the same as in the function
 description of \fInewCDKViewer\fR.
+.TP 5
+.B setCDKViewerBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKViewerBackgroundColor
 sets the background color of the widget.

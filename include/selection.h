@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.20 2003/11/27 14:55:27 tom Exp $
+ * $Id: selection.h,v 1.21 2003/12/06 15:57:38 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -57,7 +57,7 @@ extern "C" {
 /*
  * Declare selection list definitions.
  */
-#define MAX_CHOICES	100
+#define MAX_CHOICES	100	/* unused by widgets */
 
 /*
  * Define the CDK selection widget structure.
@@ -72,8 +72,8 @@ struct SSelection {
    chtype **	item;
    int *	itemLen;
    int *	itemPos;
-   chtype *	choice[MAX_CHOICES];
-   int		choicelen[MAX_CHOICES];
+   chtype **	choice;
+   int *	choicelen;
    int		choiceCount;
    int		maxchoicelen;
    int *	selections;

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.15 2003/04/17 23:35:51 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.17 2003/12/11 01:31:56 tom Exp $"
 .TH cdk_calendar 3
 .SH NAME
 activateCDKCalendar,
@@ -10,6 +10,7 @@ getCDKCalendarBox,
 getCDKCalendarDate,
 getCDKCalendarDayAttribute,
 getCDKCalendarHighlight,
+getCDKCalendarMarker,
 getCDKCalendarMonthAttribute,
 getCDKCalendarYearAttribute,
 injectCDKCalendar,
@@ -18,12 +19,16 @@ newCDKCalendar,
 positionCDKCalendar,
 removeCDKCalendarMarker,
 setCDKCalendar,
+setCDKCalendarBackgroundAttrib,
+setCDKCalendarBackgroundColor,
 setCDKCalendarBox,
 setCDKCalendarDate,
 setCDKCalendarDayAttribute,
+setCDKCalendarDaysNames,
 setCDKCalendarHighlight,
 setCDKCalendarMarker,
 setCDKCalendarMonthAttribute,
+setCDKCalendarMonthsNames,
 setCDKCalendarPostProcess,
 setCDKCalendarPreProcess,
 setCDKCalendarYearAttribute \- curses calendar widget.
@@ -62,6 +67,12 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .TP 15
 .B "chtype getCDKCalendarHighlight ("
 .BI "CDKCALENDAR *" "calendar");
+.TP 15
+.B "chtype getCDKCalendarMarker ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "int " "day",
+.BI "int " "month",
+.BI "int " "year");
 .TP 15
 .B "chtype getCDKCalendarMonthAttribute ("
 .BI "CDKCALENDAR *" "calendar");
@@ -114,6 +125,14 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .BI "chtype " "highlight",
 .BI "boolean " "box");
 .TP 15
+.B "void setCDKCalendarBackgroundAttrib ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "attribute");
+.TP 15
+.B "void setCDKCalendarBackgroundColor ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "char * " "color");
+.TP 15
 .B "void setCDKCalendarBox ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "boolean " "box");
@@ -127,6 +146,10 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .B "void setCDKCalendarDayAttribute ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "chtype " "attribute");
+.TP
+.B "void setCDKCalendarDaysNames ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "char *" "days");
 .TP 15
 .B "void setCDKCalendarHighlight ("
 .BI "CDKCALENDAR *" "calendar",
@@ -142,6 +165,10 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .B "void setCDKCalendarMonthAttribute ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "chtype " "attribute");
+.TP
+.B "void setCDKCalendarMonthsNames ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "char **" "months");
 .TP 15
 .B "void setCDKCalendarPostProcess ("
 .BI "CDKCALENDAR *" "calendar",
@@ -203,6 +230,9 @@ returns the attribute of the day attribute of the calendar.
 .B getCDKCalendarHighlight
 returns the attribute of the highlight bar of the scrolling
 list portion of the widget.
+.TP
+.B getCDKCalendarMarker
+returns the marker set on the calendar by \fBsetCDKCalendarMarker\fP.
 .TP 5
 .B getCDKCalendarMonthAttribute
 returns the attribute of the month attribute of the calendar.
@@ -287,6 +317,16 @@ The \fBcalendar\fR parameter represents an existing calendar pointer.
 The other parameter names correspond to the same parameter names listed
 in the \fInewCDKCalendar\fR function.
 .TP 5
+.B setCDKCalendarBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
+.TP 5
+.B setCDKCalendarBackgroundColor
+sets the background color of the widget.
+The parameter \fBcolor\fR
+is in the format of the Cdk format strings.
+See \fBcdk_display (3)\fR.
+.TP 5
 .B setCDKCalendarBox
 sets whether the widget will be drawn with a box around it.
 .TP 5
@@ -298,6 +338,15 @@ is used to set the date.
 .TP 5
 .B setCDKCalendarDayAttribute
 sets the attribute of the day in the calendar.
+.TP
+.B setCDKCalendarDaysNames
+sets the names of the days of the week.
+The parameter is a string listing the 2-character abbreviations for the
+days.
+The default value is
+.RS
+"Su Mo Tu We Th Fr Sa"
+.RE
 .TP 5
 .B setCDKCalendarHighlight
 sets the attribute of the highlight bar of the scrolling
@@ -311,6 +360,11 @@ with the original marker attribute.
 .TP 5
 .B setCDKCalendarMonthAttribute
 sets the attribute of the month in the calendar.
+.TP
+.B setCDKCalendarMonthsNames
+sets the names of the months of the year.
+The parameter is a 13-element array (since indexing starts with 1).
+The default values are the English month names, e.g., "January".
 .TP 5
 .B setCDKCalendarPostProcess
 allows the user to have the widget call a function after the

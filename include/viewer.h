@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.19 2003/11/27 14:55:27 tom Exp $
+ * $Id: viewer.h,v 1.20 2003/12/06 14:01:41 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -62,9 +62,9 @@ struct SViewer {
    WINDOW *	parent;
    WINDOW *	win;
    WINDOW *	shadowWin;
-   chtype *	button[MAX_BUTTONS];
-   int		buttonLen[MAX_BUTTONS];
-   int		buttonPos[MAX_BUTTONS];
+   chtype **	button;
+   int *	buttonLen;
+   int *	buttonPos;
    int		buttonCount;
    chtype	buttonHighlight;
    chtype **	list;

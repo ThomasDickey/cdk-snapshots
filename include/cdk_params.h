@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_params.h,v 1.4 2003/11/29 15:56:09 tom Exp $
+ * $Id: cdk_params.h,v 1.5 2003/12/06 14:15:56 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2003, Thomas Dickey
+ * Copyright 2003, Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

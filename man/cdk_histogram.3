@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_histogram.3,v 1.9 2003/04/17 23:24:52 tom Exp $
+.\" $Id: cdk_histogram.3,v 1.10 2003/12/11 01:25:49 tom Exp $
 .TH cdk_histogram 3
 .SH NAME
 destroyCDKHistogram,
@@ -17,6 +17,7 @@ moveCDKHistogram,
 newCDKHistogram,
 positionCDKHistogram,
 setCDKHistogram,
+setCDKHistogramBackgroundAttrib,
 setCDKHistogramBackgroundColor,
 setCDKHistogramBox,
 setCDKHistogramBoxAttribute,
@@ -106,6 +107,10 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "int " "currentValue",
 .BI "chtype " "fillerCharacter",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKHistogramBackgroundAttrib ("
+.BI "CDKHISTOGRAM *" "histogram",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKHistogramBackgroundColor ("
 .BI "CDKHISTOGRAM *" "histogram",
@@ -296,6 +301,10 @@ and current values respectively.
 The \fBfiller\fR character is the character
 to use in the unused space in the histogram.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
+.TP 5
+.B setCDKHistogramBackgroundAttrib
+the background color attribute the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKHistogramBackgroundColor
 the background color of the widget.

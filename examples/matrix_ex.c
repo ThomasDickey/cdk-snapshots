@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.9 2003/11/30 19:16:22 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.10 2003/12/05 21:12:14 tom Exp $ */
 
 #include <cdk.h>
 
@@ -102,8 +102,8 @@ int main (int argc, char **argv)
       mesg[0] = "<L>You exited the matrix normally.";
       mesg[1] = temp;
       mesg[2] = "<L>To get the contents of the matrix cell, you can";
-      mesg[3] = "<L>dereference the info array of the matrix widget:";
-      mesg[4] = courseList->info[courseList->crow][courseList->ccol];
+      mesg[3] = "<L>use getCDKMatrixCell():";
+      mesg[4] = getCDKMatrixCell(courseList, courseList->crow, courseList->ccol);
       mesg[5] = "";
       mesg[6] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 7);

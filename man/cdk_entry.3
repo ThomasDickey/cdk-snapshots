@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.13 2003/04/17 23:39:58 tom Exp $
+.\" $Id: cdk_entry.3,v 1.14 2003/12/11 01:25:50 tom Exp $
 .TH cdk_entry 3
 .SH NAME
 activateCDKEntry,
@@ -18,6 +18,7 @@ moveCDKEntry,
 newCDKEntry,
 positionCDKEntry,
 setCDKEntry,
+setCDKEntryBackgroundAttrib,
 setCDKEntryBackgroundColor,
 setCDKEntryBox,
 setCDKEntryBoxAttribute,
@@ -115,6 +116,10 @@ setCDKEntryVerticalChar \- curses text-entry widget.
 .BI "int " "minimumLength",
 .BI "int " "maximumLength",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKEntryBackgroundAttrib ("
+.BI "CDKENTRY *" "entry",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKEntryBackgroundColor ("
 .BI "CDKENTRY *" "entry",
@@ -325,6 +330,10 @@ The \fBvalue\fR parameter sets the value of the contents of the
 entry field.
 The other parameter names correspond to the same parameter names
 listed in the \fInewCDKEntry\fR function.
+.TP 5
+.B setCDKEntryBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKEntryBackgroundColor
 sets the background color of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: traverse.h,v 1.2 2002/07/10 21:41:50 tom Exp $
+ * $Id: traverse.h,v 1.4 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -18,7 +18,9 @@
 #endif
 
 /*
- * Copyright 2002, Thomas Dickey
+ * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ *
+ * Copyright 2002, Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

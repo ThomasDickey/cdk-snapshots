@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.99 $
+ * $Date: 2003/12/06 16:46:40 $
+ * $Revision: 1.100 $
  */
 
 /*
@@ -690,18 +690,21 @@ void setCDKRadioBackgroundAttrib (CDKRADIO *radio, chtype attrib)
  */
 static void _destroyCDKRadio (CDKOBJS *object)
 {
-   CDKRADIO *radio = (CDKRADIO *)object;
+   if (object != 0)
+   {
+      CDKRADIO *radio = (CDKRADIO *)object;
 
-   cleanCdkTitle (object);
-   CDKfreeChtypes(radio->item);
+      cleanCdkTitle (object);
+      CDKfreeChtypes(radio->item);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (radio->scrollbarWin);
-   deleteCursesWindow (radio->shadowWin);
-   deleteCursesWindow (radio->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (radio->scrollbarWin);
+      deleteCursesWindow (radio->shadowWin);
+      deleteCursesWindow (radio->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vRADIO, radio);
+      /* Unregister this object. */
+      unregisterCDKObject (vRADIO, radio);
+   }
 }
 
 /*
@@ -930,9 +933,9 @@ static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
 	 }
 	 if (status)
 	 {
-	    CDKfreeChtypes(radio->item);
-	    if (radio->itemLen != 0) free(radio->itemLen);
-	    if (radio->itemPos != 0) free(radio->itemPos);
+	    CDKfreeChtypes (radio->item);
+	    freeChecked (radio->itemLen);
+	    freeChecked (radio->itemPos);
 
 	    radio->item = newList;
 	    radio->itemLen = newLen;
@@ -940,9 +943,9 @@ static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
 	 }
 	 else
 	 {
-	    CDKfreeChtypes(newList);
-	    if (newLen != 0) free(newLen);
-	    if (newPos != 0) free(newPos);
+	    CDKfreeChtypes (newList);
+	    freeChecked (newLen);
+	    freeChecked (newPos);
 	 }
       }
    }

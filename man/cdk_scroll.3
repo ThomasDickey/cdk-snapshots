@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.15 2003/04/18 00:22:05 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.16 2003/12/11 01:27:03 tom Exp $"
 .TH cdk_scroll 3
 .SH NAME
 activateCDKScroll,
@@ -16,6 +16,7 @@ moveCDKScroll,
 newCDKScroll,
 positionCDKScroll,
 setCDKScroll,
+setCDKScrollBackgroundAttrib,
 setCDKScrollBackgroundColor,
 setCDKScrollBox,
 setCDKScrollBoxAttribute,
@@ -107,6 +108,10 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .BI "int " "minimumLength",
 .BI "int " "maximumLength",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKScrollBackgroundAttrib ("
+.BI "CDKSCROLL *" "scroll",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKScrollBackgroundColor ("
 .BI "CDKSCROLL *" "scroll",
@@ -305,6 +310,10 @@ lets the programmer modify certain elements of an existing
 scroll widget.
 The parameter names correspond to the same parameter names listed
 in the \fInewCDKScroll\fR function.
+.TP 5
+.B setCDKScrollBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKScrollBackgroundColor
 sets the background color of the widget.

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.12 2003/04/17 23:38:27 tom Exp $
+.\" $Id: cdk_menu.3,v 1.13 2003/12/11 01:29:48 tom Exp $
 .TH cdk_menu 3
 .SH NAME
 activateCDKMenu,
@@ -14,6 +14,8 @@ getCDKMenuTitleHighlight,
 injectCDKMenu,
 newCDKMenu,
 setCDKMenu,
+setCDKMenuBackgroundAttrib,
+setCDKMenuBackgroundColor,
 setCDKMenuCurrentItem,
 setCDKMenuPostProcess,
 setCDKMenuPreProcess,
@@ -74,6 +76,14 @@ setCDKMenuTitleHighlight \- curses menu widget
 .BI "int " "submenuItem",
 .BI "chtype " "titleAttribute",
 .BI "chtype " "subtitleAttribute");
+.TP 15
+.B "void setCDKMenuBackgroundAttrib ("
+.BI "CDKMENU *" "menu",
+.BI "chtype " "attribute");
+.TP 15
+.B "void setCDKMenuBackgroundColor ("
+.BI "CDKMENU *" "menu",
+.BI "char * " "color");
 .TP 15
 .B "void setCDKMenuCurrentItem ("
 .BI "CDKMENU *" "menu",
@@ -179,6 +189,16 @@ The parameters \fBmenuItem\fR and \fBsubmenuItem\fR set which
 menu list and sub-menu item are going to be highlighted when the widget is activated.
 The other parameter names correspond to the same parameter names
 listed in the \fInewCDKMenu\fR function.
+.TP 5
+.B setCDKMenuBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
+.TP 5
+.B setCDKMenuBackgroundColor
+sets the background color of the widget.
+The parameter \fBcolor\fR
+is in the format of the Cdk format strings.
+See \fBcdk_display (3)\fR.
 .TP 5
 .B setCDKMenuCurrentItem
 sets the current item in the menu widget.

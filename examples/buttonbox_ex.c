@@ -1,6 +1,5 @@
-/*
- * $Id: buttonbox_ex.c,v 1.13 2002/07/14 15:27:49 tom Exp $
- */
+/* $Id: buttonbox_ex.c,v 1.14 2003/12/06 13:56:01 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -72,6 +71,8 @@ int main (void)
    printf ("You typed in (%s) and selected button (%s)\n",
 	   (info != 0) ? info : "<null>",
 	   buttons[selection]);
+
+   freeChar (info);
    exit (0);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.9 2003/11/29 13:10:30 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.10 2003/12/06 16:56:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -64,6 +64,7 @@ int main(int argc, char **argv)
 				'_', A_REVERSE,
 				CDKparamValue(&params, 'N', TRUE),
 				CDKparamValue(&params, 'S', FALSE));
+   CDKfreeStrings(info);
 
    /* Let them play with the alpha list. */
    word = activateCDKAlphalist (alphaList, 0);
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
    {
       mesg[0] = "<C>You selected the following";
       sprintf (temp, "<C>(%s)", word);
-      mesg[1] = copyChar (temp);
+      mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 4);

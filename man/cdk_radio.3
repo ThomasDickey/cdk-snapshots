@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.15 2003/04/17 23:47:07 tom Exp $
+.\" $Id: cdk_radio.3,v 1.16 2003/12/11 01:27:03 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -22,6 +22,7 @@ moveCDKRadio,
 newCDKRadio,
 positionCDKRadio,
 setCDKRadio,
+setCDKRadioBackgroundAttrib,
 setCDKRadioBackgroundColor,
 setCDKRadioBox,
 setCDKRadioBoxAttribute,
@@ -111,6 +112,10 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .BI "chtype " "highlight",
 .BI "chtype " "choiceCharacter",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKRadioBackgroundAttrib ("
+.BI "CDKRADIO *" "radio",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKRadioBackgroundColor ("
 .BI "CDKRADIO *" "radio",
@@ -308,6 +313,10 @@ See \fRcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing radio widget.
 The parameter names correspond to the same parameter names listed
 in the \fInewCDKRadio\fR function.
+.TP 5
+.B setCDKRadioBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKRadioBackgroundColor
 sets the background color of the widget.

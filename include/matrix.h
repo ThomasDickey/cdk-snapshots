@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.20 2003/11/27 14:55:27 tom Exp $
+ * $Id: matrix.h,v 1.25 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -64,27 +66,45 @@ extern "C" {
 typedef struct SMatrix CDKMATRIX;
 typedef void (*MATRIXCB) (CDKMATRIX *matrix, chtype input);
 
+#define CELL_LIMIT                  MAX_MATRIX_ROWS][MAX_MATRIX_COLS
+
+#define NEW_CDKMATRIX 1
+
+#if NEW_CDKMATRIX
+#define CELL_INDEX(matrix, row,col) (((row) * ((matrix)->cols + 1)) + (col))
+#else
+#define CELL_INDEX(matrix, row,col) (row)][(col)
+#endif
+
+#define MATRIX_CELL(matrix,row,col) ((matrix)->cell[CELL_INDEX(matrix, row, col)])
+#define MATRIX_INFO(matrix,row,col) ((matrix)->info[CELL_INDEX(matrix, row, col)])
+
 struct SMatrix {
    CDKOBJS	obj;
    WINDOW *	parent;
    WINDOW *	win;
    WINDOW *	shadowWin;
-   WINDOW *	cell[MAX_MATRIX_ROWS][MAX_MATRIX_COLS];
-   char *	info[MAX_MATRIX_ROWS][MAX_MATRIX_COLS];
+#if NEW_CDKMATRIX
+   WINDOW **	cell;
+   char **	info;
+#else
+   WINDOW *	cell[CELL_LIMIT];
+   char *	info[CELL_LIMIT];
+#endif
    int		titleAdj;
    int		rows;
    int		cols;
    int		vrows;
    int		vcols;
-   int		colwidths[MAX_MATRIX_COLS];
-   int		colvalues[MAX_MATRIX_COLS];
-   chtype *	coltitle[MAX_MATRIX_COLS];
-   int		coltitleLen[MAX_MATRIX_ROWS];
-   int		coltitlePos[MAX_MATRIX_ROWS];
+   int *	colwidths;
+   int *	colvalues;
+   chtype **	coltitle;
+   int *	coltitleLen;
+   int *	coltitlePos;
    int		maxct;
-   chtype *	rowtitle[MAX_MATRIX_ROWS];
-   int		rowtitleLen[MAX_MATRIX_ROWS];
-   int		rowtitlePos[MAX_MATRIX_ROWS];
+   chtype **	rowtitle;
+   int *	rowtitleLen;
+   int *	rowtitlePos;
    int		maxrt;
    int		boxHeight;
    int		boxWidth;
@@ -92,8 +112,8 @@ struct SMatrix {
    int		colSpace;
    int		row;
    int		col;
-   int		crow;
-   int		ccol;
+   int		crow;		/* current row */
+   int		ccol;		/* current column */
    int		trow;
    int		lcol;
    int		oldcrow;
@@ -150,12 +170,23 @@ int activateCDKMatrix (
 #define injectCDKMatrix(obj,input) injectCDKObject(obj,input,Int)
 
 /*
- * These set specific attributes of the matrix widget.
+ * This sets the contents of the matrix widget from a fixed-size 2d array.
+ * The predefined array limits are very large.
+ * Use setCDKMatrixCells() instead.
  */
-void setCDKMatrix (
+#define setCDKMatrix(matrix, info, rows, subSize) \
+	setCDKMatrixCells(matrix, &info[0][0], rows, MAX_MATRIX_COLS, subSize)
+
+/*
+ * This sets the contents of the matrix widget from an array defined by the
+ * caller.  It may be any size.  For compatibility with setCDKMatrix(), the
+ * info[][] array's subscripts start at 1.
+ */
+void setCDKMatrixCells (
 		CDKMATRIX *	/* matrix */,
-		char *		/* info */ [MAX_MATRIX_ROWS][MAX_MATRIX_COLS],
+		char **		/* info */,
 		int		/* rows */,
+		int		/* cols */,
 		int *		/* subSize */);
 
 /*
@@ -201,7 +232,7 @@ void setCDKMatrixBackgroundColor (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 void setCDKMatrixBackgroundAttrib (
 		CDKMATRIX *	/* matrix */,
 		chtype		/* attribute */);
@@ -221,6 +252,14 @@ void setCDKMatrixBackgroundAttrib (
  */
 void cleanCDKMatrix (
 		CDKMATRIX *	/* matrix */);
+
+/*
+ * This cleans one cell in the matrix.
+ */
+void cleanCDKMatrixCell (
+		CDKMATRIX *	/* matrix */,
+		int		/* row */,
+		int		/* col */);
 
 /*
  * This sets the main callback in the matrix.

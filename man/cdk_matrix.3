@@ -1,9 +1,10 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.16 2003/11/15 01:16:39 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.18 2003/12/11 01:27:03 tom Exp $
 .TH cdk_matrix 3
 .SH NAME
 activateCDKMatrix,
 cleanCDKMatrix,
+cleanCDKMatrixCell,
 destroyCDKMatrix,
 drawCDKMatrix,
 eraseCDKMatrix,
@@ -14,11 +15,13 @@ jumpToCell,
 moveToCDKMatrixCell,
 newCDKMatrix,
 setCDKMatrix,
+setCDKMatrixBackgroundAttrib,
 setCDKMatrixBackgroundColor,
 setCDKMatrixBox,
 setCDKMatrixBoxAttribute,
 setCDKMatrixCB,
 setCDKMatrixCell,
+setCDKMatrixCells,
 setCDKMatrixHorizontalChar,
 setCDKMatrixLLChar,
 setCDKMatrixLRChar,
@@ -26,8 +29,7 @@ setCDKMatrixPostProcess,
 setCDKMatrixPreProcess,
 setCDKMatrixULChar,
 setCDKMatrixURChar,
-setCDKMatrixVerticalChar,
-\- curses matrix widget.
+setCDKMatrixVerticalChar \- curses matrix widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -44,6 +46,11 @@ setCDKMatrixVerticalChar,
 .TP 15
 .B "void cleanCDKMatrix ("
 .BI "CDKMATRIX *" "matrix");
+.TP
+.B "void cleanCDKMatrixCell ("
+.BI "CDKMATRIX *" "matrix",
+.BI "int " "row",
+.BI "int " "col");
 .TP 15
 .B "void destroyCDKMatrix ("
 .BI "CDKMATRIX *" "matrix");
@@ -114,6 +121,10 @@ setCDKMatrixVerticalChar,
 .BI "int " "rows",
 .BI "int *" "columnLengths");
 .TP 15
+.B "void setCDKMatrixBackgroundAttrib ("
+.BI "CDKMATRIX *" "matrix",
+.BI "chtype " "attribute");
+.TP 15
 .B "void setCDKMatrixBackgroundColor ("
 .BI "CDKMATRIX *" "matrix",
 .BI "char * " "color");
@@ -135,6 +146,12 @@ setCDKMatrixVerticalChar,
 .BI "int " "row",
 .BI "int " "col",
 .BI "char *" "value");
+.B "void setCDKMatrixCells ("
+.BI "CDKMATRIX *" "matrix",
+.BI "char **" "info",
+.BI "int " "rows",
+.BI "int " "cols",
+.BI "int *" "columnLengths");
 .TP 15
 .B "void setCDKMatrixHorizontalChar ("
 .BI "CDKMATRIX *" "matrix",
@@ -193,7 +210,10 @@ The matrix cell contents can be retrieved by using
 the \fBinfo\fR array of the matrix widget.
 .TP 5
 .B cleanCDKMatrix
-clears the information from the field.
+clears the information from all cells of the matrix.
+.TP
+.B cleanCDKMatrixCell
+clears the information from the specified cell of the matrix.
 .TP 5
 .B destroyCDKMatrix
 removes the widget from the screen and frees memory the object used.
@@ -321,6 +341,14 @@ contains the cell information.
 The parameter \fBrows\fR has the number of rows
 the parameter \fBinfo\fR contains, while \fBcolumnLengths\fR has the lengths of
 the individual columns in \fBinfo\fR.
+.IP
+Do not use this function.
+It is obsolete, provided only for compatibility with older versions of CDK.
+Use \fBsetCDKMatrixCells\fP.
+.TP 5
+.B setCDKMatrixBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKMatrixBackgroundColor
 sets the background color of the widget.
@@ -342,6 +370,15 @@ The default function is \fICDKMatrixCallBack\fR.
 .B setCDKMatrixCell
 sets the contents of the cell located by the \fBrow\fR and \fBcol\fR pair.
 The value of the cell will be set to \fBvalue\fR.
+.TP
+.B setCDKMatrixCells,
+lets the programmer initialize elements of an existing matrix widget.
+The parameter \fBinfo\fR is an array of \fIchar *\fR which
+contains the cell information.
+The parameter \fBrows\fR has the number of rows
+The parameter \fBcols\fR has the number of columns
+the parameter \fBinfo\fR contains, while \fBcolumnLengths\fR has the lengths of
+the individual columns in \fBinfo\fR.
 .TP 5
 .B setCDKMatrixHorizontalChar
 sets the horizontal drawing character for the box to

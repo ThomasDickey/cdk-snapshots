@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.24 2003/11/27 16:36:39 tom Exp $
+ * $Id: cdk_objs.h,v 1.25 2003/12/06 14:15:49 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2002,2003, Thomas Dickey
+ * Copyright 1999-2002,2003, Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.135 $
+ * $Date: 2003/12/06 16:37:38 $
+ * $Revision: 1.136 $
  */
 
 /*
@@ -923,20 +923,23 @@ static void _eraseCDKMentry (CDKOBJS *object)
  */
 static void _destroyCDKMentry (CDKOBJS *object)
 {
-   CDKMENTRY *mentry = (CDKMENTRY *)object;
+   if (object != 0)
+   {
+      CDKMENTRY *mentry = (CDKMENTRY *)object;
 
-   cleanCdkTitle (object);
-   freeChtype (mentry->label);
-   freeChar (mentry->info);
+      cleanCdkTitle (object);
+      freeChtype (mentry->label);
+      freeChar (mentry->info);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (mentry->fieldWin);
-   deleteCursesWindow (mentry->labelWin);
-   deleteCursesWindow (mentry->shadowWin);
-   deleteCursesWindow (mentry->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (mentry->fieldWin);
+      deleteCursesWindow (mentry->labelWin);
+      deleteCursesWindow (mentry->shadowWin);
+      deleteCursesWindow (mentry->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vMENTRY, mentry);
+      /* Unregister this object. */
+      unregisterCDKObject (vMENTRY, mentry);
+   }
 }
 
 /*

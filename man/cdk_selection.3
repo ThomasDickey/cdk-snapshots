@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.12 2003/04/17 23:32:53 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.13 2003/12/11 01:27:03 tom Exp $"
 .TH cdk_selection 3
 .SH NAME
 activateCDKSelection,
@@ -17,6 +17,7 @@ moveCDKSelection,
 newCDKSelection,
 positionCDKSelection,
 setCDKSelection,
+setCDKSelectionBackgroundAttrib,
 setCDKSelectionBackgroundColor,
 setCDKSelectionBox,
 setCDKSelectionBoxAttribute,
@@ -112,6 +113,10 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .BI "chtype " "highlight",
 .BI "int " "defChoices"[],
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKSelectionBackgroundAttrib ("
+.BI "CDKSELECTION *" "selection",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKSelectionBackgroundColor ("
 .BI "CDKSELECTION *" "selection",
@@ -312,6 +317,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing selection widget.
 The parameter names correspond to the same
 parameter names listed in the \fInewCDKSelection\fR function.
+.TP 5
+.B setCDKSelectionBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKSelectionBackgroundColor
 sets the background color of the widget.

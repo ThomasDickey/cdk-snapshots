@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.17 2003/11/16 12:21:26 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.18 2003/12/11 01:23:56 tom Exp $"
 .TH cdk_alphalist 3
 .SH NAME
 activateCDKAlphalist,
@@ -15,6 +15,7 @@ moveCDKAlphalist,
 newCDKAlphalist,
 positionCDKAlphalist,
 setCDKAlphalist,
+setCDKAlphalistBackgroundAttrib,
 setCDKAlphalistBackgroundColor,
 setCDKAlphalistBox,
 setCDKAlphalistBoxAttribute,
@@ -102,6 +103,10 @@ setCDKAlphalistVerticalChar \- curses sorted list widget.
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKAlphalistBackgroundAttrib ("
+.BI "CDKALPHALIST *" "alphalist",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKAlphalistBackgroundColor ("
 .BI "CDKALPHALIST *" "alphalist",
@@ -301,6 +306,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing alphalist widget.
 The parameter names correspond to the same parameter
 names listed in the \fInewCDKAlphalist\fR function.
+.TP 5
+.B setCDKAlphalistBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKAlphalistBackgroundColor
 sets the background color of the widget.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.80 $
+ * $Date: 2003/12/06 16:45:47 $
+ * $Revision: 1.82 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -24,8 +24,19 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    int buttonadj	= 0;
    int x		= 0;
 
-   if ((dialog = newCDKObject(CDKDIALOG, &my_funcs)) == 0)
+   if (rows <= 0
+    || buttonCount <= 0
+    || (dialog = newCDKObject(CDKDIALOG, &my_funcs)) == 0
+    || (dialog->info        = typeCallocN(chtype *, rows + 1)) == 0
+    || (dialog->infoLen     = typeCallocN(int,      rows + 1)) == 0
+    || (dialog->infoPos     = typeCallocN(int,      rows + 1)) == 0
+    || (dialog->buttonLabel = typeCallocN(chtype *, buttonCount + 1)) == 0
+    || (dialog->buttonLen   = typeCallocN(int,      buttonCount + 1)) == 0
+    || (dialog->buttonPos   = typeCallocN(int,      buttonCount + 1)) == 0)
+   {
+      destroyCDKObject (dialog);
       return (0);
+   }
 
    setCDKDialogBox (dialog, Box);
    boxHeight		= rows + 2 * BorderOf(dialog) + separator + 1;
@@ -66,8 +77,8 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->highlight		= highlight;
    dialog->separator		= separator;
    dialog->exitType		= vNEVER_ACTIVATED;
-   ObjOf(dialog)->inputWindow  	= dialog->win;
-   dialog->shadow  		= shadow;
+   ObjOf(dialog)->inputWindow	= dialog->win;
+   dialog->shadow		= shadow;
    dialog->preProcessFunction	= 0;
    dialog->preProcessData	= 0;
    dialog->postProcessFunction	= 0;
@@ -76,7 +87,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    /* If we couldn't create the window, we should return a null value. */
    if (dialog->win == 0)
    {
-      _destroyCDKDialog (ObjOf(dialog));
+      destroyCDKObject (dialog);
       return (0);
    }
    keypad (dialog->win, TRUE);
@@ -355,25 +366,25 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKDialog (CDKOBJS *object)
 {
-   CDKDIALOG *dialog = (CDKDIALOG *)object;
-   int x = 0;
-
-   /* Clean up the char pointers. */
-   for (x=0; x < dialog->messageRows ; x++)
+   if (object != 0)
    {
-      freeChtype (dialog->info[x]);
-   }
-   for (x=0; x < dialog->buttonCount; x++)
-   {
-      freeChtype (dialog->buttonLabel[x]);
-   }
+      CDKDIALOG *dialog = (CDKDIALOG *)object;
 
-   /* Clean up the windows. */
-   deleteCursesWindow (dialog->win);
-   deleteCursesWindow (dialog->shadowWin);
+      CDKfreeChtypes (dialog->info);
+      freeChecked (dialog->infoLen);
+      freeChecked (dialog->infoPos);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vDIALOG, dialog);
+      CDKfreeChtypes (dialog->buttonLabel);
+      freeChecked (dialog->buttonLen);
+      freeChecked (dialog->buttonPos);
+
+      /* Clean up the windows. */
+      deleteCursesWindow (dialog->win);
+      deleteCursesWindow (dialog->shadowWin);
+
+      /* Unregister this object. */
+      unregisterCDKObject (vDIALOG, dialog);
+   }
 }
 
 /*

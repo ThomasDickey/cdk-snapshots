@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.18 $
+ * $Date: 2003/12/06 16:32:24 $
+ * $Revision: 1.19 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -68,7 +68,7 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
    /* Is the window NULL? */
    if (button->win == (WINDOW *) NULL)
    {
-      _destroyCDKButton (ObjOf(button));
+      destroyCDKObject (button);
       return (0);
    }
 
@@ -489,17 +489,20 @@ void positionCDKButton (CDKBUTTON * button)
  */
 static void _destroyCDKButton (CDKOBJS * object)
 {
-   CDKBUTTON *button = (CDKBUTTON *) object;
+   if (object != 0)
+   {
+      CDKBUTTON *button = (CDKBUTTON *) object;
 
-   /* Free up the character pointers. */
-   freeChtype (button->info);
+      /* Free up the character pointers. */
+      freeChtype (button->info);
 
-   /* Free up the window pointers. */
-   deleteCursesWindow (button->shadowWin);
-   deleteCursesWindow (button->win);
+      /* Free up the window pointers. */
+      deleteCursesWindow (button->shadowWin);
+      deleteCursesWindow (button->win);
 
-   /* Unregister the object. */
-   unregisterCDKObject (vBUTTON, button);
+      /* Unregister the object. */
+      unregisterCDKObject (vBUTTON, button);
+   }
 }
 
 /*

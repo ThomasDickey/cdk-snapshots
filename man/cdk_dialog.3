@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.13 2003/04/17 23:57:14 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.14 2003/12/11 01:25:50 tom Exp $
 .TH cdk_dialog 3
 .SH NAME
 activateCDKDialog,
@@ -16,6 +16,7 @@ newCDKDialog,
 positionCDKDialog,
 setCDKDialogBox,
 setCDKDialog,
+setCDKDialogBackgroundAttrib,
 setCDKDialogBackgroundColor,
 setCDKDialogBox,
 setCDKDialogBoxAttribute,
@@ -101,6 +102,10 @@ setCDKDialogVerticalChar \- curses dialog widget
 .BI "chtype " "highlight",
 .BI "boolean " "separator",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKDialogBackgroundAttrib ("
+.BI "CDKDIALOG *" "dialog",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKDialogBackgroundColor ("
 .BI "CDKDIALOG *" "dialog",
@@ -279,6 +284,10 @@ lets the programmer modify certain elements of an existing
 dialog widget.
 The parameter names correspond to the same parameter names listed
 in the \fBnewCDKDialog\fR function.
+.TP 5
+.B setCDKDialogBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKDialogBackgroundColor
 sets the background color of the widget.

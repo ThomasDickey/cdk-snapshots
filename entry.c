@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.186 $
+ * $Date: 2003/12/06 16:34:48 $
+ * $Revision: 1.187 $
  */
 
 /*
@@ -78,7 +78,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    /* Is the window null? */
    if (entry->win == 0)
    {
-      _destroyCDKEntry (ObjOf(entry));
+      destroyCDKObject (entry);
       return (0);
    }
    keypad (entry->win, TRUE);
@@ -748,20 +748,23 @@ static void _eraseCDKEntry (CDKOBJS *object)
  */
 static void _destroyCDKEntry (CDKOBJS *object)
 {
-   CDKENTRY *entry = (CDKENTRY *)object;
+   if (object != 0)
+   {
+      CDKENTRY *entry = (CDKENTRY *)object;
 
-   cleanCdkTitle (object);
-   freeChtype (entry->label);
-   freeChar (entry->info);
+      cleanCdkTitle (object);
+      freeChtype (entry->label);
+      freeChar (entry->info);
 
-   /* Delete the windows. */
-   deleteCursesWindow (entry->fieldWin);
-   deleteCursesWindow (entry->labelWin);
-   deleteCursesWindow (entry->shadowWin);
-   deleteCursesWindow (entry->win);
+      /* Delete the windows. */
+      deleteCursesWindow (entry->fieldWin);
+      deleteCursesWindow (entry->labelWin);
+      deleteCursesWindow (entry->shadowWin);
+      deleteCursesWindow (entry->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vENTRY, entry);
+      /* Unregister this object. */
+      unregisterCDKObject (vENTRY, entry);
+   }
 }
 
 /*

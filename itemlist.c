@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.60 $
+ * $Date: 2003/12/06 16:46:13 $
+ * $Revision: 1.61 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -30,7 +30,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    if ((itemlist = newCDKObject(CDKITEMLIST, &my_funcs)) == 0
     || !createList(itemlist, item, count))
    {
-      _destroyCDKItemlist (ObjOf(itemlist));
+      destroyCDKObject (itemlist);
       return (0);
    }
 
@@ -78,7 +78,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    itemlist->win = newwin(boxHeight, boxWidth, ypos, xpos);
    if (itemlist->win == 0)
    {
-      _destroyCDKItemlist (ObjOf(itemlist));
+      destroyCDKObject (itemlist);
       return (0);
    }
 
@@ -92,7 +92,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 				   xpos + BorderOf(itemlist));
       if (itemlist->labelWin == 0)
       {
-	 _destroyCDKItemlist (ObjOf(itemlist));
+	 destroyCDKObject (itemlist);
 	 return (0);
       }
    }
@@ -107,7 +107,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 				xpos + itemlist->labelLen + BorderOf(itemlist));
    if (itemlist->fieldWin == 0)
    {
-      _destroyCDKItemlist (ObjOf(itemlist));
+      destroyCDKObject (itemlist);
       return (0);
    }
 
@@ -150,7 +150,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       itemlist->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
       if (itemlist->shadowWin == 0)
       {
-	 _destroyCDKItemlist (ObjOf(itemlist));
+	 destroyCDKObject (itemlist);
 	 return (0);
       }
    }
@@ -749,8 +749,8 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
       {
 	 /* Free up the old memory. */
 	 CDKfreeChtypes (itemlist->item);
-	 free(itemlist->itemPos);
-	 free(itemlist->itemLen);
+	 freeChecked (itemlist->itemPos);
+	 freeChecked (itemlist->itemLen);
 
 	 /* Copy in the new information. */
 	 itemlist->listSize = count;
@@ -760,9 +760,9 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
       }
       else
       {
-	 CDKfreeChtypes(newItems);
-	 if (newPos != 0) free(newPos);
-	 if (newLen != 0) free(newLen);
+	 CDKfreeChtypes (newItems);
+	 freeChecked (newPos);
+	 freeChecked (newLen);
       }
    }
    return status;

@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.22 2003/11/28 01:33:35 staszek Exp $
+ * $Id: calendar.h,v 1.26 2003/12/11 00:07:02 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,8 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2000-2002,2003, Thomas Dickey
+ * Changes 2000-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -56,9 +57,14 @@ extern "C" {
 /*
  * Declare some definitions needed for this widget.
  */
-#define MAX_DAYS	50
-#define MAX_MONTHS	13
-#define MAX_YEARS	502
+#define MAX_DAYS	32	/* maximum number of days in any month */
+#define MAX_MONTHS	13	/* month[0] is unused */
+#define MAX_YEARS	140	/* years [1901..2140] */
+
+#define CALENDAR_LIMIT          (MAX_DAYS * MAX_MONTHS * MAX_YEARS)
+
+#define CALENDAR_INDEX(d,m,y)   ((((y) * MAX_MONTHS) + (m)) * MAX_DAYS + (d))
+#define CALENDAR_CELL(c,d,m,y)  ((c)->marker[CALENDAR_INDEX(d,m,y)])
 
 /*
  * Define the CDK calendar widget structure.
@@ -81,7 +87,7 @@ struct SCalendar {
    chtype	monthAttrib;
    chtype	dayAttrib;
    chtype	highlight;
-   chtype	marker[MAX_DAYS][MAX_MONTHS][MAX_YEARS];
+   chtype *	marker;
    int		day;
    int		month;
    int		year;
@@ -243,6 +249,14 @@ void setCDKCalendarMarker (
 		int		/* month */,
 		int		/* year */,
 		chtype		/* markerChar */);
+/*
+ * Return the marker set on the calendar.
+ */
+chtype getCDKCalendarMarker (
+		CDKCALENDAR *	/* calendar */,
+		int		/* day */,
+		int		/* month */,
+		int		/* year */);
 
 /*
  * This removes a marker from the calendar.

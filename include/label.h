@@ -1,5 +1,5 @@
 /*
- * $Id: label.h,v 1.15 2003/11/15 18:11:09 tom Exp $
+ * $Id: label.h,v 1.17 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 2000-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -55,7 +57,7 @@ extern "C" {
 /*
  * Declare any definitions you need to make.
  */
-#define MAX_LABEL_ROWS	300
+#define MAX_LABEL_ROWS	300	/* unused by widgets */
 
 /*
  * Declare the CDK label structure.
@@ -65,9 +67,9 @@ struct SLabel {
    WINDOW *	parent;
    WINDOW *	win;
    WINDOW *	shadowWin;
-   chtype *	info[MAX_LABEL_ROWS];
-   int		infoLen[MAX_LABEL_ROWS];
-   int		infoPos[MAX_LABEL_ROWS];
+   chtype **	info;
+   int *	infoLen;
+   int *	infoPos;
    int		boxWidth;
    int		boxHeight;
    int		xpos;
@@ -151,7 +153,7 @@ void setCDKLabelBackgroundColor (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 void setCDKLabelBackgroundAttrib (
 		CDKLABEL *	/* label */,
 		chtype		/* attribute */);

@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.25 2003/11/28 13:32:47 tom Exp $
+ * $Id: cdk.h,v 1.27 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDK_H
@@ -10,7 +10,8 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2000-2002,2003, Thomas Dickey
+ * Changes 2000-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -236,8 +237,8 @@ typedef int boolean;
 #define COL		2
 
 #define MAX_BINDINGS	300
-#define MAX_ITEMS	2000
-#define MAX_BUTTONS	200
+#define MAX_ITEMS	2000	/* unused by widgets */
+#define MAX_BUTTONS	200	/* unused by widgets */
 
 /*
  * Not all variants of curses define getmaxx, etc.  But use the provided ones

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.93 $
+ * $Date: 2003/12/06 16:48:11 $
+ * $Revision: 1.94 $
  */
 
 /*
@@ -792,9 +792,9 @@ void setCDKSwindowBackgroundAttrib (CDKSWINDOW *swindow, chtype attrib)
  */
 static void destroyInfo(CDKSWINDOW *swindow)
 {
-   CDKfreeChtypes(swindow->list);
-   if (swindow->listPos != 0) free(swindow->listPos);
-   if (swindow->listLen != 0) free(swindow->listLen);
+   CDKfreeChtypes (swindow->list);
+   freeChecked (swindow->listPos);
+   freeChecked (swindow->listLen);
 
    swindow->list = 0;
    swindow->listPos = 0;
@@ -806,19 +806,22 @@ static void destroyInfo(CDKSWINDOW *swindow)
  */
 static void _destroyCDKSwindow (CDKOBJS *object)
 {
-   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
+   if (object != 0)
+   {
+      CDKSWINDOW *swindow = (CDKSWINDOW *)object;
 
-   destroyInfo(swindow);
+      destroyInfo(swindow);
 
-   cleanCdkTitle (object);
+      cleanCdkTitle (object);
 
-   /* Delete the windows. */
-   deleteCursesWindow (swindow->shadowWin);
-   deleteCursesWindow (swindow->fieldWin);
-   deleteCursesWindow (swindow->win);
+      /* Delete the windows. */
+      deleteCursesWindow (swindow->shadowWin);
+      deleteCursesWindow (swindow->fieldWin);
+      deleteCursesWindow (swindow->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vSWINDOW, swindow);
+      /* Unregister this object. */
+      unregisterCDKObject (vSWINDOW, swindow);
+   }
 }
 
 /*
@@ -1132,9 +1135,9 @@ static int createList(CDKSWINDOW *swindow, int listSize)
       }
       if (!status)
       {
-	 CDKfreeChtypes(newList);
-	 if (newPos != 0) free(newPos);
-	 if (newLen != 0) free(newLen);
+	 CDKfreeChtypes (newList);
+	 freeChecked (newPos);
+	 freeChecked (newLen);
       }
    }
    return status;

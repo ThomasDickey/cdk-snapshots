@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.72 $
+ * $Date: 2003/12/06 16:37:52 $
+ * $Revision: 1.74 $
  */
 
 /*
@@ -68,8 +68,7 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
       if (menuloc[x] == LEFT)
       {
 	/*
-	 * Its a menu item on the left, add it to the left side
-	 * of the menu.
+	 * It is a menu item on the left.  Add it to the left side of the menu.
 	 */
 	 menu->title[x]		= char2Chtype (menulist[x][0], &menu->titleLen[x], &junk);
 	 menu->subsize[x]	= subsize[x] - 1;
@@ -92,10 +91,10 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
       else
       {
 	/*
-	 * Its a menu item on the right, add it to the right side
-	 * of the menu.
+	 * It is a menu item on the right.  Add it to the right side of the
+	 * menu.
 	 */
-	 rightloc			-= max + 3;
+	 rightloc			-= max + 2;
 	 menu->title[rightcount]	= char2Chtype (menulist[x][0], &menu->titleLen[rightcount], &junk);
 	 menu->subsize[rightcount]	= subsize[x] - 1;
 	 if (menu->menuPos == BOTTOM)
@@ -523,26 +522,29 @@ void setCDKMenuBackgroundAttrib (CDKMENU *menu, chtype attrib)
  */
 static void _destroyCDKMenu (CDKOBJS *object)
 {
-   CDKMENU *menu = (CDKMENU *)object;
-   int x, y;
-
-   /* Clean up both the winodws and the char pointers. */
-   for (x=0; x < menu->menuItems; x++)
+   if (object != 0)
    {
-      /* Clean the windows. */
-      deleteCursesWindow (menu->titleWin[x]);
-      deleteCursesWindow (menu->pullWin[x]);
+      CDKMENU *menu = (CDKMENU *)object;
+      int x, y;
 
-      /* Delete the character pointers. */
-      freeChtype (menu->title[x]);
-      for (y=0; y < menu->subsize[x] ; y++)
+      /* Clean up both the winodws and the char pointers. */
+      for (x=0; x < menu->menuItems; x++)
       {
-	 freeChtype (menu->sublist[x][y]);
-      }
-   }
+	 /* Clean the windows. */
+	 deleteCursesWindow (menu->titleWin[x]);
+	 deleteCursesWindow (menu->pullWin[x]);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vMENU, menu);
+	 /* Delete the character pointers. */
+	 freeChtype (menu->title[x]);
+	 for (y=0; y < menu->subsize[x] ; y++)
+	 {
+	    freeChtype (menu->sublist[x][y]);
+	 }
+      }
+
+      /* Unregister this object. */
+      unregisterCDKObject (vMENU, menu);
+   }
 }
 
 /*

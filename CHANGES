@@ -7,6 +7,32 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/12/10 - T.E.Dickey <dickey@his.com>
+========================================
+	+ bump version to 4.9.11 (corresponding source from Mike Glover added
+	  install.sh to tarball; no other source changes were made).
+	+ rename "install.sh" to "install-sh" to work around bugs in certain
+	  make-programs.
+	+ allocate marker[] array in calendar dynamically.  Reduce
+	  corresponding array limits to reasonable values.
+	+ add getCDKCalendarMarker()
+	+ correct seconds in calendar's return value.
+	+ eliminate fixed array limits from dialog widget.
+	+ eliminate fixed array limits from label widget.
+	+ eliminate fixed array limits from selection widget.
+	+ eliminate fixed array limits from viewer widget.
+	+ eliminate fixed array limits from buttonbox widget.
+	+ eliminate fixed array limits from matrix widget.  Passing around
+	  1000x1000 arrays was inefficient, and caused core dumps in the Perl
+	  binding for this widget.
+	+ correct one of the attrbox() calls in drawCDKMatrixCell(), which used
+	  a left-tee where a right-tee was needed (report by William L Davis).
+	+ add setCDKMatrixCells(), redefining setCDKMatrix() as a macro to
+	  call it. 
+	+ add cleanCDKMatrixCell().
+	+ correct position for right-aligned menus, which was off by one from
+	  2003/11/30 changes (report/patch by William L Davis).
+
 2003/12/01 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ correct logic in char2Chtype() for <#UL>, <#UR> and <#LR>, broken in

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.13 2003/04/18 00:18:26 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.14 2003/12/11 01:27:31 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -27,6 +27,7 @@ newCDKSwindow,
 positionCDKSwindow,
 saveCDKSwindowInformation,
 setCDKSwindow,
+setCDKSwindowBackgroundAttrib,
 setCDKSwindowBackgroundColor,
 setCDKSwindowBox,
 setCDKSwindowBoxAttribute,
@@ -134,6 +135,10 @@ trimCDKSwindow \- a curses scrolling window widget.
 .BI "char **" "info",
 .BI "int " "lines",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKSwindowBackgroundAttrib ("
+.BI "CDKSWINDOW *" "swindow",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKSwindowBackgroundColor ("
 .BI "CDKSWINDOW *" "swindow",
@@ -350,6 +355,10 @@ The parameter \fBinfo\fR is a \fIchar **\fR of the information
 to set in the scrolling window; \fBlines\fR is the number of lines being added.
 The other parameter names correspond to the same parameter names listed in the
 \fInewCDKSwindow\fR function.
+.TP 5
+.B setCDKSwindowBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKSwindowBackgroundColor
 sets the background color of the widget.

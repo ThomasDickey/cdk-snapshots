@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.62 $
+ * $Date: 2003/12/06 16:39:02 $
+ * $Revision: 1.63 $
  */
 
 /*
@@ -490,19 +490,22 @@ void setCDKSliderBackgroundAttrib (CDKSLIDER *slider, chtype attrib)
  */
 static void _destroyCDKSlider (CDKOBJS *object)
 {
-   CDKSLIDER *slider = (CDKSLIDER *)object;
+   if (object != 0)
+   {
+      CDKSLIDER *slider = (CDKSLIDER *)object;
 
-   cleanCdkTitle (object);
-   freeChtype (slider->label);
+      cleanCdkTitle (object);
+      freeChtype (slider->label);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (slider->fieldWin);
-   deleteCursesWindow (slider->labelWin);
-   deleteCursesWindow (slider->shadowWin);
-   deleteCursesWindow (slider->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (slider->fieldWin);
+      deleteCursesWindow (slider->labelWin);
+      deleteCursesWindow (slider->shadowWin);
+      deleteCursesWindow (slider->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vSLIDER, slider);
+      /* Unregister this object. */
+      unregisterCDKObject (vSLIDER, slider);
+   }
 }
 
 /*

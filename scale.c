@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.100 $
+ * $Date: 2003/12/06 16:38:32 $
+ * $Revision: 1.101 $
  */
 
 /*
@@ -459,19 +459,22 @@ void setCDKScaleBackgroundAttrib (CDKSCALE *scale, chtype attrib)
  */
 static void _destroyCDKScale (CDKOBJS *object)
 {
-   CDKSCALE *scale = (CDKSCALE *)object;
+   if (object != 0)
+   {
+      CDKSCALE *scale = (CDKSCALE *)object;
 
-   cleanCdkTitle (object);
-   freeChtype (scale->label);
+      cleanCdkTitle (object);
+      freeChtype (scale->label);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (scale->fieldWin);
-   deleteCursesWindow (scale->labelWin);
-   deleteCursesWindow (scale->shadowWin);
-   deleteCursesWindow (scale->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (scale->fieldWin);
+      deleteCursesWindow (scale->labelWin);
+      deleteCursesWindow (scale->shadowWin);
+      deleteCursesWindow (scale->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vSCALE, scale);
+      /* Unregister this object. */
+      unregisterCDKObject (vSCALE, scale);
+   }
 }
 
 /*
