@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:18:52 $
- * $Revision: 1.188 $
+ * $Date: 2003/12/01 22:21:01 $
+ * $Revision: 1.189 $
  */
 
 #define L_MARKER '<'
@@ -549,16 +549,16 @@ chtype *char2Chtype (char *string, int *to, int *align)
 		     switch (string[from + 1])
 		     {
 		     case 'L': lastChar = ACS_LLCORNER; break;
-		     case 'U': lastChar = ACS_LRCORNER; break;
+		     case 'U': lastChar = ACS_ULCORNER; break;
 		     case 'H': lastChar = ACS_HLINE; break;
 		     case 'V': lastChar = ACS_VLINE; break;
 		     case 'P': lastChar = ACS_PLUS; break;
 		     }
 		     break;
-		  case 'U':
+		  case 'R':
 		     switch (string[from + 1])
 		     {
-		     case 'L': lastChar = ACS_ULCORNER; break;
+		     case 'L': lastChar = ACS_LRCORNER; break;
 		     case 'U': lastChar = ACS_URCORNER; break;
 		     }
 		     break;

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_display.3,v 1.7 2002/08/09 22:03:05 tom Exp $
+.\" $Id: cdk_display.3,v 1.8 2003/12/01 23:14:16 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -25,6 +25,7 @@ or until the end of the string.
 .LP
 This manual
 page outlines and demonstrates how they work.
+.
 .SS How To Use Colors
 Cdk has the capability to display colors in almost every string type displayed
 in a Cdk widget.
@@ -47,7 +48,7 @@ To turn off a
 color pair use the format command <!XX> where \fIXX\fR is a numeric value from
 0 to 64.
 .LP
-The following code segment demonstrates the use of the color commands.
+The following example demonstrates the use of the color commands.
 .ne 10
 .sp 1
 .nf
@@ -89,6 +90,7 @@ void main()
 .ce
 \fI----------------------------------------\fR
 .PP
+.
 .SS How To Use Different Character Attributes
 Cdk also provides attribute commands which allow different character attributes
 to be displayed in a Cdk widget.
@@ -113,7 +115,7 @@ D/Dim
 N/Normal
 .TE
 .LP
-The following code segment demonstrates the use of character display attributes.
+The following example demonstrates the use of character display attributes.
 .ne 10
 .sp 2
 .nf
@@ -159,10 +161,11 @@ Note that color commands and format commands can be mixed inside the same
 format marker.
 The above example underlines the label marker, which also sets
 color pair number 2.
+.
 .SS How To Justify Strings
 Justification commands can left justify, right justify, or center a string of text.
 To use a justification format in a string the command <X> is used.
-The following table lists all of the format commands available.
+The following table lists the format commands:
 .LP
 .TS
 center tab(/) box;
@@ -178,11 +181,11 @@ lw15 lw35 .
 <B=X>/Bullet. X is the bullet string to use.
 <F=X>/T{
 Links in a file where X is the filename.
-Currently only works with the viewer widget.
+This works only with the viewer widget.
 T}
 .TE
 
-The following code segment demonstrates how to use the justification commands
+The following example demonstrates how to use the justification commands
 in a Cdk widget.
 .ce
 \fI----------------------------------------\fR
@@ -238,8 +241,8 @@ it would look like
 \fI***\fR This is a bullet.
 .RE
 .PP
-The only restriction that a format command has is that it must be at the
-beginning of the string.
+A format command must be at the beginning of the string.
+.
 .SS How To Use Special Drawing Characters
 Cdk has a set of special drawing characters which can be inserted into any
 ASCII file.
@@ -257,27 +260,38 @@ lw15 lw35 .
 <#UR>/Upper Right Corner
 <#LL>/Lower Left Corner
 <#LR>/Lower Right Corner
+=
 <#LT>/Left Tee
 <#RT>/Right Tee
 <#TT>/Top Tee
 <#BT>/Bottom Tee
+=
 <#HL>/Horizontal Line
 <#VL>/Vertical Line
+=
 <#PL>/Plus Sign
 <#PM>/Plus or Minus Sign
 <#DG>/Degree Sign
 <#CB>/Checker Board
 <#DI>/Diamond
 <#BU>/Bullet
+<#S1>/Scan line 1
+<#S9>/Scan line 9
+=
+<#LA>/Left Arrow
+<#RA>/Right Arrow
+<#TA>/Top Arrow
+<#BA>/Bottom Arrow
 .TE
 .LP
 The character formats can be repeated using an optional numeric repeat value.
-To repeat a character add (XXX) to the end of the character format.
-The following example, draws 10 horizontal lines.
+To repeat a character add the repeat count within parentheses
+to the end of the character format.
+The following example draws 10 horizontal-line characters:
 .LP
 <#HL(10)>
 .LP
-The following code segment draws a box within a label window.
+The following example draws a box within a label window:
 .ce
 \fI----------------------------------------\fR
 .nf
@@ -338,12 +352,13 @@ void main()
 .LP
 Notice that drawn text can also be justified.
 .LP
+.
 .SS Edit/Display Type Codes (EDisplayType)
 .TS
 center tab(/) box;
 l l
 l l
-lw15 lw35 .
+lw15 lw45 .
 \fBDisplay_Type/Result\fR
 =
 vCHAR/Only accepts alphabetic characters.
@@ -359,25 +374,25 @@ when a character has been accepted.
 T}
 vHCHAR/T{
 Only accepts alphabetic characters.
-Displays a \fI.\fR when a character
+Displays a period (\fI.\fR) when a character
 has been accepted.
 T}
 vUHCHAR/T{
 Only accepts alphabetic characters.
-Displays a \fI.\fR and maps the
+Displays a period (\fI.\fR) and maps the
 character to upper case when a
 character has been accepted.
 T}
 vLHCHAR/T{
 Only accepts alphabetic characters.
-Displays a \fI.\fR and maps the
+Displays a period (\fI.\fR) and maps the
 character to lower case when a
 character has been accepted.
 vINT/Only accepts numeric characters.
 T}
 vHINT/T{
 Only accepts numeric characters.
-Displays a \fI.\fR when a character
+Displays a period (\fI.\fR) when a character
 has been accepted.
 vMIXED/Accepts any character types.
 T}
@@ -395,18 +410,18 @@ been accepted.
 T}
 vHMIXED/T{
 Accepts any character types.
-Displays a \fI.\fR when a character
+Displays a period (\fI.\fR) when a character
 has been accepted.
 T}
 vLHMIXED/T{
 Accepts any character types.
-Displays a \fI.\fR and maps the
+Displays a period (\fI.\fR) and maps the
 charac}er to lower case when a
 character has been accepted.
 T}
 vUHMIXED/T{
 Accepts any character types.
-Displays a \fI.\fR and maps the
+Displays a period (\fI.\fR) and maps the
 character to upper case when a
 character has been accepted.
 vVIEWONLY/Uneditable field.

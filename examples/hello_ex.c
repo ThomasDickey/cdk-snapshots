@@ -1,4 +1,4 @@
-/* $Id: hello_ex.c,v 1.5 2003/11/30 17:57:18 tom Exp $ */
+/* $Id: hello_ex.c,v 1.6 2003/12/01 23:22:21 tom Exp $ */
 
 #include <cdk.h>
 
@@ -26,9 +26,9 @@ int main(int argc, char **argv)
    initCDKColor();
 
    /* Set the labels up. */
-   mesg[0] = "                               ";
-   mesg[1] = "<C>Hello World!";
-   mesg[2] = "                               ";
+   mesg[0] = "</5><#UL><#HL(30)><#UR>";
+   mesg[1] = "</5><#VL(10)>Hello World!<#VL(10)>";
+   mesg[2] = "</5><#LL><#HL(30)><#LR>";
 
    /* Declare the labels. */
    demo = newCDKLabel (cdkscreen,
@@ -37,6 +37,8 @@ int main(int argc, char **argv)
 		       mesg, 3,
 		       CDKparamValue(&params, 'N', TRUE),
 		       CDKparamValue(&params, 'S', TRUE));
+
+   setCDKLabelBackgroundAttrib (demo, COLOR_PAIR(2));
 
    /* Is the label null? */
    if (demo == 0)
