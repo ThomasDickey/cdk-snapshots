@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.60 $
+ * $Date: 2000/09/23 00:16:19 $
+ * $Revision: 1.61 $
  */
 
 static void segvTrap (int sig);
@@ -136,52 +136,57 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
 void raiseCDKObject (EObjectType cdktype, void *object)
 {
    CDKOBJS *swapobject;
-   int toppos		= -1;
-   int swapindex	= -1;
    EObjectType swaptype;
+   int swapindex;
+   int toppos;
 
    if (validObjType(cdktype)) {
-      CDKOBJS *obj = (CDKOBJS *)object;
+      CDKOBJS *obj	= (CDKOBJS *)object;
+      CDKSCREEN *parent	= obj->screen;
 
-      toppos		= (obj)->screen->objectCount;
-      swapobject	= (obj)->screen->object[toppos];
-      swaptype		= (obj)->screen->cdktype[toppos];
+      toppos		= parent->objectCount - 1;
+
+      swapobject	= parent->object[toppos];
+      swaptype		= parent->cdktype[toppos];
       swapindex		= (obj)->screenIndex;
 
-      (obj)->screenIndex		= toppos;
-      (obj)->screen->object[toppos]	= obj;
-      (obj)->screen->cdktype[toppos]	= cdktype;
+      (obj)->screenIndex	= toppos;
+      parent->object[toppos]	= obj;
+      parent->cdktype[toppos]	= cdktype;
 
-      (obj)->screenIndex		= swapindex;
-      (obj)->screen->object[swapindex]	= swapobject;
-      (obj)->screen->cdktype[swapindex] = swaptype;
+      (swapobject)->screenIndex	= swapindex;
+      parent->object[swapindex]	= swapobject;
+      parent->cdktype[swapindex] = swaptype;
    }
 }
 
 /*
  * This 'lowers' an object.
-*/
+ */
 void lowerCDKObject (EObjectType cdktype, void *object)
 {
    CDKOBJS *swapobject;
-   int toppos		= 0;
-   int swapindex	= -1;
    EObjectType swaptype;
+   int swapindex;
+   int toppos;
 
    if (validObjType(cdktype)) {
       CDKOBJS *obj = (CDKOBJS *)object;
+      CDKSCREEN *parent	= obj->screen;
 
-      swapobject	= (obj)->screen->object[toppos];
-      swaptype		= (obj)->screen->cdktype[toppos];
+      toppos		= 0;
+
+      swapobject	= parent->object[toppos];
+      swaptype		= parent->cdktype[toppos];
       swapindex		= (obj)->screenIndex;
 
-      (obj)->screenIndex		= toppos;
-      (obj)->screen->object[toppos]	= obj;
-      (obj)->screen->cdktype[toppos]	= cdktype;
+      (obj)->screenIndex	= toppos;
+      parent->object[toppos]	= obj;
+      parent->cdktype[toppos]	= cdktype;
 
-      (obj)->screenIndex		= swapindex;
-      (obj)->screen->object[swapindex]	= swapobject;
-      (obj)->screen->cdktype[swapindex] = swaptype;
+      (swapobject)->screenIndex	= swapindex;
+      parent->object[swapindex]	= swapobject;
+      parent->cdktype[swapindex] = swaptype;
    }
 }
 

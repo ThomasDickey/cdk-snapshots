@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.39 $
+ * $Date: 2000/09/23 15:55:24 $
+ * $Revision: 1.40 $
  */
 
 DeclareCDKObjects(my_funcs,Itemlist);
@@ -49,8 +49,8 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    }
 
    /* Set the field width and the box width. */
-   fieldWidth = maxWidth + 2;
-   boxWidth = fieldWidth + itemlist->labelLen;
+   fieldWidth = maxWidth;
+   boxWidth = fieldWidth + itemlist->labelLen + 3;
 
    /* Now we need to justify the strings. */
    for (x=0; x < count; x++)
@@ -124,13 +124,13 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Make the field window. */
    itemlist->fieldWin = subwin (cdkscreen->window, 1, fieldWidth,
 				ypos + itemlist->titleLines + 1,
-				xpos + itemlist->labelLen + horizontalAdjust + 1);
+				xpos + itemlist->labelLen + horizontalAdjust + 2);
    keypad (itemlist->fieldWin, TRUE);
 
    /* Make the label window if there was a label. */
    if (itemlist->label != 0)
    {
-      itemlist->labelWin = subwin (cdkscreen->window, 1, itemlist->labelLen + 1,
+      itemlist->labelWin = subwin (cdkscreen->window, 1, itemlist->labelLen + 2,
 					ypos + itemlist->titleLines + 1,
 					xpos + horizontalAdjust + 2);
    }

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.40 $
+ * $Date: 2000/09/23 15:33:44 $
+ * $Revision: 1.41 $
  */
 
 /*
@@ -464,7 +464,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    int yearIndex	= calendar->year - 1900;
    int yearLen		= 0;
    int day		= 1;
-   int x, y, Div, mod;
+   int x, y, Ten, One;
    char temp[10];
 
    /* Get the length of the month. */
@@ -473,13 +473,13 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    /* Draw in the first line of the days. */
    for (x=calendar->weekDay; x < 7; x++)
    {
-      Div = day / 10;
-      mod = day % 10;
+      Ten = '0' + (day / 10);
+      One = '0' + (day % 10);
 
       if (calendar->day == day)
       {
-	 mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, (Div + 48) | calendar->highlight);
-	 mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), (mod + 48) | calendar->highlight);
+	 mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, Ten | calendar->highlight);
+	 mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), One | calendar->highlight);
       }
       else
       {
@@ -487,13 +487,13 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	 if (calendar->marker[day][calendar->month][yearIndex] != 0)
 	 {
 	    chtype marker = calendar->marker[day][calendar->month][yearIndex] | calendar->dayAttrib;
-	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, (Div + 48) | marker);
-	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), (mod + 48) | marker);
+	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, Ten | marker);
+	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), One | marker);
 	 }
 	 else
 	 {
-	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, (Div + 48) | calendar->dayAttrib);
-	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), (mod + 48) | calendar->dayAttrib);
+	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, Ten | calendar->dayAttrib);
+	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), One | calendar->dayAttrib);
 	 }
       }
       day++;
@@ -504,13 +504,13 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
       {
 	 if (day <= monthLength)
 	 {
-	    Div = day / 10;
-	    mod = day % 10;
+	    Ten = '0' + (day / 10);
+	    One = '0' + (day % 10);
 
 	    if (calendar->day == day)
 	    {
-	       mvwaddch (calendar->fieldWin, x, (y*3)-1, (Div + 48) | calendar->highlight);
-	       mvwaddch (calendar->fieldWin, x, (y*3), (mod + 48) | calendar->highlight);
+	       mvwaddch (calendar->fieldWin, x, (y*3)-1, Ten | calendar->highlight);
+	       mvwaddch (calendar->fieldWin, x, (y*3), One | calendar->highlight);
 	    }
 	    else
 	    {
@@ -518,13 +518,13 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	       if (calendar->marker[day][calendar->month][yearIndex] != 0)
 	       {
 		  chtype marker = calendar->marker[day][calendar->month][yearIndex] | calendar->dayAttrib;
-		  mvwaddch (calendar->fieldWin, x, (y*3)-1, (Div + 48) | marker);
-		  mvwaddch (calendar->fieldWin, x, (y*3), (mod + 48) | marker);
+		  mvwaddch (calendar->fieldWin, x, (y*3)-1, Ten | marker);
+		  mvwaddch (calendar->fieldWin, x, (y*3), One | marker);
 	       }
 	       else
 	       {
-		  mvwaddch (calendar->fieldWin, x, (y*3)-1, (Div + 48) | calendar->dayAttrib);
-		  mvwaddch (calendar->fieldWin, x, (y*3), (mod + 48) | calendar->dayAttrib);
+		  mvwaddch (calendar->fieldWin, x, (y*3)-1, Ten | calendar->dayAttrib);
+		  mvwaddch (calendar->fieldWin, x, (y*3), One | calendar->dayAttrib);
 	       }
 	    }
 	 }

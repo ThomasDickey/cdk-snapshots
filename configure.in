@@ -105,9 +105,9 @@ pdcurses) #(vi
 	;;
 esac
 
-CF_CURSES_FUNCS(start_color getmaxx getmaxy getbegx getbegy mvwin)
+CF_CURSES_FUNCS(start_color getmaxx getmaxy getbegx getbegy mvwin Xinitscr)
 
 dnl
 dnl Set pre-processor compile time variables.
 dnl
-AC_OUTPUT(Makefile examples/Makefile demos/Makefile,,,sort)
+AC_OUTPUT(Makefile cli/Makefile examples/Makefile demos/Makefile,,,sort)

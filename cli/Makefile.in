@@ -1,0 +1,67 @@
+# $Id: Makefile.in,v 1.1 2000/09/15 11:20:09 tom Exp $
+#
+# Makefile for the cli directory.
+#
+SHELL		= /bin/sh
+
+CC		= @CC@
+
+x		= @PROG_EXT@
+
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+
+srcdir		= @srcdir@
+VPATH		= $(srcdir)
+
+LIBS		= -lcdk @LIBS@
+LIBDIR		= -L.. @LDFLAGS@
+
+CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
+CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I$(srcdir)/../include
+
+BINS	= \
+	cdkalphalist$x \
+	cdkcalendar$x \
+	cdkdialog$x \
+	cdkentry$x \
+	cdkfselect$x \
+	cdkitemlist$x \
+	cdklabel$x \
+	cdkmatrix$x \
+	cdkmentry$x \
+	cdkradio$x \
+	cdkscale$x \
+	cdkscroll$x \
+	cdkselection$x \
+	cdkslider$x \
+	cdktemplate$x \
+	cdkviewer$x
+
+LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LIBDIR) $(LIBS)
+
+all : $(BINS)
+
+cdkalphalist$x :	cdkalphalist.c	; $(LINKIT)
+cdkcalendar$x :		cdkcalendar.c	; $(LINKIT)
+cdkdialog$x :		cdkdialog.c	; $(LINKIT)
+cdkentry$x :		cdkentry.c	; $(LINKIT)
+cdkfselect$x :		cdkfselect.c	; $(LINKIT)
+cdkitemlist$x :		cdkitemlist.c	; $(LINKIT)
+cdklabel$x :		cdklabel.c	; $(LINKIT)
+cdkmatrix$x :		cdkmatrix.c	; $(LINKIT)
+cdkmentry$x :		cdkmentry.c	; $(LINKIT)
+cdkradio$x :		cdkradio.c	; $(LINKIT)
+cdkscale$x :		cdkscale.c	; $(LINKIT)
+cdkscroll$x :		cdkscroll.c	; $(LINKIT)
+cdkselection$x :	cdkselection.c	; $(LINKIT)
+cdkslider$x :		cdkslider.c	; $(LINKIT)
+cdktemplate$x :		cdktemplate.c	; $(LINKIT)
+cdkviewer$x :		cdkviewer.c	; $(LINKIT)
+#
+# Standard clean directives.
+#
+clean::
+	$(RM) core *.o $(BINS)
+distclean:: clean
+	$(RM) Makefile
