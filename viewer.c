@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:06:08 $
- * $Revision: 1.116 $
+ * $Date: 2002/08/10 00:37:44 $
+ * $Revision: 1.117 $
  */
 
 /*
@@ -936,7 +936,7 @@ static void _drawCDKViewer (CDKOBJS *object, boolean Box)
 static void drawCDKViewerButtons (CDKVIEWER *viewer)
 {
    /* Declare local variables. */
-   char character;
+   chtype character;
    int x;
 
    /* No buttons, no drawing. */

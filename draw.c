@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/21 19:26:00 $
- * $Revision: 1.49 $
+ * $Date: 2002/08/10 00:33:24 $
+ * $Revision: 1.50 $
  */
 
 /*
@@ -230,7 +230,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-	 mvwaddch (window, ypos+x, xpos, string[x+start]);
+	 mvwaddch (window, ypos+x, xpos, A_CHARTEXT & string[x+start]);
       }
    }
 }

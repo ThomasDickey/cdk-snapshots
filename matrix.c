@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:36:31 $
- * $Revision: 1.136 $
+ * $Date: 2002/08/10 00:16:55 $
+ * $Revision: 1.137 $
  */
 
 /*
@@ -987,16 +987,11 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
    /* If the column is only one char. */
    for (x=1; x <= matrix->colwidths[matrix->ccol]; x++)
    {
-      if (x <= infolen)
-      {
-	mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
-			matrix->info[matrix->row][matrix->col][x-1]|highlight);
-      }
-      else
-      {
-	mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x,
-			matrix->filler | highlight);
-      }
+      chtype ch = (x <= infolen)
+      		? (A_CHARTEXT & matrix->info[matrix->row][matrix->col][x-1])
+		: matrix->filler;
+
+      mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x, ch | highlight);
    }
    wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
@@ -1087,14 +1082,11 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    /* Draw in the cell info. */
    for (x=1; x <= matrix->colwidths[col]; x++)
    {
-      if (x <= infolen)
-      {
-	 mvwaddch (cell, 1, x, matrix->info[vrow][vcol][x-1]|highlight);
-      }
-      else
-      {
-	 mvwaddch (cell, 1, x, matrix->filler|highlight);
-      }
+      chtype ch = (x <= infolen)
+      		? (A_CHARTEXT & matrix->info[vrow][vcol][x-1]|highlight)
+		: matrix->filler;
+
+      mvwaddch (cell, 1, x, ch | highlight);
    }
    wmove (cell, 1, infolen + 1);
    wrefresh (cell);

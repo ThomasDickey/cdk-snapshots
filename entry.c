@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:34:13 $
- * $Revision: 1.172 $
+ * $Date: 2002/08/10 00:08:46 $
+ * $Revision: 1.173 $
  */
 
 /*
@@ -603,8 +603,8 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
    /* Declare local variables. */
-   char plainchar = (character & A_CHARTEXT);
-   int temp, x;
+   int plainchar = (character & A_CHARTEXT);
+   unsigned temp, x;
 
    /* Start checking the input. */
    if (character <= 0 || character >= KEY_MIN)
@@ -641,7 +641,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 	     entry->dispType == vUHCHAR ||
 	     entry->dispType == vUMIXED ||
 	     entry->dispType == vUHMIXED)
-	     && !isdigit((int)plainchar))
+	     && !isdigit(plainchar))
       {
 	 plainchar = toupper (plainchar);
       }
@@ -649,7 +649,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 		     entry->dispType == vLHCHAR ||
 		     entry->dispType == vLMIXED ||
 		     entry->dispType == vLHMIXED) &&
-		     !isdigit((int)plainchar))
+		     !isdigit(plainchar))
       {
 	 plainchar = tolower (plainchar);
       }
@@ -658,8 +658,8 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
       if (entry->screenCol != entry->fieldWidth-1)
       {
 	 /* Update the character pointer. */
-	 temp = (int)strlen (entry->info);
-	 for (x=temp; x > entry->screenCol + entry->leftChar; x--)
+	 temp = strlen (entry->info);
+	 for (x=temp; (int) x > entry->screenCol + entry->leftChar; x--)
 	 {
 	    entry->info[x] = entry->info[x-1];
 	 }
@@ -669,8 +669,8 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
       else
       {
 	 /* Update the character pointer. */
-	 temp = (int)strlen (entry->info);
-	 entry->info[temp]	= plainchar;
+	 temp = strlen (entry->info);
+	 entry->info[temp]     = plainchar;
 	 entry->info[temp + 1] = '\0';
 	 entry->leftChar++;
       }
@@ -785,14 +785,14 @@ static void drawCDKEntryField (CDKENTRY *entry)
       {
 	 for (x=entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x-entry->leftChar, entry->hidden);
+	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden);
 	 }
       }
       else
       {
 	 for (x=entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x-entry->leftChar, entry->info[x] | entry->fieldAttr);
+	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, A_CHARTEXT & entry->info[x] | entry->fieldAttr);
 	 }
       }
       wmove (entry->fieldWin, 0, entry->screenCol);
