@@ -84,18 +84,26 @@ CF_FUNC_LSTAT
 
 dnl Check for curses libraries last, since XCurses has dependencies which
 dnl break the checks for other functions.
+use_library=curses
 AC_ARG_WITH(ncurses,
 	[  --with-ncurses          compile/link with ncurses library],
-	[	
-	CF_NCURSES_CPPFLAGS
-	CF_NCURSES_LIBS
-	],[
+	[use_library=ncurses],[
 AC_ARG_WITH(pdcurses,
 	[  --with-pdcurses         compile/link with pdcurses X11 library],
-	[CF_PDCURSES_X11],
-	[
+	[use_library=pdcurses])])
+
+case $use_library in #(vi
+ncurses) #(vi
+	CF_NCURSES_CPPFLAGS
+	CF_NCURSES_LIBS
+	;;
+pdcurses) #(vi
+	CF_PDCURSES_X11
+	;;
+*)
 	CF_CURSES_LIBS
-])])
+	;;
+esac
 
 CF_CURSES_FUNCS(start_color)
 

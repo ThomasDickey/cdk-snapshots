@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:54 $
- * $Revision: 1.69 $
+ * $Date: 2000/06/29 00:08:48 $
+ * $Revision: 1.70 $
  */
 
 /*
@@ -1011,7 +1011,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    CDKFSELECT *fselect	= 0;
    CDKDIALOG *dialog	= 0;
    char *filename	= 0;
-   char temp[256], *mesg[15], *button[5], *fileInfo[MAX_LINES];
+   char temp[256], *mesg[15], *button[5], **fileInfo = 0;
    int lines, answer;
 
    /* Create the file selector to choose the file. */
@@ -1076,7 +1076,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    }
 
    /* Open the file and read it in. */
-   lines = readFile (filename, fileInfo, MAX_LINES);
+   lines = CDKreadFile (filename, &fileInfo);
    if (lines == -1)
    {
       /* The file read didn't work. */
@@ -1099,7 +1099,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    setCDKSwindow (swindow, fileInfo, lines, ObjOf(swindow)->box);
 
    /* Clean up. */
-   freeCharList (fileInfo, lines);
+   CDKfreeStrings (fileInfo);
    freeChar (filename);
 }
 

@@ -13,9 +13,10 @@ char *XCursesProgramName="syb";
  * This structure is used for keeping command history.
  */
 struct history_st {
+   unsigned used;
    int count;
    int current;
-   char *command[MAXHISTORY];
+   char **cmd_history;
 };
 
 /*
@@ -90,7 +91,8 @@ int main (int argc, char **argv)
    char *mesg[5], temp[1000];
 
    /* Set up the history. */
-   GPCurrentDatabase	= strdup ("master");
+   GPCurrentDatabase	= copyChar ("master");
+   history.used   	= 0;
    history.current	= 0;
    history.count	= 0;
 
@@ -350,8 +352,7 @@ int main (int argc, char **argv)
       }
 
       /* Keep the history. */
-      history.command[history.count] = copyChar (command);
-      history.count++;
+      history.used = CDKallocStrings(&(history.cmd_history), command, history.count++, history.used);
       history.current = history.count;
 
       /* Clear the entry field. */
@@ -519,8 +520,8 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       while (1)
       {
 	 /* Redraw the screen. */
-	 eraseCDKScreen (loginEntry->screen);
-	 refreshCDKScreen (loginEntry->screen);
+	 eraseCDKScreen (ScreenOf(loginEntry));
+	 refreshCDKScreen (ScreenOf(loginEntry));
 
 	 /* Get the login to the sybase account. */
 	 login = copyChar (activateCDKEntry (loginEntry, 0));
@@ -556,7 +557,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       /* Get the password. (the account may not have a password.) */
       password = copyChar (activateCDKEntry (passwordEntry, 0));
       if ((passwordEntry->exitType == vESCAPE_HIT) ||
-	((int)strlen(password) == 0))
+	(strlen(password) == 0))
       {
 	 password = "";
       }
@@ -668,7 +669,7 @@ char *assembleTitle (DBPROCESS *dbProc)
    {
       colName		= dbcolname (dbProc, x);
       colWidth		= getColWidth (dbProc, x);
-      colNameLen	= (int)strlen (colName);
+      colNameLen	= strlen (colName);
 
       /* If we need to pad, then pad. */
       if (colNameLen < colWidth)
@@ -686,7 +687,7 @@ char *assembleTitle (DBPROCESS *dbProc)
 	 sprintf (row, "%s %s", row, colName);
       }
    }
-   return (char *)strdup (row);
+   return copyChar (row);
 }
 
 /*
@@ -784,7 +785,7 @@ char *assembleRow (DBPROCESS *dbProcess)
 int getColWidth (DBPROCESS *dbProcess, int col)
 {
    char *colName	= dbcolname (dbProcess, col);
-   int colNameLen	= (int)strlen(colName);
+   int colNameLen	= strlen(colName);
    int colWidth		= dbcollen (dbProcess, col);
    int columnType	= (int)dbcoltype (dbProcess, col);
 
@@ -871,7 +872,7 @@ void help (CDKENTRY *entry)
    mesg[lines++] = "<C> (</B/24>Refer to the scrolling window online manual for more help<!B!24>.)";
 
    /* Pop up the help message. */
-   popupLabel (entry->screen, mesg, lines);
+   popupLabel (ScreenOf(entry), mesg, lines);
 }
 
 /*
@@ -990,7 +991,7 @@ void historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype ke
    history->current--;
 
    /* Display the command. */
-   setCDKEntryValue (entry, history->command[history->current]);
+   setCDKEntryValue (entry, history->cmd_history[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
 }
 
@@ -1021,7 +1022,7 @@ void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype 
    }
 
    /* Display the command. */
-   setCDKEntryValue (entry, history->command[history->current]);
+   setCDKEntryValue (entry, history->cmd_history[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
 }
 
@@ -1042,20 +1043,20 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    {
       /* Popup a little window telling the user there are no commands. */
       char *mesg[] = {"<C></B/16>No Commands Entered", "<C>No History"};
-      popupLabel (entry->screen, mesg, 2);
+      popupLabel (ScreenOf(entry), mesg, 2);
 
       /* Redraw the screen. */
-      eraseCDKEntry (ObjOf(entry));
-      drawCDKScreen (entry->screen);
+      eraseCDKEntry (entry);
+      drawCDKScreen (ScreenOf(entry));
 
       /* And leave... */
       return;
    }
 
    /* Create the scrolling list of previous commands. */
-   scrollList = newCDKScroll (entry->screen, CENTER, CENTER, RIGHT,
+   scrollList = newCDKScroll (ScreenOf(entry), CENTER, CENTER, RIGHT,
 				height, -10, "<C></B/29>Command History",
-				history->command, history->count,
+				history->cmd_history, history->count,
 				NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
@@ -1066,11 +1067,11 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    if (selection >= 0)
    {
       /* Get the command and stick it back in the entry field. */
-      setCDKEntryValue (entry, history->command[selection]);
+      setCDKEntryValue (entry, history->cmd_history[selection]);
    }
 
    /* Redraw the screen. */
-   eraseCDKEntry (ObjOf(entry));
+   eraseCDKEntry (entry);
    drawCDKScreen (ScreenOf(entry));
 }
 
@@ -1094,7 +1095,7 @@ void loadHistory (struct history_st *history)
    history->count	= 0;
 
    /* Read the file. */
-   if ((history->count = readFile (filename, history->command, MAXHISTORY)) != -1)
+   if ((history->count = CDKreadFile (filename, &(history->cmd_history))) != -1)
    {
       history->current = history->count;
    }
@@ -1127,7 +1128,7 @@ void saveHistory (struct history_st *history, int count)
    /* Start saving the history. */
    for (x=0; x < history->count; x++)
    {
-      fprintf (fd, "%s\n", history->command[x]);
+      fprintf (fd, "%s\n", history->cmd_history[x]);
    }
    fclose (fd);
    return;

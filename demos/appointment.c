@@ -202,12 +202,12 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    int appointments	= 0;
    int linesRead	= 0;
    int segments		= 0;
-   char *lines[MAX_LINES];
+   char **lines		= 0;
    char **temp;
    int x;
 
    /* Read the appointment file. */
-   linesRead = readFile (filename, lines, MAX_LINES);
+   linesRead = CDKreadFile (filename, &lines);
    if (linesRead == -1)
    {
       appInfo->appointmentCount = 0;
@@ -235,6 +235,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
       }
       CDKfreeStrings(temp);
    }
+   CDKfreeStrings(lines);
 
    /* Keep the amount of appointments read. */
    appInfo->appointmentCount = appointments;

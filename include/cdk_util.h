@@ -55,14 +55,6 @@ void alignxy (
 		int		/* boxHeight */);
 
 /*
- * This returns a substring of the given string.
- */
-char *substring (
-		char *		/* string */,
-		int		/* start */,
-		int		/* width */);
-
-/*
  * This takes a string, a field width and a justification type and returns the
  * justification adjustment to make, to fill the justification requirement.
  */
@@ -138,26 +130,19 @@ int viewInfo (
 		boolean		/* interpret */);
 
 /*
- * This is needed for calling the quick sort routines. (I may kill
- * this and use the libc qsort)
+ * This is a wrapper for qsort.
  */
-void quickSort (
+void sortList (
 		char *		/* list */ [],
-		int		/* left */,
-		int		/* right */);
-void swapIndex (
-		char *		/* list */ [],
-		int		/* i */,
-		int		/* j */);
+		int		/* length */);
 
 /*
  * This reads a file, loads the contents into info and
  * returns the number of lines read.
  */
-int readFile (
+int CDKreadFile (
 		char *		/* filename */,
-		char **		/* info */,
-		int		/* maxlines */);
+		char ***	/* info */);
 
 /*
  * This strips which space from the front/back of the given
@@ -175,6 +160,12 @@ char **CDKsplitString(
    		char *		/* string */,
 		int		/* separator */);
 
+unsigned CDKallocStrings(
+		char ***	/* list */,
+		char *		/* item */,
+		unsigned	/* length */,
+		unsigned	/* used */);
+
 unsigned CDKcountStrings(
    		char **		/* list */);
 
@@ -191,10 +182,9 @@ int intlen (
  * This opens the given directory and reads in the contents. It stores
  * the results in 'list' and returns the number of elements found.
  */
-int getDirectoryContents (
+int CDKgetDirectoryContents (
 		char *		/* directory */,
-		char **		/* list */,
-		int		/* maxListSize */);
+		char ***	/* list */);
 
 /*
  * This looks for the given pattern in the given list.

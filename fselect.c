@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.27 $
+ * $Date: 2000/06/29 01:02:39 $
+ * $Revision: 1.28 $
  */
 
 /*
@@ -491,13 +491,13 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
 {
    /* Declare local variables. */
    struct stat fileStat;
-   char *dirList[MAX_ITEMS];
+   char **dirList = 0;
    char temp[200], mode;
    int fileCount;
    int x = 0;
 
    /* Get the directory contents. */
-   fileCount = getDirectoryContents (fselect->pwd, dirList, MAX_ITEMS);
+   fileCount = CDKgetDirectoryContents (fselect->pwd, &dirList);
    if (fileCount == -1)
    {
       /* We couldn't read the directory. Return. */
@@ -544,8 +544,8 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
       fselect->dirContents[x] = copyChar (temp);
 
       /* Free up this piece of memory. */
-      freeChar (dirList[x]);
    }
+   CDKfreeStrings (dirList);
    return 1;
 }
 

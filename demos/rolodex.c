@@ -593,14 +593,14 @@ int openNewRCFile (CDKSCREEN *screen, SRolodex *groupList, int groupCount)
 int readRCFile (char *filename, SRolodex *groupList)
 {
    /* Declare variables. */
-   int groupsFound= 0;
-   int errorsFound= 0;
-   char *lines[MAX_LINES];
+   int groupsFound = 0;
+   int errorsFound = 0;
+   char **lines = 0;
    char **items;
    int linesRead, chunks, x;
 
    /* Open the file and start reading. */
-   linesRead = readFile (filename, lines, MAX_LINES);
+   linesRead = CDKreadFile (filename, &lines);
 
    /* Check the number of lines read. */
    if (linesRead == 0)
@@ -646,10 +646,7 @@ int readRCFile (char *filename, SRolodex *groupList)
    }
 
    /* Clean up. */
-   for (x=0; x < linesRead; x++)
-   {
-      freeChar (lines[x]);
-   }
+   CDKfreeStrings(lines);
 
    /* Check the number of groups to the number of errors. */
    if (errorsFound > 0 && groupsFound == 0)
@@ -788,18 +785,18 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc GCC_UN
 int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
 {
    /* Declare variables. */
-   char *lines[MAX_LINES];
+   char **lines = 0;
    char **items;
-   int linesRead= 0;
+   int linesRead = 0;
    int chunks= 0;
-   int linesFound= 0;
+   int linesFound = 0;
    int x;
 
    /* Open the file and start reading. */
-   linesRead = readFile (dataFile, lines, MAX_LINES);
+   linesRead = CDKreadFile (dataFile, &lines);
 
    /* Check the number of lines read. */
-   if ((linesRead == 0) || (linesRead == -1))
+   if (linesRead <= 0)
    {
       return (0);
    }
@@ -839,10 +836,7 @@ int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
    }
 
    /* Clean up. */
-   for (x=0; x < linesRead; x++)
-   {
-      freeChar (lines[x]);
-   }
+   CDKfreeStrings(lines);
 
    /* Keep the record count and return. */
    phoneData->recordCount = linesFound;
