@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.79 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.80 $
  */
 
 /*
@@ -310,7 +310,7 @@ int injectCDKRadio (CDKRADIO *radio, chtype input)
    if (radio->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(radio->preProcessFunction)) (vRADIO, radio, radio->preProcessData, input);
+      ppReturn = radio->preProcessFunction (vRADIO, radio, radio->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -476,7 +476,7 @@ int injectCDKRadio (CDKRADIO *radio, chtype input)
       /* Should we call a post-process? */
       if (radio->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(radio->postProcessFunction)) (vRADIO, radio, radio->postProcessData, input);
+	 radio->postProcessFunction (vRADIO, radio, radio->postProcessData, input);
       }
    }
 

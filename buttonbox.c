@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.24 $
+ * $Date: 2001/01/06 19:38:19 $
+ * $Revision: 1.25 $
  */
 
 DeclareCDKObjects(my_funcs,Buttonbox);
@@ -249,7 +249,7 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
    /* Check if there is a pre-process function to be called. */
    if (buttonbox->preProcessFunction != 0)
    {
-      ppReturn = ((PROCESSFN)(buttonbox->preProcessFunction)) (vBUTTONBOX, buttonbox, buttonbox->preProcessData, input);
+      ppReturn = buttonbox->preProcessFunction (vBUTTONBOX, buttonbox, buttonbox->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -330,7 +330,7 @@ int injectCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype input)
       /* Should we call a post-process? */
       if (buttonbox->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(buttonbox->postProcessFunction)) (vBUTTONBOX, buttonbox, buttonbox->postProcessData, input);
+	 buttonbox->postProcessFunction (vBUTTONBOX, buttonbox, buttonbox->postProcessData, input);
       }
    }
 

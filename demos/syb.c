@@ -51,11 +51,11 @@ void saveHistory (struct history_st *history, int count);
 /*
  * Define callback prototypes.
  */
-void viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-void swindowHelpCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-void historyUpCB   (EObjectType cdktype, void *object, void *clientData, chtype key);
-void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype key);
-void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+BINDFN_PROTO(viewHistoryCB);
+BINDFN_PROTO(swindowHelpCB);
+BINDFN_PROTO(historyUpCB);
+BINDFN_PROTO(historyDownCB);
+BINDFN_PROTO(listHistoryCB);
 
 /*
  * Define Sybase error/message callbacks. This is required by DBLib.
@@ -811,7 +811,7 @@ int getColWidth (DBPROCESS *dbProcess, int col)
 /*
  * This callback allows the user to play with the scrolling window.
  */
-void viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
    CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
    CDKENTRY *entry	= (CDKENTRY *)object;
@@ -821,6 +821,7 @@ void viewHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (TRUE);
 }
 
 /*
@@ -966,16 +967,17 @@ int mesg_handler (DBPROCESS *dbProcess, DBINT mesgNumber, int mesgState, int sev
 /*
  * This is for the scrolling window help callback.
  */
-void swindowHelpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int swindowHelpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
    CDKENTRY *entry	= (CDKENTRY *)clientData;
    help(entry);
+   return (TRUE);
 }
 
 /*
  * This is the callback for the down arrow.
  */
-void historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -984,7 +986,7 @@ void historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype ke
    if (history->current == 0)
    {
       Beep();
-      return;
+      return (TRUE);
    }
 
    /* Decrement the counter. */
@@ -993,12 +995,13 @@ void historyUpCB (EObjectType cdktype, void *object, void *clientData, chtype ke
    /* Display the command. */
    setCDKEntryValue (entry, history->cmd_history[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (TRUE);
 }
 
 /*
  * This is the callback for the down arrow.
  */
-void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    struct history_st *history = (struct history_st *) clientData;
@@ -1007,7 +1010,7 @@ void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype 
    if (history->current == history->count)
    {
       Beep();
-      return;
+      return (TRUE);
    }
 
    /* Increment the counter... */
@@ -1018,19 +1021,20 @@ void historyDownCB (EObjectType cdktype, void *object, void *clientData, chtype 
    {
       cleanCDKEntry (entry);
       drawCDKEntry (entry, ObjOf(entry)->box);
-      return;
+      return (TRUE);
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->cmd_history[history->current]);
    drawCDKEntry (entry, ObjOf(entry)->box);
+   return (TRUE);
 }
 
 /*
  * This callback allows the user to pick from the history list from a
  * scrolling list.
  */
-void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
+int listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype key)
 {
    CDKSCROLL *scrollList	= 0;
    CDKENTRY *entry		= (CDKENTRY *)object;
@@ -1050,7 +1054,7 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
       drawCDKScreen (ScreenOf(entry));
 
       /* And leave... */
-      return;
+      return (TRUE);
    }
 
    /* Create the scrolling list of previous commands. */
@@ -1073,6 +1077,7 @@ void listHistoryCB (EObjectType cdktype, void *object, void *clientData, chtype 
    /* Redraw the screen. */
    eraseCDKEntry (entry);
    drawCDKScreen (ScreenOf(entry));
+   return (TRUE);
 }
 
 /*

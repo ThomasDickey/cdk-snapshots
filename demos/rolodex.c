@@ -1609,7 +1609,7 @@ int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object GCC_UNUSED, 
 /*
  * This allows the user to insert a new phone entry into the database.
  */
-void insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+int insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
@@ -1629,12 +1629,13 @@ void insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *cli
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
+   return (FALSE);
 }
 
 /*
  * This allows the user to delete a phone entry from the database.
  */
-void deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1652,6 +1653,7 @@ void deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *cli
    {
       mesg[0] = "There are no more numbers to delete.";
       popupLabel (ScreenOf(scrollp), mesg, 1);
+      return (FALSE);
    }
 
    /* Ask the user if they really want to delete the listing. */
@@ -1683,12 +1685,13 @@ void deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *cli
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
+   return (FALSE);
 }
 
 /*
- * This function provices help for the phone list editor.
+ * This function provides help for the phone list editor.
  */
-void phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+int phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1717,13 +1720,14 @@ void phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clien
    freeChar (mesg[0]); freeChar (mesg[1]);
    freeChar (mesg[2]); freeChar (mesg[3]);
    freeChar (mesg[4]);
+   return (FALSE);
 }
 
 /*
  * This is a callback to the menu widget. It allows the user to
  * ask for help about any sub-menu item.
  */
-void helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKMENU *menu= (CDKMENU *)object;
@@ -1790,12 +1794,13 @@ void helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_
 
    /* Redraw the submenu window. */
    drawCDKMenuSubwin (menu);
+   return (FALSE);
 }
 
 /*
  * This is a callback to the group list scrolling list.
  */
-void groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
@@ -1822,4 +1827,5 @@ void groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
+   return (FALSE);
 }

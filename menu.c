@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.62 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.63 $
  */
 
 /*
@@ -188,7 +188,7 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
    if (menu->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(menu->preProcessFunction)) (vMENU, menu, menu->preProcessData, input);
+      ppReturn = menu->preProcessFunction (vMENU, menu, menu->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -323,7 +323,7 @@ int injectCDKMenu (CDKMENU *menu, chtype input)
       /* Should we call a post-process? */
       if (menu->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(menu->postProcessFunction)) (vMENU, menu, menu->postProcessData, input);
+	 menu->postProcessFunction (vMENU, menu, menu->postProcessData, input);
       }
    }
 

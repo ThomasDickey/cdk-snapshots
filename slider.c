@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:54 $
- * $Revision: 1.44 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.45 $
  */
 
 /*
@@ -257,7 +257,7 @@ int injectCDKSlider (CDKSLIDER *slider, chtype input)
    if (slider->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(slider->preProcessFunction)) (vSLIDER, slider, slider->preProcessData, input);
+      ppReturn = slider->preProcessFunction (vSLIDER, slider, slider->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -346,7 +346,7 @@ int injectCDKSlider (CDKSLIDER *slider, chtype input)
       /* Should we call a post-process? */
       if (slider->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(slider->postProcessFunction)) (vSLIDER, slider, slider->postProcessData, input);
+	 slider->postProcessFunction (vSLIDER, slider, slider->postProcessData, input);
       }
    }
 

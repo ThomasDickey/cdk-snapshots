@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 /*
  * This adds a marker to the calendar.
  */
-static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
@@ -147,12 +147,13 @@ static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 				COLOR_PAIR (5) | A_REVERSE);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
+   return (FALSE);
 }
 
 /*
  * This removes a marker from the calendar.
  */
-static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
@@ -162,4 +163,5 @@ static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *objec
 				calendar->year);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
+   return (FALSE);
 }

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/09/23 15:33:44 $
- * $Revision: 1.41 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.42 $
  */
 
 /*
@@ -256,7 +256,7 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
    if (calendar->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(calendar->preProcessFunction)) (vCALENDAR, calendar, calendar->preProcessData, input);
+      ppReturn = calendar->preProcessFunction (vCALENDAR, calendar, calendar->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -334,7 +334,7 @@ time_t injectCDKCalendar (CDKCALENDAR *calendar, chtype input)
       /* Should we do a post-process? */
       if (calendar->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(calendar->postProcessFunction)) (vCALENDAR, calendar, calendar->postProcessData, input);
+	 calendar->postProcessFunction (vCALENDAR, calendar, calendar->postProcessData, input);
       }
    }
 

@@ -4,7 +4,7 @@
 char *XCursesProgramName="preprocess_ex";
 #endif
 
-int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chtype input);
+static BINDFN_PROTO(entryPreProcessCB);
 
 /*
  * This demonstrates the Cdk entry field widget.
@@ -74,7 +74,7 @@ int main (void)
    exit (0);
 }
 
-int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)
+static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKDIALOG *widget	= 0;

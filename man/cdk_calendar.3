@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.12 2000/09/15 02:07:52 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.13 2001/01/06 20:52:38 tom Exp $"
 .TH cdk_calendar 3
 .SH NAME
 activateCDKCalendar,
@@ -169,7 +169,7 @@ The calendar widget allows the user to traverse through
 months/years using the cursor keys.
 .SH AVAILABLE FUNCTIONS
 .TP 5
-.B time_t activateCDKCalendar (CDKCALENDAR *\fBcalendar\fR, chtype *\fBactions\fR);
+.B activateCDKCalendar
 activates the calendar widget and lets the user interact with the widget.
 The \fBcalendar\fR widget is a pointer to a non-NULL calendar widget.
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
@@ -186,7 +186,7 @@ If the character entered into this widget was \fIESCAPE\fR or
 \fITAB\fR then this function will return a value of (time_t)-1
 and the widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
 .TP 5
-.B void bindCDKObject (EObjectType \fBwidgetType\fR, void *\fBobject\fR, char \fBkey\fR, BINDFN \fBfunction\fR, void *\fBdata\fR);
+.B bindCDKObject
 allows the user to create special key bindings.
 The \fBwidgetType\fR parameter is a defined type which states what Cdk object
 type is being used.
@@ -201,37 +201,37 @@ The \fBfunction\fR is the function type.
 To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
 The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
-.B void destroyCDKCalendar (CDKCALENDAR *\fBcalendar\fR);
+.B destroyCDKCalendar
 removes the widget from the screen and frees memory the object used.
 .TP 5
-.B void drawCDKCalendar (CDKCALENDAR *\fBcalendar\fR, boolean \fBbox\fR);
+.B drawCDKCalendar
 draws the label widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
-.B void eraseCDKCalendar (CDKCALENDAR *\fBcalendar\fR);
+.B eraseCDKCalendar
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
 .TP 5
-.B boolean getCDKCalendarBox (CDKCALENDAR *\fBcalendar\fR);
+.B getCDKCalendarBox
 returns whether the widget will be drawn with a box around it.
 .TP 5
-.B void getCDKCalendarDate (CDKCALENDAR *\fBcalendar\fR, int *\fBday\fR, int *\fBmonth\fR, int *\fByear\fR);
+.B getCDKCalendarDate
 returns the current date the calendar is displaying.
 .TP 5
-.B chtype getCDKCalendarDayAttribute (CDKCALENDAR *\fBcalendar\fR);
+.B getCDKCalendarDayAttribute
 returns the attribute of the day attribute of the calendar.
 .TP 5
-.B chtype getCDKCalendarHighlight (CDKCALENDAR *\fBcalendar\fR);
+.B getCDKCalendarHighlight
 returns the attribute of the highlight bar of the scrolling
 list portion of the widget.
 .TP 5
-.B chtype getCDKCalendarMonthAttribute (CDKCALENDAR *\fBcalendar\fR);
+.B getCDKCalendarMonthAttribute
 returns the attribute of the month attribute of the calendar.
 .TP 5
-.B chtype getCDKCalendarYearAttribute (CDKCALENDAR *\fBcalendar\fR);
+.B getCDKCalendarYearAttribute
 returns the attribute of the year attribute of the calendar.
 .TP 5
-.B time_t injectCDKCalendar (CDKCALENDAR *\fBcalendar\fR, chtype \fBcharacter\fR);
+.B injectCDKCalendar
 injects a single character into the widget.
 The parameter \fBcalendar\fR is a pointer to a non-NULL calendar widget.
 The parameter \fBcharacter\fR is the character to inject into the widget.
@@ -248,7 +248,7 @@ Any other character
 injected into the widget will set the widget data \fIexitType\fR to
 \fIvEARLY_EXIT\fR and the function will return (time_t)-1.
 .TP 5
-.B void moveCDKCalendar (CDKCALENDAR *\fBcalendar\fR, int \fBxpos\fR, int \fBypos\fR, boolean \fBrelative\fR, boolean \fBrefresh\fR);
+.B moveCDKCalendar
 moves the given widget to the given position.
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
@@ -266,7 +266,7 @@ Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will get refreshed after the move.
 .TP 5
-.B CDKCALENDAR *newCDKCalendar (CDKSCREEN *\fBscreen\fR, int \fBxpos\fR, int \fBypos\fR, char *\fBtitle\fR, int \fBday\fR, int \fBmonth\fR, int \fByear\fR, chtype \fBdayAttrib\fR, chtype \fBmonthAttrib\fR, chtype \fByearAttrib\fR, chtype \fBhighlight\fR, boolean \fBbox\fR, boolean \fBshadow\fR);
+.B newCDKCalendar
 creates a calendar widget and returns a pointer to it.
 The \fBscreen\fR
 parameter is the screen you wish this widget to be placed in.
@@ -294,60 +294,60 @@ the shadow on or off around this widget.
 If the widget could not be created
 then a \fINULL\fR pointer is returned.
 .TP 5
-.B void positionCDKCalendar (CDKCALENDAR *\fBcalendar\fR);
+.B positionCDKCalendar
 allows the user to move the widget around the screen via the cursor/keypad keys.
 See \fBcdk_position (3)\fR for key bindings.
 .TP 5
-.B void removeCDKCalendarMarker (CDKCALENDAR *\fBcalendar\fR, int \fBday\fR, int \fBmonth\fR, int \fByear\fR);
+.B removeCDKCalendarMarker
 removes a marker from the calendar.
 .TP 5
-.B void setCDKCalendar (CDKCALENDAR *\fBcalendar\fR, int \fBday\fR, int \fBmonth\fR, int \fByear\fR, chtype \fBdayAttrib\fR, chtype \fBmonthAttrib\fR, chtype \fByearAttrib\fR, chtype \fBhighlight\fR, boolean \fBbox\fR);
+.B setCDKCalendar
 lets the programmer modify certain elements of an existing
 calendar widget.
 The \fBcalendar\fR parameter represents an existing calendar pointer.
 The other parameter names correspond to the same parameter names listed
 in the \fInewCDKCalendar\fR function.
 .TP 5
-.B void setCDKCalendarBox (CDKCALENDAR *\fBcalendar\fR, boolean \fBboxWidget\fR);
+.B setCDKCalendarBox
 sets whether the widget will be drawn with a box around it.
 .TP 5
-.B void setCDKCalendarDate (CDKCALENDAR *\fBcalendar\fR, int \fBday\fR, int \fBmonth\fR, int \fByear\fR);
+.B setCDKCalendarDate
 sets the calendar to the given date.
 If the value of the \fBday\fR,
 \fBmonth\fR, or \fByear\fR parameters is -1 then the current day, month, or year
 is used to set the date.
 .TP 5
-.B void setCDKCalendarDayAttribute (CDKCALENDAR *\fBcalendar\fR, chtype \fBattribute\fR);
+.B setCDKCalendarDayAttribute
 sets the attribute of the day in the calendar.
 .TP 5
-.B void setCDKCalendarHighlight (CDKCALENDAR *\fBcalendar\fR, chtype \fBhighlight\fR);
+.B setCDKCalendarHighlight
 sets the attribute of the highlight bar of the scrolling
 list portion of the widget.
 .TP 5
-.B void setCDKCalendarMarker (CDKCALENDAR *\fBcalendar\fR, int \fBday\fR, int \fBmonth\fR, int \fByear\fR, chtype \fBmarker\fR);
+.B setCDKCalendarMarker
 allows the user to set a marker which will be displayed when the month is drawn.
 The \fBmarker\fR parameter is the attribute to use when drawing the marker.
 If more than one marker is set on a single day, then the day will blink
 with the original marker attribute.
 .TP 5
-.B void setCDKCalendarMonthAttribute (CDKCALENDAR *\fBcalendar\fR, chtype \fBattribute\fR);
+.B setCDKCalendarMonthAttribute
 sets the attribute of the month in the calendar.
 .TP 5
-.B void setCDKCalendarPostProcess (CDKCALENDAR *\fBcalendar\fR, PROCESSFN \fBfunction\fR, void *\fBdata\fR);
+.B setCDKCalendarPostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
 The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
-.B void setCDKCalendarPreProcess (CDKCALENDAR *\fBcalendar\fR, PROCESSFN \fBfunction\fR, void *\fBdata\fR);
+.B setCDKCalendarPreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
 The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
-.B void setCDKCalendarYearAttribute (CDKCALENDAR *\fBcalendar\fR, chtype \fBattribute\fR);
+.B setCDKCalendarYearAttribute
 sets the attribute of the year in the calendar.
 .SH KEY BINDINGS
 When the widget is activated there are several default key bindings which will

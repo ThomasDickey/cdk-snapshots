@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.62 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.63 $
  */
 
 DeclareCDKObjects(my_funcs,Dialog);
@@ -200,7 +200,7 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
    /* Check if there is a pre-process function to be called. */
    if (dialog->preProcessFunction != 0)
    {
-      ppReturn = ((PROCESSFN)(dialog->preProcessFunction)) (vDIALOG, dialog, dialog->preProcessData, input);
+      ppReturn = dialog->preProcessFunction (vDIALOG, dialog, dialog->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -263,7 +263,7 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
       /* Should we call a post-process? */
       if (dialog->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(dialog->postProcessFunction)) (vDIALOG, dialog, dialog->postProcessData, input);
+	 dialog->postProcessFunction (vDIALOG, dialog, dialog->postProcessData, input);
       }
    }
 

@@ -42,6 +42,8 @@
 
 #ifdef HAVE_XCURSES
 #include <xcurses.h>
+#elif defined(HAVE_NCURSES_H)
+#include <ncurses.h>
 #else
 #include <curses.h>
 #endif

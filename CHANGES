@@ -7,6 +7,13 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2001/1/6 - T.E.Dickey <dickey@herndon4.his.com>
+================================================
+	+ reverted part of 1999/6/5 change, allowing callback functions to
+	  return a value.  Note that this makes PROCESSFN and BINDFN use
+	  the same prototype (report by Ian Eure <ieure@insynq.com>).  
+	+ SCO OpenServer does not define S_IFSOCK
+
 2000/9/23 - T.E.Dickey <dickey@herndon4.his.com>
 ================================================
 	+ change literal 48's in calendar.c to '0'.

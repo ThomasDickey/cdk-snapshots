@@ -44,7 +44,7 @@
  * This is the key binding prototype, typed for use with Perl.
  */
 #define BINDFN_PROTO(func)  \
-	void (func) ( \
+	int (func) ( \
 		EObjectType	/* cdktype */, \
 		void *		/* object */, \
 		void *		/* clientData */, \

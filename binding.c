@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.38 $
+ * $Date: 2001/01/06 19:27:47 $
+ * $Revision: 1.39 $
  */
 
 /*
@@ -120,9 +120,10 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 }
 
 /*
- * This checks to see iof the binding for the key exists. If it does then it
- * runs the command and returns a TRUE. If it doesn't it returns a FALSE. This
- * way we can 'overwrite' coded bindings.
+ * This checks to see if the binding for the key exists:
+ * If it does then it runs the command and returns its value, normally TRUE. 
+ * If it doesn't it returns a FALSE.  This way we can 'overwrite' coded
+ * bindings.
  */
 int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 {
@@ -140,8 +141,7 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
       {
 	 BINDFN function	= obj->bindingList[Index].bindFunction;
 	 void * data		= obj->bindingList[Index].bindData;
-	 function (cdktype, object, data, key);
-	 return TRUE;
+	 return function (cdktype, object, data, key);
       }
    }
    return (FALSE);

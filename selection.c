@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:54 $
- * $Revision: 1.88 $
+ * $Date: 2001/01/06 19:39:43 $
+ * $Revision: 1.89 $
  */
 
 /*
@@ -324,7 +324,7 @@ int injectCDKSelection (CDKSELECTION *selection, chtype input)
    if (selection->preProcessFunction != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = ((PROCESSFN)(selection->preProcessFunction)) (vSELECTION, selection, selection->preProcessData, input);
+      ppReturn = (selection->preProcessFunction) (vSELECTION, selection, selection->preProcessData, input);
    }
 
    /* Should we continue? */
@@ -504,7 +504,7 @@ int injectCDKSelection (CDKSELECTION *selection, chtype input)
       /* Should we call a post-process? */
       if (selection->postProcessFunction != 0)
       {
-	 ((PROCESSFN)(selection->postProcessFunction)) (vSELECTION, selection, selection->postProcessData, input);
+	 selection->postProcessFunction (vSELECTION, selection, selection->postProcessData, input);
       }
    }
       
