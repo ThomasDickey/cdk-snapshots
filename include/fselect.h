@@ -1,5 +1,5 @@
 /*
- * $Id: fselect.h,v 1.19 2003/11/16 14:23:56 tom Exp $
+ * $Id: fselect.h,v 1.20 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -236,16 +236,12 @@ char **getCDKFselectDirContents (
 /*
  * This sets the background color of the widget.
  */
-void setCDKFselectBackgroundColor (
-		CDKFSELECT *	/* fselect */,
-		char *		/* color */);
+#define setCDKFselectBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKFselectBackgroundAttrib (
-		CDKFSELECT *	/* fselect */,
-		chtype		/* attribute */);
+#define setCDKFselectBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: menu.h,v 1.16 2003/12/06 16:27:28 tom Exp $
+ * $Id: menu.h,v 1.19 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -83,10 +83,6 @@ struct SMenu {
    int		lastSubtitle;
    EExitType	exitType;
    int		lastSelection;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SMenu CDKMENU;
 
@@ -180,16 +176,12 @@ void eraseCDKMenuSubwin (
 /*
  * This sets the background color of the widget.
  */
-void setCDKMenuBackgroundColor (
-		CDKMENU *	/* menu */,
-		char *		/* color */);
+#define setCDKMenuBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKMenuBackgroundAttrib (
-		CDKMENU *	/* menu */,
-		chtype		/* attribute */);
+#define setCDKMenuBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This destroys the menu widget.
@@ -199,15 +191,8 @@ void setCDKMenuBackgroundAttrib (
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKMenuPreProcess (
-		CDKMENU *	/* menu */,
-		PROCESSFN 	/* callback */,
-		void *		/* data */);
-
-void setCDKMenuPostProcess (
-		CDKMENU *	/* menu */,
-		PROCESSFN 	/* callback */,
-		void *		/* data */);
+#define setCDKMenuPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKMenuPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

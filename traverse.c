@@ -2,19 +2,55 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:08:13 $
- * $Revision: 1.8 $
+ * $Date: 2004/08/22 19:46:21 $
+ * $Revision: 1.16 $
  */
 
-#define KEY_CTRLX '\030'
-#define KEY_CTRLL '\014'
-#define KEY_CTRLR '\022'
-
-static void handleMenu (CDKOBJS * menu)
+static int getFocusIndex (CDKSCREEN *screen)
 {
-   int done = 0;
-   FocusObj (menu);
+   int result = screen->objectFocus;
 
+   if (result < 0 || result >= screen->objectCount)
+      result = 0;
+   return result;
+}
+
+static void unsetFocus (CDKOBJS *obj)
+{
+   curs_set (0);
+   if (obj != 0)
+   {
+      HasFocusObj (obj) = FALSE;
+      UnfocusObj (obj);
+   }
+}
+
+static void setFocus (CDKOBJS *obj)
+{
+   if (obj != 0)
+   {
+      HasFocusObj (obj) = TRUE;
+      FocusObj (obj);
+   }
+   curs_set (1);
+}
+
+static CDKOBJS *switchFocus (CDKOBJS *newobj, CDKOBJS *oldobj)
+{
+   if (oldobj != newobj)
+   {
+      unsetFocus (oldobj);
+      setFocus (newobj);
+   }
+   return newobj;
+}
+
+static CDKOBJS *handleMenu (CDKSCREEN *screen, CDKOBJS *menu, CDKOBJS *oldobj)
+{
+   bool done = FALSE;
+   CDKOBJS *newobj;
+
+   switchFocus (menu, oldobj);
    while (!done)
    {
       int key = getcCDKObject (menu);
@@ -22,9 +58,15 @@ static void handleMenu (CDKOBJS * menu)
       switch (key)
       {
       case KEY_TAB:
+	 {
+	    done = TRUE;
+	    break;
+	 }
       case KEY_ESC:
 	 {
-	    done = 1;
+	    /* cleanup the menu */
+	    injectCDKMenu ((CDKMENU *) menu, key);
+	    done = TRUE;
 	    break;
 	 }
       default:
@@ -35,7 +77,10 @@ static void handleMenu (CDKOBJS * menu)
 	 }
       }
    }
-   UnfocusObj (menu);
+   if ((newobj = getCDKFocusCurrent (screen)) == 0)
+      newobj = setCDKFocusNext (screen);
+
+   return switchFocus (newobj, menu);
 }
 
 /*
@@ -66,7 +111,6 @@ static void refreshDataCDKScreen (CDKSCREEN *screen)
  * Public Interface
  */
 
-
 void resetCDKScreen (CDKSCREEN *screen)
 {
    refreshDataCDKScreen (screen);
@@ -82,19 +126,92 @@ void exitCancelCDKScreen (CDKSCREEN *screen)
    screen->exitStatus = CDKSCREEN_EXITCANCEL;
 }
 
-void exitOKCDKScreenOf (CDKOBJS * obj)
+void exitOKCDKScreenOf (CDKOBJS *obj)
 {
    exitOKCDKScreen (obj->screen);
 }
 
-void exitCancelCDKScreenOf (CDKOBJS * obj)
+void exitCancelCDKScreenOf (CDKOBJS *obj)
 {
    exitCancelCDKScreen (obj->screen);
 }
 
-void resetCDKScreenOf (CDKOBJS * obj)
+void resetCDKScreenOf (CDKOBJS *obj)
 {
    resetCDKScreen (obj->screen);
+}
+
+/*
+ * Returns the object on which the focus lies.
+ */
+CDKOBJS *getCDKFocusCurrent (CDKSCREEN *screen)
+{
+   CDKOBJS *result = 0;
+   int n = screen->objectFocus;
+
+   if (n >= 0 && n < screen->objectCount)
+      result = screen->object[n];
+   return result;
+}
+
+/*
+ * Set focus to the next object, returning it.
+ */
+CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
+{
+   CDKOBJS *result = 0;
+   CDKOBJS *curobj;
+   int n = getFocusIndex (screen);
+   int first = n;
+
+   for (;;)
+   {
+      if (++n >= screen->objectCount)
+	 n = 0;
+      curobj = screen->object[n];
+      if (curobj != 0 && AcceptsFocusObj (curobj))
+      {
+	 result = curobj;
+	 break;
+      }
+      else if (n == first)
+      {
+	 break;
+      }
+   }
+
+   screen->objectFocus = (result != 0) ? n : -1;
+   return result;
+}
+
+/*
+ * Set focus to the previous object, returning it.
+ */
+CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
+{
+   CDKOBJS *result = 0;
+   CDKOBJS *curobj;
+   int n = getFocusIndex (screen);
+   int first = n;
+
+   for (;;)
+   {
+      if (--n < 0)
+	 n = screen->objectCount - 1;
+      curobj = screen->object[n];
+      if (curobj != 0 && AcceptsFocusObj (curobj))
+      {
+	 result = curobj;
+	 break;
+      }
+      else if (n == first)
+      {
+	 break;
+      }
+   }
+
+   screen->objectFocus = (result != 0) ? n : -1;
+   return result;
 }
 
 /*
@@ -102,81 +219,56 @@ void resetCDKScreenOf (CDKOBJS * obj)
  */
 int traverseCDKScreen (CDKSCREEN *screen)
 {
-   int i;			/* current object */
+   CDKOBJS *curobj = switchFocus (setCDKFocusNext (screen), 0);
 
-   if (screen->objectCount < 1)
+   if (curobj == 0)
       return 0;
 
    refreshDataCDKScreen (screen);
 
-   i = -1;
-   do
-   {
-      ++i;
-      if (i >= screen->objectCount)
-	 return 0;		/* no widgets on this screen accept focus */
-   }
-   while (!AcceptsFocusObj (screen->object[i]));
-
-   FocusObj (screen->object[i]);
+   screen->objectFocus = -1;
 
    screen->exitStatus = CDKSCREEN_NOEXIT;
 
-   while (screen->exitStatus == CDKSCREEN_NOEXIT)
+   while ((curobj != 0) && (screen->exitStatus == CDKSCREEN_NOEXIT))
    {
-      int key = getcCDKObject (screen->object[i]);
+      int key = getcCDKObject (curobj);
 
       switch (key)
       {
       case KEY_BTAB:
 	 {
-	    UnfocusObj (screen->object[i]);
-	    do
-	    {
-	       --i;
-	       if (i < 0)
-		  i = screen->objectCount - 1;
-	    }
-	    while (!AcceptsFocusObj (screen->object[i]));
-	    FocusObj (screen->object[i]);
+	    curobj = switchFocus (setCDKFocusPrevious (screen), curobj);
 	    break;
 	 }
       case KEY_TAB:
 	 {
-	    UnfocusObj (screen->object[i]);
-	    do
-	    {
-	       ++i;
-	       if (i >= screen->objectCount)
-		  i = 0;
-	    }
-	    while (!AcceptsFocusObj (screen->object[i]));
-	    FocusObj (screen->object[i]);
+	    curobj = switchFocus (setCDKFocusNext (screen), curobj);
 	    break;
 	 }
-      case KEY_F10:
+      case KEY_F(10):
 	 {
 	    /* save data and exit */
 	    exitOKCDKScreen (screen);
 	    break;
 	 }
-      case KEY_CTRLX:
+      case CTRL('X'):
 	 {
 	    exitCancelCDKScreen (screen);
 	    break;
 	 }
-      case KEY_CTRLR:
+      case CTRL('R'):
 	 {
 	    /* reset data to defaults */
 	    resetCDKScreen (screen);
-	    FocusObj (screen->object[i]);
+	    setFocus (curobj);
 	    break;
 	 }
-      case KEY_CTRLL:
+      case CDK_REFRESH:
 	 {
 	    /* redraw screen */
 	    refreshCDKScreen (screen);
-	    FocusObj (screen->object[i]);
+	    setFocus (curobj);
 	    break;
 	 }
       case KEY_ESC:
@@ -185,17 +277,16 @@ int traverseCDKScreen (CDKSCREEN *screen)
 	    int j;
 
 	    for (j = 0; j < screen->objectCount; ++j)
-	       if (ObjTypeOf(screen->object[j]) == vMENU)
+	       if (ObjTypeOf (screen->object[j]) == vMENU)
 	       {
-		  handleMenu (screen->object[j]);
-		  FocusObj (screen->object[i]);
+		  curobj = handleMenu (screen, screen->object[j], curobj);
 		  break;
 	       }
 	    break;
 	 }
       default:
 	 {
-	    InjectObj (screen->object[i], key);
+	    InjectObj (curobj, key);
 	    break;
 	 }
       }

@@ -1,4 +1,4 @@
-/* $Id: menu_ex.c,v 1.6 2003/12/06 01:49:35 tom Exp $ */
+/* $Id: menu_ex.c,v 1.9 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -84,9 +84,8 @@ int main (void)
    destroyCDKMenu (menu);
    destroyCDKLabel (infoBox);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 /*
@@ -100,12 +99,12 @@ int displayCallback (EObjectType cdktype GCC_UNUSED, void *object, void *clientD
    char temp[256];
 
    /* Recreate the label message. */
-   sprintf (temp, "Title: %s", menulist[menu->currentTitle][0]);
+   sprintf (temp, "Title: %.*s", (int)(sizeof(temp) - 20), menulist[menu->currentTitle][0]);
    mesg[0] = strdup (temp);
-   sprintf (temp, "Sub-Title: %s", menulist[menu->currentTitle][menu->currentSubtitle+1]);
+   sprintf (temp, "Sub-Title: %.*s", (int)(sizeof(temp) - 20), menulist[menu->currentTitle][menu->currentSubtitle+1]);
    mesg[1] = strdup (temp);
    mesg[2] = "";
-   sprintf (temp, "<C>%s", menuInfo[menu->currentTitle][menu->currentSubtitle+1]);
+   sprintf (temp, "<C>%.*s", (int)(sizeof(temp) - 20), menuInfo[menu->currentTitle][menu->currentSubtitle+1]);
    mesg[3] = strdup (temp);
 
    /* Set the message of the label. */

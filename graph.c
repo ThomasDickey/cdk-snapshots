@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:45:56 $
- * $Revision: 1.74 $
+ * $Date: 2004/08/30 00:18:12 $
+ * $Revision: 1.78 $
  */
 
 DeclareCDKObjects(GRAPH, Graph, setCdk, Unknown);
@@ -318,36 +318,16 @@ EGraphDisplayType getCDKGraphDisplayType (CDKGRAPH *graph)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKGraphBackgroundColor (CDKGRAPH *graph, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKGraphBackgroundAttrib (graph, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKGraphBackgroundAttrib (CDKGRAPH *graph, chtype attrib)
+static void _setBKattrGraph (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (graph->win, attrib);
+   if (object != 0)
+   {
+      CDKGRAPH *widget = (CDKGRAPH *)object;
+
+      wbkgd (widget->win, attrib);
+   }
 }
 
 /*
@@ -385,8 +365,7 @@ static void _moveCDKGraph (CDKOBJS *object, int xplace, int yplace, boolean rela
    moveCursesWindow(graph->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(graph));
-   wrefresh (WindowOf(graph));
+   refreshCDKWindow (WindowOf(graph));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -506,8 +485,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    mvwaddch (graph->win, graph->boxHeight-3, graph->boxWidth, ACS_URCORNER);
 
    /* Refresh and lets see 'er. */
-   touchwin (graph->win);
-   wrefresh (graph->win);
+   refreshCDKWindow (graph->win);
 }
 
 /*
@@ -548,27 +526,12 @@ static void _eraseCDKGraph (CDKOBJS *object)
    }
 }
 
-static int _injectCDKGraph(CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
-{
-   return 0;
-}
+dummyInject(Graph)
 
-static void _focusCDKGraph(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyFocus(Graph)
 
-static void _unfocusCDKGraph(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Graph)
 
-static void _refreshDataCDKGraph(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Graph)
 
-static void _saveDataCDKGraph(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Graph)

@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.25 2003/12/06 16:27:28 tom Exp $
+ * $Id: matrix.h,v 1.28 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -127,10 +127,6 @@ struct SMatrix {
    int		dominant;
    chtype	filler;
    MATRIXCB	callbackfn;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 
 /*
@@ -226,16 +222,12 @@ int getCDKMatrixRow (
 /*
  * This sets the background color of the widget.
  */
-void setCDKMatrixBackgroundColor (
-		CDKMATRIX *	/* matrix */,
-		char *		/* color */);
+#define setCDKMatrixBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */
-void setCDKMatrixBackgroundAttrib (
-		CDKMATRIX *	/* matrix */,
-		chtype		/* attribute */);
+#define setCDKMatrixBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the matrix on the screen.
@@ -314,15 +306,8 @@ int jumpToCell (
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKMatrixPreProcess (
-		CDKMATRIX *	/* matrix */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKMatrixPostProcess (
-		CDKMATRIX *	/* matrix */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKMatrixPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKMatrixPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

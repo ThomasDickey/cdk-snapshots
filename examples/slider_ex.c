@@ -1,4 +1,4 @@
-/* $Id: slider_ex.c,v 1.4 2003/11/30 20:01:11 tom Exp $ */
+/* $Id: slider_ex.c,v 1.8 2004/08/29 19:44:03 tom Exp $ */
 
 #include <cdk.h>
 
@@ -13,7 +13,7 @@ int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
-   CDKSLIDER *slider	= 0;
+   CDKSLIDER *widget	= 0;
    WINDOW *cursesWin	= 0;
    char *title		= "<C></U>Enter a value:";
    char *label		= "</B>Current Value:";
@@ -37,41 +37,42 @@ int main (int argc, char **argv)
    /* Start CDK Colors. */
    initCDKColor();
 
-   /* Create the slider. */
-   slider = newCDKSlider (cdkscreen,
+   /* Create the widget. */
+   widget = newCDKSlider (cdkscreen,
 			  CDKparamValue(&params, 'X', CENTER),
 			  CDKparamValue(&params, 'Y', CENTER),
 			  title, label,
 			  A_REVERSE | COLOR_PAIR (29) | ' ',
 			  CDKparamNumber2(&params, 'w', 50),
-			  low, low, high, inc, (inc*2),
+			  low, low, high,
+			  inc, (inc*2),
 			  CDKparamValue(&params, 'N', TRUE),
 			  CDKparamValue(&params, 'S', FALSE));
 
-   /* Is the slider null? */
-   if (slider == 0)
+   /* Is the widget null? */
+   if (widget == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
       endCDK();
 
       /* Print out a message. */
-      printf ("Oops. Can't make the slider widget. Is the window too small?\n");
-      exit (1);
+      printf ("Oops. Can't make the widget. Is the window too small?\n");
+      exit (EXIT_FAILURE);
    }
 
-   /* Activate the slider. */
-   selection = activateCDKSlider (slider, 0);
+   /* Activate the widget. */
+   selection = activateCDKSlider (widget, 0);
 
-   /* Check the exit value of the slider widget. */
-   if (slider->exitType == vESCAPE_HIT)
+   /* Check the exit value of the widget. */
+   if (widget->exitType == vESCAPE_HIT)
    {
       mesg[0] = "<C>You hit escape. No value selected.";
       mesg[1] = "",
       mesg[2] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 3);
    }
-   else if (slider->exitType == vNORMAL)
+   else if (widget->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected %d", selection);
       mesg[0] = copyChar (temp);
@@ -82,9 +83,8 @@ int main (int argc, char **argv)
    }
 
    /* Clean up.*/
-   destroyCDKSlider (slider);
+   destroyCDKSlider (widget);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

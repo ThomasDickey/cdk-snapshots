@@ -115,7 +115,7 @@ int main (void)
 	 destroyCDKScreen (cdkScreen4);
 	 destroyCDKScreen (cdkScreen5);
 	 endCDK();
-	 exit (0);
+	 exit (EXIT_SUCCESS);
       }
    }
 }

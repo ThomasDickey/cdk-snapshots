@@ -1,4 +1,4 @@
-/* $Id: preprocess_ex.c,v 1.11 2003/11/27 17:00:09 tom Exp $ */
+/* $Id: preprocess_ex.c,v 1.16 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -41,7 +41,7 @@ int main (void)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    setCDKEntryPreProcess (widget, entryPreProcessCB, 0);
@@ -60,7 +60,7 @@ int main (void)
    else if (widget->exitType == vNORMAL)
    {
       mesg[0] = "<C>You typed in the following";
-      sprintf (temp, "<C>(%s)", info);
+      sprintf (temp, "<C>(%.*s)", (int)(sizeof(temp) - 20), info);
       mesg[1] = copyChar (temp);
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
@@ -71,9 +71,8 @@ int main (void)
    /* Clean up and exit. */
    destroyCDKEntry (widget);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)
@@ -94,7 +93,7 @@ static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void
 
       widget = newCDKDialog (ScreenOf(entry), CENTER, CENTER,
 				mesg, lines, buttons, buttonCount,
-				A_REVERSE, FALSE, FALSE, FALSE);
+				A_REVERSE, FALSE, TRUE, FALSE);
       activateCDKDialog (widget, 0);
       destroyCDKDialog (widget);
       drawCDKEntry (entry, ObjOf(entry)->box);

@@ -1,17 +1,12 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.10 2003/04/17 23:25:52 tom Exp $
-.de It
-.br
-.ie \\n(.$>=3 .ne \\$3
-.el .ne 3
-.IP "\\$1" \\$2
-..
+.\" $Id: cdk_binding.3,v 1.18 2004/08/29 23:28:40 tom Exp $
 .TH cdk_binding 3
 .SH NAME
 bindCDKObject,
 checkCDKObjectBind,
 cleanCDKObjectBindings,
-unbindCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
+unbindCDKObject,
+getcCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .LP
 .SH SYNOPSIS
 .LP
@@ -43,6 +38,9 @@ unbindCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .BI "EObjectType " "cdkType",
 .BI "void *" "object",
 .BI "chtype " "key");
+.TP 15
+.B "int getcCDKObject ("
+.BI "CDKOBJS *" "object");
 .fi
 .SH DESCRIPTION
 Cdk has the ability to create user definable key bindings.
@@ -65,10 +63,15 @@ lw13 lw30 lw 30 .
 \fBEObjectType_Value/Corresponding_Widget/Widget_Manual_Page\fR
 =
 vALPHALIST/Alphalist Widget/cdk_alphalist (3)
+vBUTTON/Button Widget/cdk_button (3)
+vBUTTONBOX/Buttonbox Widget/cdk_buttonbox (3)
 vCALENDAR/Calendar Widget/cdk_calendar (3)
 vDIALOG/Dialog Widget/cdk_dialog (3)
+vDSCALE/DoubleFloat Widget/cdk_dscale (3)
 vENTRY/Entry Widget/cdk_entry (3)
+vFSCALE/Floating Scale Widget/cdk_fscale (3)
 vFSELECT/File Selector Widget/cdk_fselect (3)
+vFSLIDER/Floating Slider Widget/cdk_fslider (3)
 vGRAPH/Graph Widget/cdk_graph (3)
 vHISTOGRAM/Histogram Widget/cdk_histogram (3)
 vITEMLIST/Item List Widget/cdk_itemlist (3)
@@ -78,12 +81,14 @@ vMATRIX/Matrix Widget/cdk_matrix (3)
 vMENTRY/Multiple Line Entry Widget/cdk_mentry (3)
 vMENU/Menu Widget/cdk_menu (3)
 vRADIO/Radio List Widget/cdk_radio (3)
-vSCALE/Numeric Scale Widget/cdk_scale (3)
+vSCALE/Integer Scale Widget/cdk_scale (3)
 vSCROLL/Scrolling List Widget/cdk_scroll (3)
 vSELECTION/Selection List Widget/cdk_selection (3)
 vSLIDER/Slider Widget/cdk_slider (3)
 vSWINDOW/Scrolling Window Widget/cdk_swindow (3)
 vTEMPLATE/Template Entry Widget/cdk_template (3)
+vUSCALE/Unsigned Scale Widget/cdk_uscale (3)
+vUSLIDER/Unsigned Slider Widget/cdk_uslider (3)
 vVIEWER/Viewer Widget/cdk_viewer (3)
 =
 .TE
@@ -94,8 +99,18 @@ The parameter \fBkey\fR is the key hit which triggered this callback.
 .RE
 .TP 5
 .B checkCDKObjectBind
-returns an integer stating whether the given \fBkey\fR has
-been bound to the given widget, \fBobject\fR.
+check to see if a binding for the given \fBkey\fP exists.
+If it does,
+Cdk runs the associated command and returns its value,
+normally TRUE. 
+If no binding exists, return FALSE.
+.IP
+The widgets which accept input, e.g., via "inject" methods,
+use this to check if the injected character is bound to a function.
+If that returns TRUE, the widget may update its \fIexitType\fP value:
+if \fIearlyExit\fP value is set
+(not equal to vNEVER_ACTIVATED),
+the widget sets \fIexitType\fP to that value.
 .TP 5
 .B cleanCDKObjectBindings
 removes all user defined key bindings from the given widget.
@@ -104,6 +119,33 @@ removes all user defined key bindings from the given widget.
 removes a specific binding to an object.
 The parameter are
 the same as for \fIbindCDKObject\fR.
+.TP 5
+.B getcCDKObject
+reads a keycode from the given widget.
+If the keycode has been bound to the special function \fBgetcCDKBind\fP,
+then it will be translated to the value which was given for the binding data.
+Otherwise, a few special cases are performed:
+
+.TS
+center tab(/) allbox;
+l l
+l l
+lw35 lw35 .
+\fBKey/Result\fR
+=
+CTRL-A/KEY_HOME
+CTRL-B/KEY_LEFT
+CTRL-E/KEY_END
+CTRL-F/KEY_RIGHT
+CTRL-N/tab
+CTRL-P/KEY_BTAB
+DEL/KEY_DC
+backspace/KEY_BACKSPACE
+carriage return/KEY_ENTER
+newline/KEY_ENTER
+.TE
+
+All of the widgets use \fBgetcCDKObject\fP internally for consistency.
 .SH EXAMPLE
 To help demonstrate how to use the key bindings I will demonstrate a simple
 dialog box widget with help for each button.

@@ -1,5 +1,5 @@
 /*
- * $Id: button.h,v 1.9 2003/12/06 16:28:18 tom Exp $
+ * $Id: button.h,v 1.10 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -153,16 +153,12 @@ boolean getCDKButtonBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKButtonBackgroundColor (
-		CDKBUTTON *	/* button */,
-		char *		/* color */);
+#define setCDKButtonBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKButtonBackgroundAttrib (
-		CDKBUTTON *	/* button */,
-		chtype		/* attribute */);
+#define setCDKButtonBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This erases the button.

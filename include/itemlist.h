@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.20 2003/11/27 14:55:27 tom Exp $
+ * $Id: itemlist.h,v 1.23 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -78,10 +78,6 @@ struct SItemList {
    int		boxHeight;
    EExitType	exitType;
    boolean	shadow;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SItemList CDKITEMLIST;
 
@@ -179,16 +175,12 @@ boolean getCDKItemlistBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKItemlistBackgroundColor (
-		CDKITEMLIST *	/* itemlist */,
-		char *		/* color */);
+#define setCDKItemlistBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKItemlistBackgroundAttrib (
-		CDKITEMLIST *	/* itemlist */,
-		chtype		/* attribute */);
+#define setCDKItemlistBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the itemlist widget.
@@ -225,15 +217,8 @@ void drawCDKItemlistField (
 /*
  * These functions set the pre/post process functions.
  */
-void setCDKItemlistPreProcess (
-		CDKITEMLIST *	/* itemlist */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKItemlistPostProcess (
-		CDKITEMLIST *	/* itemlist */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKItemlistPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKItemlistPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

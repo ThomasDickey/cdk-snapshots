@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.7 2003/11/28 22:13:06 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.8 2004/08/28 00:52:41 tom Exp $ */
 
 #include <cdk.h>
 
@@ -111,7 +111,6 @@ int main (int argc, char **argv)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      delwin (cursesWindow);
       endCDK();
 
       /* Spit out the message. */
@@ -215,7 +214,6 @@ int main (int argc, char **argv)
    /* End CDK. */
    destroyCDKCalendar (widget);
    destroyCDKScreen (cdkScreen);
-   delwin (cursesWindow);
    endCDK();
 
    /* Print out the date selected. D/M/Y format. */

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.16 2003/12/11 01:27:03 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.19 2004/08/27 23:03:32 tom Exp $
 .TH cdk_mentry 3
 .SH NAME
 activateCDKMentry,
@@ -225,16 +225,26 @@ returns the current value of the widget.
 injects a single character into the widget.
 The parameter \fBmentry\fR is a pointer to a non-NULL mentry.
 The parameter \fBcharacter\fR is the character to inject into the widget.
-If the character
-injected into this widget was \fIRETURN\fR or \fITAB\fR then this function will
-return a \fIchar *\fR representing the information typed into the widget and the
-widget data \fIexitType\fR will be set to \fIvNORMAL\fR.
-If the character
-entered was \fIESCAPE\fR then the function will return \fINULL\fR pointer and
-the widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
-Any other
-character injected into the widget will set the widget data \fIexitType\fR
-to \fIvEARLY_EXIT\fR and the function will return a \fINULL\fR pointer.
+The return value and side-effect (setting the widget data \fIexitType\fP)
+depend upon the injected character:
+.RS
+.TP
+\fIRETURN\fP or \fITAB\fR
+the function returns
+a \fIchar *\fR representing the information typed into the widget.
+The widget data \fIexitType\fR is set to \fIvNORMAL\fR.
+.TP
+\fIESCAPE\fP
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
+.TP
+Otherwise
+unless modified by preprocessing, postprocessing or key bindings,
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
+.RE
 .TP 5
 .B moveCDKMentry
 moves the given widget to the given position.
@@ -474,7 +484,6 @@ Up Arrow/Moves the cursor one row down.
 Down Arrow/Moves the cursor one row up.
 Delete/Deletes the character to the left of the cursor.
 Backspace/Deletes the character to the left of the cursor.
-CTRL-H/Deletes the character to the left of the cursor.
 CTRL-V/T{
 Pastes whatever is in the paste buffer, into the widget.
 T}
@@ -488,13 +497,13 @@ CTRL-U/T{
 Erases the contents of the widget.
 T}
 CTRL-A/T{
-Moves the cursor to the begining of the entry field.
+Moves the cursor to the beginning of the entry field.
 T}
 CTRL-E/T{
 Moves the cursor to the end of the entry field.
 T}
 CTRL-T/T{
-Transposes the characer under the cursor with the character to the right.
+Transposes the character under the cursor with the character to the right.
 T}
 Return/T{
 Exits the widget and returns a \fIchar *\fR representing

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:48:11 $
- * $Revision: 1.94 $
+ * $Date: 2004/08/31 01:42:06 $
+ * $Revision: 1.108 $
  */
 
 /*
@@ -26,6 +26,19 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    int boxHeight		= height;
    int xpos			= xplace;
    int ypos			= yplace;
+   int x;
+
+   static const struct { int from; int to; } bindings[] = {
+	    { CDK_BACKCHAR,	KEY_PPAGE },
+	    { 'b',		KEY_PPAGE },
+	    { 'B',		KEY_PPAGE },
+	    { CDK_FORCHAR,	KEY_NPAGE },
+	    { SPACE,		KEY_NPAGE },
+	    { 'f',		KEY_NPAGE },
+	    { 'F',		KEY_NPAGE },
+	    { '|',		KEY_HOME },
+	    { '$',		KEY_END },
+   };
 
    if ((swindow = newCDKObject(CDKSWINDOW, &my_funcs)) == 0)
       return (0);
@@ -94,13 +107,10 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    swindow->listSize		= 0;
    swindow->widestLine		= -1;
    swindow->saveLines		= saveLines;
-   swindow->exitType		= vNEVER_ACTIVATED;
+   initExitType(swindow);
+   ObjOf(swindow)->acceptsFocus	= TRUE;
    ObjOf(swindow)->inputWindow	= swindow->win;
    swindow->shadow		= shadow;
-   swindow->preProcessFunction	= 0;
-   swindow->preProcessData	= 0;
-   swindow->postProcessFunction = 0;
-   swindow->postProcessData	= 0;
 
    if (!createList(swindow, saveLines))
    {
@@ -115,7 +125,8 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    }
 
    /* Clean the key bindings. */
-   cleanCDKObjectBindings (vSWINDOW, swindow);
+   for (x = 0; x < (int) SIZEOF(bindings); ++x)
+      bindCDKObject (vSWINDOW, swindow, bindings[x].from, getcCDKBind, (void *)(long)bindings[x].to);
 
    /* Register this baby. */
    registerCDKObject (cdkscreen, vSWINDOW, swindow);
@@ -454,7 +465,7 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
    }
 
    /* Set the exit type and return. */
-   swindow->exitType = vEARLY_EXIT;
+   setExitType(swindow, 0);
    return;
 }
 
@@ -468,14 +479,17 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
    int ret = unknownInt;
    bool complete = FALSE;
 
+   /* Set the exit type. */
+   setExitType(swindow, 0);
+
    /* Draw the window.... */
    drawCDKSwindow (swindow, ObjOf(swindow)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (swindow->preProcessFunction != 0)
+   if (PreProcessFuncOf(swindow) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = swindow->preProcessFunction (vSWINDOW, swindow, swindow->preProcessData, input);
+      ppReturn = PreProcessFuncOf(swindow) (vSWINDOW, swindow, PreProcessDataOf(swindow), input);
    }
 
    /* Should we continue? */
@@ -484,7 +498,7 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind (vSWINDOW, swindow, input) != 0)
       {
-	 swindow->exitType = vESCAPE_HIT;
+	 checkEarlyExit(swindow);
 	 complete = TRUE;
       }
       else
@@ -535,7 +549,7 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_PPAGE : case CONTROL('B') : case 'b' : case 'B' :
+	    case KEY_PPAGE :
 		 if (swindow->currentTop != 0)
 		 {
 		    if (swindow->currentTop >= swindow->viewSize)
@@ -553,7 +567,7 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_NPAGE : case CONTROL('F') : case ' ' : case 'f' : case 'F' :
+	    case KEY_NPAGE :
 		 if (swindow->currentTop != swindow->maxTopLine)
 		 {
 		    if ((swindow->currentTop + swindow->viewSize) < swindow->maxTopLine)
@@ -571,11 +585,11 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_HOME : case '|' :
+	    case KEY_HOME :
 		 swindow->leftChar = 0;
 		 break;
 
-	    case KEY_END : case '$' :
+	    case KEY_END :
 		 swindow->leftChar = swindow->maxLeftChar + 1;
 		 break;
 
@@ -595,14 +609,14 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 saveCDKSwindowInformation (swindow);
 		 break;
 
-	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
-		 swindow->exitType = vNORMAL;
+	    case KEY_TAB : case KEY_ENTER :
+		 setExitType(swindow, input);
 		 ret = 1;
 		 complete = TRUE;
 		 break;
 
 	    case KEY_ESC :
-		 swindow->exitType = vESCAPE_HIT;
+		 setExitType(swindow, input);
 		 complete = TRUE;
 		 break;
 
@@ -617,15 +631,15 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (swindow->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(swindow) != 0))
       {
-	 swindow->postProcessFunction (vSWINDOW, swindow, swindow->postProcessData, input);
+	 PostProcessFuncOf(swindow) (vSWINDOW, swindow, PostProcessDataOf(swindow), input);
       }
    }
 
    if (!complete) {
       drawCDKSwindowList (swindow, ObjOf(swindow)->box);
-      swindow->exitType = vEARLY_EXIT;
+      setExitType(swindow, 0);
    }
 
    ResultOf(swindow).valueInt = ret;
@@ -667,8 +681,7 @@ static void _moveCDKSwindow (CDKOBJS *object, int xplace, int yplace, boolean re
    moveCursesWindow(swindow->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(swindow));
-   wrefresh (WindowOf(swindow));
+   refreshCDKWindow (WindowOf(swindow));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -698,8 +711,7 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 
    drawCdkTitle (swindow->win, object);
 
-   touchwin (swindow->win);
-   wrefresh (swindow->win);
+   refreshCDKWindow (swindow->win);
 
    /* Draw in the list. */
    drawCDKSwindowList (swindow, Box);
@@ -749,42 +761,21 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
    }
 
    /* Reddraw the window. */
-   touchwin (swindow->fieldWin);
-   wrefresh (swindow->fieldWin);
-}
-
-/*
- * This sets the background color of the widget.
- */
-void setCDKSwindowBackgroundColor (CDKSWINDOW *swindow, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKSwindowBackgroundAttrib (swindow, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
+   refreshCDKWindow (swindow->fieldWin);
 }
 
 /*
  * This sets the background attribute of the widget.
  */
-void setCDKSwindowBackgroundAttrib (CDKSWINDOW *swindow, chtype attrib)
+static void _setBKattrSwindow (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (swindow->win, attrib);
-   wbkgd (swindow->fieldWin, attrib);
+   if (object != 0)
+   {
+      CDKSWINDOW *widget = (CDKSWINDOW *) object;
+
+      wbkgd (widget->win, attrib);
+      wbkgd (widget->fieldWin, attrib);
+   }
 }
 
 /*
@@ -868,6 +859,23 @@ int execCDKSwindow (CDKSWINDOW *swindow, char *command, int insertPos)
    return count;
 }
 
+static void showMessage2(CDKSWINDOW *swindow, char *msg, char *msg2, char *filename)
+{
+   char *mesg[10];
+   char *temp = (char *)malloc(80 + strlen(filename));
+   int n = 0;
+
+   mesg[n++] = copyChar (msg);
+   mesg[n++] = copyChar (msg2);
+   sprintf (temp, "<C>(%s)", filename);
+   mesg[n++] = copyChar (temp);
+   mesg[n++] = copyChar (" ");
+   mesg[n++] = copyChar ("<C>Press any key to continue.");
+   popupLabel (ScreenOf(swindow), mesg, n);
+   freeCharList (mesg, n);
+   free (temp);
+}
+
 /*
  * This function allows the user to dump the information from the
  * scrolling window to a file.
@@ -912,27 +920,19 @@ void saveCDKSwindowInformation (CDKSWINDOW *swindow)
    if (linesSaved == -1)
    {
       /* Nope, tell 'em. */
-      mesg[0] = "<C></B/16>Error";
-      mesg[1] = "<C>Could not save to the file.";
-      sprintf (temp, "<C>(%s)", filename);
-      mesg[2] = copyChar (temp);
-      mesg[3] = " ";
-      mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(swindow), mesg, 5);
-      freeCharList (mesg, 5);
+      showMessage2(swindow,
+		   "<C></B/16>Error",
+		   "<C>Could not save to the file.",
+		   filename);
    }
    else
    {
       /* Yep, let them know how many lines were saved. */
-      mesg[0] = "<C></B/5>Save Successful";
       sprintf (temp, "<C>There were %d lines saved to the file", linesSaved);
-      mesg[1] = copyChar (temp);
-      sprintf (temp, "<C>(%s)", filename);
-      mesg[2] = copyChar (temp);
-      mesg[3] = " ";
-      mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(swindow), mesg, 5);
-      freeCharList (mesg, 5);
+      showMessage2(swindow,
+		   "<C></B/5>Save Successful",
+		   temp,
+		   filename);
    }
 
    /* Clean up and exit. */
@@ -950,7 +950,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    CDKFSELECT *fselect	= 0;
    CDKDIALOG *dialog	= 0;
    char *filename	= 0;
-   char temp[256], *mesg[15], *button[5], **fileInfo = 0;
+   char *mesg[15], *button[5], **fileInfo = 0;
    int lines, answer;
 
    /* Create the file selector to choose the file. */
@@ -998,7 +998,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 
       /* Create the dialog widget. */
       dialog = newCDKDialog (ScreenOf(swindow), CENTER, CENTER,
-				mesg, 2, button, 2,
+				mesg, 3, button, 2,
 				COLOR_PAIR(2)|A_REVERSE,
 				TRUE, TRUE, FALSE);
 
@@ -1019,14 +1019,10 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    if (lines == -1)
    {
       /* The file read didn't work. */
-      mesg[0] = "<C></B/16>Error";
-      mesg[1] = "<C>Could not read the file";
-      sprintf (temp, "<C>(%s)", filename);
-      mesg[2] = copyChar (temp);
-      mesg[3] = " ";
-      mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(swindow), mesg, 5);
-      freeCharList (mesg, 5);
+      showMessage2(swindow,
+		   "<C></B/16>Error",
+		   "<C>Could not read the file",
+		   filename);
       freeChar (filename);
       return;
    }
@@ -1071,43 +1067,23 @@ int dumpCDKSwindow (CDKSWINDOW *swindow, char *filename)
    return swindow->listSize;
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKSwindowPreProcess (CDKSWINDOW *swindow, PROCESSFN callback, void *data)
+static void _focusCDKSwindow(CDKOBJS *object)
 {
-   swindow->preProcessFunction = callback;
-   swindow->preProcessData = data;
+   CDKSWINDOW *widget = (CDKSWINDOW *)object;
+
+   drawCDKSwindow (widget, ObjOf(widget)->box);
 }
 
-/*
- * This function sets the post-process function.
- */
-void setCDKSwindowPostProcess (CDKSWINDOW *swindow, PROCESSFN callback, void *data)
+static void _unfocusCDKSwindow(CDKOBJS *object)
 {
-   swindow->postProcessFunction = callback;
-   swindow->postProcessData = data;
+   CDKSWINDOW *widget = (CDKSWINDOW *)object;
+
+   drawCDKSwindow (widget, ObjOf(widget)->box);
 }
 
-static void _focusCDKSwindow(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Swindow)
 
-static void _unfocusCDKSwindow(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _refreshDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _saveDataCDKSwindow(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Swindow)
 
 static int createList(CDKSWINDOW *swindow, int listSize)
 {

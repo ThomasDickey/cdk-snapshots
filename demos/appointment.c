@@ -152,7 +152,7 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the calendar. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Create a key binding to mark days on the calendar. */
@@ -188,9 +188,8 @@ int main (int argc, char **argv)
    /* Clean up and exit. */
    destroyCDKCalendar (calendar);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 /*
@@ -217,7 +216,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* Split each line up and create an appointment. */
    for (x=0; x < linesRead; x++)
    {
-      temp = CDKsplitString (lines[x], CONTROL('V'));
+      temp = CDKsplitString (lines[x], CTRL('V'));
       segments = CDKcountStrings (temp);
 
      /*
@@ -229,7 +228,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 	 appInfo->appointment[appointments].day		= atoi (temp[0]);
 	 appInfo->appointment[appointments].month	= atoi (temp[1]);
 	 appInfo->appointment[appointments].year	= atoi (temp[2]);
-	 appInfo->appointment[appointments].type	= atoi (temp[3]);
+	 appInfo->appointment[appointments].type	= (EAppointmentType) atoi (temp[3]);
 	 appInfo->appointment[appointments].description = copyChar (temp[4]);
 	 appointments++;
       }
@@ -262,10 +261,10 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
       if (appInfo->appointment[x].description != 0)
       {
 	 fprintf (fd, "%d%c%d%c%d%c%d%c%s\n",
-		appInfo->appointment[x].day, CONTROL('V'),
-		appInfo->appointment[x].month, CONTROL('V'),
-		appInfo->appointment[x].year, CONTROL('V'),
-		appInfo->appointment[x].type, CONTROL('V'),
+		appInfo->appointment[x].day, CTRL('V'),
+		appInfo->appointment[x].month, CTRL('V'),
+		appInfo->appointment[x].year, CTRL('V'),
+		appInfo->appointment[x].type, CTRL('V'),
 		appInfo->appointment[x].description);
 
 	 freeChar (appInfo->appointment[x].description);

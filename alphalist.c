@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.71 $
+ * $Date: 2004/08/31 01:39:57 $
+ * $Revision: 1.81 $
  */
  
 /*
@@ -34,6 +34,11 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int tempHeight		= 0;
    int labelLen			= 0;
    int x, junk2;
+
+   static const struct { int from; int to; } bindings[] = {
+		{ CDK_BACKCHAR,	KEY_PPAGE },
+		{ CDK_FORCHAR,	KEY_NPAGE },
+   };
 
    if ((alphalist = newCDKObject(CDKALPHALIST, &my_funcs)) == 0
     || !createList(alphalist, list, listSize))
@@ -85,7 +90,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->fillerChar	= fillerChar;
    alphalist->boxHeight		= boxHeight;
    alphalist->boxWidth		= boxWidth;
-   alphalist->exitType		= vNEVER_ACTIVATED;
+   initExitType(alphalist);
    alphalist->shadow		= shadow;
    alphalist->shadowWin		= 0;
 
@@ -124,9 +129,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    bindCDKObject (vENTRY, alphalist->entryField, KEY_UP, adjustAlphalistCB, alphalist);
    bindCDKObject (vENTRY, alphalist->entryField, KEY_DOWN, adjustAlphalistCB, alphalist);
    bindCDKObject (vENTRY, alphalist->entryField, KEY_NPAGE, adjustAlphalistCB, alphalist);
-   bindCDKObject (vENTRY, alphalist->entryField, CONTROL('F'), adjustAlphalistCB, alphalist);
    bindCDKObject (vENTRY, alphalist->entryField, KEY_PPAGE, adjustAlphalistCB, alphalist);
-   bindCDKObject (vENTRY, alphalist->entryField, CONTROL('B'), adjustAlphalistCB, alphalist);
    bindCDKObject (vENTRY, alphalist->entryField, KEY_TAB, completeWordCB, alphalist);
 
    /* Set up the post-process function for the entry field. */
@@ -151,6 +154,10 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 					  Box, FALSE);
    setCDKScrollULChar (alphalist->scrollField, ACS_LTEE);
    setCDKScrollURChar (alphalist->scrollField, ACS_RTEE);
+
+   /* Setup the key bindings. */
+   for (x = 0; x < (int) SIZEOF(bindings); ++x)
+      bindCDKObject (vALPHALIST, alphalist, bindings[x].from, getcCDKBind, (void *)(long)bindings[x].to);
 
    /* Register this baby. */
    registerCDKObject (cdkscreen, vALPHALIST, alphalist);
@@ -217,8 +224,7 @@ static void _moveCDKAlphalist (CDKOBJS *object, int xplace, int yplace, boolean 
    moveCDKScroll (alphalist->scrollField, xplace, yplace, relative, FALSE);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(alphalist));
-   wrefresh (WindowOf(alphalist));
+   refreshCDKWindow (WindowOf(alphalist));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -261,7 +267,7 @@ char *activateCDKAlphalist (CDKALPHALIST *alphalist, chtype *actions)
    ret = activateCDKEntry (alphalist->entryField, actions);
 
    /* Copy the exit type from the entry field. */
-   alphalist->exitType = alphalist->entryField->exitType;
+   copyExitType(alphalist, alphalist->entryField);
 
    /* Determine the exit status. */
    if (alphalist->exitType != vEARLY_EXIT)
@@ -286,7 +292,7 @@ static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
    ret = injectCDKEntry (alphalist->entryField, input);
 
    /* Copy the exit type from the entry field. */
-   alphalist->exitType = alphalist->entryField->exitType;
+   copyExitType(alphalist, alphalist->entryField);
 
    /* Determine the exit status. */
    if (alphalist->exitType == vEARLY_EXIT)
@@ -296,25 +302,13 @@ static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
    return (ret != unknownString);
 }
 
-static void _focusCDKAlphalist(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyFocus(Alphalist)
 
-static void _unfocusCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Alphalist)
 
-static void _refreshDataCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Alphalist)
 
-static void _saveDataCDKAlphalist(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Alphalist)
 
 /*
  * This sets multiple attributes of the widget.
@@ -451,22 +445,12 @@ static void _setMyBXattr (CDKOBJS *object, chtype character)
 }
 
 /*
- * This sets the background color of the widget.
- */ 
-void setCDKAlphalistBackgroundColor (CDKALPHALIST *alphalist, char *color)
-{
-   if (color != 0)
-   {
-      setCDKEntryBackgroundColor (alphalist->entryField, color);
-      setCDKScrollBackgroundColor (alphalist->scrollField, color);
-   }
-}
-
-/*
  * This sets the background attribute of the widget.
  */ 
-void setCDKAlphalistBackgroundAttrib (CDKALPHALIST *alphalist, chtype attrib)
+static void _setBKattrAlphalist (CDKOBJS *obj, chtype attrib)
 {
+   CDKALPHALIST *alphalist = (CDKALPHALIST *) obj;
+
    setCDKEntryBackgroundAttrib (alphalist->entryField, attrib);
    setCDKScrollBackgroundAttrib (alphalist->scrollField, attrib);
 }
@@ -482,19 +466,7 @@ static void _destroyCDKAlphalist (CDKOBJS *object)
 
       CDKfreeStrings(alphalist->list);
 
-      /* Destroy the other Cdk objects. */
-      if  (alphalist->entryField != 0)
-      {
-	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_UP);
-	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_DOWN);
-	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_NPAGE);
-	 unbindCDKObject (vENTRY, alphalist->entryField, CONTROL('F'));
-	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_PPAGE);
-	 unbindCDKObject (vENTRY, alphalist->entryField, CONTROL('B'));
-	 unbindCDKObject (vENTRY, alphalist->entryField, KEY_TAB);
-
-	 destroyCDKEntry (alphalist->entryField);
-      }
+      destroyCDKEntry (alphalist->entryField);
       destroyCDKScroll (alphalist->scrollField);
     
       /* Free up the window pointers. */
@@ -568,16 +540,15 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GC
    }
 
    /* Check the input. */
-   if ((input < KEY_MIN && (isalnum (input) || ispunct (input)))
-    || input == DELETE
-    || input == CONTROL('H')
+   if ((isChar(input) && (isalnum (CharOf(input)) || ispunct (input)))
+    || input == KEY_BACKSPACE
     || input == KEY_DC)
    {
       /* Copy the information from the entry field. */
       strcpy (pattern, entry->info);
 
       /* Truncate/Concatenate to the information in the entry field. */	 
-      if (input == DELETE || input == CONTROL('H') || input == KEY_DC)
+      if (input == KEY_BACKSPACE || input == KEY_DC)
       {
 	 pattern[infoLen] = '\0';
 	 pattern[infoLen-1] = '\0';

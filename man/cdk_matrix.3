@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.18 2003/12/11 01:27:03 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.19 2004/08/27 23:04:48 tom Exp $
 .TH cdk_matrix 3
 .SH NAME
 activateCDKMatrix,
@@ -236,15 +236,27 @@ returns the contents of the cell located by the \fBrow\fR and \fBcol\fR pair.
 injects a single character into the widget.
 The parameter \fBmatrix\fR is a pointer to a non-NULL matrix widget.
 The parameter \fBcharacter\fR is the character to inject into the widget.
-If the character
-injected into this widget was \fIRETURN\fR then this function will return 1.
-It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
-If the character entered into this widget was \fIESCAPE\fR then the widget
-will return a value of -1 and the widget data \fIexitType\fR will be
-set to \fIvESCAPE_HIT\fR.
-Any other character injected into the widget
-will set the widget data \fIexitType\fR to \fIvEARLY_EXIT\fR and the
-function will return -1.
+The return value and side-effect (setting the widget data \fIexitType\fP)
+depend upon the injected character:
+.RS
+.TP
+\fIRETURN\fP or \fITAB\fR
+the function returns
+1.
+The widget data \fIexitType\fR is set to \fIvNORMAL\fR.
+.TP
+\fIESCAPE\fP
+the function returns
+-1.
+The widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
+.TP
+Otherwise
+unless modified by preprocessing, postprocessing or key bindings,
+the function returns
+-1.
+The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
+.RE
+.IP
 The matrix cell contents can be retrieved by
 using the \fBinfo\fR array of the matrix widget.
 .TP 5

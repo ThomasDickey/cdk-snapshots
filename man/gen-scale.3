@@ -1,34 +1,40 @@
 '\" t
-.\" $Id: cdk_scale.3,v 1.16 2003/12/11 01:27:03 tom Exp $"
+.\" $Id: gen-scale.3,v 1.4 2004/08/29 21:42:17 tom Exp $"
 .TH cdk_scale 3
 .SH NAME
-activateCDKScale,
-destroyCDKScale,
-drawCDKScale,
-eraseCDKScale,
-getCDKScaleBox,
-getCDKScaleHighValue,
-getCDKScaleLowValue,
-getCDKScaleValue,
-injectCDKScale,
-moveCDKScale,
-newCDKScale,
-positionCDKScale,
-setCDKScale,
-setCDKScaleBackgroundAttrib,
-setCDKScaleBackgroundColor,
-setCDKScaleBox,
-setCDKScaleBoxAttribute,
-setCDKScaleHorizontalChar,
-setCDKScaleLLChar,
-setCDKScaleLRChar,
-setCDKScaleLowHigh,
-setCDKScalePostProcess,
-setCDKScalePreProcess,
-setCDKScaleULChar,
-setCDKScaleURChar,
-setCDKScaleValue,
-setCDKScaleVerticalChar \- curses scale widget.
+activateCDK<MIXED>,
+destroyCDK<MIXED>,
+drawCDK<MIXED>,
+eraseCDK<MIXED>,
+getCDK<MIXED>Box,
+#if <FLOAT>
+getCDK<MIXED>Digits,
+#endif <FLOAT>
+getCDK<MIXED>HighValue,
+getCDK<MIXED>LowValue,
+getCDK<MIXED>Value,
+injectCDK<MIXED>,
+moveCDK<MIXED>,
+newCDK<MIXED>,
+positionCDK<MIXED>,
+setCDK<MIXED>,
+setCDK<MIXED>BackgroundAttrib,
+setCDK<MIXED>BackgroundColor,
+setCDK<MIXED>Box,
+setCDK<MIXED>BoxAttribute,
+#if <FLOAT>
+setCDK<MIXED>Digits,
+#endif <FLOAT>
+setCDK<MIXED>HorizontalChar,
+setCDK<MIXED>LLChar,
+setCDK<MIXED>LRChar,
+setCDK<MIXED>LowHigh,
+setCDK<MIXED>PostProcess,
+setCDK<MIXED>PreProcess,
+setCDK<MIXED>ULChar,
+setCDK<MIXED>URChar,
+setCDK<MIXED>Value,
+setCDK<MIXED>VerticalChar \- curses scale widget (type <CTYPE>).
 .SH SYNOPSIS
 .LP
 .B cc
@@ -39,44 +45,49 @@ setCDKScaleVerticalChar \- curses scale widget.
 #include <cdk.h>
 .nf
 .TP 15
-.B "int activateCDKScale ("
-.BI "CDKSCALE *" "scale",
+.B "<CTYPE> activateCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype *" "actions");
 .TP 15
-.B "void destroyCDKScale ("
-.BI "CDKSCALE *" "scale");
+.B "void destroyCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale");
 .TP 15
-.B "void drawCDKScale ("
-.BI "CDKSCALE *" "scale",
+.B "void drawCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale",
 .BI "boolean " "box");
 .TP 15
-.B "void eraseCDKScale ("
-.BI "CDKSCALE *" "scale");
+.B "void eraseCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale");
 .TP 15
-.B "boolean getCDKScaleBox ("
-.BI "CDKSCALE *" "scale");
+.B "boolean getCDK<MIXED>Box ("
+.BI "CDK<UPPER> *" "scale");
+#if <FLOAT>
 .TP 15
-.B "int getCDKScaleHighValue ("
-.BI "CDKSCALE *" "scale");
+.B "int getCDK<MIXED>Digits ("
+.BI "CDK<UPPER> *" "scale");
+#endif <FLOAT>
 .TP 15
-.B "int getCDKScaleLowValue ("
-.BI "CDKSCALE *" "scale");
+.B "<CTYPE> getCDK<MIXED>HighValue ("
+.BI "CDK<UPPER> *" "scale");
 .TP 15
-.B "int getCDKScaleValue ("
-.BI "CDKSCALE *" "scale");
+.B "<CTYPE> getCDK<MIXED>LowValue ("
+.BI "CDK<UPPER> *" "scale");
 .TP 15
-.B "int injectCDKScale ("
-.BI "CDKSCALE *" "scale",
+.B "<CTYPE> getCDK<MIXED>Value ("
+.BI "CDK<UPPER> *" "scale");
+.TP 15
+.B "int injectCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "input");
 .TP 15
-.B "void moveCDKScale ("
-.BI "CDKSCALE *" "scale",
+.B "void moveCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale",
 .BI "int " "xpos",
 .BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
-.B "CDKSCALE *newCDKScale ("
+.B "CDK<UPPER> *newCDK<MIXED> ("
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
@@ -84,81 +95,90 @@ setCDKScaleVerticalChar \- curses scale widget.
 .BI "char *" "label",
 .BI "chtype " "fieldAttribute",
 .BI "int " "fieldWidth",
-.BI "int " "currentValue",
-.BI "int " "lowValue",
-.BI "int " "highValue",
-.BI "int " "increment",
-.BI "int " "fastIncrement",
+.BI "<CTYPE> " "currentValue",
+.BI "<CTYPE> " "lowValue",
+.BI "<CTYPE> " "highValue",
+.BI "<CTYPE> " "increment",
+.BI "<CTYPE> " "fastIncrement",
+#if <FLOAT>
+.BI "int " "digits",
+#endif <FLOAT>
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
-.B "void positionCDKScale ("
-.BI "CDKSCALE *" "scale");
+.B "void positionCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale");
 .TP 15
-.B "void setCDKScale ("
-.BI "CDKSCALE *" "scale",
-.BI "int " "lowValue",
-.BI "int " "highValue",
-.BI "int " "currentValue",
+.B "void setCDK<MIXED> ("
+.BI "CDK<UPPER> *" "scale",
+.BI "<CTYPE> " "lowValue",
+.BI "<CTYPE> " "highValue",
+.BI "<CTYPE> " "currentValue",
 .BI "boolean " "box");
 .TP 15
-.B "void setCDKScaleBackgroundAttrib ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>BackgroundAttrib ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "attribute");
 .TP 15
-.B "void setCDKScaleBackgroundColor ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>BackgroundColor ("
+.BI "CDK<UPPER> *" "scale",
 .BI "char * " "color");
 .TP 15
-.B "void setCDKScaleBox ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>Box ("
+.BI "CDK<UPPER> *" "scale",
 .BI "boolean " "box");
 .TP 15
-.B "void setCDKScaleBoxAttribute ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>BoxAttribute ("
+.BI "CDK<UPPER> *" "scale",
+.BI "chtype " "character");
+#if <FLOAT>
+.TP 15
+.B "void setCDK<MIXED>Digits ("
+.BI "CDK<UPPER> *" "scale",
+.BI "int " "digits");
+#endif <FLOAT>
+.TP 15
+.B "void setCDK<MIXED>HorizontalChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScaleHorizontalChar ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>LLChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScaleLLChar ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>LRChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScaleLRChar ("
-.BI "CDKSCALE *" "scale",
-.BI "chtype " "character");
+.B "void setCDK<MIXED>LowHigh ("
+.BI "CDK<UPPER> *" "scale",
+.BI "<CTYPE> " "low",
+.BI "<CTYPE> " "high");
 .TP 15
-.B "void setCDKScaleLowHigh ("
-.BI "CDKSCALE *" "scale",
-.BI "int " "low",
-.BI "int " "high");
-.TP 15
-.B "void setCDKScalePostProcess ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>PostProcess ("
+.BI "CDK<UPPER> *" "scale",
 .BI "PROCESSFN " "callback",
 .BI "void * " "data");
 .TP 15
-.B "void setCDKScalePreProcess ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>PreProcess ("
+.BI "CDK<UPPER> *" "scale",
 .BI "PROCESSFN " "callback",
 .BI "void * " "data");
 .TP 15
-.B "void setCDKScaleULChar ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>ULChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScaleURChar ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>URChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScaleValue ("
-.BI "CDKSCALE *" "scale",
-.BI "int " "value");
+.B "void setCDK<MIXED>Value ("
+.BI "CDK<UPPER> *" "scale",
+.BI "<CTYPE> " "value");
 .TP 15
-.B "void setCDKScaleVerticalChar ("
-.BI "CDKSCALE *" "scale",
+.B "void setCDK<MIXED>VerticalChar ("
+.BI "CDK<UPPER> *" "scale",
 .BI "chtype " "character");
 .fi
 .SH DESCRIPTION
@@ -166,7 +186,7 @@ The Cdk scale widget creates a scale box with a label and a scale field.
 The following functions create or manipulate the Cdk scale box widget.
 .SH AVAILABLE FUNCTIONS
 .TP 5
-.B activateCDKScale
+.B activateCDK<MIXED>
 activates the scale widget and lets the user interact with the widget.
 The parameter \fBscale\fR is a pointer to a non-NULL scale widget.
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
@@ -178,49 +198,64 @@ into this widget is \fIRETURN\fR or \fITAB\fR then this function will return a
 value from the low value to the high value.
 It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 If the character entered into this
-widget was \fIESCAPE\fR then the widget will return a value of -1 and the
-widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
+widget was \fIESCAPE\fR then the widget will return
+the unknown<DTYPE> value (see the cdk_objs.h header file).
+The widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
 .TP 5
-.B destroyCDKScale
+.B destroyCDK<MIXED>
 removes the widget from the screen and frees memory the object used.
 .TP 5
-.B drawCDKScale
+.B drawCDK<MIXED>
 draws the scale widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
-.B eraseCDKScale
+.B eraseCDK<MIXED>
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
 .TP 5
-.B getCDKScaleBox
+.B getCDK<MIXED>Box
 returns whether the widget will be drawn with a box around it.
+#if <FLOAT>
 .TP 5
-.B getCDKScaleHighValue
+.B getCDK<MIXED>Digits
+returns the number of digits shown after the decimal point for the box value.
+#endif <FLOAT>
+.TP 5
+.B getCDK<MIXED>HighValue
 returns the high value of the scale widget.
 .TP 5
-.B getCDKScaleLowValue
+.B getCDK<MIXED>LowValue
 returns the low value of the scale widget.
 .TP 5
-.B getCDKScaleValue
+.B getCDK<MIXED>Value
 returns the current value of the widget.
 .TP 5
-.B injectCDKScale
+.B injectCDK<MIXED>
 injects a single character into the widget.
 The parameter \fBscale\fR is a pointer to a non-NULL scale widget.
 The parameter \fBcharacter\fR is the character to inject into the widget.
-If the character
-injected into this widget was \fIRETURN\fR then the character injected into
-this widget is \fIRETURN\fR or \fITAB\fR then this function will return a
-value from the low value to the high value.
-It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
-If the character entered into this
-widget was \fIESCAPE\fR then the widget will return a value of -1 and the
-widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
-Any other
-character injected into the widget will set the widget data \fIexitType\fR
-to \fIvEARLY_EXIT\fR and the function will return -1.
+The return value and side-effect (setting the widget data \fIexitType\fP)
+depend upon the injected character:
+.RS
+.TP
+\fIRETURN\fP or \fITAB\fR
+the function returns
+a value ranging from the scale's low value to the scale's high value.
+The widget data \fIexitType\fR is set to \fIvNORMAL\fR.
+.TP
+\fIESCAPE\fP
+the function returns
+the unknown<DTYPE> value (see the cdk_objs.h header file).
+The widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
+.TP
+Otherwise
+unless modified by preprocessing, postprocessing or key bindings,
+the function returns
+the unknown<DTYPE> value (see the cdk_objs.h header file).
+The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
+.RE
 .TP 5
-.B moveCDKScale
+.B moveCDK<MIXED>
 moves the given widget to the given position.
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
@@ -238,7 +273,7 @@ Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will get refreshed after the move.
 .TP 5
-.B newCDKScale
+.B newCDK<MIXED>
 creates a pointer to a scale widget.
 The \fBscreen\fR parameter
 is the screen you wish this widget to be placed in.
@@ -276,72 +311,77 @@ off around this widget.
 If the widget could not be created then a \fINULL\fR
 pointer is returned.
 .TP 5
-.B positionCDKScale
+.B positionCDK<MIXED>
 allows the user to move the widget around the screen via the cursor/keypad keys.
 See \fBcdk_position (3)\fR for key bindings.
 .TP 5
-.B setCDKScale
+.B setCDK<MIXED>
 lets the programmer modify certain elements of an existing scale widget.
 The parameter names correspond to the same parameter
-names listed in the \fInewCDKScale\fR function.
+names listed in the \fInewCDK<MIXED>\fR function.
 .TP 5
-.B setCDKScaleBackgroundAttrib
+.B setCDK<MIXED>BackgroundAttrib
 sets the background attribute of the widget.
 The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
-.B setCDKScaleBackgroundColor
+.B setCDK<MIXED>BackgroundColor
 sets the background color of the widget.
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
 See \fBcdk_display (3)\fR.
 .TP 5
-.B setCDKScaleBox
+.B setCDK<MIXED>Box
 sets whether the widget will be drawn with a box around it.
 .TP 5
-.B setCDKScaleBoxAttribute
+.B setCDK<MIXED>BoxAttribute
 sets the attribute of the box.
+#if <FLOAT>
 .TP 5
-.B setCDKScaleHorizontalChar
+.B setCDK<MIXED>Digits
+sets the number of digits shown after the decimal point for the box value.
+#endif <FLOAT>
+.TP 5
+.B setCDK<MIXED>HorizontalChar
 sets the horizontal drawing character for the box to
 the given character.
 .TP 5
-.B setCDKScaleLLChar
+.B setCDK<MIXED>LLChar
 sets the lower left hand corner of the widget's box to
 the given character.
 .TP 5
-.B setCDKScaleLRChar
+.B setCDK<MIXED>LRChar
 sets the lower right hand corner of the widget's box to
 the given character.
 .TP 5
-.B setCDKScaleLowHigh
+.B setCDK<MIXED>LowHigh
 sets the low and high values of the widget.
 .TP 5
-.B setCDKScalePostProcess
+.B setCDK<MIXED>PostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
 The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
-.B setCDKScalePreProcess
+.B setCDK<MIXED>PreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
 The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
-.B setCDKScaleULChar
+.B setCDK<MIXED>ULChar
 sets the upper left hand corner of the widget's box to
 the given character.
 .TP 5
-.B setCDKScaleURChar
+.B setCDK<MIXED>URChar
 sets the upper right hand corner of the widget's box to
 the given character.
 .TP 5
-.B setCDKScaleValue
+.B setCDK<MIXED>Value
 sets the current value of the widget.
 .TP 5
-.B setCDKScaleVerticalChar
+.B setCDK<MIXED>VerticalChar
 sets the vertical drawing character for the box to
 the given character.
 .SH KEY BINDINGS
@@ -351,33 +391,25 @@ The following table
 outlines the keys and their actions for this widget.
 .LP
 .TS
-center tab(/);
+center tab(/) box;
 l l
 l l
-lw15 lw35 .
+lw15 lw50 .
 \fBKey/Action\fR
 =
-Left Arrow/T{
-Decrements the scale by the normal value.
-T}
 Down Arrow/T{
 Decrements the scale by the normal value.
 T}
-d/Decrements the scale by the normal value.
--/Decrements the scale by the normal value.
-Right Arrow/Increments the scale by the normal value.
 Up Arrow/Increments the scale by the normal value.
 u/Increments the scale by the normal value.
-+/Increments the scale by the normal value.
 Prev Page/Decrements the scale by the accelerated value.
 U/Decrements the scale by the accelerated value.
 Ctrl-B/Decrements the scale by the accelerated value.
 Next Page/Increments the scale by the accelerated value.
-D/Increments the scale by the accelerated value.
 Ctrl-F/Increments the scale by the accelerated value.
 Home/Sets the scale to the low value.
 g/Sets the scale to the low value.
-0/Sets the scale to the low value.
+^/Sets the scale to the low value.
 End/Sets the scale to the high value.
 G/Sets the scale to the high value.
 $/Sets the scale to the high value.
@@ -390,10 +422,34 @@ Exits the widget and returns the index of the selected value.
 This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Escape/T{
-Exits the widget and returns -1.
+Exits the widget and returns
+the unknown<DTYPE> value (see the cdk_objs.h header file).
 This also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-R/Refreshes the screen.
+.TE
+.LP
+If the cursor is not pointing to the field's value, the following
+key bindings apply.  You may use the left/right arrows to move the
+cursor onto the field's value and modify it by typing characters to
+replace the digits and sign.
+.TS
+center tab(/) box;
+l l
+l l
+lw15 lw50 .
+\fBKey/Action\fR
+=
+Left Arrow/T{
+Decrements the scale by the normal value.
+T}
+Right Arrow/Increments the scale by the normal value.
+=
+d/Decrements the scale by the normal value.
+D/Increments the scale by the accelerated value.
+-/Decrements the scale by the normal value.
++/Increments the scale by the normal value.
+0/Sets the scale to the low value.
 .TE
 .SH SEE ALSO
 .BR cdk (3),

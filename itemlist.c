@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:46:13 $
- * $Revision: 1.61 $
+ * $Date: 2004/08/31 23:26:45 $
+ * $Revision: 1.73 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -121,14 +121,10 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    itemlist->boxWidth			= boxWidth;
    itemlist->fieldWidth			= fieldWidth;
    itemlist->listSize			= count;
-   itemlist->exitType			= vNEVER_ACTIVATED;
-   ObjOf(itemlist)->acceptsFocus	= 1;
+   initExitType(itemlist);
+   ObjOf(itemlist)->acceptsFocus	= TRUE;
    ObjOf(itemlist)->inputWindow		= itemlist->fieldWin;
    itemlist->shadow			= shadow;
-   itemlist->preProcessFunction		= 0;
-   itemlist->preProcessData		= 0;
-   itemlist->postProcessFunction	= 0;
-   itemlist->postProcessData		= 0;
 
    setCDKItemlistBox (itemlist, Box);
 
@@ -211,7 +207,7 @@ int activateCDKItemlist (CDKITEMLIST *itemlist, chtype *actions)
    }
 
    /* Set the exit type and exit. */
-   itemlist->exitType = vEARLY_EXIT;
+   setExitType(itemlist, 0);
    return ret;
 }
 
@@ -227,16 +223,16 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   itemlist->exitType = vEARLY_EXIT;
+   setExitType(itemlist, 0);
 
    /* Draw the itemlist field. */
    drawCDKItemlistField (itemlist,TRUE);
 
    /* Check if there is a pre-process function to be called. */
-   if (itemlist->preProcessFunction != 0)
+   if (PreProcessFuncOf(itemlist) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = itemlist->preProcessFunction (vITEMLIST, itemlist, itemlist->preProcessData, input);
+      ppReturn = PreProcessFuncOf(itemlist) (vITEMLIST, itemlist, PreProcessDataOf(itemlist), input);
    }
 
    /* Should we continue? */
@@ -245,14 +241,14 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
       /* Check a predefined binding. */
       if (checkCDKObjectBind (vITEMLIST, itemlist, input) != 0)
       {
-	 itemlist->exitType = vESCAPE_HIT;
+	 checkEarlyExit(itemlist);
 	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_UP : case KEY_RIGHT : case ' ' : case '+' : case 'n' :
+	    case KEY_UP : case KEY_RIGHT : case SPACE : case '+' : case 'n' :
 		 if (itemlist->currentItem < itemlist->listSize - 1)
 		 {
 		    itemlist->currentItem++;
@@ -287,12 +283,12 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
-		 itemlist->exitType = vESCAPE_HIT;
+		 setExitType(itemlist, input);
 		 complete = TRUE;
 		 break;
 
-	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
-		 itemlist->exitType = vNORMAL;
+	    case KEY_TAB : case KEY_ENTER :
+		 setExitType(itemlist, input);
 		 ret = itemlist->currentItem;
 		 complete = TRUE;
 		 break;
@@ -309,15 +305,15 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (itemlist->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(itemlist) != 0))
       {
-	 itemlist->postProcessFunction (vITEMLIST, itemlist, itemlist->postProcessData, input);
+	 PostProcessFuncOf(itemlist) (vITEMLIST, itemlist, PostProcessDataOf(itemlist), input);
       }
    }
 
    if (!complete) {
       drawCDKItemlistField (itemlist,TRUE);
-      itemlist->exitType = vEARLY_EXIT;
+      setExitType(itemlist, 0);
    }
 
    ResultOf(itemlist).valueInt = ret;
@@ -362,8 +358,7 @@ static void _moveCDKItemlist (CDKOBJS *object, int xplace, int yplace, boolean r
    moveCursesWindow(itemlist->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(itemlist));
-   wrefresh (WindowOf(itemlist));
+   refreshCDKWindow (WindowOf(itemlist));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -405,48 +400,27 @@ static void _drawCDKItemlist (CDKOBJS *object, int Box)
 		chlen(itemlist->label));
    }
 
-   touchwin (itemlist->win);
-   wrefresh (itemlist->win);
+   refreshCDKWindow (itemlist->win);
 
    /* Draw in the field. */
    drawCDKItemlistField(itemlist, FALSE);
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKItemlistBackgroundColor (CDKITEMLIST *itemlist, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKItemlistBackgroundAttrib (itemlist, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKItemlistBackgroundAttrib (CDKITEMLIST *itemlist, chtype attrib)
+static void _setBKattrItemlist (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (itemlist->win, attrib);
-   wbkgd (itemlist->fieldWin, attrib);
-   if (itemlist->labelWin != 0)
+   if (object != 0)
    {
-      wbkgd (itemlist->labelWin, attrib);
+      CDKITEMLIST *widget = (CDKITEMLIST *) object;
+
+      wbkgd (widget->win, attrib);
+      wbkgd (widget->fieldWin, attrib);
+      if (widget->labelWin != 0)
+      {
+	 wbkgd (widget->labelWin, attrib);
+      }
    }
 }
 
@@ -473,8 +447,7 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist, boolean highlight)
 
       if (highlight)
       {
-	c &= A_CHARTEXT;
-	c |= A_REVERSE;
+	c = CharOf(c) | A_REVERSE;
       }
 
       mvwaddch (itemlist->fieldWin, 0,
@@ -483,8 +456,7 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist, boolean highlight)
    }
 
    /* Redraw the field window. */
-   touchwin (itemlist->fieldWin);
-   wrefresh (itemlist->fieldWin);
+   refreshCDKWindow (itemlist->fieldWin);
 }
 
 /*
@@ -614,29 +586,10 @@ boolean getCDKItemlistBox (CDKITEMLIST *itemlist)
    return ObjOf(itemlist)->box;
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKItemlistPreProcess (CDKITEMLIST *itemlist, PROCESSFN callback, void *data)
-{
-   itemlist->preProcessFunction = callback;
-   itemlist->preProcessData = data;
-}
-
-/*
- * This function sets the post-process function.
- */
-void setCDKItemlistPostProcess (CDKITEMLIST *itemlist, PROCESSFN callback, void *data)
-{
-   itemlist->postProcessFunction = callback;
-   itemlist->postProcessData = data;
-}
-
 static void _focusCDKItemlist(CDKOBJS *object)
 {
    CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
 
-   curs_set(0);
    drawCDKItemlistField (itemlist,TRUE);
 }
 
@@ -647,6 +600,7 @@ static void _unfocusCDKItemlist(CDKOBJS *object)
    drawCDKItemlistField (itemlist,FALSE);
 }
 
+#if 0
 static void _refreshDataCDKItemlist(CDKOBJS *object)
 {
    CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
@@ -707,6 +661,10 @@ static void _saveDataCDKItemlist(CDKOBJS *object)
       }
    }
 }
+#else
+dummyRefreshData(Itemlist)
+dummySaveData(Itemlist)
+#endif
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count)
 {

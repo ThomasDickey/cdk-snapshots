@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.7 2003/12/06 16:42:06 tom Exp $
+ * $Id: cdk_int.h,v 1.13 2004/08/27 20:34:31 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003, Thomas E. Dickey
+ * Copyright 2003,2004 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,9 +48,17 @@ extern "C" {
 #define typeCallocN(type,n)     (type*)calloc(n, sizeof(type))
 #define typeCalloc(type)        typeCallocN(type,1)
 
+#define typeReallocN(type,p,n)  (type*)realloc(p, (n) * sizeof(type))
+
+#define typeMallocN(type,n)     (type*)malloc((n) * sizeof(type))
+#define typeMalloc(type)        typeMallocN(type,1)
+
 #define freeChecked(p)		if ((p) != 0) free (p)
 
+#define isChar(c)		((int)(c) >= 0 && (int)(c) < KEY_MIN)
 #define CharOf(c)               ((unsigned char)(c))
+
+#define SIZEOF(v)		(sizeof(v)/sizeof((v)[0]))
 
 /*
  * Macros to check if caller is attempting to make the widget as high (or wide)
@@ -58,6 +66,21 @@ extern "C" {
  */
 #define isFullWidth(n)		((n) == FULL || (COLS != 0 && ((n) >= COLS)))
 #define isFullHeight(n)		((n) == FULL || (LINES != 0 && ((n) >= LINES)))
+
+/*
+ * Hide details of modifying widget->exitType
+ */
+#define storeExitType(d)	ObjOf(d)->exitType = (d)->exitType
+#define initExitType(d)		storeExitType(d) = vNEVER_ACTIVATED
+#define setExitType(w,c)	setCdkExitType(ObjOf(w), &((w)->exitType), c)
+#define copyExitType(d,s)	storeExitType(d) = ExitTypeOf(s)
+
+/*
+ * Use this if checkCDKObjectBind() returns true, use this function to
+ * decide if the exitType should be set as a side-effect.
+ */
+#define checkEarlyExit(w)	if (EarlyExitOf(w) != vNEVER_ACTIVATED) \
+				    storeExitType(w) = EarlyExitOf(w)
 
 #define CDK_PATHMAX		256
 

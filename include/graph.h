@@ -1,5 +1,5 @@
 /*
- * $Id: graph.h,v 1.20 2003/12/06 16:27:28 tom Exp $
+ * $Id: graph.h,v 1.21 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -193,16 +193,12 @@ boolean getCDKGraphBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKGraphBackgroundColor (
-		CDKGRAPH *	/* graph */,
-		char *		/* color */);
+#define setCDKGraphBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKGraphBackgroundAttrib (
-		CDKGRAPH *	/* graph */,
-		chtype		/* attribute */);
+#define setCDKGraphBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the graph on the screen.

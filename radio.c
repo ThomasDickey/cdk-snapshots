@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:46:40 $
- * $Revision: 1.100 $
+ * $Date: 2004/08/31 01:41:53 $
+ * $Revision: 1.114 $
  */
 
 /*
@@ -27,6 +27,12 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    int xpos		= xplace;
    int ypos		= yplace;
    int widestItem	= 0;
+   int x;
+
+   static const struct { int from; int to; } bindings[] = {
+		{ CDK_BACKCHAR,	KEY_PPAGE },
+		{ CDK_FORCHAR,	KEY_NPAGE },
+   };
 
    if ((radio = newCDKObject(CDKRADIO, &my_funcs)) == 0)
    {
@@ -71,7 +77,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 
-   /* Is the view size smaller then the window??? */
+   /* Is the view size smaller than the window??? */
    if (listSize < (boxHeight - BorderOf(radio) - radio->titleAdj))
    {
       radio->viewSize	= listSize;
@@ -175,14 +181,10 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    radio->leftBoxChar		= (chtype)'[';
    radio->rightBoxChar		= (chtype)']';
    radio->defItem		= defItem;
-   radio->exitType		= vNEVER_ACTIVATED;
+   initExitType(radio);
    ObjOf(radio)->inputWindow	= radio->win;
+   ObjOf(radio)->acceptsFocus   = TRUE;
    radio->shadow		= shadow;
-   radio->preProcessFunction	= 0;
-   radio->preProcessData	= 0;
-   radio->postProcessFunction	= 0;
-   radio->postProcessData	= 0;
-   radio->shadowWin		= 0;
 
    /* Do we need to create the shadow??? */
    if (shadow)
@@ -190,8 +192,9 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
       radio->shadowWin	= newwin (boxHeight, boxWidth + 1, ypos + 1, xpos + 1);
    }
 
-   /* Clean the key bindings. */
-   cleanCDKObjectBindings (vRADIO, radio);
+   /* Setup the key bindings. */
+   for (x = 0; x < (int) SIZEOF(bindings); ++x)
+      bindCDKObject (vRADIO, radio, bindings[x].from, getcCDKBind, (void *)(long)bindings[x].to);
 
    /* Register this baby. */
    registerCDKObject (cdkscreen, vRADIO, radio);
@@ -244,7 +247,7 @@ int activateCDKRadio (CDKRADIO *radio, chtype *actions)
    }
 
    /* Set the exit type and return. */
-   radio->exitType = vEARLY_EXIT;
+   setExitType(radio, 0);
    return -1;
 }
 
@@ -259,16 +262,16 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   radio->exitType = vEARLY_EXIT;
+   setExitType(radio, 0);
 
    /* Draw the radio list */
    drawCDKRadioList (radio, ObjOf(radio)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (radio->preProcessFunction != 0)
+   if (PreProcessFuncOf(radio) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = radio->preProcessFunction (vRADIO, radio, radio->preProcessData, input);
+      ppReturn = PreProcessFuncOf(radio) (vRADIO, radio, PreProcessDataOf(radio), input);
    }
 
    /* Should we continue? */
@@ -277,7 +280,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
       /* Check for a predefined key binding. */
       if (checkCDKObjectBind (vRADIO, radio, input) != 0)
       {
-	 radio->exitType = vESCAPE_HIT;
+	 checkEarlyExit(radio);
 	 complete = TRUE;
       }
       else
@@ -347,7 +350,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_PPAGE : case CONTROL('B') :
+	    case KEY_PPAGE :
 		 if (radio->currentTop > 0)
 		 {
 		    if (radio->currentTop >= (radio->viewSize -1))
@@ -368,7 +371,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_NPAGE : case CONTROL('F') :
+	    case KEY_NPAGE :
 		 if (radio->currentTop < radio->maxTopItem)
 		 {
 		    if ((radio->currentTop + radio->viewSize - 1) <= radio->maxTopItem)
@@ -413,14 +416,14 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 		 radio->selectedItem	= radio->currentItem;
 		 break;
 
-	    case KEY_NEXT : case KEY_ESC :
-		 radio->exitType = vESCAPE_HIT;
+	    case KEY_ESC :
+		 setExitType(radio, input);
 		 ret = -1;
 		 complete = TRUE;
 		 break;
 
-	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
-		 radio->exitType = vNORMAL;
+	    case KEY_TAB : case KEY_ENTER :
+		 setExitType(radio, input);
 		 ret = radio->selectedItem;
 		 complete = TRUE;
 		 break;
@@ -436,15 +439,15 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (radio->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(radio) != 0))
       {
-	 radio->postProcessFunction (vRADIO, radio, radio->postProcessData, input);
+	 PostProcessFuncOf(radio) (vRADIO, radio, PostProcessDataOf(radio), input);
       }
    }
 
    if (!complete) {
       drawCDKRadioList (radio, ObjOf(radio)->box);
-      radio->exitType = vEARLY_EXIT;
+      setExitType(radio, 0);
    }
 
    ResultOf(radio).valueInt = ret;
@@ -487,8 +490,7 @@ static void _moveCDKRadio (CDKOBJS *object, int xplace, int yplace, boolean rela
    moveCursesWindow(radio->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(radio));
-   wrefresh (WindowOf(radio));
+   refreshCDKWindow (WindowOf(radio));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -581,25 +583,28 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    }
 
    /* Highlight the current item. */
-   if (screenPos >= 0)
+   if (ObjPtr(radio)->hasFocus)
    {
-      writeChtypeAttrib (radio->win,
-			screenPos, radio->currentHigh + radio->titleAdj,
-			radio->item[radio->currentItem],
-			radio->highlight,
-			HORIZONTAL, 0,
-			radio->itemLen[radio->currentItem]);
-   }
-   else
-   {
-      writeChtypeAttrib (radio->win,
-			1 + scrollbarAdj,
-			radio->currentHigh + radio->titleAdj,
-			radio->item[radio->currentItem],
-			radio->highlight,
-			HORIZONTAL,
-			radio->leftChar - radio->itemPos[radio->currentTop] + 1,
-			radio->itemLen[radio->currentItem]);
+      if (screenPos >= 0)
+      {
+	 writeChtypeAttrib (radio->win,
+			   screenPos, radio->currentHigh + radio->titleAdj,
+			   radio->item[radio->currentItem],
+			   radio->highlight,
+			   HORIZONTAL, 0,
+			   radio->itemLen[radio->currentItem]);
+      }
+      else
+      {
+	 writeChtypeAttrib (radio->win,
+			   1 + scrollbarAdj,
+			   radio->currentHigh + radio->titleAdj,
+			   radio->item[radio->currentItem],
+			   radio->highlight,
+			   HORIZONTAL,
+			   radio->leftChar - radio->itemPos[radio->currentTop] + 1,
+			   radio->itemLen[radio->currentItem]);
+      }
    }
 
 #if 0
@@ -622,7 +627,8 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
       }
 
       /* Make sure the toggle button doesn't go out of bounds. */
-      scrollbarAdj = (radio->togglePos + radio->toggleSize)-(radio->boxHeight-radio->titleAdj-1);
+      scrollbarAdj = ((radio->togglePos + radio->toggleSize) -
+		      (radio->boxHeight - radio->titleAdj - 1));
       if (scrollbarAdj > 0)
       {
 	 radio->togglePos -= scrollbarAdj;
@@ -633,8 +639,7 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
       {
 	 mvwaddch (radio->scrollbarWin, x, 0, ' ' | A_REVERSE);
       }
-      touchwin (radio->scrollbarWin);
-      wrefresh (radio->scrollbarWin);
+      refreshCDKWindow (radio->scrollbarWin);
    }
 
    /* Box it if needed. */
@@ -644,44 +649,23 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    }
 
    /* Refresh the window. */
-   touchwin (radio->win);
-   wrefresh (radio->win);
-}
-
-/*
- * This sets the background color of the widget.
- */
-void setCDKRadioBackgroundColor (CDKRADIO *radio, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKRadioBackgroundAttrib (radio, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
+   refreshCDKWindow (radio->win);
 }
 
 /*
  * This sets the background attribute of the widget.
  */
-void setCDKRadioBackgroundAttrib (CDKRADIO *radio, chtype attrib)
+static void _setBKattrRadio (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (radio->win, attrib);
-   if (radio->scrollbarWin != 0)
+   if (object != 0)
    {
-      wbkgd (radio->scrollbarWin, attrib);
+      CDKRADIO *widget = (CDKRADIO *) object;
+
+      wbkgd (widget->win, attrib);
+      if (widget->scrollbarWin != 0)
+      {
+	 wbkgd (widget->scrollbarWin, attrib);
+      }
    }
 }
 
@@ -756,7 +740,7 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
    radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 
-   /* Is the view size smaller then the window? */
+   /* Is the view size smaller than the window? */
    if (listSize < (radio->boxHeight-1-radio->titleAdj))
    {
       radio->viewSize	= listSize;
@@ -864,42 +848,36 @@ boolean getCDKRadioBox (CDKRADIO *radio)
 }
 
 /*
- * This function sets the pre-process function.
+ * This sets the current selected item of the widget
  */
-void setCDKRadioPreProcess (CDKRADIO *radio, PROCESSFN callback, void *data)
+void setCDKRadioCurrentItem (CDKRADIO *radio, int cur)
 {
-   radio->preProcessFunction = callback;
-   radio->preProcessData = data;
+   radio->selectedItem = cur;
+   radio->currentItem = cur;
+   radio->currentHigh = cur;
+}
+int getCDKRadioCurrentItem (CDKRADIO *radio)
+{
+   return radio->currentItem;
 }
 
-/*
- * This function sets the post-process function.
- */
-void setCDKRadioPostProcess (CDKRADIO *radio, PROCESSFN callback, void *data)
+static void _focusCDKRadio(CDKOBJS *object)
 {
-   radio->postProcessFunction = callback;
-   radio->postProcessData = data;
+   CDKRADIO *radio = (CDKRADIO *)object;
+
+   drawCDKRadioList (radio, ObjOf(radio)->box);
 }
 
-static void _focusCDKRadio(CDKOBJS *object GCC_UNUSED)
+static void _unfocusCDKRadio(CDKOBJS *object)
 {
-   /* FIXME */
+   CDKRADIO *radio = (CDKRADIO *)object;
+
+   drawCDKRadioList (radio, ObjOf(radio)->box);
 }
 
-static void _unfocusCDKRadio(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Radio)
 
-static void _refreshDataCDKRadio(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _saveDataCDKRadio(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Radio)
 
 static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
 {

@@ -1,4 +1,4 @@
-/* $Id: graph_ex.c,v 1.9 2003/11/30 17:52:40 tom Exp $ */
+/* $Id: graph_ex.c,v 1.11 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make the graph widget. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Create the label widget. */
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make the label widget. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Set the graph values. */
@@ -101,7 +101,6 @@ int main(int argc, char **argv)
    destroyCDKGraph (graph);
    destroyCDKLabel (pausep);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

@@ -1,4 +1,4 @@
-/* $Id: position_ex.c,v 1.8 2003/11/30 19:26:27 tom Exp $ */
+/* $Id: position_ex.c,v 1.12 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Let the user move the widget around the window. */
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
    else if (directory->exitType == vNORMAL)
    {
       mesg[0] = "<C>You typed in the following";
-      sprintf (temp, "<C>(%s)", info);
+      sprintf (temp, "<C>(%.*s)", (int)(sizeof(temp) - 20), info);
       mesg[1] = copyChar (temp);
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
@@ -82,7 +82,6 @@ int main(int argc, char **argv)
    /* Clean up and exit. */
    destroyCDKEntry (directory);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

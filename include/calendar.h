@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.26 2003/12/11 00:07:02 tom Exp $
+ * $Id: calendar.h,v 1.29 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -97,10 +97,6 @@ struct SCalendar {
    int		xOffset;
    EExitType	exitType;
    boolean	shadow;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
    char *	DayName;
    char *	MonthName[MAX_MONTHS];
 };
@@ -229,16 +225,12 @@ boolean getCDKCalendarBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKCalendarBackgroundColor (
-		CDKCALENDAR *	/* calendar */,
-		char *		/* color */);
+#define setCDKCalendarBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKCalendarBackgroundAttrib (
-		CDKCALENDAR *	/* calendar */,
-		chtype		/* attribute */);
+#define setCDKCalendarBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This sets a marker on the calendar.
@@ -295,15 +287,8 @@ void removeCDKCalendarMarker (
 /*
  * This sets the pre and post process functions.
  */
-void setCDKCalendarPreProcess (
-		CDKCALENDAR *	/* calendar */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKCalendarPostProcess (
-		CDKCALENDAR *	/* calendar */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKCalendarPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKCalendarPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 /*
  * This sets days and months names

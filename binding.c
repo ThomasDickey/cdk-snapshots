@@ -2,29 +2,22 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:08:13 $
- * $Revision: 1.40 $
+ * $Date: 2004/09/01 00:20:14 $
+ * $Revision: 1.48 $
  */
 
-/*
- * Declare file local prototypes.
- */
-static int mapChtype (chtype key);
+#ifndef KEY_MAX
+#define KEY_MAX 512
+#endif
 
 /*
  * This inserts a binding.
  */
 void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN function, void * data)
 {
-   int Index = mapChtype (key);
    CDKOBJS *obj = (CDKOBJS *)object;
 
-  /*
-   * When an alarm is set and this function is entered, a very wild
-   * value for the key is provided, and the index gets messed up big time.
-   * So we will make sure that index is a valid value before using it.
-   */
-   if ((Index >= 0) && (Index < MAX_BINDINGS))
+   if (key < KEY_MAX)
    {
       if (cdktype == vFSELECT)
       {
@@ -36,25 +29,24 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
       }
       else
       {
-	 if (Index >= obj->bindingCount)
+	 if (key >= 0 && (unsigned) key >= obj->bindingCount)
 	 {
-	    unsigned next = (Index + 1);
-	    unsigned need = next * sizeof(CDKBINDING);
+	    unsigned next = (key + 1);
 
 	    if (obj->bindingList != 0)
-	       obj->bindingList = (CDKBINDING *)realloc(obj->bindingList, need);
+	       obj->bindingList = typeReallocN(CDKBINDING, obj->bindingList, next);
 	    else
-	       obj->bindingList = (CDKBINDING *)malloc(need);
+	       obj->bindingList = typeMallocN(CDKBINDING, next);
 
-	    memset(&(obj->bindingList[obj->bindingCount]), 0,
-		   (next - obj->bindingCount) * sizeof(CDKBINDING));
+	    memset (&(obj->bindingList[obj->bindingCount]), 0,
+		    (next - obj->bindingCount) * sizeof(CDKBINDING));
 	    obj->bindingCount = next;
 	 }
 
 	 if (obj->bindingList != 0)
 	 {
-	    obj->bindingList[Index].bindFunction = function;
-	    obj->bindingList[Index].bindData	 = data;
+	    obj->bindingList[key].bindFunction = function;
+	    obj->bindingList[key].bindData = data;
 	 }
       }
    }
@@ -65,14 +57,8 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
  */
 void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
 {
-   int Index = mapChtype(key);
    CDKOBJS *obj = (CDKOBJS *)object;
 
-  /*
-   * When an alarm is set and this function is entered, a very wild
-   * value for the key is provided, and the index gets messed up big time.
-   * So we will make sure that index is a valid value before using it.
-   */
    if (cdktype == vFSELECT)
    {
       unbindCDKObject (vENTRY, ((CDKFSELECT *)object)->entryField, key);
@@ -81,22 +67,18 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
    {
       unbindCDKObject (vENTRY, ((CDKALPHALIST *)object)->entryField, key);
    }
-   else if (Index >= 0 && Index < obj->bindingCount)
+   else if ((unsigned) key < obj->bindingCount)
    {
-      obj->bindingList[Index].bindFunction	= 0;
-      obj->bindingList[Index].bindData		= 0;
+      obj->bindingList[key].bindFunction = 0;
+      obj->bindingList[key].bindData = 0;
    }
 }
 
 /*
- * This sets all the bindings for the given objects.
+ * This removes all the bindings for the given objects.
  */
 void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 {
-  /*
-   * Since dereferencing a void pointer is a no-no, we have to cast
-   * our pointer correctly.
-   */
    if (cdktype == vFSELECT)
    {
       cleanCDKObjectBindings (vENTRY, ((CDKFSELECT *)object)->entryField);
@@ -109,38 +91,34 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
    }
    else
    {
-      int x;
+      unsigned x;
       CDKOBJS *obj = (CDKOBJS *)object;
+
       for (x=0; x < obj->bindingCount; x++)
       {
-	 (obj)->bindingList[x].bindFunction	= 0;
-	 (obj)->bindingList[x].bindData		= 0;
+	 (obj)->bindingList[x].bindFunction = 0;
+	 (obj)->bindingList[x].bindData = 0;
       }
    }
 }
 
 /*
  * This checks to see if the binding for the key exists:
- * If it does then it runs the command and returns its value, normally TRUE. 
+ * If it does then it runs the command and returns its value, normally TRUE.
  * If it doesn't it returns a FALSE.  This way we can 'overwrite' coded
  * bindings.
  */
 int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 {
-   int Index = mapChtype (key);
    CDKOBJS *obj = (CDKOBJS *)object;
 
-  /*
-   * When an alarm is set and this function is entered, a very wild
-   * value for the key is provided, and the index gets messed up big time.
-   * So we will make sure that index is a valid value before using it.
-   */
-   if ((Index >= 0) && (Index < obj->bindingCount))
+   if ((unsigned) key < obj->bindingCount)
    {
-      if ( (obj)->bindingList[Index].bindFunction != 0 )
+      if ((obj)->bindingList[key].bindFunction != 0)
       {
-	 BINDFN function	= obj->bindingList[Index].bindFunction;
-	 void * data		= obj->bindingList[Index].bindData;
+	 BINDFN function = obj->bindingList[key].bindFunction;
+	 void * data = obj->bindingList[key].bindData;
+
 	 return function (cdktype, object, data, key);
       }
    }
@@ -148,47 +126,63 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 }
 
 /*
- * This translates non ascii characters like KEY_UP to an 'equivalent'
- * ascii value.
+ * This is a dummy function used to ensure that the constant for mapping has
+ * a distinct address.
  */
-static int mapChtype (chtype key)
+int getcCDKBind (EObjectType cdktype GCC_UNUSED, void * object GCC_UNUSED, void * clientData GCC_UNUSED, chtype input GCC_UNUSED)
 {
-   static const struct {
-      int key_out;
-      chtype key_in;
-   } table[] = {
-      { 257, KEY_UP },
-      { 258, KEY_DOWN },
-      { 259, KEY_LEFT },
-      { 260, KEY_RIGHT },
-      { 261, KEY_NPAGE },
-      { 262, KEY_PPAGE },
-      { 263, KEY_HOME },
-      { 264, KEY_END },
-      { 265, KEY_F0 },
-      { 266, KEY_F1 },
-      { 267, KEY_F2 },
-      { 268, KEY_F3 },
-      { 269, KEY_F4 },
-      { 270, KEY_F5 },
-      { 271, KEY_F6 },
-      { 272, KEY_F7 },
-      { 273, KEY_A1 },
-      { 274, KEY_A3 },
-      { 275, KEY_B2 },
-      { 276, KEY_C1 },
-      { 277, KEY_C3 },
-      { 278, KEY_ESC },
-   };
-   unsigned n;
+   return 0;
+}
 
-   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++)
+/*
+ * Read from the input window, filtering keycodes as needed.
+ */
+int getcCDKObject (CDKOBJS *obj)
+{
+   int result = wgetch (InputWindowOf (obj));
+
+   if (result >= 0
+       && (unsigned)result < obj->bindingCount
+       && obj->bindingList[result].bindFunction == getcCDKBind)
    {
-      if (table[n].key_in == key)
+      result = (int)(long)obj->bindingList[result].bindData;
+   }
+   else
+   {
+      switch (result)
       {
-	 key = table[n].key_out;
+      case '\r':
+      case '\n':
+	 result = KEY_ENTER;
+	 break;
+      case '\t':
+	 result = KEY_TAB;
+	 break;
+      case DELETE:
+	 result = KEY_DC;
+	 break;
+      case '\b':	/* same as CTRL('H'), for ASCII */
+	 result = KEY_BACKSPACE;
+	 break;
+      case CDK_BEGOFLINE:
+	 result = KEY_HOME;
+	 break;
+      case CDK_ENDOFLINE:
+	 result = KEY_END;
+	 break;
+      case CDK_FORCHAR:
+	 result = KEY_RIGHT;
+	 break;
+      case CDK_BACKCHAR:
+	 result = KEY_LEFT;
+	 break;
+      case CDK_NEXT:
+	 result = KEY_TAB;
+	 break;
+      case CDK_PREV:
+	 result = KEY_BTAB;
 	 break;
       }
    }
-   return (key);
+   return result;
 }

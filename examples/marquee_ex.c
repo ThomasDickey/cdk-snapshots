@@ -1,4 +1,4 @@
-/* $Id: marquee_ex.c,v 1.6 2003/11/30 19:09:14 tom Exp $ */
+/* $Id: marquee_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 
       /* Print out a message. */
       printf ("Oops. Can't seem to create the marquee window. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Draw the CDK screen. */
@@ -153,7 +153,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKMarquee (scrollMessage);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

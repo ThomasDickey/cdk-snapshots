@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.20 2003/11/27 14:55:27 tom Exp $
+ * $Id: radio.h,v 1.24 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -92,10 +92,6 @@ struct SRadio {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SRadio CDKRADIO;
 
@@ -200,6 +196,16 @@ boolean getCDKRadioBox (
 		CDKRADIO *	/* radio */);
 
 /*
+ * This sets the current selected item of the widget
+ */
+void setCDKRadioCurrentItem (
+		CDKRADIO *	/* radio */,
+ 		int 		/* current item */);
+
+int getCDKRadioCurrentItem (
+		CDKRADIO *	/* radio */);
+
+/*
  * These set the drawing characters of the widget.
  */
 #define setCDKRadioULChar(w,c)             setULCharOf(w,c)
@@ -213,16 +219,12 @@ boolean getCDKRadioBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKRadioBackgroundColor (
-		CDKRADIO *	/* radio */,
-		char *		/* color */);
+#define setCDKRadioBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
- */ 
-void setCDKRadioBackgroundAttrib (
-		CDKRADIO *	/* radio */,
-		chtype		/* attribute */);
+ */
+#define setCDKRadioBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the widget on the screen.
@@ -252,15 +254,8 @@ void setCDKRadioBackgroundAttrib (
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKRadioPreProcess (
-		CDKRADIO *	/* radio */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKRadioPostProcess (
-		CDKRADIO *	/* radio */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKRadioPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKRadioPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

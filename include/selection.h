@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.21 2003/12/06 15:57:38 tom Exp $
+ * $Id: selection.h,v 1.24 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -97,10 +97,6 @@ struct SSelection {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SSelection CDKSELECTION;
 
@@ -274,29 +270,18 @@ boolean getCDKSelectionBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKSelectionBackgroundColor (
-		CDKSELECTION *	/* selection */,
-		char *		/* color */);
+#define setCDKSelectionBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKSelectionBackgroundAttrib (
-		CDKSELECTION *	/* selection */,
-		chtype		/* attribute */);
+#define setCDKSelectionBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKSelectionPreProcess (
-		CDKSELECTION *	/* selection */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKSelectionPostProcess (
-		CDKSELECTION *	/* selection */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKSelectionPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKSelectionPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

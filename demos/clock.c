@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the label. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Do this for-ever... */
@@ -84,7 +84,6 @@ int main (int argc, char **argv)
    /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 
 	 case 'h':
 	      printf ("Usage: %s %s\n", argv[0], GPUsage);
-	      exit (0);
+	      exit (EXIT_SUCCESS);
 	      break;
       }
    }
@@ -165,7 +165,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C></U>Fatal Error";
       mesg[1] = "<C>Could not connect to the Sybase database.";
       popupLabel (GPCdkScreen, mesg, 2);
-      exit (-1);
+      exit (EXIT_FAILURE);
    }
 
    /* Load the history. */
@@ -186,8 +186,8 @@ int main (int argc, char **argv)
    /* Create the key bindings. */
    bindCDKObject (vENTRY, commandEntry, KEY_UP, &historyUpCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_DOWN, &historyDownCB, &history);
-   bindCDKObject (vENTRY, commandEntry, CONTROL('^'), &listHistoryCB, &history);
-   bindCDKObject (vENTRY, commandEntry, TAB, &viewHistoryCB, commandOutput);
+   bindCDKObject (vENTRY, commandEntry, CTRL('^'), &listHistoryCB, &history);
+   bindCDKObject (vENTRY, commandEntry, KEY_TAB, &viewHistoryCB, commandOutput);
    bindCDKObject (vSWINDOW, commandOutput, '?', swindowHelpCB, commandEntry);
 
    /* Draw the screen. */
@@ -202,7 +202,7 @@ int main (int argc, char **argv)
    {
       destroyCDKScreen (GPCdkScreen);
       endCDK ();
-      exit (-1);
+      exit (EXIT_FAILURE);
    }
 
    /* Do this forever. */
@@ -234,10 +234,9 @@ int main (int argc, char **argv)
 	 /* All done. */
 	 destroyCDKEntry (commandEntry);
 	 destroyCDKSwindow (commandOutput);
-	 delwin (cursesWin);
 	 freeChar (upper);
 	 endCDK();
-	 exit (0);
+	 exit (EXIT_SUCCESS);
       }
       else if (strcmp (command, "login") == 0)
       {
@@ -575,7 +574,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       mesg[1] = "<C>Could not connect to the Sybase database.";
       popupLabel (screen, mesg, 2);
       refreshCDKScreen (screen);
-      exit (-1);
+      exit (EXIT_FAILURE);
    }
 
   /*
@@ -888,9 +887,10 @@ char *uc (char *word)
    /* Start converting the case. */
    for (x=0; x < length; x++)
    {
-      if (isalpha ((int)word[x]))
+      int ch = (unsigned char)(word[x]);
+      if (isalpha (ch))
       {
-	 upper[x] = toupper(word[x]);
+	 upper[x] = toupper(ch);
       }
       else
       {

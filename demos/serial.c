@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 
 	 case 'h' :
 	       printf ("Usage: %s [-p Port] [-i Poll Interval] [-c Poll Count] [-v] [-h]\n", argv[0]);
-	       exit (0);
+	       exit (EXIT_SUCCESS);
 	       break;
       }
    }
@@ -107,7 +107,7 @@ int main (int argc, char **argv)
    {
       /* Create a pop-up dialog box... */
       printf ("Error: Open of <%s> failed.\n", port);
-      exit (-1);
+      exit (EXIT_FAILURE);
    }
 
    termInfo.c_cflag = CRTSCTS | CLOCAL;
@@ -116,7 +116,7 @@ int main (int argc, char **argv)
       /* Really should create a pop-up dialog box... */
       printf ("Error: Could not get port attributes. Closing the port.\n");
       close (LFD);
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    for (;;)

@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.49 2003/11/28 13:18:06 tom Exp $
+# $Id: Makefile.in,v 1.59 2004/09/01 00:27:24 tom Exp $
 #
-#  Copyright 2001-2002,2003, Thomas Dickey
+#  Copyright 2001-2003,2004, Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -93,7 +93,7 @@ INSTALL_DATA	= @INSTALL_DATA@
 INSTALL_LIB	= $(LIBTOOL_INSTALL) $(INSTALL_DATA)
 UNINSTALL_LIB	= $(LIBTOOL_UNINSTALL) $(RM)
 
-.SUFFIXES: .c $o .os .i
+.SUFFIXES: .c .o .os .i
 
 DEFAULT		= $(CDKLIB) headers.sed
 
@@ -102,6 +102,33 @@ default :: $(DEFAULT)
 #
 # Create the file lists.
 #
+AUTO_HDR	= \
+		include/dscale.h \
+		include/fscale.h \
+		include/fslider.h \
+		include/scale.h \
+		include/slider.h \
+		include/uscale.h \
+		include/uslider.h
+
+AUTO_SRC	= \
+		dscale.c \
+		fscale.c \
+		fslider.c \
+		scale.c \
+		slider.c \
+		uscale.c \
+		uslider.c
+
+AUTO_MAN	= \
+		man/cdk_dscale.3 \
+		man/cdk_fscale.3 \
+		man/cdk_fslider.3 \
+		man/cdk_scale.3 \
+		man/cdk_slider.3 \
+		man/cdk_uscale.3 \
+		man/cdk_uslider.3
+
 CDKHDR		= \
 		alphalist.h \
 		binding.h \
@@ -109,6 +136,7 @@ CDKHDR		= \
 		buttonbox.h \
 		calendar.h \
 		cdk.h \
+		cdk_compat.h \
 		cdk_config.h \
 		cdk_objs.h \
 		cdk_params.h \
@@ -119,7 +147,6 @@ CDKHDR		= \
 		dialog.h \
 		draw.h \
 		entry.h \
-		fscale.h \
 		fselect.h \
 		graph.h \
 		histogram.h \
@@ -130,22 +157,22 @@ CDKHDR		= \
 		mentry.h \
 		menu.h \
 		radio.h \
-		scale.h \
 		scroll.h \
 		selection.h \
-		slider.h \
 		swindow.h \
 		template.h \
 		traverse.h \
 		viewer.h
 
 CDKSRC		= \
+		$(AUTO_SRC) \
 		alphalist.c \
 		binding.c \
 		button.c \
 		buttonbox.c \
 		calendar.c \
 		cdk.c \
+		cdk_compat.c \
 		cdk_objs.c \
 		cdk_params.c \
 		cdkscreen.c \
@@ -153,7 +180,6 @@ CDKSRC		= \
 		dialog.c \
 		draw.c \
 		entry.c \
-		fscale.c \
 		fselect.c \
 		get_index.c \
 		get_string.c \
@@ -169,10 +195,8 @@ CDKSRC		= \
 		popup_label.c \
 		position.c \
 		radio.c \
-		scale.c \
 		scroll.c \
 		selection.c \
-		slider.c \
 		swindow.c \
 		select_file.c \
 		template.c \
@@ -210,7 +234,6 @@ CDKMAN		= \
 		cdk_screen.3 \
 		cdk_scroll.3 \
 		cdk_selection.3 \
-		cdk_slider.3 \
 		cdk_swindow.3 \
 		cdk_template.3 \
 		cdk_traverse.3 \
@@ -218,12 +241,13 @@ CDKMAN		= \
 
 CDKREADME	= EXPANDING NOTES TODO COPYING INSTALL README
 
-OBJECTS		= $(CDKSRC:.c=$o)
+OBJECTS		= $(CDKSRC:.c=.o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
 LIB_OBJECT	= @LIB_OBJECT@
 
-all $(OBJECTS) ::	include/cdk_config.h
+all sources :: $(AUTO_SRC)
 
+all $(OBJECTS) ::	include/cdk_config.h
 
 #
 # Standard library directive.
@@ -255,6 +279,11 @@ all demos ::
 all cli ::
 	cd cli && $(MAKE) $(MAKE_RECUR)
 
+#
+# Make the generated manpages.
+#
+all manpages :: $(AUTO_MAN)
+
 # Order of install-targets should match the order of uninstalls.  Put the
 # documentation first, then the headers, and finally the library:
 #	(un)installCDKReadme
@@ -284,8 +313,12 @@ uninstallCDKReadme ::
 # This installs the CDK man pages.
 #
 install \
-installCDKManPages :: headers.sed $(MAN_DIR)
+installCDKManPages :: headers.sed $(AUTO_MAN) $(MAN_DIR)
 	@echo "Installing the CDK man pages in $(MAN_DIR) ..."
+	@for i in $(AUTO_MAN); do \
+	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(MAN_DIR) $(srcdir) $$i; \
+	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $$i;  \
+	done
 	@for i in $(CDKMAN); do \
 	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(MAN_DIR) $(srcdir) man/$$i; \
 	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $(srcdir)/man/$$i;  \
@@ -294,6 +327,10 @@ installCDKManPages :: headers.sed $(MAN_DIR)
 uninstall \
 uninstallCDKManPages ::
 	@echo "Uninstalling the CDK man pages from $(MAN_DIR) ..."
+	@- for i in $(AUTO_MAN); do \
+	   $(RM) $(MAN_DIR)/`basename $$i`; \
+	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(srcdir)/$$i; \
+	done
 	@- for i in $(CDKMAN); do \
 	   $(RM) $(MAN_DIR)/$$i; \
 	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(srcdir)/man/$$i; \
@@ -303,8 +340,11 @@ uninstallCDKManPages ::
 # This installs the header files.
 #
 install \
-installCDKHeaderFiles :: headers.sed $(INCLUDE_DIR)
+installCDKHeaderFiles :: headers.sed $(AUTO_HDR) $(INCLUDE_DIR)
 	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
+	@for i in $(AUTO_HDR); do \
+	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(INCLUDE_DIR) $(srcdir) $$i; \
+	done
 	@for i in $(CDKHDR); do \
 	   $(SHELL) $(srcdir)/headers.sh $(INSTALL_DATA) $(INCLUDE_DIR) $(srcdir) include/$$i; \
 	done
@@ -312,6 +352,9 @@ installCDKHeaderFiles :: headers.sed $(INCLUDE_DIR)
 uninstall \
 uninstallCDKHeaderFiles ::
 	@echo "Uninstalling CDK header files from $(INCLUDE_DIR)..."
+	@- for i in $(AUTO_HDR); do \
+	   $(RM) $(INCLUDE_DIR)/`basename $$i`; \
+	done
 	@- for i in $(CDKHDR); do \
 	   $(RM) $(INCLUDE_DIR)/$$i; \
 	done
@@ -353,9 +396,12 @@ headers.sed : $(srcdir)/headers.sh
 #
 clean ::
 	@- $(RM) -r autom4te.cache
-	- $(LIBTOOL_CLEAN) $(RM) *$o $(CDKLIB)
+	- $(LIBTOOL_CLEAN) $(RM) *.o $(CDKLIB)
 	- $(RM) *.i *.os $(CDKSHLIB)
 	- $(RM) headers.sed core tags *~
+	$(RM) $(AUTO_HDR)
+	$(RM) $(AUTO_SRC)
+	$(RM) $(AUTO_MAN)
 
 realclean :: clean
 	cd examples	&& $(MAKE) $(MAKE_RECUR) clean
@@ -377,7 +423,7 @@ distclean :: realclean
 #
 # Standard .c to .o compile line.
 #
-.c$o:
+.c.o:
 @RULE_CC@
 	@ECHO_CC@$(LIBTOOL_COMPILE) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
@@ -393,3 +439,65 @@ $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \
 $(LIB_DIR) \
 $(MAN_DIR) : ; $(srcdir)/mkdirs.sh $@
+
+#
+# Files generated from templates:
+#
+GEN_SCALE	= $(SHELL) $(srcdir)/gen-scale.sh
+
+SCALE_H		= $(srcdir)/include/gen-scale.h
+SCALE_C		= $(srcdir)/gen-scale.c
+SCALE_M		= $(srcdir)/man/gen-scale.3
+
+include/dscale.h :	$(SCALE_H)
+	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_H) >$@
+dscale.c :		$(SCALE_C) $(AUTO_HDR)
+	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_C) >$@
+man/cdk_dscale.3 :	$(SCALE_M)
+	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_M) >$@
+
+include/fscale.h :	$(SCALE_H)
+	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_H) >$@
+fscale.c :		$(SCALE_C) $(AUTO_HDR)
+	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_C) >$@
+man/cdk_fscale.3 :	$(SCALE_M)
+	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_M) >$@
+
+include/scale.h :	$(SCALE_H)
+	$(GEN_SCALE) SCALE Scale Int int $(SCALE_H) >$@
+scale.c :		$(SCALE_C) $(AUTO_HDR)
+	$(GEN_SCALE) SCALE Scale Int int $(SCALE_C) >$@
+man/cdk_scale.3 :	$(SCALE_M)
+	$(GEN_SCALE) SCALE Scale Int int $(SCALE_M) >$@
+
+include/uscale.h :	$(SCALE_H)
+	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_H) >$@
+uscale.c :		$(SCALE_C) $(AUTO_HDR)
+	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_C) >$@
+man/cdk_uscale.3 :	$(SCALE_M)
+	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_M) >$@
+
+SLIDER_H	= $(srcdir)/include/gen-slider.h
+SLIDER_C	= $(srcdir)/gen-slider.c
+SLIDER_M	= $(srcdir)/man/gen-slider.3
+
+include/fslider.h :	$(SLIDER_H)
+	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_H) >$@
+fslider.c :		$(SLIDER_C) $(AUTO_HDR)
+	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_C) >$@
+man/cdk_fslider.3 :	$(SLIDER_M)
+	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_M) >$@
+
+include/slider.h :	$(SLIDER_H)
+	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_H) >$@
+slider.c :		$(SLIDER_C) $(AUTO_HDR)
+	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_C) >$@
+man/cdk_slider.3 :	$(SLIDER_M)
+	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_M) >$@
+
+include/uslider.h :	$(SLIDER_H)
+	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_H) >$@
+uslider.c :		$(SLIDER_C) $(AUTO_HDR)
+	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_C) >$@
+man/cdk_uslider.3 :	$(SLIDER_M)
+	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_M) >$@

@@ -1,4 +1,4 @@
-/* $Id: hello_ex.c,v 1.6 2003/12/01 23:22:21 tom Exp $ */
+/* $Id: hello_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the label. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Draw the CDK screen. */
@@ -61,7 +61,6 @@ int main(int argc, char **argv)
    /* Clean up. */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

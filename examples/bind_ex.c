@@ -1,4 +1,4 @@
-/* $Id: bind_ex.c,v 1.12 2003/11/29 15:40:00 tom Exp $ */
+/* $Id: bind_ex.c,v 1.15 2004/08/28 01:03:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the dialog box. ");
       printf ("Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Create the key binding. */
@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	 }
 	 else
 	 {
-	    sprintf (temp, "<C><%s>", loginName);
+	    sprintf (temp, "<C><%.*s>", (int)(sizeof(temp) - 10), loginName);
 	 }
 	 info[1] = copyChar (temp);
 	 popupLabel (ScreenOf (question), info, 2);
@@ -164,7 +164,6 @@ int main(int argc, char **argv)
    /* Clean up. */
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK ();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

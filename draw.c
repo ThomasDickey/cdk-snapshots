@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/27 22:16:44 $
- * $Revision: 1.53 $
+ * $Date: 2004/08/31 01:52:59 $
+ * $Revision: 1.56 $
  */
 
 /*
@@ -246,7 +246,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-	 mvwaddch (window, ypos+x, xpos, A_CHARTEXT & string[x+start]);
+	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]));
       }
    }
 }
@@ -262,7 +262,7 @@ void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int 
       {
 	 unsigned want = (end - start) + 1000;
 	 freeChar (blanks);
-	 blanks = malloc (want);
+	 blanks = (char *)malloc (want);
 	 cleanChar (blanks, want-1, ' ');
       }
       writeChar (window, xpos, ypos, blanks, align, start, end);
@@ -286,7 +286,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
       display = MINIMUM(display,getmaxx(window)-1);
       for (x=0; x < display ; x++)
       {
-	 mvwaddch (window, ypos, xpos+x, (string[x+start] & A_CHARTEXT) | attr);
+	 mvwaddch (window, ypos, xpos+x, CharOf(string[x+start]) | attr);
       }
    }
    else
@@ -295,7 +295,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
       display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
-	 mvwaddch (window, ypos+x, xpos, (string[x+start] & A_CHARTEXT) | attr);
+	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]) | attr);
       }
    }
 }
@@ -307,7 +307,11 @@ static int cdk_waddchnstr (WINDOW *window, const chtype *string, int len)
    int y, x, n;
    getyx(window, y, x);
    for (n = 0; n < len; ++n)
-      mvwaddch(window, y, x + n, string[n]);
+   {
+      if (mvwaddch(window, y, x + n, string[n]) == ERR)
+	 return ERR;
+   }
+   return OK;
 }
 #undef  waddchnstr
 #define waddchnstr(window, string, len) cdk_waddchnstr(window, string, len)
@@ -376,7 +380,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff,getmaxx(window)-xpos);
       for (x=0; x < display; x++)
       {
-	 plain = string[x+start] & A_CHARTEXT;
+	 plain = CharOf(string[x+start]);
 	 mvwaddch (window, ypos, xpos+x, plain | attr);
       }
    }
@@ -386,7 +390,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff,getmaxy(window)-ypos);
       for (x=0; x < display; x++)
       {
-	 plain = string[x+start] & A_CHARTEXT;
+	 plain = CharOf(string[x+start]);
 	 mvwaddch (window, ypos+x, xpos, plain | attr);
       }
    }

@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.25 2003/12/06 14:15:49 tom Exp $
+ * $Id: cdk_objs.h,v 1.35 2004/09/01 00:15:15 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2002,2003, Thomas E. Dickey
+ * Copyright 1999-2003,2004, Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,7 @@ typedef enum {
    , DataTypeInt
    , DataTypeFloat
    , DataTypeDouble
+   , DataTypeUnsigned
 } CDKDataType;
 
 typedef union {
@@ -75,12 +76,14 @@ typedef union {
    int    valueInt;
    float  valueFloat;
    double valueDouble;
+   unsigned valueUnsigned;
 } CDKDataUnion;
 
-#define unknownString  (char *)0
-#define unknownInt     (-1)
-#define unknownFloat   (0.0)
-#define unknownDouble  (0.0)
+#define unknownString   (char *)0
+#define unknownInt      (-1)
+#define unknownFloat    (0.0)
+#define unknownDouble   (0.0)
+#define unknownUnsigned (0)
 
 /*
  * Methods common to all widgets.
@@ -105,6 +108,8 @@ typedef struct CDKFUNCS {
    void         (*setVTcharObj)    (struct CDKOBJS *, chtype);
    void         (*setHZcharObj)    (struct CDKOBJS *, chtype);
    void         (*setBXattrObj)    (struct CDKOBJS *, chtype);
+   /* background attribute */
+   void         (*setBKattrObj)    (struct CDKOBJS *, chtype);
 } CDKFUNCS;
 
 /* The cast is needed because traverse.c wants to use CDKOBJS pointers */
@@ -124,6 +129,7 @@ typedef struct CDKFUNCS {
 #define UnfocusObj(p)           MethodPtr(p,unfocusObj)      (p)
 #define SaveDataObj(p)          MethodPtr(p,saveDataObj)     (p)
 #define RefreshDataObj(p)       MethodPtr(p,refreshDataObj)  (p)
+#define SetBackAttrObj(p,c)     MethodPtr(p,setBKattrObj)    (p,c)
 
 #define AcceptsFocusObj(p)      (ObjPtr(p)->acceptsFocus)
 #define HasFocusObj(p)          (ObjPtr(p)->hasFocus)
@@ -145,7 +151,7 @@ typedef struct CDKOBJS {
    WINDOW *     inputWindow;
    void *       dataPtr;
    CDKDataUnion resultData;
-   int          bindingCount;
+   unsigned     bindingCount;
    CDKBINDING * bindingList;
    /* title-drawing */
    chtype **	title;
@@ -160,6 +166,14 @@ typedef struct CDKOBJS {
    chtype       VTChar;		/* lines: vertical */
    chtype       HZChar;		/* lines: horizontal */
    chtype       BXAttr;
+   /* events */
+   EExitType	exitType;
+   EExitType	earlyExit;
+   /* pre/post-processing */
+   PROCESSFN	preProcessFunction;
+   void *	preProcessData;
+   PROCESSFN	postProcessFunction;
+   void *	postProcessData;
 } CDKOBJS;
 
 #define ObjOf(ptr)              (&(ptr)->obj)
@@ -168,6 +182,8 @@ typedef struct CDKOBJS {
 #define WindowOf(ptr)           (ScreenOf(ptr)->window)
 #define BorderOf(p)             (ObjOf(p)->borderSize)
 #define ResultOf(p)             (ObjOf(p)->resultData)
+#define ExitTypeOf(p)           (ObjOf(p)->exitType)
+#define EarlyExitOf(p)          (ObjOf(p)->earlyExit)
 
 /* titles */
 #define TitleOf(w)              ObjOf(w)->title
@@ -191,6 +207,13 @@ typedef struct CDKOBJS {
 #define setVTCharOf(o,c)        MethodOf(o)->setVTcharObj(ObjOf(o),c)
 #define setHZCharOf(o,c)        MethodOf(o)->setHZcharObj(ObjOf(o),c)
 #define setBXAttrOf(o,c)        MethodOf(o)->setBXattrObj(ObjOf(o),c)
+#define setBKAttrOf(o,c)        MethodOf(o)->setBKattrObj(ObjOf(o),c)
+
+   /* pre/post-processing */
+#define PreProcessFuncOf(w)	(ObjOf(w)->preProcessFunction)
+#define PreProcessDataOf(w)	(ObjOf(w)->preProcessData)
+#define PostProcessFuncOf(w)	(ObjOf(w)->postProcessFunction)
+#define PostProcessDataOf(w)	(ObjOf(w)->postProcessData)
 
 /* FIXME - remove this */
 #define ReturnOf(p)   (ObjPtr(p)->dataPtr)
@@ -233,6 +256,7 @@ static void _moveCDK ## mixed          (struct CDKOBJS *, int, int, boolean, boo
 static void _refreshDataCDK ## mixed   (struct CDKOBJS *); \
 static void _saveDataCDK ## mixed      (struct CDKOBJS *); \
 static void _unfocusCDK ## mixed       (struct CDKOBJS *); \
+static void _setBKattr ## mixed        (struct CDKOBJS *, chtype); \
 static const CDKFUNCS my_funcs = { \
    v ## upper, \
    DataType ## type, \
@@ -252,15 +276,83 @@ static const CDKFUNCS my_funcs = { \
    line ## VTchar, \
    line ## HZchar, \
    line ## BXattr, \
+   _setBKattr ## mixed, \
 }
 
-extern int getcCDKObject (CDKOBJS *);
-extern void positionCDKObject (CDKOBJS *, WINDOW *);
+/*
+ * Some methods are unused.  Define macros to represent dummy methods
+ * to make it simple to maintain them.
+ */
+#define dummyInject(mixed) \
+static int _injectCDK ## mixed (CDKOBJS * object GCC_UNUSED, chtype input GCC_UNUSED) \
+{ \
+   return 0; \
+}
+
+#define dummyFocus(mixed) \
+static void _focusCDK ## mixed (CDKOBJS * object GCC_UNUSED) \
+{ \
+}
+
+#define dummyUnfocus(mixed) \
+static void _unfocusCDK ## mixed (CDKOBJS * object GCC_UNUSED) \
+{ \
+}
+
+#define dummySaveData(mixed) \
+static void _saveDataCDK ## mixed (CDKOBJS * object GCC_UNUSED) \
+{ \
+}
+
+#define dummyRefreshData(mixed) \
+static void _refreshDataCDK ## mixed (CDKOBJS * object GCC_UNUSED) \
+{ \
+}
+
+/*
+ * Read keycode from object, optionally translating bindings.
+ */
+extern int getcCDKObject (
+		CDKOBJS *	/* object */);
+
+/*
+ * Interactively reposition an object within a window.
+ */
+extern void positionCDKObject (
+		CDKOBJS *	/* object */,
+		WINDOW *	/* win */);
+
+/*
+ * Pre/postprocessing.
+ */
+extern void setCDKObjectPreProcess (
+		CDKOBJS *	/* object */,
+	        PROCESSFN	/* func */,
+		void *		/* data */);
+
+extern void setCDKObjectPostProcess (
+		CDKOBJS *	/* object */,
+	        PROCESSFN	/* func */,
+		void *		/* data */);
+
+/*
+ * Background color.
+ */
+extern void setCDKObjectBackgroundColor (
+		CDKOBJS *	/* object */,
+		char *		/* color */);
 
 /* title-storage is implemented identically with all widgets */
 extern int setCdkTitle (CDKOBJS *, char *, int);
 extern void drawCdkTitle (WINDOW *, CDKOBJS *);
 extern void cleanCdkTitle (CDKOBJS *);
+
+#define setCdkEarlyExit(p,q)    EarlyExitOf(p) = q
+
+extern void setCdkExitType(
+		CDKOBJS *	/* obj */,
+		EExitType *	/* type */,
+		chtype		/* ch */);
 
 #ifdef __cplusplus
 }

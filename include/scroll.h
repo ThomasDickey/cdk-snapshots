@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.22 2003/11/27 14:55:27 tom Exp $
+ * $Id: scroll.h,v 1.25 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -95,10 +95,6 @@ struct SScroll {
    boolean	numbers;
    chtype	titlehighlight;
    chtype	highlight;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SScroll CDKSCROLL;
 
@@ -202,16 +198,12 @@ boolean getCDKScrollBox (
 /*
  * This sets the background color of the widget.
  */ 
-void setCDKScrollBackgroundColor (
-		CDKSCROLL *	/* scroll */,
-		char *		/* color */);
+#define setCDKScrollBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKScrollBackgroundAttrib (
-		CDKSCROLL *	/* scroll */,
-		chtype		/* attribute */);
+#define setCDKScrollBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This adds a single item into the scrolling list.
@@ -255,15 +247,8 @@ void deleteCDKScrollItem (
 /*
  * These set the scrolling list pre/post process functions.
  */
-void setCDKScrollPreProcess (
-		CDKSCROLL *	/* scroll */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKScrollPostProcess (
-		CDKSCROLL *	/* scroll */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKScrollPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKScrollPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

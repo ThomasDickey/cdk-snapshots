@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:35:37 $
- * $Revision: 1.78 $
+ * $Date: 2004/08/30 00:19:18 $
+ * $Revision: 1.83 $
  */
 
 DeclareCDKObjects(HISTOGRAM, Histogram, setCdk, Unknown);
@@ -474,36 +474,15 @@ boolean getCDKHistogramBox (CDKHISTOGRAM *histogram)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKHistogramBackgroundAttrib (histogram, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKHistogramBackgroundAttrib (CDKHISTOGRAM *histogram, chtype attrib)
+static void _setBKattrHistogram (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (histogram->win, attrib);
+   if (object != 0)
+   {
+      CDKHISTOGRAM *widget = (CDKHISTOGRAM *) object;
+      wbkgd (widget->win, attrib);
+   }
 }
 
 /*
@@ -541,8 +520,7 @@ static void _moveCDKHistogram (CDKOBJS *object, int xplace, int yplace, boolean 
    moveCursesWindow(histogram->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(histogram));
-   wrefresh (WindowOf(histogram));
+   refreshCDKWindow (WindowOf(histogram));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -560,7 +538,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    chtype battr = 0;
    chtype bchar = 0;
    chtype fattr = histogram->filler & A_ATTRIBUTES;
-   chtype fchar = histogram->filler & A_CHARTEXT;
+   chtype fchar = CharOf(histogram->filler);
    int histX	= TitleLinesOf(histogram) + 1;
    int histY	= histogram->barSize;
    int len, x, y;
@@ -646,7 +624,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 	 battr	= mvwinch (histogram->win, x, y);
 #endif
 	 fchar	= battr & A_ATTRIBUTES;
-	 bchar	= battr & A_CHARTEXT;
+	 bchar	= CharOf(battr);
 
 	 if (bchar == ' ')
 	 {
@@ -660,8 +638,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    }
 
    /* Refresh the window. */
-   touchwin (histogram->win);
-   wrefresh (histogram->win);
+   refreshCDKWindow (histogram->win);
 }
 
 /*
@@ -701,27 +678,12 @@ static void _eraseCDKHistogram (CDKOBJS *object)
    }
 }
 
-static int _injectCDKHistogram(CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
-{
-   return 0;
-}
+dummyInject(Histogram)
 
-static void _focusCDKHistogram(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyFocus(Histogram)
 
-static void _unfocusCDKHistogram(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Histogram)
 
-static void _refreshDataCDKHistogram(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Histogram)
 
-static void _saveDataCDKHistogram(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Histogram)

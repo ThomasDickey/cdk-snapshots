@@ -2,9 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:37:52 $
- * $Revision: 1.74 $
+ * $Date: 2004/08/30 00:26:17 $
+ * $Revision: 1.93 $
  */
+
+#define TITLELINES 1
 
 /*
  * Declare file local prototypes.
@@ -20,9 +22,12 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
 {
    CDKMENU *menu	= 0;
    int rightcount	= menuItems - 1;
-   int rightloc		= getmaxx((cdkscreen->window));
+   int rightloc		= getmaxx(cdkscreen->window);
    int leftloc		= 0;
    int x, y, max, junk;
+   int xpos		= getbegx(cdkscreen->window);
+   int ypos		= getbegy(cdkscreen->window);
+   int ymax		= getmaxy(cdkscreen->window);
 
    if ((menu = newCDKObject(CDKMENU, &my_funcs)) == 0)
       return (0);
@@ -39,81 +44,58 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen, char *menulist[MAX_MENU_ITEMS][MAX_SU
    menu->currentTitle		= 0;
    menu->currentSubtitle	= 0;
    menu->lastSelection		= -1;
-   menu->preProcessFunction	= 0;
-   menu->preProcessData		= 0;
-   menu->postProcessFunction	= 0;
-   menu->postProcessData	= 0;
    menu->menuPos		= menuPos;
-   menu->exitType		= vNEVER_ACTIVATED;
-   ObjOf(menu)->inputWindow     = menu->titleWin[menu->currentTitle];
+   initExitType(menu);
 
    /* Create the pull down menus. */
    for (x=0; x < menuItems; x++)
    {
-      max = -1;
-      for (y=1; y < subsize[x] ; y++)
+      int x1 = (menuloc[x] == LEFT) ? x : rightcount--;
+      int x2;
+      int y1 = (menuPos == BOTTOM) ? (ymax - 1) : 0;
+      int y2 = (menuPos == BOTTOM) ? (ymax - subsize[x] - 2) : TITLELINES;
+      int high = subsize[x] + TITLELINES;
+
+      /*
+       * Limit the menu height to fit on the screen.
+       */
+      if (high + y2 > ymax)
       {
-	 if (menuloc[x] == LEFT)
-	 {
-	    menu->sublist[x][y-1] = char2Chtype (menulist[x][y], &menu->sublistLen[x][y-1], &junk);
-	    max = MAXIMUM (max, menu->sublistLen[x][y-1]);
-	 }
-	 else
-	 {
-	    menu->sublist[rightcount][y-1] = char2Chtype (menulist[x][y], &menu->sublistLen[rightcount][y-1], &junk);
-	    max = MAXIMUM (max, menu->sublistLen[rightcount][y-1]);
-	 }
+	 high = ymax - TITLELINES;
+      }
+
+      max = -1;
+      for (y = TITLELINES; y < subsize[x] ; y++)
+      {
+	 int y0 = y - TITLELINES;
+	 menu->sublist[x1][y0] = char2Chtype (menulist[x][y], &menu->sublistLen[x1][y0], &junk);
+	 max = MAXIMUM (max, menu->sublistLen[x1][y0]);
       }
 
       if (menuloc[x] == LEFT)
       {
-	/*
-	 * It is a menu item on the left.  Add it to the left side of the menu.
-	 */
-	 menu->title[x]		= char2Chtype (menulist[x][0], &menu->titleLen[x], &junk);
-	 menu->subsize[x]	= subsize[x] - 1;
-	 if (menu->menuPos == BOTTOM)
-	 {
-	    menu->titleWin[x]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, LINES-1, leftloc);
-	    menu->pullWin[x]	= subwin (cdkscreen->window, subsize[x]+1, max+2, LINES-subsize[x]-2, leftloc);
-	 }
-	 else
-	 {
-	    menu->titleWin[x]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, 0, leftloc);
-	    menu->pullWin[x]	= subwin (cdkscreen->window, subsize[x]+1, max+2, 1, leftloc);
-	 }
-	 leftloc += menu->titleLen[x] + 1;
-
-	 /* Allow the windows to use the keypad. */
-	 keypad (menu->titleWin[x], TRUE);
-	 keypad (menu->pullWin[x], TRUE);
+	 x2 = leftloc;
       }
       else
       {
-	/*
-	 * It is a menu item on the right.  Add it to the right side of the
-	 * menu.
-	 */
-	 rightloc			-= max + 2;
-	 menu->title[rightcount]	= char2Chtype (menulist[x][0], &menu->titleLen[rightcount], &junk);
-	 menu->subsize[rightcount]	= subsize[x] - 1;
-	 if (menu->menuPos == BOTTOM)
-	 {
-	    menu->titleWin[rightcount]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, LINES-1, rightloc);
-	    menu->pullWin[rightcount]	= subwin (cdkscreen->window, subsize[x]+1, max+2, LINES-subsize[x]-2, rightloc);
-	 }
-	 else
-	 {
-	    menu->titleWin[rightcount]	= subwin (cdkscreen->window, 1, menu->titleLen[x]+2, 0, rightloc);
-	    menu->pullWin[rightcount]	= subwin (cdkscreen->window, subsize[x]+1, max+2, 1, rightloc);
-	 }
-
-	 /* Allow the windows to use the keypad. */
-	 keypad (menu->titleWin[rightcount], TRUE);
-	 keypad (menu->pullWin[rightcount], TRUE);
-	 rightcount--;
+	 x2 = (rightloc -= max + 2);
       }
+      menu->title[x1]	 = char2Chtype (menulist[x][0], &menu->titleLen[x1], &junk);
+      menu->subsize[x1]	 = subsize[x] - TITLELINES;
+      menu->titleWin[x1] = subwin (cdkscreen->window, TITLELINES, menu->titleLen[x1]+2, ypos + y1, xpos + x2);
+      menu->pullWin[x1]  = subwin (cdkscreen->window, high, max+2, ypos + y2, xpos + x2);
+      if (menu->titleWin[x1] == 0 || menu->pullWin[x1] == 0)
+      {
+	 destroyCDKMenu(menu);
+	 return (0);
+      }
+
+      leftloc += menu->titleLen[x] + 1;
+
+      keypad (menu->titleWin[x1], TRUE);
+      keypad (menu->pullWin[x1], TRUE);
    }
+   ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
 
    /* Clean the key bindings. */
    cleanCDKObjectBindings (vMENU, menu);
@@ -145,10 +127,12 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
    /* If the input string is null, this is an interactive activate. */
    if (actions == 0)
    {
+      ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+
       /* Start taking input from the keyboard. */
       for (;;)
       {
-	 input = wgetch (menu->titleWin[menu->currentTitle]);
+	 input = getcCDKObject (ObjOf(menu));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMenu (menu, input);
@@ -174,8 +158,102 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
    }
 
    /* Set the exit type and return. */
-   menu->exitType = vEARLY_EXIT;
+   setExitType(menu, 0);
    return -1;
+}
+
+/*
+ * The "%" operator is simpler but does not handle negative values.
+ */
+static int wrapped (int within, int limit)
+{
+   if (within < 0)
+      within = limit - 1;
+   else if (within >= limit)
+      within = 0;
+   return within;
+}
+
+static void drawTitle (CDKMENU *menu, int item)
+{
+   writeChtype (menu->titleWin[item],
+		0, 0, menu->title[item],
+		HORIZONTAL,
+		0, menu->titleLen[item]);
+}
+
+static void drawItem (CDKMENU *menu, int item, int offset)
+{
+   writeChtype (menu->pullWin[menu->currentTitle],
+	       1, item + TITLELINES - offset,
+	       menu->sublist[menu->currentTitle][item],
+	       HORIZONTAL,
+	       0, menu->sublistLen[menu->currentTitle][item]);
+}
+
+/* Highlight the current sub-menu item. */
+static void selectItem (CDKMENU *menu, int item, int offset)
+{
+   writeChtypeAttrib (menu->pullWin[menu->currentTitle],
+	       1, item + TITLELINES - offset,
+	       menu->sublist[menu->currentTitle][item],
+	       menu->subtitleAttr,
+	       HORIZONTAL,
+	       0, menu->sublistLen[menu->currentTitle][item]);
+}
+
+static void withinSubmenu (CDKMENU *menu, int step)
+{
+   int next = wrapped(menu->currentSubtitle + step, menu->subsize[menu->currentTitle]);
+
+   if (next != menu->currentSubtitle)
+   {
+      CDKSCREEN *screen = ScreenOf(menu);
+      int ymax = getmaxy(screen->window);
+
+      if (1 +
+	 getbegy (menu->pullWin[menu->currentTitle]) +
+	 menu->subsize[menu->currentTitle] >= ymax)
+      {
+	 menu->currentSubtitle = next;
+	 drawCDKMenuSubwin (menu);
+      }
+      else
+      {
+	 /* Erase the old subtitle. */
+	 drawItem (menu, menu->currentSubtitle, 0);
+
+	 /* Set the values. */
+	 menu->currentSubtitle = next;
+
+	 /* Draw the new sub-title. */
+	 selectItem (menu, menu->currentSubtitle, 0);
+
+	 wrefresh (menu->pullWin[menu->currentTitle]);
+      }
+
+      ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+   }
+}
+
+static void acrossSubmenus (CDKMENU *menu, int step)
+{
+   int next = wrapped(menu->currentTitle + step, menu->menuItems);
+
+   if (next != menu->currentTitle)
+   {
+      /* Erase the menu sub-window. */
+      eraseCDKMenuSubwin (menu);
+      refreshCDKScreen (ScreenOf(menu));
+
+      /* Set the values. */
+      menu->currentTitle = next;
+      menu->currentSubtitle = 0;
+
+      /* Draw the new menu sub-window. */
+      drawCDKMenuSubwin (menu);
+      ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+   }
 }
 
 /*
@@ -189,13 +267,13 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   menu->exitType = vEARLY_EXIT;
+   setExitType(menu, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (menu->preProcessFunction != 0)
+   if (PreProcessFuncOf(menu) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = menu->preProcessFunction (vMENU, menu, menu->preProcessData, input);
+      ppReturn = PreProcessFuncOf(menu) (vMENU, menu, PreProcessDataOf(menu), input);
    }
 
    /* Should we continue? */
@@ -204,7 +282,7 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
       /* Check for key bindings. */
       if (checkCDKObjectBind (vMENU, menu, input) != 0)
       {
-	 menu->exitType = vESCAPE_HIT;
+	 checkEarlyExit(menu);
 	 complete = TRUE;
       }
       else
@@ -212,109 +290,24 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_LEFT :
-		 /* Erase the menu sub-window */
-		 eraseCDKMenuSubwin (menu);
-		 refreshCDKScreen (ScreenOf(menu));
-
-		 /* Set the values. */
-		 menu->currentSubtitle = 0;
-		 if (menu->currentTitle == 0)
-		 {
-		    menu->currentTitle = menu->menuItems - 1;
-		 }
-		 else
-		 {
-		    menu->currentTitle--;
-		 }
-
-		 /* Draw the new menu sub-window. */
-		 drawCDKMenuSubwin (menu);
-		 ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+		 acrossSubmenus(menu, -1);
 		 break;
 
 	    case KEY_RIGHT : case KEY_TAB :
-		 /* Erase the menu sub-window. */
-		 eraseCDKMenuSubwin (menu);
-		 refreshCDKScreen (ScreenOf(menu));
-
-		 /* Set the values. */
-		 menu->currentSubtitle = 0;
-		 if (menu->currentTitle == menu->menuItems-1)
-		 {
-		       menu->currentTitle = 0;
-		 }
-		 else
-		 {
-		    menu->currentTitle++;
-		 }
-
-		 /* Draw the new menu sub-window. */
-		 drawCDKMenuSubwin (menu);
-		 ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+		 acrossSubmenus(menu, 1);
 		 break;
 
 	    case KEY_UP :
-		 /* Erase the old subtitle. */
-		 writeChtype (menu->pullWin[menu->currentTitle],
-				1, menu->currentSubtitle+1,
-				menu->sublist[menu->currentTitle][menu->currentSubtitle],
-				HORIZONTAL,
-				0, menu->sublistLen[menu->currentTitle][menu->currentSubtitle]);
-
-		 /* Set the values. */
-		 if (menu->currentSubtitle == 0)
-		 {
-		    menu->currentSubtitle = menu->subsize[menu->currentTitle] - 1;
-		 }
-		 else
-		 {
-		    menu->currentSubtitle--;
-		 }
-
-		 /* Draw the new sub-title. */
-		 writeChtypeAttrib (menu->pullWin[menu->currentTitle],
-					1, menu->currentSubtitle+1,
-					menu->sublist[menu->currentTitle][menu->currentSubtitle],
-					menu->subtitleAttr,
-					HORIZONTAL,
-					0, menu->sublistLen[menu->currentTitle][menu->currentSubtitle]);
-		 wrefresh (menu->pullWin[menu->currentTitle]);
-		 ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+		 withinSubmenu (menu, -1);
 		 break;
 
 	    case KEY_DOWN : case SPACE :
-		 /* Erase the old subtitle. */
-		 writeChtype (menu->pullWin[menu->currentTitle],
-				1, menu->currentSubtitle+1,
-				menu->sublist[menu->currentTitle][menu->currentSubtitle],
-				HORIZONTAL,
-				0, menu->sublistLen[menu->currentTitle][menu->currentSubtitle]);
-
-		 /* Set the values. */
-		 if (menu->currentSubtitle == menu->subsize[menu->currentTitle]-1)
-		 {
-		    menu->currentSubtitle = 0;
-		 }
-		 else
-		 {
-		    menu->currentSubtitle++;
-		 }
-
-		 /* Draw the new sub-title. */
-		 writeChtypeAttrib (
-				menu->pullWin[menu->currentTitle],
-				1, menu->currentSubtitle+1,
-				menu->sublist[menu->currentTitle][menu->currentSubtitle],
-				menu->subtitleAttr,
-				HORIZONTAL,
-				0, menu->sublistLen[menu->currentTitle][menu->currentSubtitle]);
-		 wrefresh (menu->pullWin[menu->currentTitle]);
-		 ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
+		 withinSubmenu (menu, 1);
 		 break;
 
-	    case KEY_RETURN : case KEY_ENTER :
+	    case KEY_ENTER :
 		 cleanUpMenu (menu);
-		 menu->exitType = vNORMAL;
+		 setExitType(menu, input);
 		 menu->lastSelection = ((menu->currentTitle * 100) + menu->currentSubtitle);
 		 ret = menu->lastSelection;
 		 complete = TRUE;
@@ -322,7 +315,7 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
 
 	    case KEY_ESC :
 		 cleanUpMenu (menu);
-		 menu->exitType = vESCAPE_HIT;
+		 setExitType(menu, input);
 		 menu->lastSelection = -1;
 		 ret = menu->lastSelection;
 		 complete = TRUE;
@@ -336,14 +329,15 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (menu->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(menu) != 0))
       {
-	 menu->postProcessFunction (vMENU, menu, menu->postProcessData, input);
+	 PostProcessFuncOf(menu) (vMENU, menu, PostProcessDataOf(menu), input);
       }
    }
 
-   if (!complete) {
-      menu->exitType = vEARLY_EXIT;
+   if (!complete)
+   {
+      setExitType(menu, 0);
    }
 
    ResultOf(menu).valueInt = ret;
@@ -356,8 +350,21 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
 void drawCDKMenuSubwin (CDKMENU *menu)
 {
    int x;
+   int high = getmaxy(menu->pullWin[menu->currentTitle]) - 2;
+   int x0 = 0;
+   int x1 = menu->subsize[menu->currentTitle];
+
+   if (x1 > high)
+      x1 = high;
+
+   if (menu->currentSubtitle >= x1)
+   {
+      x0 = (menu->currentSubtitle - x1) + 1;
+      x1 += x0;
+   }
 
    /* Box the window. */
+   werase(menu->pullWin[menu->currentTitle]);
    box (menu->pullWin[menu->currentTitle], ACS_VLINE, ACS_HLINE);
    if (menu->menuPos == BOTTOM)
    {
@@ -370,31 +377,20 @@ void drawCDKMenuSubwin (CDKMENU *menu)
    }
 
    /* Draw in the items. */
-   for (x=0; x < menu->subsize[menu->currentTitle] ; x++)
+   for (x = x0; x < x1 ; x++)
    {
-      writeChtype (menu->pullWin[menu->currentTitle],
-			1, x+1,
-			menu->sublist[menu->currentTitle][x],
-			HORIZONTAL,
-			0, menu->sublistLen[menu->currentTitle][x]);
+      drawItem (menu, x, x0);
    }
 
-   /* Highlight the current sub-menu item. */
-   writeChtypeAttrib (menu->pullWin[menu->currentTitle],
-			1, menu->currentSubtitle+1,
-			menu->sublist[menu->currentTitle][menu->currentSubtitle],
-			menu->subtitleAttr, HORIZONTAL, 0,
-			menu->sublistLen[menu->currentTitle][menu->currentSubtitle]);
-   touchwin (menu->pullWin[menu->currentTitle]);
-   wrefresh (menu->pullWin[menu->currentTitle]);
+   selectItem (menu, menu->currentSubtitle, x0);
+   refreshCDKWindow (menu->pullWin[menu->currentTitle]);
 
    /* Highlight the title. */
    writeChtypeAttrib (menu->titleWin[menu->currentTitle],
 			0, 0, menu->title[menu->currentTitle],
 			menu->titleAttr, HORIZONTAL, 0,
 			menu->titleLen[menu->currentTitle]);
-   touchwin (menu->titleWin[menu->currentTitle]);
-   wrefresh (menu->titleWin[menu->currentTitle]);
+   refreshCDKWindow (menu->titleWin[menu->currentTitle]);
 }
 
 /*
@@ -405,12 +401,8 @@ void eraseCDKMenuSubwin (CDKMENU *menu)
    eraseCursesWindow (menu->pullWin[menu->currentTitle]);
 
    /* Redraw the sub-menu title. */
-   writeChtype (menu->titleWin[menu->currentTitle],
-		0, 0, menu->title[menu->currentTitle],
-		HORIZONTAL,
-		0, menu->titleLen[menu->currentTitle]);
-   touchwin (menu->titleWin[menu->currentTitle]);
-   wrefresh (menu->titleWin[menu->currentTitle]);
+   drawTitle (menu, menu->currentTitle);
+   refreshCDKWindow (menu->titleWin[menu->currentTitle]);
 }
 
 /*
@@ -424,9 +416,8 @@ static void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
    /* Draw in the menu titles. */
    for (x=0; x < menu->menuItems; x++)
    {
-      writeChtype (menu->titleWin[x], 0, 0, menu->title[x], HORIZONTAL, 0, menu->titleLen[x]);
-      touchwin (menu->titleWin[x]);
-      wrefresh (menu->titleWin[x]);
+      drawTitle (menu, x);
+      refreshCDKWindow (menu->titleWin[x]);
    }
 }
 
@@ -469,8 +460,7 @@ static void _moveCDKMenu (CDKOBJS *object, int xplace, int yplace, boolean relat
    }
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(menu));
-   wrefresh (WindowOf(menu));
+   refreshCDKWindow (WindowOf(menu));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -480,40 +470,20 @@ static void _moveCDKMenu (CDKOBJS *object, int xplace, int yplace, boolean relat
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKMenuBackgroundColor (CDKMENU *menu, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKMenuBackgroundAttrib (menu, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKMenuBackgroundAttrib (CDKMENU *menu, chtype attrib)
+static void _setBKattrMenu (CDKOBJS *object, chtype attrib)
 {
-   int x;
-   /* Set the widgets background attribute. */
-   for (x=0; x < menu->menuItems; x++)
+   if (object != 0)
    {
-      wbkgd (menu->titleWin[x], attrib);
-      wbkgd (menu->pullWin[x], attrib);
+      CDKMENU *widget = (CDKMENU *)object;
+      int x;
+
+      for (x=0; x < widget->menuItems; x++)
+      {
+	 wbkgd (widget->titleWin[x], attrib);
+	 wbkgd (widget->pullWin[x], attrib);
+      }
    }
 }
 
@@ -579,35 +549,12 @@ void setCDKMenu (CDKMENU *menu, int menuItem, int subMenuItem, chtype titleHighl
 }
 
 /*
- * This sets the current menu itme to highlight.
+ * This sets the current menu item to highlight.
  */
 void setCDKMenuCurrentItem (CDKMENU *menu, int menuitem, int submenuitem)
 {
-   /* Set the menu item position values. */
-   if (menuitem < 0)
-   {
-      menu->currentTitle = 0;
-   }
-   else if (menuitem >= menu->menuItems)
-   {
-      menu->currentTitle = menu->menuItems - 1;
-   }
-   else
-   {
-      menu->currentTitle = menuitem;
-   }
-   if (submenuitem < 0)
-   {
-      menu->currentSubtitle = 0;
-   }
-   else if (submenuitem >= menu->subsize[menu->currentTitle])
-   {
-      menu->currentSubtitle = menu->subsize[menu->currentTitle]-1;
-   }
-   else
-   {
-      menu->currentSubtitle = submenuitem;
-   }
+   menu->currentTitle    = wrapped(menuitem,    menu->menuItems);
+   menu->currentSubtitle = wrapped(submenuitem, menu->subsize[menu->currentTitle]);
 }
 void getCDKMenuCurrentItem (CDKMENU *menu, int *menuItem, int *subMenuItem)
 {
@@ -652,45 +599,16 @@ static void cleanUpMenu (CDKMENU *menu)
    refreshCDKScreen (ScreenOf(menu));
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKMenuPreProcess (CDKMENU *menu, PROCESSFN callback, void *data)
-{
-   menu->preProcessFunction = callback;
-   menu->preProcessData = data;
-}
-
-/*
- * This function sets the post-process function.
- */
-void setCDKMenuPostProcess (CDKMENU *menu, PROCESSFN callback, void *data)
-{
-   menu->postProcessFunction = callback;
-   menu->postProcessData = data;
-}
-
-
 static void _focusCDKMenu(CDKOBJS *object)
 {
    CDKMENU *menu = (CDKMENU *)object;
 
-   curs_set(0);
    drawCDKMenuSubwin(menu);
    ObjOf(menu)->inputWindow = menu->titleWin[menu->currentTitle];
 }
 
-static void _unfocusCDKMenu(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Menu)
 
-static void _refreshDataCDKMenu(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Menu)
 
-static void _saveDataCDKMenu(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Menu)

@@ -171,7 +171,6 @@ int main(void)
 	 destroyCDKMenu (rolodexMenu);
 	 destroyCDKLabel (rolodexTitle);
 	 destroyCDKScreen (cdkscreen);
-	 delwin (cursesWin);
 
 	 /* Free up other pointers. */
 	 freeChar (GCurrentGroup);
@@ -190,7 +189,7 @@ int main(void)
 	 endCDK();
 
 	 /* Exit cleanly. */
-	 exit (0);
+	 exit (EXIT_SUCCESS);
       }
       else if (selection == 100)
       {
@@ -300,8 +299,8 @@ int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex *groupList, int gro
    for (x=0; x < groupCount; x++)
    {
       fprintf (fd, "%s%c%s%c%s\n",
-	       groupList[x].name, CONTROL('V'),
-	       groupList[x].desc, CONTROL('V'),
+	       groupList[x].name, CTRL('V'),
+	       groupList[x].desc, CTRL('V'),
 	       groupList[x].dbm);
    }
    fclose (fd);
@@ -619,7 +618,7 @@ int readRCFile (char *filename, SRolodex *groupList)
       /* Only split lines which do not start with a # */
       if (strlen (lines[x]) != 0 && lines[x][0] != '#')
       {
-	 items = CDKsplitString (lines[x], CONTROL('V'));
+	 items = CDKsplitString (lines[x], CTRL('V'));
 	 chunks = CDKcountStrings (items);
 
 	 /* Only take the ones which fit the format. */
@@ -737,7 +736,7 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc GCC_UN
    /* Create key bindings. */
    bindCDKObject (vSCROLL, nameList, 'i', insertPhoneEntryCB, &phoneData);
    bindCDKObject (vSCROLL, nameList, 'd', deletePhoneEntryCB, &phoneData);
-   bindCDKObject (vSCROLL, nameList, DELETE, deletePhoneEntryCB, &phoneData);
+   bindCDKObject (vSCROLL, nameList, KEY_DC, deletePhoneEntryCB, &phoneData);
    bindCDKObject (vSCROLL, nameList, '?', phoneEntryHelpCB, 0);
 
    /* Let them play. */
@@ -809,14 +808,14 @@ int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
       if (lines[x][0] != '#')
       {
 	 /* Split the string. */
-	 items = CDKsplitString (lines[x], CONTROL('V'));
+	 items = CDKsplitString (lines[x], CTRL('V'));
 	 chunks = CDKcountStrings (items);
 
 	 /* Copy the chunks. */
 	 if (chunks == 8)
 	 {
 	    phoneData->record[linesFound].name		= items[0];
-	    phoneData->record[linesFound].lineType	= atoi (items[1]);
+	    phoneData->record[linesFound].lineType	= (ELineType) atoi (items[1]);
 	    phoneData->record[linesFound].phoneNumber	= items[2];
 	    phoneData->record[linesFound].address	= items[3];
 	    phoneData->record[linesFound].city		= items[4];
@@ -879,22 +878,22 @@ int savePhoneDataFile (char *filename, SPhoneData *phoneData)
       if (phoneRecord->lineType == vCell || phoneRecord->lineType == vPager)
       {
 	 fprintf (fd, "%s%c%d%c%s%c-%c-%c-%c-%c%s\n",
-			phoneRecord->name, CONTROL('V'),
-			phoneRecord->lineType, CONTROL('V'),
-			phoneRecord->phoneNumber, CONTROL('V'),
-			CONTROL('V'), CONTROL('V'), CONTROL('V'), CONTROL('V'),
+			phoneRecord->name, CTRL('V'),
+			phoneRecord->lineType, CTRL('V'),
+			phoneRecord->phoneNumber, CTRL('V'),
+			CTRL('V'), CTRL('V'), CTRL('V'), CTRL('V'),
 			phoneRecord->desc);
       }
       else
       {
 	 fprintf (fd, "%s%c%d%c%s%c%s%c%s%c%s%c%s%c%s\n",
-			phoneRecord->name, CONTROL('V'),
-			phoneRecord->lineType, CONTROL('V'),
-			phoneRecord->phoneNumber, CONTROL('V'),
-			phoneRecord->address, CONTROL('V'),
-			phoneRecord->city, CONTROL('V'),
-			phoneRecord->province, CONTROL('V'),
-			phoneRecord->postalCode, CONTROL('V'),
+			phoneRecord->name, CTRL('V'),
+			phoneRecord->lineType, CTRL('V'),
+			phoneRecord->phoneNumber, CTRL('V'),
+			phoneRecord->address, CTRL('V'),
+			phoneRecord->city, CTRL('V'),
+			phoneRecord->province, CTRL('V'),
+			phoneRecord->postalCode, CTRL('V'),
 			phoneRecord->desc);
       }
    }
@@ -1111,7 +1110,7 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData *phoneData)
 				"Type: ",
 				types, GLINETYPECOUNT, 0,
 				TRUE, FALSE);
-   phoneRecord->lineType = activateCDKItemlist (itemList, 0);
+   phoneRecord->lineType = (ELineType) activateCDKItemlist (itemList, 0);
    destroyCDKItemlist (itemList);
 
    /* Clean up. */
@@ -1123,7 +1122,7 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData *phoneData)
    /* Check the return code of the line type question. */
    if (phoneRecord->lineType == -1)
    {
-      phoneRecord->lineType = 0;
+      phoneRecord->lineType = (ELineType) 0;
       return 1;
    }
    else if (phoneRecord->lineType == vPager || phoneRecord->lineType == vCell)

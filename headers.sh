@@ -1,8 +1,20 @@
 #! /bin/sh
-# $Id: headers.sh,v 1.3 2001/12/04 01:55:24 tom Exp $
+# $Id: headers.sh,v 1.4 2004/08/28 00:12:47 tom Exp $
 #
 # Adjust includes for header files that reside in a subdirectory of
 # /usr/include, etc.
+#
+# Parameters (the first case creates the sed script):
+#	$1 is the target directory
+#	$2 is the source directory
+# or (the second case does the install, using the sed script):
+#	$1 is the script to use for installing
+#	$2 is the target directory
+#	$3 is the source directory
+#	$4 is the file to install, editing source/target/etc.
+
+PACKAGE=CDK
+CONFIGH=cdk_config.h
 
 TMPSED=headers.sed
 
@@ -17,13 +29,23 @@ if test $# = 2 ; then
 		for i in $REF/*.h
 		do
 			NAME=`basename $i`
-			echo "s/<$NAME>/<$END\/$NAME>/" >> $TMPSED
+			echo "s/<$NAME>/<$END\/$NAME>/g" >> $TMPSED
 		done
 		;;
 	*)
 		echo "" >> $TMPSED
 		;;
 	esac
+	for name in `
+	egrep "#define[ 	][ 	]*[A-Z]" $REF/$CONFIGH \
+		| sed	-e 's/^#define[ 	][ 	]*//' \
+			-e 's/[ 	].*//' \
+		| fgrep -v GCC_ \
+		| sort -u \
+		| egrep -v "^${PACKAGE}_"`
+	do
+		echo "s/\\<$name\\>/${PACKAGE}_$name/g" >>$TMPSED
+	done
 else
 	PRG=""
 	while test $# != 3

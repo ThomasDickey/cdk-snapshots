@@ -100,9 +100,9 @@ int main(int argc, char **argv)
    /* Create the key bindings. */
    bindCDKObject (vENTRY, commandEntry, KEY_UP, historyUpCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_DOWN, historyDownCB, &history);
-   bindCDKObject (vENTRY, commandEntry, TAB, viewHistoryCB, commandOutput);
-   bindCDKObject (vENTRY, commandEntry, CONTROL('^'), listHistoryCB, &history);
-   bindCDKObject (vENTRY, commandEntry, CONTROL('G'), jumpWindowCB, commandOutput);
+   bindCDKObject (vENTRY, commandEntry, KEY_TAB, viewHistoryCB, commandOutput);
+   bindCDKObject (vENTRY, commandEntry, CTRL('^'), listHistoryCB, &history);
+   bindCDKObject (vENTRY, commandEntry, CTRL('G'), jumpWindowCB, commandOutput);
 
    /* Draw the screen. */
    refreshCDKScreen (cdkscreen);
@@ -129,10 +129,9 @@ int main(int argc, char **argv)
 	 /* All done. */
 	 destroyCDKEntry (commandEntry);
 	 destroyCDKSwindow (commandOutput);
-	 delwin (cursesWin);
 	 freeChar (upper);
 	 endCDK();
-	 exit (0);
+	 exit (EXIT_SUCCESS);
       }
       else if (strcmp (command, "clear") == 0)
       {
@@ -403,9 +402,10 @@ char *uc (char *word)
    /* Start converting the case. */
    for (x=0; x < length; x++)
    {
-      if (isalpha ((int)word[x]))
+      int ch = (unsigned char)(word[x]);
+      if (isalpha (ch))
       {
-	 upper[x] = toupper(word[x]);
+	 upper[x] = toupper(ch);
       }
       else
       {

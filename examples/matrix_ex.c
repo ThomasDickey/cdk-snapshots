@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.10 2003/12/05 21:12:14 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.13 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the matrix widget. Is the window too small ?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the matrix. */
@@ -112,7 +112,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKMatrix (courseList);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

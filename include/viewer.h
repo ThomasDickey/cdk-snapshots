@@ -1,5 +1,5 @@
 /*
- * $Id: viewer.h,v 1.20 2003/12/06 14:01:41 tom Exp $
+ * $Id: viewer.h,v 1.21 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -194,16 +194,12 @@ boolean getCDKViewerBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKViewerBackgroundColor (
-		CDKVIEWER *	/* viewer */,
-		char *		/* color */);
+#define setCDKViewerBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKViewerBackgroundAttrib (
-		CDKVIEWER *	/* viewer */,
-		chtype		/* attribute */);
+#define setCDKViewerBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the viewer field on the screen.

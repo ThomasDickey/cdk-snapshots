@@ -22,7 +22,9 @@ AC_CHECK_TOOL(AR, ar, ar)
 AC_PROG_MAKE_SET
 CF_MAKEFLAGS
 
+CF_ANSI_CC_REQD
 AC_C_CONST
+CF_XOPEN_SOURCE
 
 CF_DISABLE_ECHO
 CF_PROG_EXT
@@ -63,7 +65,6 @@ CF_GETOPT_HEADER
 dnl
 dnl Checks for library functions.
 dnl
-AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(\
 getcwd \
 mktime \

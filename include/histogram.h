@@ -1,5 +1,5 @@
 /*
- * $Id: histogram.h,v 1.17 2003/12/06 16:27:28 tom Exp $
+ * $Id: histogram.h,v 1.18 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -208,16 +208,12 @@ boolean getCDKHistogramBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKHistogramBackgroundColor (
-		CDKHISTOGRAM *	/* histogram */,
-		char *		/* color */);
+#define setCDKHistogramBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKHistogramBackgroundAttrib (
-		CDKHISTOGRAM *	/* histogram */,
-		chtype		/* attribute */);
+#define setCDKHistogramBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the widget on the screen.

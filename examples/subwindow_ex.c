@@ -1,4 +1,4 @@
-/* $Id: subwindow_ex.c,v 1.6 2003/11/30 20:07:51 tom Exp $ */
+/* $Id: subwindow_ex.c,v 1.8 2004/08/28 00:57:12 tom Exp $ */
 
 #include <cdk.h>
 
@@ -66,12 +66,10 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKScroll (dowList);
    destroyCDKLabel (title);
-   werase (subWindow);
-   wrefresh (subWindow);
-   delwin (subWindow);
+   eraseCursesWindow (subWindow);
    endCDK();
 
    /* Tell them what they picked. */
    printf ("You picked %s\n", dow[pick]);
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

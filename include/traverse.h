@@ -1,5 +1,5 @@
 /*
- * $Id: traverse.h,v 1.4 2003/12/06 16:27:28 tom Exp $
+ * $Id: traverse.h,v 1.6 2004/08/14 12:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -18,9 +18,7 @@
 #endif
 
 /*
- * Changes 1999-2002,2003 copyright Thomas E. Dickey
- *
- * Copyright 2002, Thomas E. Dickey
+ * Copyright 1999-2003,2004 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,13 +50,16 @@
  * SUCH DAMAGE.
  */
 
-extern int  traverseCDKScreen (CDKSCREEN *screen);
-extern void exitCancelCDKScreen (CDKSCREEN *screen);
-extern void exitCancelCDKScreenOf (CDKOBJS *obj);
-extern void exitOKCDKScreen (CDKSCREEN *screen);
-extern void exitOKCDKScreenOf (CDKOBJS *obj);
-extern void resetCDKScreen (CDKSCREEN *screen);
-extern void resetCDKScreenOf (CDKOBJS *obj);
+extern CDKOBJS *getCDKFocusCurrent (CDKSCREEN * /* screen */);
+extern CDKOBJS *setCDKFocusNext (CDKSCREEN * /* screen */);
+extern CDKOBJS *setCDKFocusPrevious (CDKSCREEN * /* screen */);
+extern int  traverseCDKScreen (CDKSCREEN * /* screen */);
+extern void exitCancelCDKScreen (CDKSCREEN * /* screen */);
+extern void exitCancelCDKScreenOf (CDKOBJS * /* obj */);
+extern void exitOKCDKScreen (CDKSCREEN * /* screen */);
+extern void exitOKCDKScreenOf (CDKOBJS * /* obj */);
+extern void resetCDKScreen (CDKSCREEN * /* screen */);
+extern void resetCDKScreenOf (CDKOBJS * /* obj */);
 
 #endif /* CDKTRAVERSE_H */
 #endif /* CDKINCLUDES */

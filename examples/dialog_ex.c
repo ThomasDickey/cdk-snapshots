@@ -1,4 +1,4 @@
-/* $Id: dialog_ex.c,v 1.8 2003/12/06 16:17:11 tom Exp $ */
+/* $Id: dialog_ex.c,v 1.11 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the dialog box. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the dialog box. */
@@ -84,7 +84,6 @@ int main(int argc, char **argv)
    /* Clean up. */
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
