@@ -7,6 +7,18 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2002/02/25 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
+	+ add cdk_process manpage.
+	+ remove redundant description of bindCDKObject() from several manpages.
+	+ add rcs identifiers to header files.
+	+ add ifdef's in each header file for C++, to make the C externs link
+	  properly without requiring the application to declare them (reported
+	  in comp.unix.programmer newsgroup by <bigslick_2k@hotmail.com>).
+	+ correct typo in template.c introduced in 2000/01/16 substitutions
+	  to use macro isPlateChar() which made templates not work with
+	  interspersed punctuation (reported by jiny <jiny@ynmail.com>).
+
 2001/12/30 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
 	+ remove some redundant wrefresh() calls in various widgets.

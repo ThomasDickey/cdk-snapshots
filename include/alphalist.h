@@ -1,14 +1,15 @@
+/*
+ * $Id: alphalist.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKALPHALIST_H
 #define CDKALPHALIST_H	1
 
-#include <cdk.h>
-#include <entry.h>
-#include <scroll.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 1999, Mike Glover
@@ -42,6 +43,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
+#include <entry.h>
+#include <scroll.h>
 
 /*
  * Define the CDK alphalist widget structure.
@@ -233,5 +237,9 @@ void setCDKAlphalistPostProcess (
 		CDKALPHALIST *	/* alphalist */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKALPHALIST_H */

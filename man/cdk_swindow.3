@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.11 2000/09/15 02:07:52 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.12 2002/02/26 00:31:05 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -10,7 +10,6 @@
 .SH NAME
 activateCDKSwindow,
 addCDKSwindow,
-bindCDKObject,
 cleanCDKSwindow,
 destroyCDKSwindow,
 drawCDKSwindow,
@@ -59,13 +58,6 @@ trimCDKSwindow \- a curses scrolling window widget.
 .BI "CDKSWINDOW *" "swindow",
 .BI "char *" "info",
 .BI "int " "insertPosition");
-.TP 15
-.B "void bindCDKObject ("
-.BI "EObjectType " "widgetType",
-.BI "void *" "object",
-.BI "chtype " "key",
-.BI "BINDFN " "function",
-.BI "void *" "data");
 .TP 15
 .B "void cleanCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow");
@@ -228,18 +220,6 @@ The position of the new information is governed by
 the value of the parameter \fBinsertPosition\fR.
 This parameter may be
 two values: \fITOP\fR or \fIBOTTOM\fR.
-.TP 5
-.B bindCDKObject
-allows the user to create special key bindings.
-The \fBwidgetType\fR parameter is a defined type which states what Cdk object
-type is being used.
-To learn more about the type \fIEObjectType\fR see \fIcdk_binding (3)\fR.
-The \fBobject\fR parameter is the pointer
-to the widget object.
-The \fBkey\fR is the character to bind.
-The \fBfunction\fR is the function type.
-To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
-The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
 .B cleanCDKSwindow
 clears the information from the window.

@@ -1,5 +1,13 @@
+/*
+ * $Id: draw.h,v 1.5 2002/02/25 23:35:19 tom Exp $
+ */
+
 #ifndef CDKDRAW_H
 #define CDKDRAW_H	1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <cdk.h>
 
@@ -122,5 +130,9 @@ void attrbox (
  */
 void drawShadow (
 		WINDOW *	/* window */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKDRAW_H */

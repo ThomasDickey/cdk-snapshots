@@ -1,5 +1,13 @@
+/*
+ * $Id: menu.h,v 1.10 2002/02/25 23:35:19 tom Exp $
+ */
+
 #ifndef CDKMENU_H
 #define CDKMENU_H	1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <cdk.h>
 
@@ -186,5 +194,9 @@ void setCDKMenuPostProcess (
     		CDKMENU *	/* menu */,
 		PROCESSFN 	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKMENU_H */

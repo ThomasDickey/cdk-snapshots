@@ -1,9 +1,8 @@
 '\" t
-.\" $Id: cdk_scale.3,v 1.12 2000/09/15 02:07:52 tom Exp $"
+.\" $Id: cdk_scale.3,v 1.13 2002/02/26 00:31:05 tom Exp $"
 .TH cdk_scale 3
 .SH NAME
 activateCDKScale,
-bindCDKObject,
 destroyCDKScale,
 drawCDKScale,
 eraseCDKScale,
@@ -42,13 +41,6 @@ setCDKScaleVerticalChar \- curses scale widget.
 .B "int activateCDKScale ("
 .BI "CDKSCALE *" "scale",
 .BI "chtype *" "actions");
-.TP 15
-.B "void bindCDKObject ("
-.BI "EObjectType " "widgetType",
-.BI "void *" "object",
-.BI "chtype " "key",
-.BI "BINDFN " "function",
-.BI "void *" "data");
 .TP 15
 .B "void destroyCDKScale ("
 .BI "CDKSCALE *" "scale");
@@ -183,18 +175,6 @@ It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 If the character entered into this
 widget was \fIESCAPE\fR then the widget will return a value of -1 and the
 widget data \fIexitType\fR will be set to \fIvESCAPE_HIT\fR.
-.TP 5
-.B bindCDKObject
-allows the user to create special key bindings.
-The \fBwidgetType\fR parameter is a defined type which states what Cdk object
-type is being used.
-To learn more about the type \fIEObjectType\fR see \fBcdk_binding (3)\fR.
-The \fBobject\fR parameter is the pointer
-to the widget object.
-The \fBkey\fR is the character to bind.
-The \fBfunction\fR is the function type.
-To learn more about the key binding callback function types see \fIcdk_binding (3)\fR.
-The last parameter \fBdata\fR points to data that is passed to the callback function.
 .TP 5
 .B destroyCDKScale
 removes the widget from the screen and frees memory the object used.

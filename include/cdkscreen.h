@@ -1,5 +1,13 @@
+/*
+ * $Id: cdkscreen.h,v 1.7 2002/02/25 23:35:19 tom Exp $
+ */
+
 #ifndef CDKSCREEN_H
 #define CDKSCREEN_H	1
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <cdk.h>
 
@@ -164,5 +172,9 @@ void endCDK(void);
  * This creates all the color pairs.
  */
 void initCDKColor(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKSCREEN_H */

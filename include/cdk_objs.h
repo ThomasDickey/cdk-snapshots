@@ -1,5 +1,15 @@
+/*
+ * $Id: cdk_objs.h,v 1.11 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDK_OBJS_H
 #define CDK_OBJS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <cdk.h>
 
 /*
  * Copyright 1999, Thomas Dickey
@@ -86,5 +96,9 @@ static CDKFUNCS table = { \
 }
 
 void positionCDKObject (CDKOBJS *, WINDOW *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDK_OBJS_H */

@@ -1,12 +1,15 @@
+/*
+ * $Id: fscale.h,v 1.2 2002/02/25 23:38:00 tom Exp $
+ */
+
 #ifndef CDKFSCALE_H
 #define CDKFSCALE_H	1
 
-#include <cdk.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-/*
- * Description of the widget:
- *
- */
+#include <cdk.h>
 
 /*
  * Copyright 2001, Lutz Mueller
@@ -249,5 +252,9 @@ void setCDKFScalePostProcess (
 		CDKFSCALE *	/* scale */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CDKFSCALE_H */

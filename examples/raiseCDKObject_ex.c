@@ -1,4 +1,4 @@
-/* $Id: raiseCDKObject_ex.c,v 1.3 2000/09/23 00:49:24 tom Exp $ */
+/* $Id: raiseCDKObject_ex.c,v 1.4 2002/02/25 23:39:15 tom Exp $ */
 
 #include "cdk.h"
 
@@ -105,7 +105,6 @@ int main(int argc GCC_UNUSED, char **argv GCC_UNUSED)
         break;
       case '3':
         raiseCDKObject (vLABEL, label3);
-        break;
         break;
       case '4':
         raiseCDKObject (vLABEL, label4);
