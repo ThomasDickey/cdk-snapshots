@@ -1,4 +1,4 @@
-/* $Id: marquee_ex.c,v 1.5 2002/07/14 21:40:23 moloney Exp $ */
+/* $Id: marquee_ex.c,v 1.6 2003/11/30 19:09:14 tom Exp $ */
 
 #include <cdk.h>
 
@@ -6,7 +6,46 @@
 char *XCursesProgramName="marquee_ex";
 #endif
 
-void help (char *programName);
+static char		startAttr[100];
+static char		endAttr[100];
+
+/*
+ * This spits out help about this demo program.
+ */
+static void help (char *programName)
+{
+char *USAGE = "[-m Message] [-R repeat value] [-d delay value] [-b|r|u|k] [-h]";
+
+   printf ("Usage: %s %s\n", programName, USAGE);
+   printf ("     -m Message - Sets the message to display in the marquee\n");
+   printf ("                  If no message is provided, one will be created.\n");
+   printf ("     -R Repeat  - Tells the marquee how many time to repeat the message.\n");
+   printf ("                  A value of -1 tells the marquee to repeat the message forever.\n");
+   printf ("     -d Delay   - Sets the number of milli seconds to delay beyween repeats.\n");
+   printf ("     -b         - Tells the marquee to display the message with the bold attribute.\n");
+   printf ("     -r         - Tells the marquee to display the message with a revered attribute.\n");
+   printf ("     -u         - Tells the marquee to display the message with an underline attribute.\n");
+   printf ("     -k         - Tells the marquee to display the message with the blinking attribute.\n");
+}
+
+static void myParseAttr(CDK_PARAMS *params, int lower, int upper)
+{
+   if (CDKparamString(params, lower) != 0)
+   {
+      char starting[3];
+      char ending[3];
+
+      if (startAttr[0] == '\0')
+      {
+	 startAttr[0] = '<';
+	 endAttr[0] = '<';
+      }
+      sprintf (starting, "/%c", upper);
+      sprintf (ending, "!%c", upper);
+      strcat (startAttr, starting);
+      strcat (endAttr, ending);
+   }
+}
 
 int main (int argc, char **argv)
 {
@@ -15,99 +54,30 @@ int main (int argc, char **argv)
    CDKMARQUEE	*scrollMessage;
    WINDOW	*cursesWin;
    char		message[1024];
-   char		startAttr[10];
-   char		endAttr[10];
    char		*currentTime;
-   char		*mesg;
    time_t	clck;
-   int delay, repeat, ret, tmp;
 
-   /* Set some variables. */
-   repeat	= 3;
-   delay	= 5;
-   mesg		= 0;
+   CDK_PARAMS params;
+   char *mesg;
+   int delay;
+   int repeat;
+
+   CDKparseParams (argc, argv, &params, "brkud:R:m:hw:" CDK_MIN_PARAMS);
+   myParseAttr(&params, 'b', 'B');
+   myParseAttr(&params, 'r', 'R');
+   myParseAttr(&params, 'k', 'K');
+   myParseAttr(&params, 'u', 'U');
+   repeat = CDKparamNumber2 (&params, 'R', 3);
+   delay  = CDKparamNumber2 (&params, 'd', 5);
+   mesg   = CDKparamString  (&params, 'm');
+
+   if (CDKparamString(&params, 'h') != 0)
+      help (argv[0]);
 
    /* Clean up the strings. */
-   cleanChar (message, sizeof(message), '\0');
+   cleanChar (message,   sizeof(message),   '\0');
    cleanChar (startAttr, sizeof(startAttr), '\0');
-   cleanChar (endAttr, sizeof(endAttr), '\0');
-
-   /* Check the command line for options. */
-   while (1)
-   {
-      ret = getopt (argc, argv, "brkud:R:m:h");
-
-      /* Are there any more command line options to parse. */
-      if (ret == -1)
-      {
-	 break;
-      }
-
-      switch (ret)
-      {
-	 case 'b':
-	      if (startAttr[0] == '\0')
-	      {
-		 startAttr[0] = '<';
-		 endAttr[0] = '<';
-	      }
-	      strcat (startAttr, "/B");
-	      strcat (endAttr, "!B");
-	      break;
-
-	 case 'r':
-	      if (startAttr[0] == '\0')
-	      {
-		 startAttr[0] = '<';
-		 endAttr[0] = '<';
-	      }
-	      strcat (startAttr, "/R");
-	      strcat (endAttr, "!R");
-	      break;
-
-	 case 'k':
-	      if (startAttr[0] == '\0')
-	      {
-		 startAttr[0] = '<';
-		 endAttr[0] = '<';
-	      }
-	      strcat (startAttr, "/K");
-	      strcat (endAttr, "!K");
-	      break;
-
-	 case 'u':
-	      if (startAttr[0] == '\0')
-	      {
-		 startAttr[0] = '<';
-		 endAttr[0] = '<';
-	      }
-	      strcat (startAttr, "/U");
-	      strcat (endAttr, "!U");
-	      break;
-
-	 case 'R':
-	      repeat = atoi (optarg);
-	      break;
-
-	 case 'd':
-	      tmp = atoi (optarg);
-	      if (tmp > 0)
-	      {
-		 delay = tmp;
-	      }
-	      break;
-
-	 case 'm':
-	      mesg = copyChar (optarg);
-	      break;
-
-	 case 'h':
-	      help (argv[0]);
-	      freeChar (mesg);
-	      exit (0);
-	      break;
-      }
-   }
+   cleanChar (endAttr,   sizeof(endAttr),   '\0');
 
    /* Put the end of the attributes if they asked for then. */
    if (startAttr[0] == '<')
@@ -125,7 +95,12 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the marquee. */
-   scrollMessage = newCDKMarquee (cdkscreen, CENTER, TOP, 30, FALSE, TRUE);
+   scrollMessage = newCDKMarquee (cdkscreen,
+				  CDKparamValue(&params, 'X', CENTER),
+				  CDKparamValue(&params, 'Y', TOP),
+				  CDKparamValue(&params, 'w', 30),
+				  CDKparamValue(&params, 'N', FALSE),
+				  CDKparamValue(&params, 'S', TRUE));
 
    /* Check if the marquee is null. */
    if (scrollMessage == 0)
@@ -181,23 +156,4 @@ int main (int argc, char **argv)
    delwin (cursesWin);
    endCDK();
    exit (0);
-}
-
-/*
- * This spits out help about this demo program.
- */
-void help (char *programName)
-{
-char *USAGE = "[-m Message] [-R repeat value] [-d delay value] [-b|r|u|k] [-h]";
-
-   printf ("Usage: %s %s\n", programName, USAGE);
-   printf ("     -m Message - Sets the message to display in the marquee\n");
-   printf ("                  If no message is provided, one will be created.\n");
-   printf ("     -R Repeat  - Tells the marquee how many time to repeat the message.\n");
-   printf ("                  A value of -1 tells the marquee to repeat the message forever.\n");
-   printf ("     -d Delay   - Sets the number of milli seconds to delay beyween repeats.\n");
-   printf ("     -b         - Tells the marquee to display the message with the bold attribute.\n");
-   printf ("     -r         - Tells the marquee to display the message with a revered attribute.\n");
-   printf ("     -u         - Tells the marquee to display the message with an underline attribute.\n");
-   printf ("     -k         - Tells the marquee to display the message with the blinking attribute.\n");
 }

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:11:08 $
- * $Revision: 1.106 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.111 $
  */
 
 /*
@@ -20,18 +20,15 @@ DeclareCDKObjects(SELECTION, Selection, setCdk, Int);
 CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace, int height, int width, char *title, char **list, int listSize, char **choices, int choiceCount, chtype highlight, boolean Box, boolean shadow)
 {
    CDKSELECTION *selection	= 0;
-   chtype *holder		= 0;
-   int maxWidth			= INT_MIN;
    int widestItem		= -1;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
    int ypos			= yplace;
    int x			= 0;
-   char **temp			= 0;
-   int len, junk2;
+   int junk2;
 
    if ((selection = newCDKObject(CDKSELECTION, &my_funcs)) == 0)
       return (0);
@@ -52,54 +49,20 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    */
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
-   /* Translate the char * title to a chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
-
-      temp = CDKsplitString (title, '\n');
-      selection->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x = 0; x < selection->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * BorderOf(selection));
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(selection));
-      for (x = 0; x < selection->titleLines; x++)
-      {
-	 selection->title[x] = char2Chtype (temp[x],
-					    &selection->titleLen[x],
-					    &selection->titlePos[x]);
-	 selection->titlePos[x] = justifyString (titleWidth,
-						selection->titleLen[x],
-						selection->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      selection->titleLines = 0;
-   }
+   boxWidth = setCdkTitle(ObjOf(selection), title, boxWidth);
 
    /* Set the box height. */
-   if (selection->titleLines > boxHeight) {
+   if (TitleLinesOf(selection) > boxHeight) {
       if (listSize > 8)
-	 boxHeight = selection->titleLines + 10;
+	 boxHeight = TitleLinesOf(selection) + 10;
       else
-	 boxHeight = selection->titleLines + listSize + 2;
+	 boxHeight = TitleLinesOf(selection) + listSize + 2;
    }
 
    /* Set the rest of the variables. */
-   selection->titleAdj		= selection->titleLines + BorderOf(selection);
+   selection->titleAdj		= TitleLinesOf(selection) + BorderOf(selection);
    selection->listSize		= listSize;
-   selection->viewSize		= boxHeight - (2 * BorderOf(selection) + selection->titleLines);
+   selection->viewSize		= boxHeight - (2 * BorderOf(selection) + TitleLinesOf(selection));
    selection->lastItem		= listSize - 1;
    selection->maxTopItem	= listSize - selection->viewSize;
    selection->maxchoicelen	= -1;
@@ -135,7 +98,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    selection->toggleSize	= (selection->listSize > (boxHeight - 2 * BorderOf(selection)) ? 1 : ceilCDK(selection->step));
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(selection));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the selection window */
    selection->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -526,7 +489,7 @@ static void _moveCDKSelection (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(selection), &xpos, &ypos, selection->boxWidth, selection->boxHeight, BorderOf(selection));
+   alignxy (WindowOf(selection), &xpos, &ypos, selection->boxWidth, selection->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -554,7 +517,6 @@ static void _moveCDKSelection (CDKOBJS *object, int xplace, int yplace, boolean 
 static void _drawCDKSelection (CDKOBJS *object, boolean Box)
 {
    CDKSELECTION *selection = (CDKSELECTION *)object;
-   int x;
 
    /* Draw in the shadow if we need to. */
    if (selection->shadowWin != 0)
@@ -562,19 +524,7 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
       drawShadow (selection->shadowWin);
    }
 
-   /* Draw in the title if there is one. */
-   if (selection->titleLines != 0)
-   {
-      for (x = 0; x < selection->titleLines; x++)
-      {
-	 writeChtype (selection->win,
-			selection->titlePos[x] + BorderOf(selection),
-			x + 1,
-			selection->title[x],
-			HORIZONTAL, 0,
-			selection->titleLen[x]);
-      }
-   }
+   drawCdkTitle (selection->win, object);
 
    /* Redraw the list */
    drawCDKSelectionList (selection, Box);
@@ -741,11 +691,7 @@ static void _destroyCDKSelection (CDKOBJS *object)
    CDKSELECTION *selection = (CDKSELECTION *)object;
    int x;
 
-   /* Clean up the char pointers. */
-   for (x = 0; x < selection->titleLines; x++)
-   {
-      freeChtype (selection->title[x]);
-   }
+   cleanCdkTitle (object);
    for (x = 0; x < selection->choiceCount; x++)
    {
       freeChtype (selection->choice[x]);
@@ -810,7 +756,7 @@ void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
 
    /* Readjust all of the variables ... */
    selection->listSize		= listSize;
-   selection->viewSize		= selection->boxHeight - (2 + selection->titleLines);
+   selection->viewSize		= selection->boxHeight - (2 + TitleLinesOf(selection));
    selection->lastItem		= listSize - 1;
    selection->maxTopItem	= listSize - selection->viewSize;
 
@@ -862,41 +808,17 @@ int getCDKSelectionItems (CDKSELECTION *selection, char *list[])
  */
 void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
 {
-   char **temp;
-   int x;
-   int titleWidth;
-
    /* Make sure the title isn't null. */
    if (title == 0)
    {
       return;
    }
 
-   /* Clear out the old title. */
-   for (x = 0; x < selection->titleLines; x++)
-   {
-      freeChtype (selection->title[x]);
-   }
-
-   temp = CDKsplitString (title, '\n');
-   selection->titleLines = CDKcountStrings (temp);
-
-   /* For each line in the title, convert from char * to chtype * */
-   titleWidth = selection->boxWidth - (2 * BorderOf(selection));
-   for (x = 0; x < selection->titleLines; x++)
-   {
-      selection->title[x] = char2Chtype (temp[x],
-					&selection->titleLen[x],
-					&selection->titlePos[x]);
-      selection->titlePos[x] = justifyString (titleWidth,
-						selection->titleLen[x],
-						selection->titlePos[x]);
-   }
-   CDKfreeStrings(temp);
+   (void) setCdkTitle(ObjOf(selection), title, - (selection->boxWidth + 1));
 
    /* Set the rest of the variables. */
-   selection->titleAdj		= selection->titleLines + 1;
-   selection->viewSize		= selection->boxHeight - (2 + selection->titleLines);
+   selection->titleAdj		= TitleLinesOf(selection) + 1;
+   selection->viewSize		= selection->boxHeight - (2 + TitleLinesOf(selection));
    selection->maxTopItem	= selection->listSize - selection->viewSize;
    selection->maxchoicelen	= -1;
 

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.14 2003/04/18 22:23:34 tom Exp $
+# $Id: Makefile.in,v 1.15 2003/11/27 12:03:51 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -10,12 +10,18 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
+CC		= @CC@
+RM		= rm -f
+
 LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 
-LIBTOOL		= @LIBTOOL@
-CC		= @CC@
-LINK		= $(LIBTOOL) $(CC)
-x		= @PROG_EXT@
+LIBTOOL		= @LIBTOOL@ @ECHO_LT@
+LIBTOOL_CLEAN	= @LIB_CLEAN@
+LIBTOOL_LINK	= @LIB_LINK@
+LINK		= $(LIBTOOL_LINK) $(CC)
+
+x		= @EXEEXT@
+o		= .@OBJEXT@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include -I. @CPPFLAGS@
@@ -93,8 +99,7 @@ syb$x :		syb.c
 # Standard clean directives.
 #
 clean::
-	-rm -rf .libs
-	-rm -f core *.o $(BINS) $(OTHER_BINS)
+	-$(LIBTOOL_CLEAN) $(RM) *.o core $(BINS) $(OTHER_BINS)
 
 distclean::	clean
 	-rm -f Makefile

@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.6 2001/04/20 22:50:02 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.7 2003/11/28 22:13:06 tom Exp $ */
 
 #include <cdk.h>
 
@@ -32,137 +32,49 @@ int main (int argc, char **argv)
    chtype highlight		= A_REVERSE;
    chtype *holder		= 0;
    char *CDK_WIDGET_COLOR	= 0;
-   char *title			= 0;
-   char *buttons		= 0;
-   char *outputFile		= 0;
    char *temp			= 0;
-   int xpos			= CENTER;
-   int ypos			= CENTER;
-   int day			= -1;
-   int month			= -1;
-   int year			= -1;
    int buttonCount		= 0;
    int selection		= 0;
    int shadowHeight		= 0;
-   boolean boxWidget		= TRUE;
-   boolean shadowWidget		= FALSE;
    FILE *fp			= stderr;
    char **buttonList		= 0;
-   int j1, j2, ret;
+   int j1, j2;
 
-   /* Set the day/month/year values to todays date. */
+   CDK_PARAMS params;
+   boolean boxWidget;
+   boolean shadowWidget;
+   char *buttons;
+   char *outputFile;
+   char *title;
+   int day;
+   int month;
+   int xpos;
+   int year;
+   int ypos;
+
    getTodaysDate (&day, &month, &year);
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      /* If there aren't any more options, then break. */
-      if ((ret = getopt (argc, argv, "d:m:y:B:O:X:Y:T:NS")) == -1)
-      {
-         break;
-      }
+   CDKparseParams(argc, argv, &params, "d:m:y:B:O:T:X:Y:NS");
 
-      /* Determine which command line option we just received. */
-      switch (ret)
-      {
-         case 'd':
-              day = atoi (optarg);
-              break;
+   xpos         = CDKparamValue(&params, 'X', CENTER);
+   ypos         = CDKparamValue(&params, 'Y', CENTER);
+   boxWidget    = CDKparamValue(&params, 'N', TRUE);
+   shadowWidget = CDKparamValue(&params, 'S', FALSE);
 
-         case 'm':
-              month = atoi (optarg);
-              break;
-
-         case 'y':
-              year = atoi (optarg);
-              break;
-
-         case 'B':
-              buttons = copyChar (optarg);
-              break;
-
-         case 'T':
-              title = copyChar (optarg);
-              break;
-
-         case 'O':
-              outputFile = copyChar (optarg);
-              break;
-
-         case 'X':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 xpos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 xpos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 xpos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 xpos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 xpos = CENTER;
-              }
-              else
-              {
-                 xpos = atoi (optarg);
-              }
-              break;
-
-         case 'Y':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 ypos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 ypos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 ypos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 ypos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 ypos = CENTER;
-              }
-              else
-              {
-                 ypos = atoi (optarg);
-              }
-              break;
-
-         case 'N':
-              boxWidget = FALSE;
-              break;
-
-         case 'S':
-              shadowWidget = TRUE;
-              break;
-
-         default:
-              break;
-      }
-   }
+   day          = CDKparamValue(&params, 'd', day);
+   month        = CDKparamValue(&params, 'm', month);
+   year         = CDKparamValue(&params, 'y', year);
+   buttons      = CDKparamString(&params, 'B');
+   outputFile   = CDKparamString(&params, 'O');
+   title        = CDKparamString(&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
    {
       if ((fp = fopen (outputFile, "w")) == 0)
       {
-         fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-         exit (-1);
+	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
+	 exit (-1);
       }
    }
 
@@ -215,7 +127,6 @@ int main (int argc, char **argv)
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
-      freeChar (buttons);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
@@ -275,16 +186,16 @@ int main (int argc, char **argv)
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
       {
-         widget->shadow = TRUE;
+	 widget->shadow = TRUE;
 
-        /*
-         * We force the widget and buttonWidget to be drawn so the
-         * buttonbox widget will be drawn when the widget is activated.
-         * Otherwise the shadow window will draw over the button widget.
-         */
-         drawCDKCalendar (widget, ObjOf(widget)->box);
-         eraseCDKButtonbox (buttonWidget);
-         drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	/*
+	 * We force the widget and buttonWidget to be drawn so the
+	 * buttonbox widget will be drawn when the widget is activated.
+	 * Otherwise the shadow window will draw over the button widget.
+	 */
+	 drawCDKCalendar (widget, ObjOf(widget)->box);
+	 eraseCDKButtonbox (buttonWidget);
+	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
       }
    }
 
@@ -328,9 +239,9 @@ void getTodaysDate (int *day, int *month, int *year)
    dateInfo = localtime (&clck);
 
    /* Set the pointers accordingly. */
-   (*day) = dateInfo->tm_mday;
-   (*month) = dateInfo->tm_mon+1;
-   (*year) = dateInfo->tm_year + 1900;
+   (*day)   = dateInfo->tm_mday;
+   (*month) = dateInfo->tm_mon + 1;
+   (*year)  = dateInfo->tm_year + 1900;
 }
 
 int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

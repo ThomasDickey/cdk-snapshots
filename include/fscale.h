@@ -1,5 +1,5 @@
 /*
- * $Id: fscale.h,v 1.7 2003/11/15 18:11:09 tom Exp $
+ * $Id: fscale.h,v 1.8 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -62,11 +62,7 @@ struct SFScale {
    WINDOW *	shadowWin;
    WINDOW *	fieldWin;
    WINDOW *	labelWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype *	label;
    int		labelLen;
    int		labelPos;

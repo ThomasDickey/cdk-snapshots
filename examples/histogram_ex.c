@@ -1,10 +1,12 @@
+/* $Id: histogram_ex.c,v 1.6 2003/11/30 22:10:18 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="histogram_ex";
+char *XCursesProgramName = "histogram_ex";
 #endif
 
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare vars. */
    CDKSCREEN *cdkscreen = 0;
@@ -16,6 +18,12 @@ int main (void)
    char *bassTitle	= "<C></5>Bass  <!5>";
    char *trebleTitle	= "<C></5>Treble<!5>";
 
+   CDK_PARAMS params;
+   boolean Box;
+
+   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS);
+   Box = CDKparamValue(&params, 'N', TRUE);
+
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
@@ -24,9 +32,14 @@ int main (void)
    initCDKColor();
 
    /* Create the histogram objects. */
-   volume = newCDKHistogram (cdkscreen, 10, 10, 1, -2,
-				HORIZONTAL, volumeTitle,
-				TRUE, FALSE);
+   volume = newCDKHistogram (cdkscreen,
+			     CDKparamValue(&params, 'X', 10),
+			     CDKparamValue(&params, 'Y', 10),
+			     CDKparamValue(&params, 'H', 1),
+			     CDKparamValue(&params, 'W', -2),
+			     HORIZONTAL, volumeTitle,
+			     Box,
+			     CDKparamValue(&params, 'S', FALSE));
    if (volume == 0)
    {
       /* Exit CDK. */
@@ -38,9 +51,14 @@ int main (void)
       exit (1);
    }
 
-   bass = newCDKHistogram (cdkscreen, 10, 14, 1, -2,
-				HORIZONTAL, bassTitle,
-				TRUE, FALSE);
+   bass = newCDKHistogram (cdkscreen,
+			   CDKparamValue(&params, 'X', 10),
+			   CDKparamValue(&params, 'Y', 14),
+			   CDKparamValue(&params, 'H', 1),
+			   CDKparamValue(&params, 'W', -2),
+			   HORIZONTAL, bassTitle,
+			   Box,
+			   CDKparamValue(&params, 'S', FALSE));
    if (bass == 0)
    {
       /* Exit CDK. */
@@ -53,9 +71,14 @@ int main (void)
       exit (1);
    }
 
-   treble = newCDKHistogram (cdkscreen, 10, 18, 1, -2,
-				HORIZONTAL, trebleTitle,
-				TRUE, FALSE);
+   treble = newCDKHistogram (cdkscreen,
+			     CDKparamValue(&params, 'X', 10),
+			     CDKparamValue(&params, 'Y', 18),
+			     CDKparamValue(&params, 'H', 1),
+			     CDKparamValue(&params, 'W', -2),
+			     HORIZONTAL, trebleTitle,
+			     Box,
+			     CDKparamValue(&params, 'S', FALSE));
    if (treble == 0)
    {
       /* Exit CDK. */
@@ -69,45 +92,47 @@ int main (void)
       exit (1);
    }
 
+#define BAR(a,b,c) A_BOLD, a, b, c, ' '|A_REVERSE|COLOR_PAIR(3), Box
+
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 6, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 3, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 7, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 6));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 3));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 7));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 8, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 1, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 9, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 8));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 1));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 9));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 10, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 7,	 ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 10, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 10));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 7));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 10));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 1, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 8, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 3, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 1));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 8));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 3));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 3, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 3, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 3, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 3));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 3));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 3));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 
    /* Set the histogram values. */
-   setCDKHistogram (volume, vPERCENT, CENTER, A_BOLD, 0, 10, 10, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (bass  , vPERCENT, CENTER, A_BOLD, 0, 10, 10, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
-   setCDKHistogram (treble, vPERCENT, CENTER, A_BOLD, 0, 10, 10, ' '|A_REVERSE|COLOR_PAIR(3), TRUE);
+   setCDKHistogram (volume, vPERCENT, CENTER, BAR(0, 10, 10));
+   setCDKHistogram (bass  , vPERCENT, CENTER, BAR(0, 10, 10));
+   setCDKHistogram (treble, vPERCENT, CENTER, BAR(0, 10, 10));
    refreshCDKScreen (cdkscreen);
    sleep (4);
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:55:40 $
- * $Revision: 1.68 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.73 $
  */
 
 DeclareCDKObjects(GRAPH, Graph, setCdk, Unknown);
@@ -16,14 +16,12 @@ DeclareCDKObjects(GRAPH, Graph, setCdk, Unknown);
 CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *xtitle, char *ytitle)
 {
    CDKGRAPH *graph	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= width;
    int boxHeight	= height;
    int xpos		= xplace;
    int ypos		= yplace;
-   char **temp		= 0;
-   int x;
 
    if ((graph = newCDKObject(CDKGRAPH, &my_funcs)) == 0)
       return (0);
@@ -51,29 +49,9 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    */
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth = boxWidth - (BorderOf(graph) + TITLE_LM);
+   boxWidth = setCdkTitle(ObjOf(graph), title, boxWidth);
 
-      /* We need to split the title on \n. */
-      temp = CDKsplitString (title, '\n');
-      graph->titleLines = CDKcountStrings (temp);
-
-      /* For each line in the title, convert from char * to chtype * */
-      for (x=0; x < graph->titleLines; x++)
-      {
-	 graph->title[x]	= char2Chtype (temp[x], &graph->titleLen[x], &graph->titlePos[x]);
-	 graph->titlePos[x]	= justifyString (titleWidth, graph->titleLen[x], graph->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      graph->titleLines = 0;
-   }
-   boxHeight += graph->titleLines;
+   boxHeight += TitleLinesOf(graph);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -82,7 +60,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen, int xplace, int yplace, int height,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(graph));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the graph pointer. */
    ScreenOf(graph)	= cdkscreen;
@@ -165,7 +143,7 @@ int setCDKGraph (CDKGRAPH *graph, int *values, int count, char *graphChar, boole
  */
 static void setScales (CDKGRAPH *graph)
 {
-   graph->xscale = ((graph->maxx - graph->minx) / MAXIMUM(1, (graph->boxHeight - graph->titleLines - 5)));
+   graph->xscale = ((graph->maxx - graph->minx) / MAXIMUM(1, (graph->boxHeight - TitleLinesOf(graph) - 5)));
    if (graph->xscale <= 0)
       graph->xscale = 1;
 
@@ -185,9 +163,16 @@ int setCDKGraphValues (CDKGRAPH *graph, int *values, int count, boolean startAtZ
 
    /* Make sure everything is happy. */
    if (count < 0)
-   {
       return (FALSE);
+
+   if (graph->values != 0)
+   {
+      free (graph->values);
+      graph->values = 0;
+      graph->count = 0;
    }
+   if ((graph->values = typeCallocN(int, count + 1)) == 0)
+      return FALSE;
 
    /* Copy the X values. */
    for (x=0; x < count; x++)
@@ -227,7 +212,7 @@ int *getCDKGraphValues (CDKGRAPH *graph, int *size)
 int setCDKGraphValue (CDKGRAPH *graph, int Index, int value, boolean startAtZero)
 {
    /* Make sure the index is within range. */
-   if (Index < 0 || Index > graph->count)
+   if (Index < 0 || Index >= graph->count)
    {
       return (FALSE);
    }
@@ -249,7 +234,7 @@ int setCDKGraphValue (CDKGRAPH *graph, int Index, int value, boolean startAtZero
 }
 int getCDKGraphValue (CDKGRAPH *graph, int Index)
 {
-   return graph->values[Index];
+   return Index >= 0 && Index < graph->count ? graph->values[Index] : 0;
 }
 
 /*
@@ -389,7 +374,7 @@ static void _moveCDKGraph (CDKOBJS *object, int xplace, int yplace, boolean rela
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(graph), &xpos, &ypos, graph->boxWidth, graph->boxHeight, BorderOf(graph));
+   alignxy (WindowOf(graph), &xpos, &ypos, graph->boxWidth, graph->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -442,24 +427,12 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the vertical axis. */
-   drawLine (graph->win, 2, graph->titleLines + 1, 2, graph->boxHeight-3, ACS_VLINE);
+   drawLine (graph->win, 2, TitleLinesOf(graph) + 1, 2, graph->boxHeight-3, ACS_VLINE);
 
    /* Draw in the horizontal axis. */
    drawLine (graph->win, 3, graph->boxHeight-3, graph->boxWidth, graph->boxHeight-3, ACS_HLINE);
 
-   /* Draw in the title if there is one. */
-   if (graph->titleLines != 0)
-   {
-      for (x=0; x < graph->titleLines; x++)
-      {
-	 writeChtype (graph->win,
-			graph->titlePos[x] + BorderOf(graph) + TITLE_LM,
-			x + 1,
-			graph->title[x],
-			HORIZONTAL, 0,
-			graph->titleLen[x]);
-      }
-   }
+   drawCdkTitle (graph->win, object);
 
    /* Draw in the X axis title. */
    if (graph->xtitle != 0)
@@ -471,7 +444,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    /* Draw in the X axis high value. */
    sprintf (temp, "%d", graph->maxx);
    len = (int)strlen (temp);
-   writeCharAttrib (graph->win, 1, graph->titleLines + 1, temp, attrib, VERTICAL, 0, len);
+   writeCharAttrib (graph->win, 1, TitleLinesOf(graph) + 1, temp, attrib, VERTICAL, 0, len);
 
    /* Draw in the X axis low value. */
    sprintf (temp, "%d", graph->minx);
@@ -528,7 +501,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the axis corners. */
-   mvwaddch (graph->win, graph->titleLines, 2, ACS_URCORNER);
+   mvwaddch (graph->win, TitleLinesOf(graph), 2, ACS_URCORNER);
    mvwaddch (graph->win, graph->boxHeight-3, 2, ACS_LLCORNER);
    mvwaddch (graph->win, graph->boxHeight-3, graph->boxWidth, ACS_URCORNER);
 
@@ -543,16 +516,15 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
 static void _destroyCDKGraph (CDKOBJS *object)
 {
    CDKGRAPH *graph = (CDKGRAPH *)object;
-   int x;
 
-   /* Clear up the char pointers. */
-   for (x=0; x < graph->titleLines; x++)
-   {
-      freeChtype (graph->title[x]);
-   }
+   cleanCdkTitle (object);
+
    freeChtype (graph->xtitle);
    freeChtype (graph->ytitle);
    freeChtype (graph->graphChar);
+
+   if (graph->values != 0)
+      free (graph->values);
 
    /* Unregister this object. */
    unregisterCDKObject (vGRAPH, graph);

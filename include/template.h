@@ -1,5 +1,5 @@
 /*
- * $Id: template.h,v 1.18 2003/11/15 18:11:09 tom Exp $
+ * $Id: template.h,v 1.19 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -65,11 +65,7 @@ struct STemplate {
    WINDOW *	shadowWin;
    WINDOW *	labelWin;
    WINDOW *	fieldWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype *	label;
    chtype *	overlay;
    chtype	overlayAttr;

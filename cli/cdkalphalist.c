@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.6 2001/12/20 00:47:51 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.7 2003/11/28 19:13:05 tom Exp $ */
 
 #include <cdk.h>
 
@@ -27,161 +27,50 @@ int main (int argc, char **argv)
    CDKBUTTONBOX *buttonWidget	= 0;
    WINDOW *cursesWindow		= 0;
    char *CDK_WIDGET_COLOR	= 0;
-   char *filename		= 0;
-   char *title			= 0;
-   char *label			= 0;
-   char *list			= 0;
-   char *outputFile		= 0;
-   char *tempFiller		= 0;
    char *answer			= 0;
-   char *buttons		= 0;
+   char *buttons;
    char *temp			= 0;
    chtype *holder		= 0;
    chtype filler		= A_NORMAL | '.';
-   int xpos			= CENTER;
-   int ypos			= CENTER;
-   int height			= -1;
-   int width			= -1;
-   int ret			= 0;
    int scrollLines		= -1;
    int buttonCount		= 0;
    int selection		= 0;
    int shadowHeight		= 0;
-   boolean boxWidget		= TRUE;
-   boolean shadowWidget		= FALSE;
    FILE *fp			= stderr;
    char **scrollList		= 0;
    char **buttonList		= 0;
    int j1, j2;
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      /* If there aren't any more options, then break. */
-      if ((ret = getopt (argc, argv, "l:T:L:B:f:s:O:H:W:X:Y:NS")) == -1)
-      {
-         break;
-      }
+   CDK_PARAMS params;
+   boolean boxWidget;
+   boolean shadowWidget;
+   char *filename;
+   char *label;
+   char *list;
+   char *outputFile;
+   char *tempFiller;
+   char *title;
+   int height;
+   int width;
+   int xpos;
+   int ypos;
 
-      /* Determine which command line option we just received. */
-      switch (ret)
-      {
-         case 'f':
-              filename = copyChar (optarg);
-              break;
+   CDKparseParams(argc, argv, &params, "f:l:B:F:L:O:T:" CDK_CLI_PARAMS);
 
-         case 'l':
-              list = copyChar (optarg);
-              break;
+   xpos         = CDKparamValue(&params, 'X', CENTER);
+   ypos         = CDKparamValue(&params, 'Y', CENTER);
+   height       = CDKparamValue(&params, 'H', -1);
+   width        = CDKparamValue(&params, 'W', -1);
+   boxWidget    = CDKparamValue(&params, 'N', TRUE);
+   shadowWidget = CDKparamValue(&params, 'S', FALSE);
 
-         case 'T':
-              title = copyChar (optarg);
-              break;
-
-         case 'L':
-              label = copyChar (optarg);
-              break;
-
-         case 'B':
-              buttons = copyChar (optarg);
-              break;
-
-         case 'O':
-              outputFile = copyChar (optarg);
-              break;
-
-         case 'W':
-              if (strcmp (optarg, "FULL") == 0)
-              {
-                 width = COLS;
-              }
-              else
-              {
-                 width = atoi (optarg);
-              }
-              break;
-
-         case 'H':
-              if (strcmp (optarg, "FULL") == 0)
-              {
-                 height = LINES;
-              }
-              else
-              {
-                 height = atoi (optarg);
-              }
-              break;
-
-         case 'F':
-              tempFiller = copyChar (optarg);
-              break;
-
-         case 'X':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 xpos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 xpos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 xpos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 xpos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 xpos = CENTER;
-              }
-              else
-              {
-                 xpos = atoi (optarg);
-              }
-              break;
-
-         case 'Y':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 ypos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 ypos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 ypos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 ypos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 ypos = CENTER;
-              }
-              else
-              {
-                 ypos = atoi (optarg);
-              }
-              break;
-
-         case 'N':
-              boxWidget = FALSE;
-              break;
-
-         case 'S':
-              shadowWidget = TRUE;
-              break;
-
-         default:
-              break;
-      }
-   }
+   filename     = CDKparamString(&params, 'f');
+   list         = CDKparamString(&params, 'l');
+   buttons      = CDKparamString(&params, 'B');
+   tempFiller   = CDKparamString(&params, 'F');
+   label        = CDKparamString(&params, 'L');
+   outputFile   = CDKparamString(&params, 'O');
+   title        = CDKparamString(&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -221,7 +110,6 @@ int main (int argc, char **argv)
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
       scrollLines = CDKcountStrings (scrollList);
-      freeChar (list);
    }
 
    /* Start curses. */
@@ -269,7 +157,6 @@ int main (int argc, char **argv)
    {
       /* Clean up some memory. */
       CDKfreeStrings(scrollList);
-      freeChar (title);
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
@@ -289,7 +176,6 @@ int main (int argc, char **argv)
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
-      freeChar (buttons);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

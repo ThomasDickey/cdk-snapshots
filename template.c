@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:17:45 $
- * $Revision: 1.104 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.108 $
  */
 
 /*
@@ -23,20 +23,16 @@ DeclareCDKObjects(TEMPLATE, Template, setCdk, String);
 CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, char *plate, char *Overlay, boolean Box, boolean shadow)
 {
    CDKTEMPLATE *cdktemplate	= 0;
-   chtype *holder		= 0;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= 0;
    int boxHeight		= Box ? 3 : 1;
-   int maxWidth			= INT_MIN;
    int xpos			= xplace;
    int ypos			= yplace;
-   int horizontalAdjust		= 0;
+   int horizontalAdjust, oldWidth;
    int fieldWidth		= 0;
    int plateLen			= 0;
    int junk			= 0;
-   char **temp			= 0;
-   int x, len, junk2;
 
    if (plate == 0
     || (cdktemplate = newCDKObject(CDKTEMPLATE, &my_funcs)) == 0)
@@ -50,7 +46,6 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    cdktemplate->label		= 0;
    cdktemplate->labelLen	= 0;
    cdktemplate->labelWin	= 0;
-   cdktemplate->titleLines	= 0;
 
    /* Translate the char * label to a chtype * */
    if (label != 0)
@@ -74,47 +69,11 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Set the box width. */
    boxWidth = fieldWidth+ cdktemplate->labelLen + 2 * BorderOf(cdktemplate);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
+   oldWidth = boxWidth;
+   boxWidth = setCdkTitle(ObjOf(cdktemplate), title, boxWidth);
+   horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-      temp = CDKsplitString (title, '\n');
-      cdktemplate->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < cdktemplate->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-
-      /*
-       * If one of the title lines is wider than the field and the label,
-       * the box width will expand to accomodate.
-       */
-       if (maxWidth > boxWidth)
-       {
-	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-          boxWidth = maxWidth + 2 * BorderOf(cdktemplate);
-       }
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(cdktemplate));
-      for (x=0; x < cdktemplate->titleLines; x++)
-      {
-	 cdktemplate->title[x]	  = char2Chtype (temp[x], &cdktemplate->titleLen[x], &cdktemplate->titlePos[x]);
-         cdktemplate->titlePos[x] = justifyString (titleWidth, cdktemplate->titleLen[x], cdktemplate->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      cdktemplate->titleLines = 0;
-   }
-   boxHeight += cdktemplate->titleLines;
+   boxHeight += TitleLinesOf(cdktemplate);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -124,7 +83,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    fieldWidth = MINIMUM(fieldWidth, boxWidth - cdktemplate->labelLen - 2 * BorderOf(cdktemplate));
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(cdktemplate));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the cdktemplate window */
    cdktemplate->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -142,13 +101,13 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    {
       cdktemplate->labelWin = subwin (cdktemplate->win, 1,
 					cdktemplate->labelLen,
-					ypos + cdktemplate->titleLines + BorderOf(cdktemplate),
+					ypos + TitleLinesOf(cdktemplate) + BorderOf(cdktemplate),
 					xpos + horizontalAdjust + BorderOf(cdktemplate));
    }
 
    /* Make the field window. */
    cdktemplate->fieldWin = subwin (cdktemplate->win, 1, fieldWidth,
-				ypos + cdktemplate->titleLines + BorderOf(cdktemplate),
+				ypos + TitleLinesOf(cdktemplate) + BorderOf(cdktemplate),
 				xpos + cdktemplate->labelLen + horizontalAdjust + BorderOf(cdktemplate));
    keypad (cdktemplate->fieldWin, TRUE);
 
@@ -576,7 +535,7 @@ static void _moveCDKTemplate (CDKOBJS *object, int xplace, int yplace, boolean r
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(cdktemplate), &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight, BorderOf(cdktemplate));
+   alignxy (WindowOf(cdktemplate), &xpos, &ypos, cdktemplate->boxWidth, cdktemplate->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -605,7 +564,6 @@ static void _moveCDKTemplate (CDKOBJS *object, int xplace, int yplace, boolean r
 static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
-   int x;
 
    /* Do we need to draw the shadow. */
    if (cdktemplate->shadowWin != 0)
@@ -619,19 +577,8 @@ static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
       drawObjBox (cdktemplate->win, ObjOf(cdktemplate));
    }
 
-   /* Draw in the title if there is one. */
-   if (cdktemplate->titleLines != 0)
-   {
-      for (x=0; x < cdktemplate->titleLines; x++)
-      {
-	 writeChtype (cdktemplate->win,
-			cdktemplate->titlePos[x] + BorderOf(cdktemplate),
-			x + BorderOf(cdktemplate),
-			cdktemplate->title[x],
-			HORIZONTAL, 0,
-			cdktemplate->titleLen[x]);
-      }
-   }
+   drawCdkTitle (cdktemplate->win, object);
+
    touchwin (cdktemplate->win);
    wrefresh (cdktemplate->win);
 
@@ -749,17 +696,12 @@ void setCDKTemplateBackgroundAttrib (CDKTEMPLATE *cdktemplate, chtype attrib)
 static void _destroyCDKTemplate (CDKOBJS *object)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
-   int x;
 
-   /* Clear out the character pointers. */
+   cleanCdkTitle (object);
    freeChtype (cdktemplate->label);
    freeChtype (cdktemplate->overlay);
    freeChar (cdktemplate->plate);
    freeChar (cdktemplate->info);
-   for (x=0; x < cdktemplate->titleLines; x++)
-   {
-      freeChtype (cdktemplate->title[x]);
-   }
 
    /* Delete the windows. */
    deleteCursesWindow (cdktemplate->fieldWin);

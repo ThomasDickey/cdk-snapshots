@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:49:35 $
- * $Revision: 1.79 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.80 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -51,7 +51,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    boxWidth	= boxWidth + 2 + 2 * BorderOf(dialog);
 
    /* Now we have to readjust the x and y positions. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(dialog));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Set up the dialog box attributes. */
    ScreenOf(dialog)		= cdkscreen;
@@ -291,7 +291,7 @@ static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(dialog), &xpos, &ypos, dialog->boxWidth, dialog->boxHeight, 1);
+   alignxy (WindowOf(dialog), &xpos, &ypos, dialog->boxWidth, dialog->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:45:45 $
- * $Revision: 1.43 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.47 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -14,19 +14,16 @@ DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
 CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int height, int width, char *title, int rows, int cols, char **buttons, int buttonCount, chtype highlight, boolean Box, boolean shadow)
 {
    CDKBUTTONBOX *buttonbox	= 0;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= 0;
    int boxHeight		= 0;
    int maxColWidth		= INT_MIN;
-   int maxWidth			= INT_MIN;
    int colWidth			= 0;
    int xpos			= xPos;
    int ypos			= yPos;
    int currentButton		= 0;
-   chtype *holder		= 0;
-   char **temp			= 0;
-   int x, y, len, junk;
+   int x, y, junk;
 
    if ((buttonbox = newCDKObject(CDKBUTTONBOX, &my_funcs)) == 0)
       return (0);
@@ -51,38 +48,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    */
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
-
-      /* We need to split the title on \n. */
-      temp = CDKsplitString (title, '\n');
-      buttonbox->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < buttonbox->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-      boxWidth = MAXIMUM (boxWidth, maxWidth + 2 * BorderOf(buttonbox));
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(buttonbox));
-      for (x=0; x < buttonbox->titleLines; x++)
-      {
-	 buttonbox->title[x]	= char2Chtype (temp[x], &buttonbox->titleLen[x], &buttonbox->titlePos[x]);
-	 buttonbox->titlePos[x] = justifyString (titleWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      buttonbox->titleLines = 0;
-   }
+   boxWidth = setCdkTitle(ObjOf(buttonbox), title, boxWidth);
 
    /* Translate the buttons char * to a chtype * */
    for (x = 0; x < buttonCount; x++)
@@ -118,7 +84,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Now we have to readjust the x and y positions. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(buttonbox));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Set up the buttonbox box attributes. */
    ScreenOf(buttonbox)			= cdkscreen;
@@ -142,9 +108,9 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    buttonbox->postProcessData		= 0;
 
    /* Set up the row adjustment. */
-   if (boxHeight - rows - buttonbox->titleLines > 0)
+   if (boxHeight - rows - TitleLinesOf(buttonbox) > 0)
    {
-      buttonbox->rowAdjust = (int)((boxHeight-rows-buttonbox->titleLines) / buttonbox->rows);
+      buttonbox->rowAdjust = (int)((boxHeight - rows - TitleLinesOf(buttonbox)) / buttonbox->rows);
    }
 
    /* Set the col adjustment. */
@@ -413,7 +379,6 @@ void setCDKButtonboxBackgroundAttrib (CDKBUTTONBOX *buttonbox, chtype attrib)
 static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
-   int x = 0;
 
    /* Is there a shadow? */
    if (buttonbox->shadowWin != 0)
@@ -428,18 +393,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the title if there is one. */
-   if (buttonbox->titleLines != 0)
-   {
-      for (x=0; x < buttonbox->titleLines; x++)
-      {
-	 writeChtype (buttonbox->win,
-			buttonbox->titlePos[x] + BorderOf(buttonbox),
-			x + 1,
-			buttonbox->title[x],
-			HORIZONTAL, 0,
-			buttonbox->titleLen[x]);
-      }
-   }
+   drawCdkTitle (buttonbox->win, object);
 
    /* Draw in the buttons. */
    drawCDKButtonboxButtons (buttonbox);
@@ -450,7 +404,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
  */
 void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
 {
-   int row		= buttonbox->titleLines + 1;
+   int row		= TitleLinesOf(buttonbox) + 1;
    int col		= (int)(buttonbox->colAdjust / 2);
    int currentButton	= 0;
    int x, y;
@@ -462,7 +416,7 @@ void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
    {
       for (x=0; x < buttonbox->cols; x++)
       {
-         row = buttonbox->titleLines + BorderOf(buttonbox);
+         row = TitleLinesOf(buttonbox) + BorderOf(buttonbox);
 
 	 for (y=0; y < buttonbox->rows; y++)
 	 {
@@ -529,7 +483,7 @@ static void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(buttonbox), &xpos, &ypos, buttonbox->boxWidth, buttonbox->boxHeight, BorderOf(buttonbox));
+   alignxy (WindowOf(buttonbox), &xpos, &ypos, buttonbox->boxWidth, buttonbox->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -558,11 +512,7 @@ static void _destroyCDKButtonbox (CDKOBJS *object)
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
    int x;
 
-   /* Free up some memory. */
-   for (x=0; x < buttonbox->titleLines; x++)
-   {
-      freeChtype (buttonbox->title[x]);
-   }
+   cleanCdkTitle(object);
    for (x=0; x < buttonbox->buttonCount; x++)
    {
       freeChtype (buttonbox->button[x]);

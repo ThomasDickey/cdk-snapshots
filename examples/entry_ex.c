@@ -1,3 +1,5 @@
+/* $Id: entry_ex.c,v 1.9 2003/11/29 13:18:20 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -9,7 +11,7 @@ static BINDFN_PROTO(XXXCB);
 /*
  * This demonstrates the Cdk entry field widget.
  */
-int main (int argc GCC_UNUSED, char **argv)
+int main(int argc, char **argv)
 {
    /* Declare local variables. */
    CDKSCREEN *cdkscreen = 0;
@@ -19,6 +21,10 @@ int main (int argc GCC_UNUSED, char **argv)
    char *label		= "</U/5>Directory:<!U!5>";
    char *info, *mesg[10], temp[256];
 
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
+
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
@@ -27,9 +33,13 @@ int main (int argc GCC_UNUSED, char **argv)
    initCDKColor();
 
    /* Create the entry field widget. */
-   directory = newCDKEntry (cdkscreen, CENTER, CENTER,
-				title, label, A_NORMAL, '.', vMIXED,
-				40, 0, 256, TRUE, FALSE);
+   directory = newCDKEntry (cdkscreen,
+			    CDKparamValue(&params, 'X', CENTER),
+			    CDKparamValue(&params, 'Y', CENTER),
+			    title, label, A_NORMAL, '.', vMIXED,
+			    40, 0, 256,
+			    CDKparamValue(&params, 'N', TRUE),
+			    CDKparamValue(&params, 'S', FALSE));
    bindCDKObject (vENTRY, directory, '?', XXXCB, 0);
 
    /* Is the widget null? */
@@ -52,7 +62,7 @@ int main (int argc GCC_UNUSED, char **argv)
    * don't check if argv[1] is null or not. The function setCDKEntry
    * already performs any needed checks.
    */
-   setCDKEntry (directory, argv[1], 0, 256, TRUE);
+   setCDKEntry (directory, argv[optind], 0, 256, TRUE);
 
    /* Activate the entry field. */
    info = activateCDKEntry (directory, 0);

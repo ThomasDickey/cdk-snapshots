@@ -1,5 +1,5 @@
 /*
- * $Id: histogram.h,v 1.15 2003/11/15 18:11:09 tom Exp $
+ * $Id: histogram.h,v 1.16 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -60,11 +60,7 @@ struct SHistogram {
    WINDOW *			parent;
    WINDOW *			win;
    WINDOW *			shadowWin;
-   chtype *			title[MAX_LINES];
-   int				titlePos[MAX_LINES];
-   int				titleLen[MAX_LINES];
    int				titleAdj;
-   int				titleLines;
    char *			curString;
    char *			lowString;
    char *			highString;

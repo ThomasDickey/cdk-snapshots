@@ -1,4 +1,4 @@
-/* $Id: cdkitemlist.c,v 1.4 2001/04/20 22:51:11 tom Exp $ */
+/* $Id: cdkitemlist.c,v 1.5 2003/11/28 22:17:54 tom Exp $ */
 
 #include <cdk.h>
 
@@ -27,143 +27,53 @@ int main (int argc, char **argv)
    CDKBUTTONBOX *buttonWidget	= 0;
    WINDOW *cursesWindow		= 0;
    chtype *holder		= 0;
-   char *filename		= 0;
-   char *title			= 0;
-   char *label			= 0;
-   char *list			= 0;
-   char *outputFile		= 0;
-   char *buttons		= 0;
    char *answer			= 0;
    char *CDK_WIDGET_COLOR	= 0;
    char *temp			= 0;
-   int xpos			= CENTER;
-   int ypos			= CENTER;
    int ret			= 0;
-   int defaultItem		= 0;
    int buttonCount		= 0;
    int selection		= 0;
    int shadowHeight		= 0;
-   boolean boxWidget		= TRUE;
-   boolean shadowWidget		= FALSE;
    FILE *fp			= stderr;
    char **itemlistList		= 0;
    char **buttonList		= 0;
    int itemlistLines, j1, j2;
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      /* If there aren't any more options, then break. */
-      if ((ret = getopt (argc, argv, "l:f:d:T:L:B:O:X:Y:NS")) == -1)
-      {
-         break;
-      }
+   CDK_PARAMS params;
+   boolean boxWidget;
+   boolean shadowWidget;
+   char *buttons;
+   char *filename;
+   char *label;
+   char *list;
+   char *outputFile;
+   char *title;
+   int defaultItem;
+   int xpos;
+   int ypos;
 
-      /* Determine which command line option we just received. */
-      switch (ret)
-      {
-         case 'l':
-              list = copyChar (optarg);
-              break;
+   CDKparseParams(argc, argv, &params, "d:f:l:B:L:O:T:" "X:Y:NS");
 
-         case 'f':
-              filename = copyChar (optarg);
-              break;
+   xpos         = CDKparamValue(&params, 'X', CENTER);
+   ypos         = CDKparamValue(&params, 'Y', CENTER);
+   boxWidget    = CDKparamValue(&params, 'N', TRUE);
+   shadowWidget = CDKparamValue(&params, 'S', FALSE);
 
-         case 'd':
-              defaultItem = atoi (optarg);
-              break;
-
-         case 'T':
-              title = copyChar (optarg);
-              break;
-
-         case 'L':
-              label = copyChar (optarg);
-              break;
-
-         case 'B':
-              buttons = copyChar (optarg);
-              break;
-
-         case 'O':
-              outputFile = copyChar (optarg);
-              break;
-
-         case 'X':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 xpos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 xpos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 xpos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 xpos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 xpos = CENTER;
-              }
-              else
-              {
-                 xpos = atoi (optarg);
-              }
-              break;
-
-         case 'Y':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 ypos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 ypos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 ypos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 ypos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 ypos = CENTER;
-              }
-              else
-              {
-                 ypos = atoi (optarg);
-              }
-              break;
-
-         case 'N':
-              boxWidget = FALSE;
-              break;
-
-         case 'S':
-              shadowWidget = TRUE;
-              break;
-
-         default:
-              break;
-      }
-   }
+   defaultItem  = CDKparamValue(&params, 'd', 0);
+   filename     = CDKparamString(&params, 'f');
+   list         = CDKparamString(&params, 'l');
+   buttons      = CDKparamString(&params, 'B');
+   label        = CDKparamString(&params, 'L');
+   outputFile   = CDKparamString(&params, 'O');
+   title        = CDKparamString(&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
    {
       if ((fp = fopen (outputFile, "w")) == 0)
       {
-         fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-         exit (-1);
+	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
+	 exit (-1);
       }
    }
 
@@ -173,21 +83,21 @@ int main (int argc, char **argv)
       /* Maybe they gave a filename to use to read. */
       if (filename != 0)
       {
-         /* Read the file in. */
-         itemlistLines = CDKreadFile (filename, &itemlistList);
+	 /* Read the file in. */
+	 itemlistLines = CDKreadFile (filename, &itemlistList);
 
-         /* Check if there was an error. */
-         if (itemlistLines == -1)
-         {
-            fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
-            exit (-1);
-         }
+	 /* Check if there was an error. */
+	 if (itemlistLines == -1)
+	 {
+	    fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
+	    exit (-1);
+	 }
       }
       else
       {
-         /* They didn't provide anything. */
-         fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-         exit (-1);
+	 /* They didn't provide anything. */
+	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
+	 exit (-1);
       }
    }
    else
@@ -195,7 +105,6 @@ int main (int argc, char **argv)
       /* Split the itemlist lines up. */
       itemlistList = CDKsplitString (list, '\n');
       itemlistLines = CDKcountStrings (itemlistList);
-      freeChar (list);
    }
 
    /* Start curses. */
@@ -234,7 +143,6 @@ int main (int argc, char **argv)
    {
       /* Clean up some memory. */
       CDKfreeStrings(itemlistList);
-      freeChar (title);
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
@@ -254,7 +162,6 @@ int main (int argc, char **argv)
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
-      freeChar (buttons);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
@@ -314,16 +221,16 @@ int main (int argc, char **argv)
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
       {
-         widget->shadow = TRUE;
+	 widget->shadow = TRUE;
 
-        /*
-         * We force the widget and buttonWidget to be drawn so the
-         * buttonbox widget will be drawn when the widget is activated.
-         * Otherwise the shadow window will draw over the button widget.
-         */
-         drawCDKItemlist (widget, ObjOf(widget)->box);
-         eraseCDKButtonbox (buttonWidget);
-         drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	/*
+	 * We force the widget and buttonWidget to be drawn so the
+	 * buttonbox widget will be drawn when the widget is activated.
+	 * Otherwise the shadow window will draw over the button widget.
+	 */
+	 drawCDKItemlist (widget, ObjOf(widget)->box);
+	 eraseCDKButtonbox (buttonWidget);
+	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
       }
    }
 

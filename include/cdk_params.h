@@ -1,16 +1,20 @@
 /*
- * $Id: cdk_int.h,v 1.5 2003/11/29 00:09:25 tom Exp $
+ * $Id: cdk_params.h,v 1.4 2003/11/29 15:56:09 tom Exp $
  */
 
 #ifndef CDKINCLUDES
-#ifndef CDK_INT_H
-#define CDK_INT_H
+#ifndef CDK_PARAMS_H
+#define CDK_PARAMS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#endif
 
 /*
  * Copyright 2003, Thomas Dickey
@@ -45,25 +49,87 @@ extern "C" {
  * SUCH DAMAGE.
  */
 
-#define typeCallocN(type,n)     (type*)calloc(n, sizeof(type))
-#define typeCalloc(type)        typeCallocN(type,1)
-
-#define CharOf(c)               ((unsigned char)(c))
+#define MAX_CDK_PARAMS 256
 
 /*
- * Macros to check if caller is attempting to make the widget as high (or wide)
- * as the screen.
+ * CDKparseParams() knows about these options and will decode them into
+ * the CDK_PARAMS struct.  They are the most generally useful for positioning
+ * a widget.
  */
-#define isFullWidth(n)		((n) == FULL || (COLS != 0 && ((n) >= COLS)))
-#define isFullHeight(n)		((n) == FULL || (LINES != 0 && ((n) >= LINES)))
+#define CDK_MIN_PARAMS	"NSX:Y:"
+#define CDK_CLI_PARAMS	"NSX:Y:H:W:"
 
-#define CDK_PATHMAX		256
+/*
+ * This records the values that CDKparseParams() decodes using getopt():
+ */
+typedef struct CDK_PARAMS {
+   char *	allParams[MAX_CDK_PARAMS];
+   bool		Box;
+   bool		Shadow;
+   int		hValue;
+   int		wValue;
+   int		xValue;
+   int		yValue;
+} CDK_PARAMS;
 
-extern char *GPasteBuffer;
+/*
+ * Parse the given argc/argv command-line, with the options passed to
+ * getopt()'s 3rd parameter.
+ */
+void CDKparseParams (
+		int		/* argc */,
+		char **		/* argv */,
+		CDK_PARAMS *	/* params */,
+		char *		/* options */);
+
+/*
+ * Parse the string as one of CDK's positioning keywords, or an actual
+ * position.
+ */
+int CDKparsePosition (
+		char *		/* string */);
+
+/*
+ * Retrieve an integer (or boolean) option value from the parsed command-line.
+ */
+int CDKparamNumber (
+		CDK_PARAMS *	/* params */,
+		int		/* option */);
+
+/*
+ * Retrieve an optional integer (or boolean) value from the parsed command-line.
+ */
+int CDKparamNumber2 (
+		CDK_PARAMS *	/* params */,
+		int		/* option */,
+		int		/* missing */);
+
+/*
+ * Retrieve a string option value from the parsed command-line.
+ */
+char * CDKparamString (
+		CDK_PARAMS *	/* params */,
+		int		/* option */);
+
+/*
+ * Retrieve an optional string option value from the parsed command-line.
+ */
+char * CDKparamString2 (
+		CDK_PARAMS *	/* params */,
+		int		/* option */,
+		char *		/* missing */);
+
+/*
+ * Retrieve an integer (or boolean) option value from the parsed command-line.
+ */
+int CDKparamValue (
+		CDK_PARAMS *	/* params */,
+		int		/* option */,
+		int		/* missing */);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* CDK_INT_H */
+#endif /* CDK_PARAMS_H */
 #endif /* CDKINCLUDES */

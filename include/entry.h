@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.19 2003/11/15 16:22:11 tom Exp $
+ * $Id: entry.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -67,11 +67,7 @@ struct SEntry {
    WINDOW *	fieldWin;
    chtype *	label;
    int		labelLen;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype	fieldAttr;
    int		fieldWidth;
    char *	info;

@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:46:17 $
- * $Revision: 1.69 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.71 $
  */
  
 /*
@@ -24,14 +24,14 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 {
    CDKALPHALIST *alphalist	= 0;
    chtype *chtypeLabel		= 0;
-   int parentWidth		= getmaxx(cdkscreen->window) - 1;
-   int parentHeight		= getmaxy(cdkscreen->window) - 1;
+   int parentWidth		= getmaxx(cdkscreen->window);
+   int parentHeight		= getmaxy(cdkscreen->window);
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
    int ypos			= yplace;
-   int entryWidth		= 0;
-   int entryHeight		= 0;
+   int tempWidth		= 0;
+   int tempHeight		= 0;
    int labelLen			= 0;
    int x, junk2;
 
@@ -66,7 +66,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    }
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(alphalist));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the file selector window. */
    alphalist->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -107,13 +107,15 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    alphalist->listSize = listSize;
 
    /* Create the entry field. */
-   entryWidth = boxWidth - (labelLen + 2 + 2 * BorderOf(alphalist));
+   tempWidth = (isFullWidth(width)
+   		 ? FULL
+		 : boxWidth - 2 - labelLen);
    alphalist->entryField = newCDKEntry (cdkscreen,
-					getbegx(alphalist->win) + BorderOf(alphalist),
-					getbegy(alphalist->win) + BorderOf(alphalist),
+					getbegx(alphalist->win),
+					getbegy(alphalist->win),
 					title, label,
 					A_NORMAL, fillerChar, 
-					vMIXED, entryWidth, 0, 512,
+					vMIXED, tempWidth, 0, 512,
 					Box, FALSE);
    setCDKEntryLLChar (alphalist->entryField, ACS_LTEE);
    setCDKEntryLRChar (alphalist->entryField, ACS_RTEE);
@@ -130,14 +132,20 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Set up the post-process function for the entry field. */
    setCDKEntryPreProcess (alphalist->entryField, preProcessEntryField, alphalist);
 
-   /* Create the scrolling list. */
-   entryHeight = getmaxy(alphalist->entryField->win);
+   /*
+    * Create the scrolling list.  It overlaps the entry field by one line if
+    * we are using box-borders.
+    */
+   tempHeight = getmaxy(alphalist->entryField->win) - BorderOf(alphalist);
+   tempWidth = (isFullWidth(width)
+   		? FULL
+		: boxWidth - 1);
    alphalist->scrollField = newCDKScroll (cdkscreen, 
-					  getbegx(alphalist->win) + BorderOf(alphalist),
-					  getbegy(alphalist->entryField->win) + entryHeight + BorderOf(alphalist),
+					  getbegx(alphalist->win),
+					  getbegy(alphalist->entryField->win) + tempHeight,
 					  RIGHT,
-					  boxHeight - entryHeight - (BorderOf(alphalist)*2),
-					  boxWidth - (1 + 2 * BorderOf(alphalist)),
+					  boxHeight - tempHeight,
+					  tempWidth,
 					  0, list, listSize,
 					  NONUMBERS, A_REVERSE,
 					  Box, FALSE);
@@ -194,7 +202,7 @@ static void _moveCDKAlphalist (CDKOBJS *object, int xplace, int yplace, boolean 
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(alphalist), &xpos, &ypos, alphalist->boxWidth, alphalist->boxHeight, BorderOf(alphalist));
+   alignxy (WindowOf(alphalist), &xpos, &ypos, alphalist->boxWidth, alphalist->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.19 2003/11/16 20:16:39 tom Exp $
+ * $Id: selection.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -68,11 +68,7 @@ struct SSelection {
    WINDOW *	win;
    WINDOW *	scrollbarWin;
    WINDOW *	shadowWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype **	item;
    int *	itemLen;
    int *	itemPos;

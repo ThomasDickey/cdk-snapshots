@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.20 2003/11/15 18:11:09 tom Exp $
+ * $Id: calendar.h,v 1.22 2003/11/28 01:33:35 staszek Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 /*
+ * Copyright 2000-2002,2003, Thomas Dickey
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -69,11 +70,7 @@ struct SCalendar {
    WINDOW *	labelWin;
    WINDOW *	fieldWin;
    WINDOW *	shadowWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    int		xpos;
    int		ypos;
    int		height;
@@ -98,6 +95,8 @@ struct SCalendar {
    void *	preProcessData;
    PROCESSFN	postProcessFunction;
    void *	postProcessData;
+   char *	DayName;
+   char *	MonthName[MAX_MONTHS];
 };
 typedef struct SCalendar CDKCALENDAR;
 
@@ -291,6 +290,17 @@ void setCDKCalendarPostProcess (
 		CDKCALENDAR *	/* calendar */,
 		PROCESSFN	/* callback */,
 		void *		/* data */);
+
+/*
+ * This sets days and months names
+ */
+void setCDKCalendarMonthsNames (
+		CDKCALENDAR *	/* calendar */,
+		char **		/* months */);
+
+void setCDKCalendarDaysNames (
+		CDKCALENDAR *	/* calendar */,
+		char *		/* days - 1st is Sunday */);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: graph.h,v 1.16 2003/11/15 18:11:09 tom Exp $
+ * $Id: graph.h,v 1.18 2003/11/27 21:24:13 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 /*
+ * Copyright 2000-2002,2003, Thomas Dickey
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -60,11 +61,7 @@ struct SGraph {
    WINDOW *		parent;
    WINDOW *		win;
    WINDOW *		shadowWin;
-   chtype *		title[MAX_LINES];
-   int			titlePos[MAX_LINES];
-   int			titleLen[MAX_LINES];
    int			titleAdj;
-   int			titleLines;
    chtype *		graphChar;
    boolean		shadow;
    int			boxHeight;
@@ -72,7 +69,7 @@ struct SGraph {
    chtype *		xtitle;
    int			xtitlePos;
    int			xtitleLen;
-   int			values[MAX_LINES];
+   int *		values;
    int			count;
    int			minx;
    int			maxx;

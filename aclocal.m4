@@ -1,6 +1,6 @@
-dnl $Id: aclocal.m4,v 1.21 2003/04/18 22:21:47 tom Exp $
+dnl $Id: aclocal.m4,v 1.22 2003/11/27 10:22:43 tom Exp $
 dnl macros used for CDK configure script
-dnl -- T.Dickey
+dnl -- T.E.Dickey
 dnl ---------------------------------------------------------------------------
 dnl ---------------------------------------------------------------------------
 dnl CF_AC_PREREQ version: 2 updated: 1997/09/06 13:24:56
@@ -178,11 +178,12 @@ AC_TRY_LINK([#include <stdio.h>],[printf("Hello world");],,
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CURSES_CHTYPE version: 5 updated: 2000/10/07 16:31:51
+dnl CF_CURSES_CHTYPE version: 6 updated: 2003/11/06 19:59:57
 dnl ----------------
 dnl Test if curses defines 'chtype' (usually a 'long' type for SysV curses).
 AC_DEFUN([CF_CURSES_CHTYPE],
 [
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
 AC_CACHE_CHECK(for chtype typedef,cf_cv_chtype_decl,[
 	AC_TRY_COMPILE([#include <${cf_cv_ncurses_header-curses.h}>],
 		[chtype foo],
@@ -201,7 +202,7 @@ if test $cf_cv_chtype_decl = yes ; then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CURSES_CPPFLAGS version: 6 updated: 2002/10/27 18:21:42
+dnl CF_CURSES_CPPFLAGS version: 7 updated: 2003/06/06 00:48:41
 dnl ------------------
 dnl Look for the curses headers.
 AC_DEFUN([CF_CURSES_CPPFLAGS],[
@@ -220,7 +221,7 @@ sunos3*|sunos4*)
 	;;
 esac
 ])
-test "$cf_cv_curses_incdir" != no && CPPFLAGS="$CPPFLAGS $cf_cv_curses_incdir"
+test "$cf_cv_curses_incdir" != no && CPPFLAGS="$cf_cv_curses_incdir $CPPFLAGS"
 
 AC_CACHE_CHECK(if we have identified curses headers,cf_cv_ncurses_header,[
 cf_cv_ncurses_header=none
@@ -245,12 +246,14 @@ AC_CHECK_HEADERS($cf_cv_ncurses_header)
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CURSES_FUNCS version: 10 updated: 2001/07/17 17:04:37
+dnl CF_CURSES_FUNCS version: 12 updated: 2003/11/06 19:59:57
 dnl ---------------
 dnl Curses-functions are a little complicated, since a lot of them are macros.
 AC_DEFUN([CF_CURSES_FUNCS],
 [
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
 AC_REQUIRE([CF_XOPEN_CURSES])
+AC_REQUIRE([CF_CURSES_TERM_H])
 for cf_func in $1
 do
 	CF_UPPER(cf_tr_func,$cf_func)
@@ -265,11 +268,15 @@ do
 char * XCursesProgramName = "test";
 #else
 #include <${cf_cv_ncurses_header-curses.h}>
+#if defined(NCURSES_VERSION) && defined(HAVE_NCURSESW_TERM_H)
+#include <ncursesw/term.h>
+#else
 #if defined(NCURSES_VERSION) && defined(HAVE_NCURSES_TERM_H)
 #include <ncurses/term.h>
 #else
 #ifdef HAVE_TERM_H
 #include <term.h>
+#endif
 #endif
 #endif
 #endif],
@@ -293,12 +300,13 @@ exit(foo == 0);
 done
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CURSES_LIBS version: 22 updated: 2002/10/27 18:21:42
+dnl CF_CURSES_LIBS version: 23 updated: 2003/11/06 19:59:57
 dnl --------------
 dnl Look for the curses libraries.  Older curses implementations may require
 dnl termcap/termlib to be linked as well.  Call CF_CURSES_CPPFLAGS first.
 AC_DEFUN([CF_CURSES_LIBS],[
 
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
 AC_MSG_CHECKING(if we have identified curses libraries)
 AC_TRY_LINK([#include <${cf_cv_ncurses_header-curses.h}>],
 	[initscr(); tgoto("?", 0,0)],
@@ -411,6 +419,46 @@ setbegyx(win, 2, 3);
 done
 AC_MSG_RESULT("$cf_result")
 AC_DEFINE_UNQUOTED(setbegyx(win,y,x),$cf_result)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl CF_CURSES_TERM_H version: 6 updated: 2003/11/06 19:59:57
+dnl ----------------
+dnl SVr4 curses should have term.h as well (where it puts the definitions of
+dnl the low-level interface).  This may not be true in old/broken implementations,
+dnl as well as in misconfigured systems (e.g., gcc configured for Solaris 2.4
+dnl running with Solaris 2.5.1).
+AC_DEFUN([CF_CURSES_TERM_H],
+[
+AC_CACHE_CHECK(for term.h, cf_cv_term_header,[
+
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
+# If we found <ncurses/curses.h>, look for <ncurses/term.h>, but always look
+# for <term.h> if we do not find the variant.
+for cf_header in \
+	`echo ${cf_cv_ncurses_header-curses.h} | sed -e 's%/.*%/%'`term.h \
+	term.h
+do
+	AC_TRY_COMPILE([
+#include <${cf_cv_ncurses_header-curses.h}>
+#include <${cf_header}>],
+	[WINDOW *x],
+	[cf_cv_term_header=$cf_header
+	 break],
+	[cf_cv_term_header=no])
+done
+])
+
+case $cf_cv_term_header in #(vi
+term.h) #(vi
+	AC_DEFINE(HAVE_TERM_H)
+	;;
+ncurses/term.h)
+	AC_DEFINE(HAVE_NCURSES_TERM_H)
+	;;
+ncursesw/term.h)
+	AC_DEFINE(HAVE_NCURSESW_TERM_H)
+	;;
+esac
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_DIRNAME version: 4 updated: 2002/12/21 19:25:52
@@ -604,7 +652,21 @@ rm -rf conftest*
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_GCC_WARNINGS version: 12 updated: 2002/11/23 16:02:49
+dnl CF_GCC_VERSION version: 3 updated: 2003/09/06 19:16:57
+dnl --------------
+dnl Find version of gcc
+AC_DEFUN([CF_GCC_VERSION],[
+AC_REQUIRE([AC_PROG_CC])
+GCC_VERSION=none
+if test "$GCC" = yes ; then
+	AC_MSG_CHECKING(version of $CC)
+	GCC_VERSION="`${CC} --version|sed -e '2,$d' -e 's/^[[^0-9.]]*//' -e 's/[[^0-9.]].*//'`"
+	test -z "$GCC_VERSION" && GCC_VERSION=unknown
+	AC_MSG_RESULT($GCC_VERSION)
+fi
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl CF_GCC_WARNINGS version: 15 updated: 2003/07/05 18:42:30
 dnl ---------------
 dnl Check if the compiler supports useful warning options.  There's a few that
 dnl we don't use, simply because they're too noisy:
@@ -612,12 +674,14 @@ dnl
 dnl	-Wconversion (useful in older versions of gcc, but not in gcc 2.7.x)
 dnl	-Wredundant-decls (system headers make this too noisy)
 dnl	-Wtraditional (combines too many unrelated messages, only a few useful)
-dnl	-Wwrite-strings (too noisy, but should review occasionally)
+dnl	-Wwrite-strings (too noisy, but should review occasionally).  This
+dnl		is enabled for ncurses using "--enable-const".
 dnl	-pedantic
 dnl
 AC_DEFUN([CF_GCC_WARNINGS],
 [
-if ( test "$GCC" = yes || test "$GXX" = yes )
+AC_REQUIRE([CF_GCC_VERSION])
+if test "$GCC" = yes
 then
 	cat > conftest.$ac_ext <<EOF
 #line __oline__ "configure"
@@ -644,8 +708,19 @@ EOF
 		CFLAGS="$cf_save_CFLAGS $EXTRA_CFLAGS -$cf_opt"
 		if AC_TRY_EVAL(ac_compile); then
 			test -n "$verbose" && AC_MSG_RESULT(... -$cf_opt)
+			case $cf_opt in #(vi
+			Wcast-qual) #(vi
+				CPPFLAGS="$CPPFLAGS -DXTSTRINGDEFINES"
+				;;
+			Winline) #(vi
+				case $GCC_VERSION in
+				3.3*)
+					CF_VERBOSE(feature is broken in gcc $GCC_VERSION)
+					continue;;
+				esac
+				;;
+			esac
 			EXTRA_CFLAGS="$EXTRA_CFLAGS -$cf_opt"
-			test "$cf_opt" = Wcast-qual && EXTRA_CFLAGS="$EXTRA_CFLAGS -DXTSTRINGDEFINES"
 		fi
 	done
 	rm -f conftest*
@@ -892,7 +967,7 @@ printf("old\n");
 	,[$1=no])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_CPPFLAGS version: 16 updated: 2002/12/29 18:30:46
+dnl CF_NCURSES_CPPFLAGS version: 17 updated: 2003/11/06 19:59:57
 dnl -------------------
 dnl Look for the SVr4 curses clone 'ncurses' in the standard places, adjusting
 dnl the CPPFLAGS variable so we can include its header.
@@ -916,6 +991,7 @@ dnl wide-character version of ncurses is installed.
 AC_DEFUN([CF_NCURSES_CPPFLAGS],
 [AC_REQUIRE([CF_WITH_CURSES_DIR])
 
+AC_PROVIDE([CF_CURSES_CPPFLAGS])dnl
 cf_ncuhdr_root=ifelse($1,,ncurses,$1)
 
 test -n "$cf_cv_curses_dir" && \
@@ -1056,13 +1132,14 @@ CF_UPPER(cf_nculib_ROOT,HAVE_LIB$cf_nculib_root)
 AC_DEFINE_UNQUOTED($cf_nculib_ROOT)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_VERSION version: 10 updated: 2002/10/27 18:21:42
+dnl CF_NCURSES_VERSION version: 11 updated: 2003/11/06 19:59:57
 dnl ------------------
 dnl Check for the version of ncurses, to aid in reporting bugs, etc.
 dnl Call CF_CURSES_CPPFLAGS first, or CF_NCURSES_CPPFLAGS.  We don't use
 dnl AC_REQUIRE since that does not work with the shell's if/then/else/fi.
 AC_DEFUN([CF_NCURSES_VERSION],
 [
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
 AC_CACHE_CHECK(for ncurses version, cf_cv_ncurses_version,[
 	cf_cv_ncurses_version=no
 	cf_tempfile=out$$
@@ -1176,13 +1253,12 @@ else
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_PROG_EXT version: 8 updated: 2002/12/21 19:25:52
+dnl CF_PROG_EXT version: 9 updated: 2003/10/18 16:36:22
 dnl -----------
 dnl Compute $PROG_EXT, used for non-Unix ports, such as OS/2 EMX.
 AC_DEFUN([CF_PROG_EXT],
 [
 AC_REQUIRE([CF_CHECK_CACHE])
-PROG_EXT=
 case $cf_cv_system_name in
 os2*)
     # We make sure -Zexe is not used -- it would interfere with @PROG_EXT@
@@ -1190,12 +1266,13 @@ os2*)
     CPPFLAGS="$CPPFLAGS -D__ST_MT_ERRNO__"
     CXXFLAGS="$CXXFLAGS -Zmt"
     LDFLAGS=`echo "$LDFLAGS -Zmt -Zcrtdll" | sed -e "s%-Zexe%%g"`
-    PROG_EXT=".exe"
-    ;;
-cygwin*)
-    PROG_EXT=".exe"
     ;;
 esac
+
+AC_EXEEXT
+AC_OBJEXT
+
+PROG_EXT="$EXEEXT"
 AC_SUBST(PROG_EXT)
 test -n "$PROG_EXT" && AC_DEFINE_UNQUOTED(PROG_EXT,"$PROG_EXT")
 ])dnl
@@ -1358,36 +1435,87 @@ AC_DEFUN([CF_VERBOSE],
 [test -n "$verbose" && echo "	$1" 1>&AC_FD_MSG
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_VERSION_INFO version: 2 updated: 2002/07/20 00:33:32
+dnl CF_VERSION_INFO version: 3 updated: 2003/11/22 12:22:45
 dnl ---------------
-dnl Provide a configure option to incorporate libtool.  Define several useful
-dnl symbols for the makefile, including ones derived from the VERSION file:
+dnl Define several useful symbols derived from the VERSION file.  A separate
+dnl file is preferred to embedding the version numbers in various scripts.
+dnl (automake is a textbook-example of why the latter is a bad idea, but there
+dnl are others).
+dnl
+dnl The file contents are:
 dnl	libtool-version	release-version	patch-version
+dnl or
+dnl	release-version
+dnl where
+dnl	libtool-version (see ?) consists of 3 integers separated by '.'
+dnl	release-version consists of a major version and minor version
+dnl		separated by '.', optionally followed by a patch-version
+dnl		separated by '-'.  The minor version need not be an
+dnl		integer (but it is preferred).
+dnl	patch-version is an integer in the form yyyymmdd, so ifdef's and
+dnl		scripts can easily compare versions.
+dnl
+dnl If libtool is used, the first form is required, since CF_WITH_LIBTOOL
+dnl simply extracts the first field using 'cut -f1'.
 AC_DEFUN([CF_VERSION_INFO],
 [
 if test -f $srcdir/VERSION ; then
 	AC_MSG_CHECKING(for package version)
-	cf_version=`cut -f2 $srcdir/VERSION`
 
-	VERSION_MAJOR=`echo "$cf_version" | sed -e 's/\..*//'`
+	# if there are not enough fields, cut returns the last one...
+	cf_field1=`sed -e '2,$d' $srcdir/VERSION|cut -f1`
+	cf_field2=`sed -e '2,$d' $srcdir/VERSION|cut -f2`
+	cf_field3=`sed -e '2,$d' $srcdir/VERSION|cut -f3`
+
+	# this is how CF_BUNDLED_INTL uses $VERSION:
+	VERSION="$cf_field1"
+
+	VERSION_MAJOR=`echo "$cf_field2" | sed -e 's/\..*//'`
 	test -z "$VERSION_MAJOR" && AC_MSG_ERROR(missing major-version)
 
-	VERSION_MINOR=`echo "$cf_version" | sed -e 's/^[[^.]]*\.//'`
+	VERSION_MINOR=`echo "$cf_field2" | sed -e 's/^[[^.]]*\.//' -e 's/-.*//'`
 	test -z "$VERSION_MINOR" && AC_MSG_ERROR(missing minor-version)
 
 	AC_MSG_RESULT(${VERSION_MAJOR}.${VERSION_MINOR})
 
 	AC_MSG_CHECKING(for package patch date)
-	VERSION_PATCH=`cut -f3 $srcdir/VERSION`
-	test -z "$VERSION_PATCH" && AC_MSG_ERROR(missing patch-date)
+	VERSION_PATCH=`echo "$cf_field3" | sed -e 's/^[[^-]]*-//'`
+	case .$VERSION_PATCH in
+	.)
+		AC_MSG_ERROR(missing patch-date $VERSION_PATCH)
+		;;
+	.[[0-9]][[0-9]][[0-9]][[0-9]][[0-9]][[0-9]][[0-9]][[0-9]])
+		;;
+	*)
+		AC_MSG_ERROR(illegal patch-date $VERSION_PATCH)
+		;;
+	esac
 	AC_MSG_RESULT($VERSION_PATCH)
 else
 	AC_MSG_ERROR(did not find $srcdir/VERSION)
 fi
 
+# show the actual data that we have for versions:
+CF_VERBOSE(VERSION $VERSION)
+CF_VERBOSE(VERSION_MAJOR $VERSION_MAJOR)
+CF_VERBOSE(VERSION_MINOR $VERSION_MINOR)
+CF_VERBOSE(VERSION_PATCH $VERSION_PATCH)
+
+AC_SUBST(VERSION)
 AC_SUBST(VERSION_MAJOR)
 AC_SUBST(VERSION_MINOR)
 AC_SUBST(VERSION_PATCH)
+
+dnl if a package name is given, define its corresponding version info.  We
+dnl need the package name to ensure that the defined symbols are unique.
+ifelse($1,,,[
+	PACKAGE=$1
+	AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
+	AC_SUBST(PACKAGE)
+	CF_UPPER(cf_PACKAGE,$PACKAGE)
+	AC_DEFINE_UNQUOTED(${cf_PACKAGE}_VERSION,"${VERSION_MAJOR}.${VERSION_MINOR}")
+	AC_DEFINE_UNQUOTED(${cf_PACKAGE}_PATCHDATE,${VERSION_PATCH})
+])
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_WITH_CURSES_DIR version: 2 updated: 2002/11/10 14:46:59
@@ -1432,16 +1560,25 @@ if test $with_dmalloc = yes ; then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_LIBTOOL version: 5 updated: 2003/04/18 22:19:54
+dnl CF_WITH_LIBTOOL version: 8 updated: 2003/09/06 19:15:56
 dnl ---------------
 dnl Provide a configure option to incorporate libtool.  Define several useful
 dnl symbols for the makefile rules.
 AC_DEFUN([CF_WITH_LIBTOOL],
 [
 LIBTOOL=
+
+# common library maintenance symbols that are convenient for libtool scripts:
 LIB_CREATE='$(AR) -cr'
 LIB_OBJECT='$(OBJECTS)'
 LIB_SUFFIX=.a
+LIB_PREP="$RANLIB"
+
+# symbols used to prop libtool up to enable it to determine what it should be
+# doing:
+LIB_CLEAN=
+LIB_COMPILE=
+LIB_LINK=
 LIB_INSTALL=
 LIB_UNINSTALL=
 
@@ -1451,8 +1588,13 @@ AC_ARG_WITH(libtool,
 	[with_libtool=$withval],
 	[with_libtool=no])
 AC_MSG_RESULT($with_libtool)
-if test "$with_libtool" = "yes"; then
-	AC_PATH_PROG(LIBTOOL,libtool)
+if test "$with_libtool" != "no"; then
+	if test "$with_libtool" != "yes" ; then
+		CF_PATH_SYNTAX(with_libtool)
+		LIBTOOL=$with_libtool
+	else
+		AC_PATH_PROG(LIBTOOL,libtool)
+	fi
 	if test -z "$LIBTOOL" ; then
 		AC_MSG_ERROR(Cannot find libtool)
 	fi
@@ -1460,9 +1602,12 @@ if test "$with_libtool" = "yes"; then
 	LIB_CREATE='$(LIBTOOL) --mode=link $(CC) -rpath $(DESTDIR)$(libdir) -version-info `cut -f1 $(srcdir)/VERSION` -o'
 	LIB_OBJECT='$(OBJECTS:.o=.lo)'
 	LIB_SUFFIX=.la
+	LIB_CLEAN='$(LIBTOOL) --mode=clean'
+	LIB_COMPILE='$(LIBTOOL) --mode=compile'
+	LIB_LINK='$(LIBTOOL) --mode=link'
 	LIB_INSTALL='$(LIBTOOL) --mode=install'
 	LIB_UNINSTALL='$(LIBTOOL) --mode=uninstall'
-	RANLIB=:
+	LIB_PREP=:
 
 	# Show the version of libtool
 	AC_MSG_CHECKING(version of libtool)
@@ -1470,32 +1615,54 @@ if test "$with_libtool" = "yes"; then
 	# Save the version in a cache variable - this is not entirely a good
 	# thing, but the version string from libtool is very ugly, and for
 	# bug reports it might be useful to have the original string.
-	cf_cv_libtool_version=`$LIBTOOL --version 2>&1 | sed -e 's/^[[^1-9]]*//' -e 's/[[^0-9.]].*//'`
+	cf_cv_libtool_version=`$LIBTOOL --version 2>&1 | sed -e '2,$d' -e 's/^[[^1-9]]*//' -e 's/[[^0-9.]].*//'`
 	AC_MSG_RESULT($cf_cv_libtool_version)
 	if test -z "$cf_cv_libtool_version" ; then
 		AC_MSG_ERROR(This is not libtool)
 	fi
+
+	# special hack to add --tag option for C++ compiler
+	case $cf_cv_libtool_version in
+	1.[[5-9]]*|[[2-9]]*)
+		LIBTOOL_CXX="$LIBTOOL --tag=CXX"
+		;;
+	*)
+		LIBTOOL_CXX="$LIBTOOL"
+		;;
+	esac
 else
 	LIBTOOL=""
+	LIBTOOL_CXX=""
 fi
 
 test -z "$LIBTOOL" && ECHO_LT=
 
 AC_SUBST(LIBTOOL)
+AC_SUBST(LIBTOOL_CXX)
+
 AC_SUBST(LIB_CREATE)
 AC_SUBST(LIB_OBJECT)
 AC_SUBST(LIB_SUFFIX)
+AC_SUBST(LIB_PREP)
+
+AC_SUBST(LIB_CLEAN)
+AC_SUBST(LIB_COMPILE)
+AC_SUBST(LIB_LINK)
 AC_SUBST(LIB_INSTALL)
 AC_SUBST(LIB_UNINSTALL)
 
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl CF_WITH_WARNINGS version: 4 updated: 2003/05/24 15:01:41
+dnl ----------------
 dnl Combine the checks for gcc features into a configure-script option
 AC_DEFUN([CF_WITH_WARNINGS],
 [
+if ( test "$GCC" = yes || test "$GXX" = yes )
+then
 AC_MSG_CHECKING(if you want to check for gcc warnings)
 AC_ARG_WITH(warnings,
-	[  --with-warnings         turn on gcc warnings, for debugging],
+	[  --with-warnings         test: turn on gcc warnings],
 	[cf_opt_with_warnings=$withval],
 	[cf_opt_with_warnings=no])
 AC_MSG_RESULT($cf_opt_with_warnings)
@@ -1503,25 +1670,34 @@ if test "$cf_opt_with_warnings" != no ; then
 	CF_GCC_ATTRIBUTES
 	CF_GCC_WARNINGS
 fi
+fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_XOPEN_CURSES version: 6 updated: 2002/11/12 06:55:30
+dnl CF_XOPEN_CURSES version: 8 updated: 2003/11/07 19:47:46
 dnl ---------------
 dnl Test if we should define X/Open source for curses, needed on Digital Unix
 dnl 4.x, to see the extended functions, but breaks on IRIX 6.x.
+dnl
+dnl The getbegyx() check is needed for HPUX, which omits legacy macros such
+dnl as getbegy().  The latter is better design, but the former is standard.
 AC_DEFUN([CF_XOPEN_CURSES],
 [
+AC_REQUIRE([CF_CURSES_CPPFLAGS])dnl
 AC_CACHE_CHECK(if we must define _XOPEN_SOURCE_EXTENDED,cf_cv_need_xopen_extension,[
 AC_TRY_LINK([
 #include <stdlib.h>
 #include <${cf_cv_ncurses_header-curses.h}>],[
-	long x = winnstr(stdscr, "", 0)],
+	long x = winnstr(stdscr, "", 0);
+	int x1, y1;
+	getbegyx(stdscr, y1, x1)],
 	[cf_cv_need_xopen_extension=no],
 	[AC_TRY_LINK([
 #define _XOPEN_SOURCE_EXTENDED
 #include <stdlib.h>
 #include <${cf_cv_ncurses_header-curses.h}>],[
-	long x = winnstr(stdscr, "", 0)],
+	long x = winnstr(stdscr, "", 0);
+	int x1, y1;
+	getbegyx(stdscr, y1, x1)],
 	[cf_cv_need_xopen_extension=yes],
 	[cf_cv_need_xopen_extension=unknown])])])
 test $cf_cv_need_xopen_extension = yes && CPPFLAGS="$CPPFLAGS -D_XOPEN_SOURCE_EXTENDED"

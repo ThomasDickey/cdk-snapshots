@@ -1,3 +1,5 @@
+/* $Id: dialog_ex.c,v 1.7 2003/11/29 16:13:11 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -7,7 +9,7 @@ char *XCursesProgramName="dialog_ex";
 /*
  * This program demonstrates the Cdk dialog widget.
  */
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen	= 0;
@@ -16,6 +18,10 @@ int main (void)
    char *buttons[]	= {"</B/24>Ok", "</B16>Cancel"};
    char *message[10], *mesg[3], temp[100];
    int selection;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -34,10 +40,14 @@ int main (void)
    message[6]	= "<L>and left.";
 
    /* Create the dialog box. */
-   question = newCDKDialog (cdkscreen, CENTER, CENTER,
-				message, 7, buttons, 2,
-				COLOR_PAIR(2)|A_REVERSE,
-				TRUE, TRUE, FALSE);
+   question = newCDKDialog (cdkscreen,
+			    CDKparamValue(&params, 'X', CENTER),
+			    CDKparamValue(&params, 'Y', CENTER),
+			    message, 7, buttons, 2,
+			    COLOR_PAIR(2)|A_REVERSE,
+			    TRUE,
+			    CDKparamValue(&params, 'N', TRUE),
+			    CDKparamValue(&params, 'S', FALSE));
 
    /* Check if we got a null value back. */
    if (question == 0)

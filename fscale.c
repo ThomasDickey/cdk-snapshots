@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:53:21 $
- * $Revision: 1.16 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.20 $
  */
 
 /*
@@ -19,17 +19,14 @@ DeclareCDKObjects(FSCALE, FScale, setCdk, Float);
 CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, int fieldWidth, float start, float low, float high, float inc, float fastinc, int digits, boolean Box, boolean shadow)
 {
    CDKFSCALE *scale	= 0;
-   chtype *holder	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxHeight	= 3;
    int boxWidth		= fieldWidth + 2;
-   int maxWidth		= INT_MIN;
-   int horizontalAdjust = 0;
+   int horizontalAdjust, oldWidth;
    int xpos		= xplace;
    int ypos		= yplace;
-   char **temp		= 0;
-   int x, len, junk, junk2;
+   int junk;
 
    if ((scale = newCDKObject(CDKFSCALE, &my_funcs)) == 0)
       return (0);
@@ -40,7 +37,6 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    scale->label		= 0;
    scale->labelLen	= 0;
    scale->labelWin	= 0;
-   scale->titleLines	= 0;
 
   /*
    * If the fieldWidth is a negative value, the fieldWidth will
@@ -57,47 +53,11 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
       boxWidth		= scale->labelLen + fieldWidth + 2;
    }
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
+   oldWidth = boxWidth;
+   boxWidth = setCdkTitle(ObjOf(scale), title, boxWidth);
+   horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-      temp = CDKsplitString (title, '\n');
-      scale->titleLines = CDKcountStrings (temp);
-
-      /* We need to determine the widest title line. */
-      for (x=0; x < scale->titleLines; x++)
-      {
-	 holder = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (holder);
-      }
-
-      /*
-       * If one of the title lines is wider than the field and the label,
-       * the box width will expand to accomodate.
-       */
-       if (maxWidth > boxWidth)
-       {
-	  horizontalAdjust = (int)((maxWidth - boxWidth) / 2) + 1;
-	  boxWidth = maxWidth + 2;
-       }
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(scale));
-      for (x=0; x < scale->titleLines; x++)
-      {
-	 scale->title[x]	= char2Chtype (temp[x], &scale->titleLen[x], &scale->titlePos[x]);
-	 scale->titlePos[x]	= justifyString (titleWidth, scale->titleLen[x], scale->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      scale->titleLines = 0;
-   }
-   boxHeight += scale->titleLines;
+   boxHeight += TitleLinesOf(scale);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
@@ -107,7 +67,7 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    fieldWidth = (fieldWidth > (boxWidth - scale->labelLen - 2) ? (boxWidth - scale->labelLen - 2) : fieldWidth);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(scale));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the scale window. */
    scale->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -124,13 +84,13 @@ CDKFSCALE *newCDKFScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    {
       scale->labelWin = subwin (scale->win, 1,
 				scale->labelLen + 2,
-				ypos + scale->titleLines + 1,
+				ypos + TitleLinesOf(scale) + 1,
 				xpos + horizontalAdjust + 1);
    }
 
    /* Create the scale field window. */
    scale->fieldWin = subwin (scale->win, 1, fieldWidth,
-				ypos + scale->titleLines + 1,
+				ypos + TitleLinesOf(scale) + 1,
 				xpos + scale->labelLen + horizontalAdjust + 1);
    keypad (scale->fieldWin, TRUE);
    keypad (scale->win, TRUE);
@@ -380,7 +340,7 @@ static void _moveCDKFScale (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(scale), &xpos, &ypos, scale->boxWidth, scale->boxHeight, BorderOf(scale));
+   alignxy (WindowOf(scale), &xpos, &ypos, scale->boxWidth, scale->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -409,7 +369,6 @@ static void _moveCDKFScale (CDKOBJS *object, int xplace, int yplace, boolean rel
 static void _drawCDKFScale (CDKOBJS *object, boolean Box)
 {
    CDKFSCALE *scale = (CDKFSCALE *)object;
-   int x;
 
    /* Draw the shadow. */
    if (scale->shadowWin != 0)
@@ -423,19 +382,7 @@ static void _drawCDKFScale (CDKOBJS *object, boolean Box)
       drawObjBox (scale->win, ObjOf(scale));
    }
 
-   /* Draw in the title if there is one. */
-   if (scale->titleLines != 0)
-   {
-      for (x=0; x < scale->titleLines; x++)
-      {
-	 writeChtype (scale->win,
-			scale->titlePos[x] + BorderOf(scale),
-			x + 1,
-			scale->title[x],
-			HORIZONTAL, 0,
-			scale->titleLen[x]);
-      }
-   }
+   drawCdkTitle (scale->win, object);
 
    /* Draw the label. */
    if (scale->labelWin != 0)
@@ -520,14 +467,9 @@ void setCDKFScaleBackgroundAttrib (CDKFSCALE *scale, chtype attrib)
 static void _destroyCDKFScale (CDKOBJS *object)
 {
    CDKFSCALE *scale = (CDKFSCALE *)object;
-   int x;
 
-   /* Clean up the char pointers. */
    freeChtype (scale->label);
-   for (x=0; x < scale->titleLines; x++)
-   {
-      freeChtype (scale->title[x]);
-   }
+   cleanCdkTitle (object);
 
    /* Clean up the windows. */
    deleteCursesWindow (scale->fieldWin);

@@ -1,5 +1,5 @@
 /*
- * $Id: swindow.h,v 1.19 2003/11/18 22:41:09 tom Exp $
+ * $Id: swindow.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -66,11 +66,7 @@ struct SSwindow {
    chtype **	list;
    int *	listPos;
    int *	listLen;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    int		listSize;
    int		boxHeight;
    int		boxWidth;

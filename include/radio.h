@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.19 2003/11/16 16:40:11 tom Exp $
+ * $Id: radio.h,v 1.20 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -63,10 +63,6 @@ struct SRadio {
    WINDOW *	win;
    WINDOW *	scrollbarWin;
    WINDOW *	shadowWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
-   int		titleLines;
    chtype **	item;
    int *	itemLen;
    int *	itemPos;

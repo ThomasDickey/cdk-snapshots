@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:03:22 $
- * $Revision: 1.145 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.149 $
  */
 
 /*
@@ -25,14 +25,13 @@ DeclareCDKObjects(MATRIX, Matrix, setCdk, Int);
 CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows, int cols, int vrows, int vcols, char *title, char **rowtitles, char **coltitles, int *colwidths, int *colvalues, int rspace, int cspace, chtype filler, int dominant, boolean Box, boolean boxCell, boolean shadow)
 {
    CDKMATRIX *matrix	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
-   chtype *junk		= 0;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxHeight	= 0;
    int boxWidth		= 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   int maxWidth		= INT_MIN;
+   int maxWidth;
    int maxRowTitleWidth = 0;
    int rowSpace		= MAXIMUM (0, rspace);
    int colSpace		= MAXIMUM (0, cspace);
@@ -40,7 +39,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    int begy		= 0;
    int cellWidth	= 0;
    char **temp		= 0;
-   int x, y, len, junk2;
+   int x, y;
 
    if ((matrix = newCDKObject(CDKMATRIX, &my_funcs)) == 0)
       return (0);
@@ -61,40 +60,27 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    vrows = (vrows > rows ? rows : vrows);
    vcols = (vcols > cols ? cols : vcols);
 
-   /* We need to determine the width of the matrix box. */
-   if (title != 0)
-   {
-      temp = CDKsplitString (title, '\n');
-      matrix->titleLines = CDKcountStrings (temp);
-      for (x=0; x < matrix->titleLines; x++)
-      {
-	 junk = char2Chtype (temp[x], &len, &junk2);
-	 maxWidth = MAXIMUM (maxWidth, len);
-	 freeChtype (junk);
-      }
-      CDKfreeStrings(temp);
-   }
-   else
-   {
-      /* No title? Set the required variables. */
-      matrix->titleLines = 0;
-   }
-   boxWidth = maxWidth;
+   /*
+    * Count the number of lines in the title (see setCdkTitle).
+    */
+   temp = CDKsplitString (title, '\n');
+   TitleLinesOf(matrix) = CDKcountStrings (temp);
+   CDKfreeStrings(temp);
 
    /* Determine the height of the box. */
    if (vrows == 1)
    {
-      boxHeight = 6 + matrix->titleLines;
+      boxHeight = 6 + TitleLinesOf(matrix);
    }
    else
    {
       if (rowSpace == 0)
       {
-	 boxHeight = 6 + matrix->titleLines + ((vrows - 1) * 2);
+	 boxHeight = 6 + TitleLinesOf(matrix) + ((vrows - 1) * 2);
       }
       else
       {
-	 boxHeight = 3 + matrix->titleLines + (vrows * 3) + ((vrows-1) * (rowSpace-1));
+	 boxHeight = 3 + TitleLinesOf(matrix) + (vrows * 3) + ((vrows-1) * (rowSpace-1));
       }
    }
 
@@ -121,23 +107,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    maxWidth -= (colSpace-1);
    boxWidth = MAXIMUM (maxWidth, boxWidth);
 
-   /* Translate the char * items to chtype * */
-   if (title != 0)
-   {
-      int titleWidth;
-
-      temp = CDKsplitString (title, '\n');
-      matrix->titleLines = CDKcountStrings (temp);
-
-      /* For each line in the title, convert from char * to chtype * */
-      titleWidth = boxWidth - (2 * BorderOf(matrix));
-      for (x=0; x < matrix->titleLines; x++)
-      {
-	 matrix->title[x]	= char2Chtype (temp[x], &matrix->titleLen[x], &matrix->titlePos[x]);
-	 matrix->titlePos[x]	= justifyString (titleWidth, matrix->titleLen[x], matrix->titlePos[x]);
-      }
-      CDKfreeStrings(temp);
-   }
+   boxWidth = setCdkTitle(ObjOf(matrix), title, boxWidth);
 
   /*
    * Make sure the dimensions of the window didn't
@@ -147,7 +117,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(matrix));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the pop-up window. */
    matrix->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -160,7 +130,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
 
    /* Make the subwindows in the pop-up. */
    begx = xpos;
-   begy = ypos + 1 + matrix->titleLines;
+   begy = ypos + 1 + TitleLinesOf(matrix);
 
    /* Make the 'empty' 0x0 cell. */
    matrix->cell[0][0] = subwin (matrix->win, 3, matrix->maxrt, begy, begx);
@@ -951,7 +921,7 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(matrix), &xpos, &ypos, matrix->boxWidth, matrix->boxHeight, BorderOf(matrix));
+   alignxy (WindowOf(matrix), &xpos, &ypos, matrix->boxWidth, matrix->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -1204,19 +1174,8 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
       drawObjBox (matrix->win, ObjOf(matrix));
    }
 
-   /* Draw in the title. */
-   if (matrix->titleLines != 0)
-   {
-      for (x=0; x < matrix->titleLines; x++)
-      {
-	 writeChtype (matrix->win,
-			matrix->titlePos[x] + BorderOf(matrix),
-			x + 1,
-			matrix->title[x],
-			HORIZONTAL, 0,
-			matrix->titleLen[x]);
-      }
-   }
+   drawCdkTitle (matrix->win, object);
+
    touchwin (matrix->win);
    wrefresh (matrix->win);
 
@@ -1272,14 +1231,7 @@ static void _destroyCDKMatrix (CDKOBJS *object)
    int x = 0;
    int y = 0;
 
-   /* Clear out the title. */
-   if (matrix->titleLines != 0)
-   {
-      for (x=0; x < matrix->titleLines; x++)
-      {
-	 freeChtype (matrix->title[x]);
-      }
-   }
+   cleanCdkTitle (object);
 
    /* Clear out the col titles. */
    for (x=1; x <= matrix->cols; x++)

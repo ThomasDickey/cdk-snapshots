@@ -1,8 +1,20 @@
+/* $Id: fscale_ex.c,v 1.2 2003/11/30 18:34:53 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="scale_ex";
+char *XCursesProgramName = "fscale_ex";
 #endif
+
+static float myFloatParam (CDK_PARAMS *params, int code, float missing)
+{
+   char *opt = CDKparamString (params, code);
+   float result = missing;
+
+   if (opt != 0)
+      result = atof(opt);
+   return result;
+}
 
 /*
  * This program demonstrates the Cdk scale widget.
@@ -15,39 +27,18 @@ int main (int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C>Select a value";
    char *label		= "</5>Current value";
-   float low		= -1.2;
-   float high		= 2.4;
-   float inc		= 0.2;
    char temp[256], *mesg[5];
-   int ret;
    float selection;
 
-   /* Parse up the command line.*/
-   while (1)
-   {
-      ret = getopt (argc, argv, "l:h:i:");
+   CDK_PARAMS params;
+   float high;
+   float inc;
+   float low;
 
-      /* Are there any more command line options to parse. */
-      if (ret == -1)
-      {
-	 break;
-      }
-
-      switch (ret)
-      {
-	 case 'l':
-	      low = atof (optarg);
-	      break;
-
-	 case 'h':
-	      high = atof (optarg);
-	      break;
-
-	 case 'i':
-	      inc = atof (optarg);
-	      break;
-      }
-   }
+   CDKparseParams(argc, argv, &params, "h:i:l:w:" CDK_MIN_PARAMS);
+   high   = myFloatParam(&params, 'h', 2.4);
+   inc    = myFloatParam(&params, 'i', 0.2);
+   low    = myFloatParam(&params, 'l', -1.2);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -57,10 +48,15 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the scale. */
-   scale = newCDKFScale (cdkscreen, CENTER, CENTER,
-			title, label, A_NORMAL,
-			10, low, low, high,
-			inc, (inc*2.), 1, TRUE, FALSE);
+   scale = newCDKFScale (cdkscreen,
+			 CDKparamValue(&params, 'X', CENTER),
+			 CDKparamValue(&params, 'Y', CENTER),
+			 title, label, A_NORMAL,
+			 CDKparamNumber2(&params, 'w', 10),
+			 low, low, high,
+			 inc, (inc*2.), 1,
+			 CDKparamValue(&params, 'N', TRUE),
+			 CDKparamValue(&params, 'S', FALSE));
 
    /* Is the scale null? */
    if (scale == 0)

@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.8 2003/11/25 00:03:03 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.9 2003/11/29 13:10:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -26,7 +26,7 @@ static int getUserList (char ***list)
    return x;
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen		= 0;
@@ -39,6 +39,10 @@ int main(void)
    char *mesg[5], temp[256];
    int count;
 
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS);
+
    /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
@@ -50,10 +54,16 @@ int main(void)
    count = getUserList (&info);
 
    /* Create the alpha list widget. */
-   alphaList = newCDKAlphalist (cdkscreen, CENTER, CENTER,
-				0, 0, title, label,
+   alphaList = newCDKAlphalist (cdkscreen,
+				CDKparamValue(&params, 'X', CENTER),
+				CDKparamValue(&params, 'Y', CENTER),
+				CDKparamValue(&params, 'H', 0),
+				CDKparamValue(&params, 'W', 0),
+				title, label,
 				info, count,
-				'_', A_REVERSE, TRUE, FALSE);
+				'_', A_REVERSE,
+				CDKparamValue(&params, 'N', TRUE),
+				CDKparamValue(&params, 'S', FALSE));
 
    /* Let them play with the alpha list. */
    word = activateCDKAlphalist (alphaList, 0);

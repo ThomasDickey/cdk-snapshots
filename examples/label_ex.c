@@ -1,16 +1,22 @@
+/* $Id: label_ex.c,v 1.6 2003/11/30 18:42:41 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="label_ex";
+char *XCursesProgramName = "label_ex";
 #endif
 
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN	*cdkscreen;
    CDKLABEL	*demo;
    WINDOW	*cursesWin;
    char		*mesg[10];
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -26,7 +32,12 @@ int main (void)
    mesg[3] = "<C>This line should be set to whatever the screen default is.";
 
    /* Declare the labels. */
-   demo = newCDKLabel (cdkscreen, CENTER, CENTER, mesg, 4, TRUE, TRUE);
+   demo = newCDKLabel (cdkscreen,
+		       CDKparamValue(&params, 'X', CENTER),
+		       CDKparamValue(&params, 'Y', CENTER),
+		       mesg, 4,
+		       CDKparamValue(&params, 'N', TRUE),
+		       CDKparamValue(&params, 'S', TRUE));
 
    /* Is the label null? */
    if (demo == 0)

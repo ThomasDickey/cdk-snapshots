@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/25 01:12:22 $
- * $Revision: 1.130 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.136 $
  */
 
 /*
@@ -37,8 +37,8 @@ DeclareCDKObjects(VIEWER, Viewer, setCdk, Unknown);
 CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char **buttons, int buttonCount, chtype buttonHighlight, boolean Box, boolean shadow)
 {
    CDKVIEWER *viewer	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= width;
    int boxHeight	= height;
    int xpos		= xplace;
@@ -68,7 +68,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(viewer));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the viewer window. */
    viewer->win = newwin (boxHeight, boxWidth, ypos, xpos);
@@ -120,7 +120,6 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    viewer->listSize		= -1;
    viewer->showLineInfo		= 1;
    viewer->exitType		= vEARLY_EXIT;
-   viewer->titleLines		= 0;
 
    /* Do we need to create a shadow??? */
    if (shadow)
@@ -161,45 +160,15 @@ int setCDKViewer (CDKVIEWER *viewer, char *title, char **list, int listSize, cht
  */
 void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
 {
-   char **temp;
-   int x;
-
-   /* Clean out the old title. */
-   for (x=0; x < viewer->titleLines; x++)
-   {
-      freeChtype (viewer->title[x]);
-      viewer->title[x] = 0;
-      viewer->titlePos[x] = 0;
-      viewer->titleLen[x] = 0;
-   }
-   viewer->titleLines = 0;
-   viewer->titleAdj = 0;
-
-   /* Create the new title if there is one. */
-   if (title != 0)
-   {
-      int titleWidth = viewer->boxWidth - (2 * BorderOf(viewer));
-
-      temp = CDKsplitString (title, '\n');
-      viewer->titleLines = CDKcountStrings (temp);
-      viewer->titleLines = MINIMUM(viewer->titleLines, MAX_LINES - 1);
-
-      /* For each line in the title, convert from char * to chtype * */
-      for (x=0; x < viewer->titleLines; x++)
-      {
-	 viewer->title[x]	= char2Chtype (temp[x], &viewer->titleLen[x], &viewer->titlePos[x]);
-	 viewer->titlePos[x]	= justifyString (titleWidth, viewer->titleLen[x], viewer->titlePos[x]);
-      }
-      viewer->titleAdj = viewer->titleLines;
-      CDKfreeStrings(temp);
-   }
+   (void) setCdkTitle(ObjOf(viewer), title, - (viewer->boxWidth + 1));
+   viewer->titleAdj = TitleLinesOf(viewer);
 
    /* Need to set viewer->viewSize. */
-   viewer->viewSize = viewer->boxHeight - (viewer->titleLines + 1) - 2;
+   viewer->viewSize = viewer->boxHeight - (TitleLinesOf(viewer) + 1) - 2;
 }
 chtype **getCDKViewerTitle (CDKVIEWER *viewer)
 {
-   return viewer->title;
+   return TitleOf(viewer);
 }
 
 static void setupLine (CDKVIEWER *viewer, boolean interpret, char *list, int x)
@@ -948,7 +917,7 @@ static void _moveCDKViewer (CDKOBJS *object, int xplace, int yplace, boolean rel
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(viewer), &xpos, &ypos, viewer->boxWidth, viewer->boxHeight, BorderOf(viewer));
+   alignxy (WindowOf(viewer), &xpos, &ypos, viewer->boxWidth, viewer->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
@@ -1083,11 +1052,7 @@ static void _destroyCDKViewer (CDKOBJS *object)
 
    destroyInfo(viewer);
 
-   /* Clear up the char pointers. */
-   for (x=0; x < viewer->titleLines; x++)
-   {
-      freeChtype (viewer->title[x]);
-   }
+   cleanCdkTitle (object);
    for (x=0; x < viewer->buttonCount; x++)
    {
       freeChtype (viewer->button[x]);
@@ -1128,19 +1093,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
    /* Clear the window. */
    werase (viewer->win);
 
-   /* Redraw the title. */
-   if (viewer->titleLines != 0)
-   {
-      for (x=0; x < viewer->titleLines; x++)
-      {
-	 writeChtype (viewer->win,
-		      viewer->titlePos[x] + BorderOf(viewer),
-		      x + 1,
-		      viewer->title[x],
-		      HORIZONTAL, 0,
-		      viewer->titleLen[x]);
-      }
-   }
+   drawCdkTitle (viewer->win, ObjOf(viewer));
 
    /* Draw in the current line at the top. */
    if (viewer->showLineInfo == TRUE)
@@ -1169,12 +1122,12 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
       * they asked for the info line and there is no title, or if the
       * two items overlap.
       */
-      if (viewer->titleLines == 0
-       || viewer->titlePos[0] < ((int)strlen(temp) + 2))
+      if (TitleLinesOf(viewer) == 0
+       || TitlePosOf(viewer)[0] < ((int)strlen(temp) + 2))
       {
 	 listAdjust = 1;
       }
-      writeChar (viewer->win, 1, (listAdjust ? viewer->titleLines : 0) + 1,
+      writeChar (viewer->win, 1, (listAdjust ? TitleLinesOf(viewer) : 0) + 1,
 		 temp, HORIZONTAL, 0, (int)strlen(temp));
    }
 
@@ -1193,7 +1146,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
 	 if (screenPos >= 0)
 	 {
 	    writeChtype (viewer->win, screenPos,
-			 x + viewer->titleLines + listAdjust + 1,
+			 x + TitleLinesOf(viewer) + listAdjust + 1,
 			 viewer->list[x + viewer->currentTop],
 			 HORIZONTAL, 0,
 			 viewer->listLen[x + viewer->currentTop]);
@@ -1201,7 +1154,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
 	 else
 	 {
 	    writeChtype (viewer->win, 1,
-			 x + viewer->titleLines + listAdjust + 1,
+			 x + TitleLinesOf(viewer) + listAdjust + 1,
 			 viewer->list[x + viewer->currentTop],
 			 HORIZONTAL,
 			 viewer->leftChar - viewer->listPos[viewer->currentTop + x],

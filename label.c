@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 22:00:05 $
- * $Revision: 1.73 $
+ * $Date: 2003/11/30 21:15:51 $
+ * $Revision: 1.75 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -15,8 +15,8 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
 {
    /* Maintain the label information. */
    CDKLABEL *label	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window) - 1;
-   int parentHeight	= getmaxy(cdkscreen->window) - 1;
+   int parentWidth	= getmaxx(cdkscreen->window);
+   int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= INT_MIN;
    int boxHeight;
    int xpos		= xplace;
@@ -51,7 +51,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
 
    /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight, BorderOf(label));
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Create the label. */
    ScreenOf(label)	= cdkscreen;
@@ -252,7 +252,7 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(label), &xpos, &ypos, label->boxWidth, label->boxHeight, BorderOf(label));
+   alignxy (WindowOf(label), &xpos, &ypos, label->boxWidth, label->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;

@@ -1,4 +1,4 @@
-/* $Id: radio1_ex.c,v 1.3 2002/07/14 21:39:11 moloney Exp $ */
+/* $Id: radio1_ex.c,v 1.4 2003/11/30 19:34:11 tom Exp $ */
 
 #include "cdk.h"
 
@@ -9,7 +9,7 @@ char *XCursesProgramName = "radio_ex";
 /*
  * This program demonstrates the Cdk radio widget.
  */
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = (CDKSCREEN *) NULL;
@@ -20,6 +20,10 @@ int main (void)
    char *mesg[5], temp[100];
    int selection;
 
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
+
    /* Set up CDK. */
    cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
@@ -28,10 +32,17 @@ int main (void)
    initCDKColor ();
 
    /* Create the radio list. */
-   radio = newCDKRadio (cdkscreen, CENTER, CENTER, NONE,
-			5, 20, NULL, item, 3,
+   radio = newCDKRadio (cdkscreen,
+			CDKparamValue(&params, 'X', CENTER),
+			CDKparamValue(&params, 'Y', CENTER),
+			CDKparsePosition(CDKparamString2(&params, 's', "NONE")),
+			CDKparamValue(&params, 'H', 5),
+			CDKparamValue(&params, 'W', 20),
+			NULL, item, 3,
 			'#' | A_REVERSE, 1,
-			A_REVERSE, FALSE, FALSE);
+			A_REVERSE,
+			CDKparamValue(&params, 'N', TRUE),
+			CDKparamValue(&params, 'S', FALSE));
 
    /* Check if the radio list is NULL. */
    if (radio == (CDKRADIO *) NULL)

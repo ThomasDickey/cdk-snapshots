@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.18 2003/11/15 18:11:09 tom Exp $
+ * $Id: buttonbox.h,v 1.19 2003/11/27 14:55:27 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -60,11 +60,7 @@ struct SButtonBox {
    WINDOW *	parent;
    WINDOW *	win;
    WINDOW *	shadowWin;
-   chtype *	title[MAX_LINES];
-   int		titlePos[MAX_LINES];
-   int		titleLen[MAX_LINES];
    int		titleAdj;
-   int		titleLines;
    chtype *	button[MAX_BUTTONS];
    int		buttonLen[MAX_BUTTONS];
    int		buttonPos[MAX_BUTTONS];

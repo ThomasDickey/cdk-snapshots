@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.4 2002/07/16 19:37:37 tom Exp $ */
+/* $Id: cdklabel.c,v 1.6 2003/11/30 20:31:26 tom Exp $ */
 
 #include <cdk.h>
 
@@ -20,121 +20,39 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen		= 0;
    CDKLABEL *widget		= 0;
    WINDOW *cursesWindow		= 0;
-   char *message		= 0;
-   char *filename		= 0;
-   char *command		= 0;
    char *CDK_WIDGET_COLOR	= 0;
    char *temp			= 0;
    chtype *holder		= 0;
-   char waitChar		= 0;
-   boolean shadowWidget		= FALSE;
-   boolean boxWidget		= TRUE;
-   int xpos			= CENTER;
-   int ypos			= CENTER;
    int messageLines		= -1;
-   int sleepLength		= -1;
    char **messageList		= 0;
    char tempCommand[1000];
-   int ret, x, j1, j2;
+   int x, j1, j2;
 
-   /* Parse up the command line. */
-   while (1)
-   {
-      /* If there aren't any more options, then break. */
-      if ((ret = getopt (argc, argv, "m:f:p:s:c:X:Y:NS")) == -1)
-      {
-         break;
-      }
+   CDK_PARAMS params;
+   boolean boxWidget;
+   boolean shadowWidget;
+   char *command;
+   char *filename;
+   char *message;
+   char waitChar = 0;
+   int sleepLength;
+   int xpos;
+   int ypos;
 
-      /* Determine which command line option we just received. */
-      switch (ret)
-      {
-         case 'm':
-              message = copyChar (optarg);
-              break;
+   CDKparseParams(argc, argv, &params, "c:f:m:p:s:" "X:Y:NS");
 
-         case 'f':
-              filename = copyChar (optarg);
-              break;
+   xpos         = CDKparamValue(&params, 'X', CENTER);
+   ypos         = CDKparamValue(&params, 'Y', CENTER);
+   boxWidget    = CDKparamValue(&params, 'N', TRUE);
+   shadowWidget = CDKparamValue(&params, 'S', FALSE);
 
-         case 'c':
-              command = copyChar (optarg);
-              break;
+   sleepLength  = CDKparamValue(&params, 's', 0);
+   command      = CDKparamString(&params, 'c');
+   filename     = CDKparamString(&params, 'f');
+   message      = CDKparamString(&params, 'm');
 
-         case 'p':
-              waitChar = optarg[0];
-              break;
-
-         case 's':
-              sleepLength = atoi (optarg);
-              break;
-
-         case 'X':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 xpos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 xpos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 xpos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 xpos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 xpos = CENTER;
-              }
-              else
-              {
-                 xpos = atoi (optarg);
-              }
-              break;
-
-         case 'Y':
-              if (strcmp (optarg, "TOP") == 0)
-              {
-                 ypos = TOP;
-              }
-              else if (strcmp (optarg, "BOTTOM") == 0)
-              {
-                 ypos = BOTTOM;
-              }
-              else if (strcmp (optarg, "LEFT") == 0)
-              {
-                 ypos = LEFT;
-              }
-              else if (strcmp (optarg, "RIGHT") == 0)
-              {
-                 ypos = RIGHT;
-              }
-              else if (strcmp (optarg, "CENTER") == 0)
-              {
-                 ypos = CENTER;
-              }
-              else
-              {
-                 ypos = atoi (optarg);
-              }
-              break;
-
-         case 'N':
-              boxWidget = FALSE;
-              break;
-
-         case 'S':
-              shadowWidget = TRUE;
-              break;
-
-         default:
-              break;
-      }
-   }
+   if ((temp = CDKparamString(&params, 'p')) != 0)
+      waitChar = *temp;
 
    /* Make sure we have a message to display. */
    if (message == 0)
@@ -142,22 +60,21 @@ int main (int argc, char **argv)
       /* No message, maybe they provided a file to read. */
       if (filename != 0)
       {
-         /* Read the file in. */
-         messageLines = CDKreadFile (filename, &messageList);
-         freeChar (filename);
+	 /* Read the file in. */
+	 messageLines = CDKreadFile (filename, &messageList);
 
-         /* Check if there was an error. */
-         if (messageLines == -1)
-         {
-            fprintf (stderr, "Error: Could not open the file %s\n", filename);
-            exit (-1);
-         }
+	 /* Check if there was an error. */
+	 if (messageLines == -1)
+	 {
+	    fprintf (stderr, "Error: Could not open the file %s\n", filename);
+	    exit (-1);
+	 }
       }
       else
       {
-         /* No message, no file, it's an error. */
-         fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-         exit (-1);
+	 /* No message, no file, it's an error. */
+	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
+	 exit (-1);
       }
    }
    else
@@ -165,7 +82,6 @@ int main (int argc, char **argv)
       /* Split the message up. */
       messageList = CDKsplitString (message, '\n');
       messageLines = CDKcountStrings (messageList);
-      freeChar (message);
    }
 
    /* Set up CDK. */
@@ -201,7 +117,7 @@ int main (int argc, char **argv)
       /* Clean up some memory. */
       for (x=0; x < messageLines; x++)
       {
-         freeChar (messageList[x]);
+	 freeChar (messageList[x]);
       }
 
       /* Shut down curses and CDK. */
@@ -237,7 +153,7 @@ int main (int argc, char **argv)
    }
 
    /* If they supplied a sleep time, sleep for the given length. */
-   if (sleepLength != -1)
+   if (sleepLength > 0)
    {
       sleep (sleepLength);
    }

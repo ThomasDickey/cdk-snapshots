@@ -7,6 +7,27 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2003/11/30 - T.E.Dickey <dickey@his.com>
+========================================
+	+ remove borderSize parameter from alignxy().
+	+ modify all widgets to account for borderSize consistently, allowing
+	  one to display a widget that uses the full screen size (report by
+	  Yee_Keat Phuah <yk.phuah@nestac.com>).
+	+ add cdk_params.c, use this to simplify cli programs and add getopt
+	  processing systematically to the demos and examples.
+	+ correct an off-by-one in baseName() that would return the slash
+	  character in the result.
+	+ add setCDKCalendarMonthsNames() and setCDKCalendarDaysNames (patch
+	  by Stanislaw Bierowka <staszek@pecet.com.pl>).
+	+ split-out several files from draw.c since they are wrappers for
+	  widgets rather than drawing functions.  Doing this reduces the
+	  executable size:  get_index.c, get_string.c, popup_dialog.c,
+	  popup_label.c, select_file.c, view_file.c and view_info.c
+	+ eliminate static MAX_LINES limit from graph-widget values.
+	+ eliminate static MAX_LINES limit from widget titles.
+	+ updated configure script, improved checks for curses functions.
+	+ updated config.guess, config.sub
+
 2003/11/24 - T.E.Dickey <dickey@his.com>
 ========================================
 	+ display a "processing..." message in setCDKViewerInfo while building

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.43 2003/11/15 18:25:20 tom Exp $
+# $Id: Makefile.in,v 1.49 2003/11/28 13:18:06 tom Exp $
 #
 #  Copyright 2001-2002,2003, Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -33,8 +33,9 @@
 #  SUCH DAMAGE.
 #
 SHELL		= /bin/sh
+@SET_MAKE@
+MAKE_RECUR	= @cf_cv_makeflags@ prefix=$(prefix)
 
-LIBTOOL		= @LIBTOOL@ @ECHO_LT@
 LIB_ROOTNAME	= @LIB_ROOTNAME@
 LIB_SUFFIX	= @LIB_SUFFIX@
 
@@ -51,6 +52,10 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
+x		= @EXEEXT@
+o		= .@OBJEXT@
+a		= @LIB_SUFFIX@
+
 DESTDIR		=
 includedir	= $(DESTDIR)@includedir@
 libdir		= $(DESTDIR)@libdir@
@@ -61,26 +66,34 @@ INCLUDE_DIR	= $(includedir)/cdk
 LIB_DIR		= $(libdir)
 MAN_DIR		= $(mandir)/man3
 
+CC		= @CC@
+CPP		= @CPP@
+AR		= @AR@
+RANLIB		= @LIB_PREP@
+RM		= rm -f
+
 LIBS		= @LIBS@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I./include -I$(srcdir)/include @CPPFLAGS@
 
-CC		= @CC@
-CPP		= @CPP@
 LDFLAGS		= @LDFLAGS@
-LIB_CREATE	= @LIB_CREATE@
-RANLIB		= @RANLIB@
 
-RM		= rm -f
+LIBTOOL		= @LIBTOOL@ @ECHO_LT@
+LIBTOOL_CLEAN	= @LIB_CLEAN@
+LIBTOOL_COMPILE	= @LIB_COMPILE@
+LIBTOOL_CREATE	= @LIB_CREATE@
+LIBTOOL_LINK	= @LIB_LINK@
+LIBTOOL_INSTALL	= @LIB_INSTALL@
+LIBTOOL_UNINSTALL = @LIB_UNINSTALL@
 
 INSTALL		= @INSTALL@
-INSTALL_PROGRAM	= @INSTALL_PROGRAM@
+INSTALL_PROGRAM	= $(LIBTOOL_INSTALL) @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
-INSTALL_LIB	= @LIB_INSTALL@ $(INSTALL_DATA)
-UNINSTALL_LIB	= @LIB_UNINSTALL@ $(RM)
+INSTALL_LIB	= $(LIBTOOL_INSTALL) $(INSTALL_DATA)
+UNINSTALL_LIB	= $(LIBTOOL_UNINSTALL) $(RM)
 
-.SUFFIXES: .c .o .os .i
+.SUFFIXES: .c $o .os .i
 
 DEFAULT		= $(CDKLIB) headers.sed
 
@@ -98,6 +111,7 @@ CDKHDR		= \
 		cdk.h \
 		cdk_config.h \
 		cdk_objs.h \
+		cdk_params.h \
 		cdk_util.h \
 		cdk_version.h \
 		cdkscreen.h \
@@ -133,6 +147,7 @@ CDKSRC		= \
 		calendar.c \
 		cdk.c \
 		cdk_objs.c \
+		cdk_params.c \
 		cdkscreen.c \
 		debug.c \
 		dialog.c \
@@ -140,6 +155,8 @@ CDKSRC		= \
 		entry.c \
 		fscale.c \
 		fselect.c \
+		get_index.c \
+		get_string.c \
 		graph.c \
 		histogram.c \
 		itemlist.c \
@@ -148,6 +165,8 @@ CDKSRC		= \
 		matrix.c \
 		mentry.c \
 		menu.c \
+		popup_dialog.c \
+		popup_label.c \
 		position.c \
 		radio.c \
 		scale.c \
@@ -155,9 +174,12 @@ CDKSRC		= \
 		selection.c \
 		slider.c \
 		swindow.c \
+		select_file.c \
 		template.c \
 		traverse.c \
 		version.c \
+		view_file.c \
+		view_info.c \
 		viewer.c
 
 CDKMAN		= \
@@ -196,7 +218,7 @@ CDKMAN		= \
 
 CDKREADME	= EXPANDING NOTES TODO COPYING INSTALL README
 
-OBJECTS		= $(CDKSRC:.c=.o)
+OBJECTS		= $(CDKSRC:.c=$o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
 LIB_OBJECT	= @LIB_OBJECT@
 
@@ -209,7 +231,7 @@ all $(OBJECTS) ::	include/cdk_config.h
 all cdklib :: $(DEFAULT)
 
 $(CDKLIB) :: $(OBJECTS)
-	@echo creating $@; $(LIB_CREATE) $@ $(LIB_OBJECT)
+	@echo creating $@; $(LIBTOOL_CREATE) $@ $(LIB_OBJECT)
 	@$(RANLIB) $@
 
 cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS) headers.sed
@@ -219,19 +241,19 @@ cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS) headers.sed
 # Make the examples directory.
 #
 all examples ::
-	cd examples && make
+	cd examples && $(MAKE) $(MAKE_RECUR)
 
 #
 # Make the demos directory.
 #
 all demos ::
-	cd demos && make
+	cd demos && $(MAKE) $(MAKE_RECUR)
 
 #
 # Make the cli directory.
 #
 all cli ::
-	cd cli && make
+	cd cli && $(MAKE) $(MAKE_RECUR)
 
 # Order of install-targets should match the order of uninstalls.  Put the
 # documentation first, then the headers, and finally the library:
@@ -330,13 +352,15 @@ headers.sed : $(srcdir)/headers.sh
 # Clean up after ourselves...
 #
 clean ::
-	$(RM) -fr .libs
-	$(RM) *.[oia] *.l[oa] *.os $(CDKLIB) $(CDKSHLIB) headers.sed core tags *~
+	@- $(RM) -r autom4te.cache
+	- $(LIBTOOL_CLEAN) $(RM) *$o $(CDKLIB)
+	- $(RM) *.i *.os $(CDKSHLIB)
+	- $(RM) headers.sed core tags *~
 
 realclean :: clean
-	cd examples	&& make clean
-	cd demos	&& make clean
-	cd cli		&& make clean
+	cd examples	&& $(MAKE) $(MAKE_RECUR) clean
+	cd demos	&& $(MAKE) $(MAKE_RECUR) clean
+	cd cli		&& $(MAKE) $(MAKE_RECUR) clean
 
 #
 # Use this to clean the distribution.
@@ -353,9 +377,9 @@ distclean :: realclean
 #
 # Standard .c to .o compile line.
 #
-.c.o:
+.c$o:
 @RULE_CC@
-	@ECHO_CC@$(LIBTOOL) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+	@ECHO_CC@$(LIBTOOL_COMPILE) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 .c.i:
 @RULE_CC@

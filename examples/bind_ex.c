@@ -1,4 +1,4 @@
-/* $Id: bind_ex.c,v 1.11 2002/07/14 14:23:04 tom Exp $ */
+/* $Id: bind_ex.c,v 1.12 2003/11/29 15:40:00 tom Exp $ */
 
 #include <cdk.h>
 
@@ -45,7 +45,7 @@ static int dialogHelpCB (EObjectType cdktype GCC_UNUSED,
    return (FALSE);
 }
 
-int main (void)
+int main(int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN	*cdkscreen;
@@ -59,6 +59,10 @@ int main (void)
    int		selection;
    time_t	clck;
    struct tm	*currentTime;
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr ();
@@ -77,9 +81,13 @@ int main (void)
    buttons[3] = "Quit";
 
    /* Create the dialog box. */
-   question = newCDKDialog (cdkscreen, CENTER, CENTER,
+   question = newCDKDialog (cdkscreen,
+			    CDKparamValue(&params, 'X', CENTER),
+			    CDKparamValue(&params, 'Y', CENTER),
 			    message, 3, buttons, 4, A_REVERSE,
-			    TRUE, TRUE, FALSE);
+			    TRUE,
+			    CDKparamValue(&params, 'N', TRUE),
+			    CDKparamValue(&params, 'S', FALSE));
 
    /* Check if we got a null value back. */
    if (question == (CDKDIALOG *) 0)

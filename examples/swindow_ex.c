@@ -1,10 +1,15 @@
+/* $Id: swindow_ex.c,v 1.7 2003/11/30 20:12:32 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="swindow_ex";
 #endif
 
-int main (void)
+/*
+ * Demonstrate a scrolling-window.
+ */
+int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
@@ -12,6 +17,10 @@ int main (void)
    WINDOW *cursesWin	= 0;
    char *title		= "<C></5>Error Log";
    char *mesg[5];
+
+   CDK_PARAMS params;
+
+   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -21,8 +30,14 @@ int main (void)
    initCDKColor();
 
    /* Create the scrolling window. */
-   swindow = newCDKSwindow (cdkscreen, CENTER, CENTER, 6, 65,
-				title, 100, TRUE, FALSE);
+   swindow = newCDKSwindow (cdkscreen,
+			   CDKparamValue(&params, 'X', CENTER),
+			   CDKparamValue(&params, 'Y', CENTER),
+			   CDKparamValue(&params, 'H', 6),
+			   CDKparamValue(&params, 'W', 65),
+			   title, 100,
+			   CDKparamValue(&params, 'N', TRUE),
+			   CDKparamValue(&params, 'S', FALSE));
 
    /* Is the window null. */
    if (swindow == 0)
