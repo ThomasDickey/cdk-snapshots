@@ -1,6 +1,6 @@
 # Note that this is NOT a relocatable package
 %define ver      4.9.10
-%define subver   20020727
+%define subver   20030418
 %define rel      1
 %define prefix   /usr
 
@@ -10,7 +10,7 @@ Version: %ver
 Release: %rel
 Copyright: BSD
 Group: Applications/Libraries
-Source: ftp://dickey.his.com/cdk/cdk.tar.gz
+Source: ftp://invisible-island.com/cdk/cdk.tar.gz
 BuildRoot: /tmp/cdk-%{ver}-root
 Packager: Squidster <squidster@msa.dec.com>
 Requires: ncurses

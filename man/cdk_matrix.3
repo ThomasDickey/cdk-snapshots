@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.14 2002/08/09 20:15:12 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.15 2003/04/18 00:10:20 tom Exp $
 .TH cdk_matrix 3
 .SH NAME
 activateCDKMatrix,
@@ -53,7 +53,7 @@ setCDKMatrixVerticalChar,
 .B "void eraseCDKMatrix ("
 .BI "CDKMATRIX *" "matrix");
 .TP 15
-.B "void getCDKMatrixCell ("
+.B "char * getCDKMatrixCell ("
 .BI "CDKMATRIX *" "matrix",
 .BI "int " "row",
 .BI "int " "col");
@@ -63,12 +63,14 @@ setCDKMatrixVerticalChar,
 .BI "chtype " "input");
 .TP 15
 .B "int jumpToCell ("
-.BI "CDKMATRIX *" "matrix");
+.BI "CDKMATRIX *" "matrix",
+.BI "int " "row",
+.BI "int " "col");
 .TP 15
 .B "void moveCDKMatrix ("
 .BI "CDKMATRIX *" "matrix",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -103,7 +105,7 @@ setCDKMatrixVerticalChar,
 .TP 15
 .B "void setCDKMatrix ("
 .BI "CDKMATRIX *" "matrix",
-.BI "char **" "info",
+.BI "char *" "info"[MAX_MATRIX_ROWS][MAX_MATRIX_COLS],
 .BI "int " "rows",
 .BI "int *" "columnLengths");
 .TP 15
@@ -119,7 +121,7 @@ setCDKMatrixVerticalChar,
 .BI "CDKMATRIX *" "matrix",
 .BI "MATRIXCB " "callbackFunction");
 .TP 15
-.B "void setCDKMatrixCell ("
+.B "int setCDKMatrixCell ("
 .BI "CDKMATRIX *" "matrix",
 .BI "int " "row",
 .BI "int " "col",

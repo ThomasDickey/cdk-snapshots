@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 12:25:08 $
- * $Revision: 1.9 $
+ * $Date: 2003/04/17 22:21:41 $
+ * $Revision: 1.10 $
  */
 
 DeclareCDKObjects (BUTTON, Button, Int);
@@ -291,7 +291,7 @@ static void drawCDKButtonText (CDKBUTTON * button)
 /*
  * This draws the button widget.
  */
-static void _drawCDKButton (CDKOBJS * object, boolean Box)
+static void _drawCDKButton (CDKOBJS * object, boolean Box GCC_UNUSED)
 {
    CDKBUTTON *button = (CDKBUTTON *) object;
 

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.12 2002/07/19 00:51:40 tom Exp $
+# $Id: Makefile.in,v 1.14 2003/04/18 22:23:34 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -10,7 +10,7 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
-LIBS		= ../libcdk@LIB_SUFFIX@ @LIBS@
+LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 
 LIBTOOL		= @LIBTOOL@
 CC		= @CC@
@@ -19,7 +19,7 @@ x		= @PROG_EXT@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include -I. @CPPFLAGS@
-LDFLAGS		= @LDFLAGS@
+LDFLAGS		= -L.. @LDFLAGS@
 
 BINS		= \
 		fileview$x \
@@ -28,8 +28,11 @@ BINS		= \
 		clock$x \
 		stopSign$x \
 		appointment$x \
-		serial$x \
 		vinstall$x
+
+# this needs configure-script work:
+OTHER_BINS	= \
+		serial$x
 
 #
 # If you have Sybase installed on your system, try making
@@ -51,7 +54,7 @@ all : $(BINS)
 #
 # Most of the examples are built from a single .c file using the same libraries
 #
-LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $@.o -o $@ $(LDFLAGS) $(LIBS)
+LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
 
 # fileview    - Basic file selector/file viewer combination.
 fileview$x :	fileview.o	; $(LINKIT)
@@ -91,7 +94,7 @@ syb$x :		syb.c
 #
 clean::
 	-rm -rf .libs
-	-rm -f core *.o $(BINS)
+	-rm -f core *.o $(BINS) $(OTHER_BINS)
 
 distclean::	clean
 	-rm -f Makefile

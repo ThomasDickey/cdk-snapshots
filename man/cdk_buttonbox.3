@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_buttonbox.3,v 1.14 2002/07/09 00:55:26 tom Exp $
+.\" $Id: cdk_buttonbox.3,v 1.15 2003/04/18 00:00:09 tom Exp $
 .TH cdk_buttonbox 3
 .SH NAME
 activateCDKButtonbox,
@@ -61,8 +61,8 @@ setCDKButtonboxVerticalChar \- Creates a managed curses buttonbox widget.
 .TP 15
 .B "void moveCDKButtonbox ("
 .BI "CDKBUTTONBOX *" "buttonbox",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -72,7 +72,7 @@ setCDKButtonboxVerticalChar \- Creates a managed curses buttonbox widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char ** " "title" ,
+.BI "char * " "title" ,
 .BI "int " "rows",
 .BI "int " "cols",
 .BI "char ** " "buttons" ,

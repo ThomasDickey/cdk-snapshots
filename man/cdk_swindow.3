@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.12 2002/02/26 00:31:05 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.13 2003/04/18 00:18:26 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -91,7 +91,7 @@ trimCDKSwindow \- a curses scrolling window widget.
 .B "boolean getCDKSwindowBox ("
 .BI "CDKSWINDOW *" "swindow);"
 .TP 15
-.B "char **getCDKSwindowContents ("
+.B "chtype **getCDKSwindowContents ("
 .BI "CDKSWINDOW *" "swindow");
 .TP 15
 .B "int injectCDKSwindow ("
@@ -107,8 +107,8 @@ trimCDKSwindow \- a curses scrolling window widget.
 .TP 15
 .B "void moveCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15

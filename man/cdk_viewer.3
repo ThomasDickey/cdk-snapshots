@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.12 2002/02/26 00:31:05 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.13 2003/04/17 22:43:13 tom Exp $
 .TH cdk_viewer 3
 .SH NAME
 activateCDKViewer,
@@ -57,14 +57,14 @@ setCDKViewerVerticalChar \- curses viewer list widget.
 .B "chtype getCDKViewerHighlight ("
 .BI "CDKVIEWER *" "viewer");
 .TP 15
-.B "int getCDKViewerInfo ("
+.B "chtype **getCDKViewerInfo ("
 .BI "CDKVIEWER *" "viewer",
 .BI "char **" "itemList");
 .TP 15
 .B "boolean getCDKViewerInfoLine ("
 .BI "CDKVIEWER *" "viewer");
 .TP 15
-.B "int getCDKViewerTitle ("
+.B "chtype **getCDKViewerTitle ("
 .BI "CDKVIEWER *" "viewer");
 .TP 15
 .B "void moveCDKViewer ("

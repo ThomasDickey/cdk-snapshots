@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.36 2002/08/09 23:48:05 tom Exp $
+# $Id: Makefile.in,v 1.42 2003/04/18 15:06:14 tom Exp $
 #
-#  Copyright 2001,2002, Thomas Dickey
+#  Copyright 2001-2002,2003, Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -34,15 +34,16 @@
 #
 SHELL		= /bin/sh
 
-LIBTOOL		= @LIBTOOL@
+LIBTOOL		= @LIBTOOL@ @ECHO_LT@
+LIB_ROOTNAME	= @LIB_ROOTNAME@
 LIB_SUFFIX	= @LIB_SUFFIX@
 
 VERSION_MAJOR	= @VERSION_MAJOR@
 VERSION_MINOR	= @VERSION_MINOR@
 VERSION		= $(VERSION_MAJOR).$(VERSION_MINOR)
-CDKLIB		= @LIB_PREFIX@cdk$(LIB_SUFFIX)
-CDKSHLIB	= @LIB_PREFIX@cdk.so.$(VERSION)
-SONAME		= @LIB_PREFIX@cdk.so.$(VERSION_MAJOR)
+CDKLIB		= @LIB_PREFIX@@LIB_ROOTNAME@$(LIB_SUFFIX)
+CDKSHLIB	= @LIB_PREFIX@@LIB_ROOTNAME@.so.$(VERSION)
+SONAME		= @LIB_PREFIX@@LIB_ROOTNAME@.so.$(VERSION_MAJOR)
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -66,6 +67,7 @@ CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I./include -I$(srcdir)/include @CPPFLAGS@
 
 CC		= @CC@
+CPP		= @CPP@
 LDFLAGS		= @LDFLAGS@
 LIB_CREATE	= @LIB_CREATE@
 RANLIB		= @RANLIB@
@@ -75,10 +77,10 @@ RM		= rm -f
 INSTALL		= @INSTALL@
 INSTALL_PROGRAM	= @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
-INSTALL_LIB	= @INSTALL_LIB@ $(INSTALL_DATA)
-UNINSTALL_LIB	= @UNINSTALL_LIB@ $(RM)
+INSTALL_LIB	= @LIB_INSTALL@ $(INSTALL_DATA)
+UNINSTALL_LIB	= @LIB_UNINSTALL@ $(RM)
 
-.SUFFIXES: .c .o .os
+.SUFFIXES: .c .o .os .i
 
 DEFAULT		= $(CDKLIB) headers.sed
 
@@ -191,7 +193,7 @@ CDKMAN		= \
 		cdk_traverse.3 \
 		cdk_viewer.3
 
-CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
+CDKREADME	= EXPANDING NOTES TODO COPYING INSTALL README
 
 OBJECTS		= $(CDKSRC:.c=.o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
@@ -270,7 +272,7 @@ uninstall \
 uninstallCDKManPages ::
 	@echo "Uninstalling the CDK man pages from $(MAN_DIR) ..."
 	@- for i in $(CDKMAN); do \
-	   $(RM) $(MAN_DIR)/$$i;
+	   $(RM) $(MAN_DIR)/$$i; \
 	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(srcdir)/man/$$i; \
 	done
 
@@ -312,12 +314,12 @@ installCDKSHLibrary :: $(LIB_DIR) $(CDKSHLIB)
 	@echo "Installing CDK library"
 	@echo "	$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)"
 	@$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)
-	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so"
-	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@cdk.so
+	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so"
+	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so
 
 uninstall \
 uninstallCDKSHLibrary ::
-	@- $(RM) $(LIB_DIR)/@LIB_PREFIX@cdk.so
+	@- $(RM) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so
 	@- $(RM) $(LIB_DIR)/$(CDKSHLIB) 
 
 headers.sed : $(srcdir)/headers.sh
@@ -328,7 +330,7 @@ headers.sed : $(srcdir)/headers.sh
 #
 clean ::
 	$(RM) -fr .libs
-	$(RM) *.[oa] *.l[oa] *.os $(CDKLIB) $(CDKSHLIB) headers.sed core tags *~
+	$(RM) *.[oia] *.l[oa] *.os $(CDKLIB) $(CDKSHLIB) headers.sed core tags *~
 
 realclean :: clean
 	cd examples	&& make clean
@@ -353,6 +355,10 @@ distclean :: realclean
 .c.o:
 @RULE_CC@
 	@ECHO_CC@$(LIBTOOL) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+.c.i:
+@RULE_CC@
+	@ECHO_CC@$(CPP) $(CPPFLAGS) -E -C $< >$@
 
 .c.os:
 @RULE_CC@

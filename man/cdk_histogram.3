@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_histogram.3,v 1.8 2000/09/15 01:43:41 tom Exp $
+.\" $Id: cdk_histogram.3,v 1.9 2003/04/17 23:24:52 tom Exp $
 .TH cdk_histogram 3
 .SH NAME
 destroyCDKHistogram,
@@ -52,10 +52,10 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "boolean getCDKHistogramBox ("
-.BI "DKHISTOGRAM *" "histogram");
+.BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "chtype getCDKHistogramFillerChar ("
-.BI "DKHISTOGRAM *" "histogram");
+.BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "int getCDKHistogramHighValue ("
 .BI "CDKHISTOGRAM *" "histogram");
@@ -64,21 +64,21 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "chtype getCDKHistogramStatsAttr ("
-.BI "DKHISTOGRAM *" "histogram");
+.BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "int getCDKHistogramStatsPos ("
-.BI "DKHISTOGRAM *" "histogram");
+.BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "int getCDKHistogramValue ("
 .BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "EHistogramDisplayType getCDKHistogramViewType ("
-.BI "DKHISTOGRAM *" "histogram");
+.BI "CDKHISTOGRAM *" "histogram");
 .TP 15
 .B "void moveCDKHistogram ("
 .BI "CDKHISTOGRAM *" "histogram",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -86,11 +86,10 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
 .BI "int " "height",
 .BI "int " "width",
 .BI "int " "orient",
-.BI "char *" "label",
+.BI "char *" "title",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
@@ -113,7 +112,7 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "char * " "color");
 .TP 15
 .B "void setCDKHistogramBox ("
-.BI "DKHISTOGRAM *" "histogram",
+.BI "CDKHISTOGRAM *" "histogram",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKHistogramBoxAttribute ("
@@ -121,7 +120,7 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "chtype " "character");
 .TP 15
 .B "void setCDKHistogramFillerChar ("
-.BI "DKHISTOGRAM *" "histogram",
+.BI "CDKHISTOGRAM *" "histogram",
 .BI "chtype " "fillerCharacter");
 .TP 15
 .B "void setCDKHistogramHorizontalChar ("
@@ -137,11 +136,11 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "chtype " "character");
 .TP 15
 .B "void setCDKHistogramStatsAttr ("
-.BI "DKHISTOGRAM *" "histogram",
+.BI "CDKHISTOGRAM *" "histogram",
 .BI "chtype " "statsAttribute");
 .TP 15
 .B "void setCDKHistogramStatsPos ("
-.BI "DKHISTOGRAM *" "histogram",
+.BI "CDKHISTOGRAM *" "histogram",
 .BI "int " "statsPosition");
 .TP 15
 .B "void setCDKHistogramULChar ("
@@ -163,7 +162,7 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "chtype " "character");
 .TP 15
 .B "void setCDKHistogramViewType ("
-.BI "DKHISTOGRAM *" "histogram",
+.BI "CDKHISTOGRAM *" "histogram",
 .BI "EHistogramDisplayType " "viewType");
 .fi
 .SH DESCRIPTION

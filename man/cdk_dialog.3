@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.12 2002/07/09 00:54:35 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.13 2003/04/17 23:57:14 tom Exp $
 .TH cdk_dialog 3
 .SH NAME
 activateCDKDialog,
 destroyCDKDialog,
 drawCDKDialog,
 eraseCDKDialog,
-getCDKAlphalistBox,
+getCDKDialog,
 getCDKDialogBox,
 getCDKDialogHighlight,
 getCDKDialogSeparator,
@@ -14,7 +14,7 @@ injectCDKDialog,
 moveCDKDialog,
 newCDKDialog,
 positionCDKDialog,
-setCDKAlphalistBox,
+setCDKDialogBox,
 setCDKDialog,
 setCDKDialogBackgroundColor,
 setCDKDialogBox,
@@ -53,7 +53,7 @@ setCDKDialogVerticalChar \- curses dialog widget
 .B "void eraseCDKDialog ("
 .BI "CDKDIALOG *" "dialog");
 .TP 15
-.B "boolean getCDKAlphalistBox ("
+.B "boolean getCDKDialog ("
 .BI "CDKDIALOG *" "dialog");
 .TP 15
 .B "boolean getCDKDialogBox ("
@@ -71,8 +71,8 @@ setCDKDialogVerticalChar \- curses dialog widget
 .TP 15
 .B "void moveCDKDialog ("
 .BI "CDKDIALOG *" "dialog",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -91,7 +91,8 @@ setCDKDialogVerticalChar \- curses dialog widget
 .TP 15
 .B "void positionCDKDialog ("
 .BI "CDKDIALOG *" "dialog");
-.B "void setCDKAlphalistBox ("
+.TP 15
+.B "void setCDKDialogBox ("
 .BI "CDKDIALOG *" "dialog",
 .BI "boolean " "boxWidget");
 .TP 15
@@ -188,7 +189,7 @@ If the \fBbox\fR parameter is true, the widget is drawn with a box.
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
 .TP 5
-.B getCDKAlphalistBox
+.B getCDKDialog
 returns true if the list will be drawn with a box around it.
 .TP 5
 .B getCDKDialogBox
@@ -270,7 +271,7 @@ allows the user to move the widget around the screen via the
 cursor/keypad keys.
 See \fBcdk_position (3)\fR for key bindings.
 .TP 5
-.B setCDKAlphalistBox
+.B setCDKDialogBox
 sets whether the widget will be drawn with a box around it.
 .TP 5
 .B setCDKDialog

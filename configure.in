@@ -21,6 +21,7 @@ CF_DISABLE_ECHO
 CF_PROG_EXT
 CF_LIB_PREFIX
 
+CF_WITH_CURSES_DIR
 CF_WITH_WARNINGS
 CF_WITH_LIBTOOL
 CF_VERSION_INFO
@@ -29,25 +30,8 @@ dnl
 dnl Checks for libraries.
 dnl
 
-AC_MSG_CHECKING(if you want to link with dbmalloc for testing)
-AC_ARG_WITH(dbmalloc,
-	[  --with-dbmalloc         test: use Conor Cahill's dbmalloc library],
-	[with_dbmalloc=$withval],
-	[with_dbmalloc=no])
-AC_MSG_RESULT($with_dbmalloc)
-if test $with_dbmalloc = yes ; then
-	AC_CHECK_LIB(dbmalloc,debug_malloc)
-fi
-
-AC_MSG_CHECKING(if you want to link with dmalloc for testing)
-AC_ARG_WITH(dmalloc,
-	[  --with-dmalloc          test: use Gray Watson's dmalloc library],
-	[with_dmalloc=$withval],
-	[with_dmalloc=no])
-AC_MSG_RESULT($with_dmalloc)
-if test $with_dmalloc = yes ; then
-	AC_CHECK_LIB(dmalloc,dmalloc_debug)
-fi
+CF_WITH_DBMALLOC
+CF_WITH_DMALLOC
 
 dnl
 dnl Checks for header files.
@@ -79,6 +63,7 @@ strerror \
 )
 
 CF_FUNC_LSTAT
+CF_LOCALE([AC_DEFINE(HAVE_SETLOCALE)])
 
 dnl Check for curses libraries last, since XCurses has dependencies which
 dnl break the checks for other functions.
@@ -86,17 +71,28 @@ use_library=curses
 AC_ARG_WITH(ncurses,
 	[  --with-ncurses          compile/link with ncurses library],
 	[use_library=ncurses],[
+AC_ARG_WITH(ncursesw,
+	[  --with-ncursesw         compile/line with wide-character ncurses],
+	[use_library=ncursesw],[
 AC_ARG_WITH(pdcurses,
 	[  --with-pdcurses         compile/link with pdcurses X11 library],
-	[use_library=pdcurses])])
+	[use_library=pdcurses])])])
 
+LIB_ROOTNAME=cdk
 case $use_library in #(vi
 ncurses) #(vi
 	CF_NCURSES_CPPFLAGS
 	CF_NCURSES_LIBS
 	;;
+ncursesw)
+	CF_UTF8_LIB
+	CF_NCURSES_CPPFLAGS(ncursesw)
+	CF_NCURSES_LIBS(ncursesw)
+	LIB_ROOTNAME=cdkw
+	;;
 pdcurses) #(vi
 	CF_PDCURSES_X11
+	LIB_ROOTNAME=cdkX
 	;;
 *)
 	CF_CURSES_CPPFLAGS
@@ -104,6 +100,7 @@ pdcurses) #(vi
 	CF_CURSES_LIBS
 	;;
 esac
+AC_SUBST(LIB_ROOTNAME)
 
 CF_CURSES_FUNCS(\
 	Xinitscr\

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/08/10 00:08:46 $
- * $Revision: 1.173 $
+ * $Date: 2003/04/17 22:17:44 $
+ * $Revision: 1.174 $
  */
 
 /*
@@ -792,7 +792,7 @@ static void drawCDKEntryField (CDKENTRY *entry)
       {
 	 for (x=entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, A_CHARTEXT & entry->info[x] | entry->fieldAttr);
+	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, (A_CHARTEXT & entry->info[x]) | entry->fieldAttr);
 	 }
       }
       wmove (entry->fieldWin, 0, entry->screenCol);
@@ -848,7 +848,7 @@ static void _destroyCDKEntry (CDKOBJS *object)
 /*
  * This sets specific attributes of the entry field.
  */
-void setCDKEntry (CDKENTRY *entry, char *value, int min, int max, boolean Box)
+void setCDKEntry (CDKENTRY *entry, char *value, int min, int max, boolean Box GCC_UNUSED)
 {
    setCDKEntryValue (entry, value);
    setCDKEntryMin (entry, min);

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.14 2002/02/26 00:31:05 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.15 2003/04/17 23:35:51 tom Exp $"
 .TH cdk_calendar 3
 .SH NAME
 activateCDKCalendar,
@@ -75,8 +75,8 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .TP 15
 .B "void moveCDKCalendar ("
 .BI "CDKCALENDAR *" "calendar",
-.BI "int " "box",
-.BI "int " "box",
+.BI "int " "xpos",
+.BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
@@ -103,7 +103,7 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .BI "int " "month",
 .BI "int " "year");
 .TP 15
-.B "int setCDKCalendar ("
+.B "void setCDKCalendar ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "int " "day",
 .BI "int " "month",
@@ -111,6 +111,7 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .BI "chtype " "dayAttrib",
 .BI "chtype " "monthAttrib",
 .BI "chtype " "yearAttrib",
+.BI "chtype " "highlight",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKCalendarBox ("

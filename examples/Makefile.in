@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.13 2002/07/19 00:56:40 tom Exp $
+# $Id: Makefile.in,v 1.14 2003/04/18 12:37:32 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -10,8 +10,8 @@ exec_prefix	= @exec_prefix@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 
-LIBS		= ../libcdk@LIB_SUFFIX@ @LIBS@
-LDFLAGS		= @LDFLAGS@
+LIBS		= -l@LIB_ROOTNAME@ @LIBS@
+LDFLAGS		= -L.. @LDFLAGS@
 
 LIBTOOL		= @LIBTOOL@
 CC		= @CC@
