@@ -128,6 +128,8 @@ int injectCDKScroll (CDKSCROLL *scroll, chtype input);
 void setCDKScroll (CDKSCROLL *scroll, char **scrollItems, int listSize,
 			boolean numbers, chtype highlight, boolean Box);
 
+void setCDKScrollPosition (CDKSCROLL *scroll, int item);
+
 /*
  * This sets the contents of the scrolling list.
  */

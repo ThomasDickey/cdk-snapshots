@@ -158,8 +158,9 @@ realclean::
 #
 # Use this to clean the distribution.
 #
-distclean:: realclean
+distclean::
 	$(RM) config.cache config.log config.status
+	$(MAKE) realclean
 
 #
 # Standard .c to .o compile line.

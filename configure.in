@@ -62,7 +62,7 @@ if test "$ac_cv_prog_CC" = "g++"; then
 fi
 
 dnl
-dnl Checks for libraries. If we have ncurses's start_color
+dnl Checks for libraries. If we have start_color
 dnl set the HAVE_COLOR define.
 dnl
 AC_CHECK_LIB(m,sin)
@@ -80,7 +80,6 @@ dnl
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h unistd.h)
-AC_CHECK_HEADER(ncurses, start_color)
 
 dnl
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -108,10 +107,12 @@ dnl
 CDK_FIND_LIB(libncurses.a, cdk_ncurses_lib)
 if test "$cdk_ncurses_lib" != "no"; then
    LIBS="$LIBS -lncurses"
+   CFLAGS="$CFLAGS -DHAVE_LIBNCURSES=1"
 fi
 CDK_FIND_LIB(libcurses.a, cdk_curses_lib)
 if test "$cdk_ncurses_lib" != "no"; then
    LIBS="$LIBS -lcurses"
+   CFLAGS="$CFLAGS -DHAVE_LIBNCURSES=0"
 fi
 
 AC_OUTPUT(Makefile examples/Makefile demos/Makefile)
