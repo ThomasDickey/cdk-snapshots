@@ -1,9 +1,30 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2003, 2004
+Modifications copyright Thomas E. Dickey 1999-2004, 2005
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2005/03/08 - T.E.Dickey <dickey@his.com>
+	+ correct logic of deleteCDKScrollItem(), which did not preserve the
+	  final null-pointer at the end of the list (report by Fu Steve X).
+	+ add isCDKOBjectBind() to simply check if the given object/key
+	  combination is bound, rather than invoke the bound function.
+	+ modify binding.c so that all of the functions share the same logic
+	  for mapping the given object to the bindable object, e.g., the entry
+	  widget for alphalist and fselect composite widgets.  In particular,
+	  checkCDKObjectBind() and getcCDKObject() did not use the same binding
+	  data. 
+	+ correct initialization of traverseCDKScreen(), which required two
+	  tab keypresses to make the first traversal (report by Fu Steve X).
+	+ update configure script checks for _XOPEN_SOURCE, etc.
+	+ updated config.guess and config.sub
+	+ correct prototype shown in manpage for setCDKScroll() (report by
+	  Stefan Heimann).
+	+ correct equivalent expressions in setCDKRadioItems() and
+	  setCDKSelectionItems().
+	+ correct expression in setCDKScrollItems() which caused the updated
+	  window to shrink by 2 lines (report by Stefan Heimann).
 
 2004/12/24 - T.E.Dickey <dickey@his.com>
 ========================================

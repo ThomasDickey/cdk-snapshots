@@ -2,52 +2,75 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/09/01 00:20:14 $
- * $Revision: 1.48 $
+ * $Date: 2005/03/08 23:25:41 $
+ * $Revision: 1.50 $
+ *
+ * Notes:
+ *
+ * The cdktype parameter passed to bindCDKObject, etc., is redundant since
+ * the object parameter also has the same information.  For compatibility
+ * just use it for a sanity check.
  */
 
 #ifndef KEY_MAX
 #define KEY_MAX 512
 #endif
 
-/*
- * This inserts a binding.
- */
-void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN function, void * data)
+static CDKOBJS *bindableObject (EObjectType * cdktype, void *object)
 {
    CDKOBJS *obj = (CDKOBJS *)object;
 
-   if (key < KEY_MAX)
+   if (obj != 0 && *cdktype == ObjTypeOf (obj))
    {
-      if (cdktype == vFSELECT)
+      if (*cdktype == vFSELECT)
       {
-	 bindCDKObject (vENTRY, ((CDKFSELECT *)object)->entryField, key, function, data);
+	 *cdktype = vENTRY;
+	 object = ((CDKFSELECT *) object)->entryField;
       }
-      else if (cdktype == vALPHALIST)
+      else if (*cdktype == vALPHALIST)
       {
-	 bindCDKObject (vENTRY, ((CDKALPHALIST *)object)->entryField, key, function, data);
+	 *cdktype = vENTRY;
+	 object = ((CDKALPHALIST *) object)->entryField;
       }
-      else
+   }
+   else
+   {
+      object = 0;
+   }
+   return object;
+}
+
+/*
+ * This inserts a binding.
+ */
+void bindCDKObject (EObjectType cdktype,
+		    void *object,
+		    chtype key,
+		    BINDFN function,
+		    void *data)
+{
+   CDKOBJS *obj = bindableObject (&cdktype, object);
+
+   if ((key < KEY_MAX) && obj != 0)
+   {
+      if (key != 0 && (unsigned)key >= obj->bindingCount)
       {
-	 if (key >= 0 && (unsigned) key >= obj->bindingCount)
-	 {
-	    unsigned next = (key + 1);
-
-	    if (obj->bindingList != 0)
-	       obj->bindingList = typeReallocN(CDKBINDING, obj->bindingList, next);
-	    else
-	       obj->bindingList = typeMallocN(CDKBINDING, next);
-
-	    memset (&(obj->bindingList[obj->bindingCount]), 0,
-		    (next - obj->bindingCount) * sizeof(CDKBINDING));
-	    obj->bindingCount = next;
-	 }
+	 unsigned next = (key + 1);
 
 	 if (obj->bindingList != 0)
-	 {
-	    obj->bindingList[key].bindFunction = function;
-	    obj->bindingList[key].bindData = data;
-	 }
+	    obj->bindingList = typeReallocN (CDKBINDING, obj->bindingList, next);
+	 else
+	    obj->bindingList = typeMallocN (CDKBINDING, next);
+
+	 memset (&(obj->bindingList[obj->bindingCount]), 0,
+		 (next - obj->bindingCount) * sizeof (CDKBINDING));
+	 obj->bindingCount = next;
+      }
+
+      if (obj->bindingList != 0)
+      {
+	 obj->bindingList[key].bindFunction = function;
+	 obj->bindingList[key].bindData = data;
       }
    }
 }
@@ -57,17 +80,9 @@ void bindCDKObject (EObjectType cdktype, void *object, chtype key, BINDFN functi
  */
 void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
 {
-   CDKOBJS *obj = (CDKOBJS *)object;
+   CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (cdktype == vFSELECT)
-   {
-      unbindCDKObject (vENTRY, ((CDKFSELECT *)object)->entryField, key);
-   }
-   else if (cdktype == vALPHALIST)
-   {
-      unbindCDKObject (vENTRY, ((CDKALPHALIST *)object)->entryField, key);
-   }
-   else if ((unsigned) key < obj->bindingCount)
+   if (obj != 0 && ((unsigned)key < obj->bindingCount))
    {
       obj->bindingList[key].bindFunction = 0;
       obj->bindingList[key].bindData = 0;
@@ -79,22 +94,13 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
  */
 void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 {
-   if (cdktype == vFSELECT)
-   {
-      cleanCDKObjectBindings (vENTRY, ((CDKFSELECT *)object)->entryField);
-      cleanCDKObjectBindings (vSCROLL, ((CDKFSELECT *)object)->scrollField);
-   }
-   else if (cdktype == vALPHALIST)
-   {
-      cleanCDKObjectBindings (vENTRY, ((CDKALPHALIST *)object)->entryField);
-      cleanCDKObjectBindings (vSCROLL, ((CDKALPHALIST *)object)->scrollField);
-   }
-   else
+   CDKOBJS *obj = bindableObject (&cdktype, object);
+
+   if (obj != 0)
    {
       unsigned x;
-      CDKOBJS *obj = (CDKOBJS *)object;
 
-      for (x=0; x < obj->bindingCount; x++)
+      for (x = 0; x < obj->bindingCount; x++)
       {
 	 (obj)->bindingList[x].bindFunction = 0;
 	 (obj)->bindingList[x].bindData = 0;
@@ -110,14 +116,14 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
  */
 int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 {
-   CDKOBJS *obj = (CDKOBJS *)object;
+   CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if ((unsigned) key < obj->bindingCount)
+   if (obj != 0 && ((unsigned)key < obj->bindingCount))
    {
       if ((obj)->bindingList[key].bindFunction != 0)
       {
 	 BINDFN function = obj->bindingList[key].bindFunction;
-	 void * data = obj->bindingList[key].bindData;
+	 void *data = obj->bindingList[key].bindData;
 
 	 return function (cdktype, object, data, key);
       }
@@ -126,10 +132,29 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 }
 
 /*
+ * This checks to see if the binding for the key exists.
+ */
+bool isCDKObjectBind (EObjectType cdktype, void *object, chtype key)
+{
+   bool result = FALSE;
+   CDKOBJS *obj = bindableObject (&cdktype, object);
+
+   if (obj != 0 && ((unsigned)key < obj->bindingCount))
+   {
+      if ((obj)->bindingList[key].bindFunction != 0)
+	 result = TRUE;
+   }
+   return (result);
+}
+
+/*
  * This is a dummy function used to ensure that the constant for mapping has
  * a distinct address.
  */
-int getcCDKBind (EObjectType cdktype GCC_UNUSED, void * object GCC_UNUSED, void * clientData GCC_UNUSED, chtype input GCC_UNUSED)
+int getcCDKBind (EObjectType cdktype GCC_UNUSED,
+		 void *object GCC_UNUSED,
+		 void *clientData GCC_UNUSED,
+		 chtype input GCC_UNUSED)
 {
    return 0;
 }
@@ -139,13 +164,16 @@ int getcCDKBind (EObjectType cdktype GCC_UNUSED, void * object GCC_UNUSED, void 
  */
 int getcCDKObject (CDKOBJS *obj)
 {
+   EObjectType cdktype = ObjTypeOf (obj);
+   CDKOBJS *test = bindableObject (&cdktype, obj);
    int result = wgetch (InputWindowOf (obj));
 
    if (result >= 0
-       && (unsigned)result < obj->bindingCount
-       && obj->bindingList[result].bindFunction == getcCDKBind)
+       && test != 0
+       && (unsigned)result < test->bindingCount
+       && test->bindingList[result].bindFunction == getcCDKBind)
    {
-      result = (int)(long)obj->bindingList[result].bindData;
+      result = (int)(long)test->bindingList[result].bindData;
    }
    else
    {
@@ -161,7 +189,7 @@ int getcCDKObject (CDKOBJS *obj)
       case DELETE:
 	 result = KEY_DC;
 	 break;
-      case '\b':	/* same as CTRL('H'), for ASCII */
+      case '\b':		/* same as CTRL('H'), for ASCII */
 	 result = KEY_BACKSPACE;
 	 break;
       case CDK_BEGOFLINE:

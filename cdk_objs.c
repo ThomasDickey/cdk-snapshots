@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2004/08/29 23:41:36 $
- * $Revision: 1.10 $
+ * $Date: 2005/03/09 00:04:00 $
+ * $Revision: 1.11 $
  */
 
 /*
@@ -177,17 +177,8 @@ void cleanCdkTitle (CDKOBJS *obj)
       CDKfreeChtypes (obj->title);
       obj->title = 0;
 
-      if (obj->titlePos != 0)
-      {
-	 free (obj->titlePos);
-	 obj->titlePos = 0;
-      }
-
-      if (obj->titleLen != 0)
-      {
-	 free (obj->titleLen);
-	 obj->titlePos = 0;
-      }
+      freeAndNull (obj->titlePos);
+      freeAndNull (obj->titleLen);
 
       obj->titleLines = 0;
    }

@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.8 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.9 2005/03/08 19:51:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -14,7 +14,7 @@ int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 /*
  * Define file local variables.
  */
-char *FPUsage = "-l List | -f filename [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static char *FPUsage = "-l List | -f filename [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *

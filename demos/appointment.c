@@ -12,7 +12,11 @@ char *XCursesProgramName="appointmentBook";
 /*
  *
  */
-chtype GPAppointmentAttributes[] = {A_BLINK, A_BOLD, A_REVERSE, A_UNDERLINE};
+static chtype GPAppointmentAttributes[] = {
+   A_BLINK,
+   A_BOLD,
+   A_REVERSE,
+   A_UNDERLINE};
 
 /*
  *

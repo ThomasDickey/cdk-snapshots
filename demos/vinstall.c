@@ -11,11 +11,13 @@ char *XCursesProgramName="vinstall";
  */
 
 /* Declare global types and prototypes. */
-char *FPUsage = "-f filename [-s source directory] [-d destination directory] [-t title] [-o Output file] [-q]";
+static char *FPUsage = "-f filename [-s source directory] [-d destination directory] [-t title] [-o Output file] [-q]";
+
 typedef enum {vCanNotOpenSource,
 		vCanNotOpenDest,
 		vOK
 		} ECopyFile;
+
 static ECopyFile copyFile (CDKSCREEN *cdkScreen, char *src, char *dest);
 static int verifyDirectory (CDKSCREEN *screen, char *directory);
 

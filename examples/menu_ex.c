@@ -1,4 +1,4 @@
-/* $Id: menu_ex.c,v 1.9 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: menu_ex.c,v 1.10 2005/03/08 19:45:41 tom Exp $ */
 
 #include <cdk.h>
 
@@ -6,11 +6,12 @@
 char *XCursesProgramName = "menu_ex";
 #endif
 
-int displayCallback (EObjectType cdktype, void *object, void *clientData, chtype input);
-char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS];
-char *menuInfo[3][4] = {{"", "This saves the current info.", "This exits the program.", ""},
-			{"", "This cuts text", "This copies text", "This pastes text"},
-			{"", "Help for editing", "Help for file management", "Info about the program"}};
+static int displayCallback (EObjectType cdktype, void *object, void *clientData, chtype input);
+static char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS];
+static char *menuInfo[3][4] = {
+   {"", "This saves the current info.", "This exits the program.", ""},
+   {"", "This cuts text", "This copies text", "This pastes text"},
+   {"", "Help for editing", "Help for file management", "Info about the program"}};
 
 /*
  * This program demonstratres the Cdk menu widget.
@@ -91,7 +92,7 @@ int main (void)
 /*
  * This gets called after every movement.
  */
-int displayCallback (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype input GCC_UNUSED)
+static int displayCallback (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype input GCC_UNUSED)
 {
    CDKMENU *menu	= (CDKMENU *)object;
    CDKLABEL *infoBox	= (CDKLABEL *)clientData;
