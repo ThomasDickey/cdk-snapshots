@@ -1,10 +1,9 @@
-#include "cdk.h"
-#include <limits.h>
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:21:11 $
- * $Revision: 1.79 $
+ * $Date: 2000/02/18 23:20:54 $
+ * $Revision: 1.80 $
  */
 
 /*

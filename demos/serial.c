@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "cdk.h"
+#include <cdk.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="serial";

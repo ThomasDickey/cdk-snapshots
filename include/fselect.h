@@ -1,7 +1,7 @@
 #ifndef CDKFSELECT_H
 #define CDKFSELECT_H	1
 
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * Description of the widget:
@@ -41,8 +41,8 @@
  * SUCH DAMAGE.
  */
 
-#include "label.h"
-#include "entry.h"
+#include <label.h>
+#include <entry.h>
 
 /*
  * Define the CDK file selector widget structure.

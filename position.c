@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:14:01 $
- * $Revision: 1.2 $
+ * $Date: 2000/02/18 23:20:55 $
+ * $Revision: 1.3 $
  */
 
 #undef	ObjOf

@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 22:53:17 $
- * $Revision: 1.36 $
+ * $Date: 2000/02/19 01:39:37 $
+ * $Revision: 1.38 $
  */
 
 /*
@@ -12,7 +12,7 @@
  */
 void initCDKColor (void)
 {
-#ifdef HAVE_COLOR
+#ifdef HAVE_START_COLOR
    /* Declare local variables. */
    int color[]	= {
 			COLOR_WHITE,	COLOR_RED,	COLOR_GREEN,

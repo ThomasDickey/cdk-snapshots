@@ -34,15 +34,20 @@
  * SUCH DAMAGE.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "cdk_config.h"
-#endif
+#include <cdk_config.h>
 
 #ifdef	CDK_PERL_EXT
 #undef	instr
 #endif
 
+#ifdef HAVE_XCURSES
+#include <xcurses.h>
+#else
 #include <curses.h>
+#endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -53,8 +58,30 @@
 #include <errno.h>
 #include <pwd.h>
 #include <grp.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+
+#if HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
+#if HAVE_GETOPT_HEADER
+#if HAVE_GETOPT_H
+#include <getopt.h>
+#endif
+#else
+extern int optind;
+extern char * optarg;
+#endif
+
+/*
+ * Values we normally get from limits.h (assume 32-bits)
+ */
+#ifndef INT_MIN
+#define INT_MIN (-INT_MAX - 1)
+#endif
+
+#ifndef INT_MAX
+#define INT_MAX 2147483647
+#endif
 
 #ifndef GCC_UNUSED
 #define GCC_UNUSED /*nothing*/
@@ -199,37 +226,37 @@ void stopCDKDebug (FILE *fd);
 /*
  * These header files define miscellaneous values and prototypes.
  */
-#include "cdkscreen.h"
-#include "curdefs.h"
-#include "binding.h"
-#include "cdk_util.h"
-#include "cdk_objs.h"
+#include <cdkscreen.h>
+#include <curdefs.h>
+#include <binding.h>
+#include <cdk_util.h>
+#include <cdk_objs.h>
 
 /*
  * Include the CDK widget header files.
  */
-#include "alphalist.h"
-#include "buttonbox.h"
-#include "calendar.h"
-#include "dialog.h"
-#include "entry.h"
-#include "fselect.h"
-#include "graph.h"
-#include "histogram.h"
-#include "itemlist.h"
-#include "label.h"
-#include "marquee.h"
-#include "matrix.h"
-#include "mentry.h"
-#include "menu.h"
-#include "radio.h"
-#include "scale.h"
-#include "scroll.h"
-#include "selection.h"
-#include "slider.h"
-#include "swindow.h"
-#include "template.h"
-#include "viewer.h"
-#include "draw.h"
+#include <alphalist.h>
+#include <buttonbox.h>
+#include <calendar.h>
+#include <dialog.h>
+#include <entry.h>
+#include <fselect.h>
+#include <graph.h>
+#include <histogram.h>
+#include <itemlist.h>
+#include <label.h>
+#include <marquee.h>
+#include <matrix.h>
+#include <mentry.h>
+#include <menu.h>
+#include <radio.h>
+#include <scale.h>
+#include <scroll.h>
+#include <selection.h>
+#include <slider.h>
+#include <swindow.h>
+#include <template.h>
+#include <viewer.h>
+#include <draw.h>
 
 #endif /* CDK_H */

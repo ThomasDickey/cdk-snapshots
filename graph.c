@@ -1,10 +1,9 @@
-#include "cdk.h"
-#include <limits.h>
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:03:14 $
- * $Revision: 1.54 $
+ * $Date: 2000/02/18 23:20:55 $
+ * $Revision: 1.55 $
  */
 
 DeclareCDKObjects(my_funcs,Graph);

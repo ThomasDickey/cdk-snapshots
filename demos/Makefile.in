@@ -4,16 +4,30 @@
 SHELL		= /bin/sh
 
 CC		= @CC@
+x		= @PROG_EXT@
+
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+
+srcdir		= @srcdir@
+VPATH		= $(srcdir)
 
 LIBS		= -lcdk @LIBS@
 
 CFLAGS		= @CFLAGS@
 EXTRA_CFLAGS	= @EXTRA_CFLAGS@
-CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I.. -I. 
+CPPFLAGS	= @DEFS@ @CPPFLAGS@ -I../include -I$(srcdir)/../include -I. 
 
 LIBDIR		= -L.. @LDFLAGS@
-BINS		= fileview rolodex command clock stopSign \
-		appointment serial vinstall
+BINS		= \
+		fileview$x \
+		rolodex$x \
+		command$x \
+		clock$x \
+		stopSign$x \
+		appointment$x \
+		serial$x \
+		vinstall$x
 
 #
 # If you have Sybase installed on your system, try making
@@ -35,39 +49,39 @@ all : $(BINS)
 #
 # Most of the examples are built from a single .c file using the same libraries
 #
-LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $< -o $@ $(LIBDIR) $(LIBS)
+LINKIT	= @ECHO_LD@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $@.o -o $@ $(LIBDIR) $(LIBS)
 
 # fileview    - Basic file selector/file viewer combination.
-fileview:	fileview.o	; $(LINKIT)
+fileview$x :	fileview.o	; $(LINKIT)
 
 # rolodex     - A fairly robust rolodex.
-rolodex:	rolodex.o	; $(LINKIT)
+rolodex$x :	rolodex.o	; $(LINKIT)
 
 # command     - A basic command interface with command history.
-command:	command.o	; $(LINKIT)
+command$x :	command.o	; $(LINKIT)
 
 # clock       - A simple little clock.
-clock:		clock.o	; $(LINKIT)
+clock$x :	clock.o	; $(LINKIT)
 
 # stopSign    - A simple demo I wrote after a couple of pints. :)
-stopSign:	stopSign.o	; $(LINKIT)
+stopSign$x :	stopSign.o	; $(LINKIT)
 
 # appointment - A basic appointment book/date keeper.
-appointment:	appointment.o	; $(LINKIT)
+appointment$x :	appointment.o	; $(LINKIT)
 
 # serial      - This probes the serial port.
-serial:		serial.o	; $(LINKIT)
+serial$x :	serial.o	; $(LINKIT)
 
 # keycheck    - This prints out the keys ASCII and Octal values.
-keycheck:	keycheck.o	; $(LINKIT)
+keycheck$x :	keycheck.o	; $(LINKIT)
 
 # vinstall    - CDK based installer.
-vinstall:	vinstall.o	; $(LINKIT)
+vinstall$x :	vinstall.o	; $(LINKIT)
 
 #
 # A Sybase interface.
 #
-syb:	syb.c
+syb$x :		syb.c
 	$(CC) $(CFLAGS) -o $@ $? $(CPPFLAGS) $(SYBINCDIR) $(LIBDIR) $(SYBLIBDIR) $(LIBS) $(SYBLIBS)
 
 #

@@ -1,9 +1,9 @@
-#include "cdk.h"
+#include <cdk.h>
 
 /*
  * $Author: tom $
- * $Date: 2000/01/16 23:04:45 $
- * $Revision: 1.59 $
+ * $Date: 2000/02/18 23:20:55 $
+ * $Revision: 1.60 $
  */
 
 DeclareCDKObjects(my_funcs,Histogram);
