@@ -44,6 +44,20 @@ int main (int argc, char **argv)
       exit (1);
    }
 
+drawCDKScroll (scrollList, 1);
+setCDKScrollPosition (scrollList, 10);
+drawCDKScroll (scrollList, 1);
+sleep (3);
+setCDKScrollPosition (scrollList, 20);
+drawCDKScroll (scrollList, 1);
+sleep (3);
+setCDKScrollPosition (scrollList, 30);
+drawCDKScroll (scrollList, 1);
+sleep (3);
+setCDKScrollPosition (scrollList, 70);
+drawCDKScroll (scrollList, 1);
+sleep (3);
+
    /* Activate the scrolling list. */
    selection = activateCDKScroll (scrollList, (chtype *)NULL);
 

@@ -3,8 +3,8 @@
    
 /*
  * $Author: glovem $
- * $Date: 1998/03/02 16:31:48 $
- * $Revision: 1.59 $
+ * $Date: 1999/01/04 19:06:15 $
+ * $Revision: 1.60 $
  */
 
 /*
@@ -342,7 +342,7 @@ int injectCDKScroll (CDKSCROLL *scroll, chtype input)
                     {
                        if (scroll->currentHigh == scroll->viewSize - 1)
                        {
-                       /* We need to scroll down one line. */
+                          /* We need to scroll down one line. */
                           if (scroll->currentTop < scroll->maxTopItem)
                           {
                              scroll->currentTop++;
@@ -515,6 +515,31 @@ int injectCDKScroll (CDKSCROLL *scroll, chtype input)
    /* Set the exit type and return. */
    scroll->exitType = vEARLY_EXIT;
    return -1;
+}
+
+/*
+ * This allows the user to accelerate to a position in the scrolling list.
+ */
+void setCDKScrollPosition (CDKSCROLL *scroll, int item)
+{
+   if (item < 0)
+   {
+      scroll->currentTop	= 0;
+      scroll->currentItem	= 0;
+      scroll->currentHigh	= 1;
+   }
+   else if (item > scroll->listSize-1)
+   {
+      scroll->currentTop	= scroll->maxTopItem;
+      scroll->currentItem	= scroll->lastItem;
+      scroll->currentHigh	= scroll->viewSize-1;
+   }
+   else
+   {
+      scroll->currentTop	= item;
+      scroll->currentItem	= item;
+      scroll->currentHigh	= 0;
+   }
 }
 
 /*

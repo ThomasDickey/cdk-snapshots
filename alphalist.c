@@ -3,8 +3,8 @@
  
 /*
  * $Author: glovem $
- * $Date: 1998/03/02 16:31:18 $
- * $Revision: 1.27 $
+ * $Date: 1999/01/04 19:47:08 $
+ * $Revision: 1.28 $
  */
  
 /*
@@ -650,6 +650,12 @@ int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, c
    {
       infoLen = (int)strlen (entry->info);
    }
+   else
+   {
+      setCDKScrollPosition (scroll, 0);
+      drawCDKScroll (scroll, scroll->box);
+      return 1;
+   }
 
    /* Check the input. */
    if (isalnum (input) || ispunct (input) ||
@@ -663,8 +669,12 @@ int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, c
       {
          pattern[infoLen] = '\0';
          pattern[infoLen-1] = '\0';
-         if (infoLen == 1)
+
+         /* If we had only 1 item in the list; jump back to the top. */
+         if (infoLen <= 1)
          {
+            setCDKScrollPosition (scroll, 0);
+            drawCDKScroll (scroll, scroll->box);
             return 1;
          }
       }
@@ -680,21 +690,49 @@ int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, c
       {
          difference		= index - scroll->currentItem;
          absoluteDifference	= abs (difference);
-         if (difference < 0)
+
+        /*
+         * If the difference is less than zero, then move up.
+         * Otherwise move down.
+         */
+         if (difference <= 0)
          {
-            for (x=0; x < absoluteDifference; x++)
+           /*
+            * If the difference is greater than 10 jump to the new
+            * index position. Otherwise provide the nice scroll.
+            */
+            if (absoluteDifference <= 10)
             {
-               injectCDKScroll (scroll, KEY_UP);
+               for (x=0; x < absoluteDifference; x++)
+               {
+                  injectCDKScroll (scroll, KEY_UP);
+               }
             }
+            else
+            {
+               setCDKScrollPosition (scroll, index);
+            }
+            drawCDKScroll (scroll, scroll->box);
          }
-         else if (difference > 0)
+         else
          {
-            for (x=0; x < absoluteDifference; x++)
+           /*
+            * If the difference is greater than 10 jump to the new
+            * index position. Otherwise provide the nice scroll.
+            */
+            if (absoluteDifference <= 10)
             {
-               injectCDKScroll (scroll, KEY_DOWN);
+               for (x=0; x < absoluteDifference; x++)
+               {
+                  injectCDKScroll (scroll, KEY_DOWN);
+               }
             }
+            else
+            {
+               setCDKScrollPosition (scroll, index);
+            }
+            drawCDKScroll (scroll, scroll->box);
          }
-         drawCDKScroll (scroll, scroll->box);
       }
       else
       {
