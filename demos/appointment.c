@@ -34,7 +34,7 @@ struct AppointmentMarker {
  *
  */
 struct AppointmentInfo {
-	struct AppointmentMarker appointment[1000];
+	struct AppointmentMarker appointment[MAX_MARKERS];
 	int appointmentCount;
 };
 

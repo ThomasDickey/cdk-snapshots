@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.59 2004/09/01 00:27:24 tom Exp $
+# $Id: Makefile.in,v 1.60 2004/11/08 00:36:27 tom Exp $
 #
 #  Copyright 2001-2003,2004, Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -396,7 +396,7 @@ headers.sed : $(srcdir)/headers.sh
 #
 clean ::
 	@- $(RM) -r autom4te.cache
-	- $(LIBTOOL_CLEAN) $(RM) *.o $(CDKLIB)
+	- $(LIBTOOL_CLEAN) $(RM) $(LIB_OBJECT) $(CDKLIB)
 	- $(RM) *.i *.os $(CDKSHLIB)
 	- $(RM) headers.sed core tags *~
 	$(RM) $(AUTO_HDR)

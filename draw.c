@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/10/04 23:56:33 $
- * $Revision: 1.57 $
+ * $Date: 2004/11/07 23:36:55 $
+ * $Revision: 1.58 $
  */
 
 /*
@@ -288,7 +288,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
 }
 
 /*
- * This writes out a chtype * string * with the given attributes.
+ * This writes out a chtype * string * with the given attributes added.
  */
 void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chtype attr, int align, int start, int end)
 {
@@ -302,7 +302,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff, getmaxx(window) - xpos);
       for (x=0; x < display; x++)
       {
-	 mvwaddch (window, ypos, xpos+x, CharOf(string[x+start]) | attr);
+	 mvwaddch (window, ypos, xpos+x, string[x+start] | attr);
       }
    }
    else
@@ -311,7 +311,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
       display = MINIMUM(diff, getmaxy(window) - ypos);
       for (x=0; x < display; x++)
       {
-	 mvwaddch (window, ypos+x, xpos, CharOf(string[x+start]) | attr);
+	 mvwaddch (window, ypos+x, xpos, string[x+start] | attr);
       }
    }
 }
