@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: headers.sh,v 1.2 2001/04/21 16:25:37 tom Exp $
+# $Id: headers.sh,v 1.3 2001/12/04 01:55:24 tom Exp $
 #
 # Adjust includes for header files that reside in a subdirectory of
 # /usr/include, etc.
@@ -7,11 +7,12 @@
 TMPSED=headers.sed
 
 if test $# = 2 ; then
+	rm -f $TMPSED
 	DST=$1
 	REF=$2
-
+	LEAF=`basename $DST`
 	case $DST in
-	/*/include/*)
+	/*/include/$LEAF)
 		END=`basename $DST`
 		for i in $REF/*.h
 		do
@@ -43,6 +44,10 @@ else
 	rm -f $TMPSRC
 	sed -f $TMPSED $SRC > $TMPSRC
 	NAME=`basename $SRC`
+
+	# Just in case someone gzip'd manpages, remove the conflicting copy.
+	test -f $DST/$NAME.gz && rm -f $DST/$NAME.gz
+
 	eval $PRG $TMPSRC $DST/$NAME
 	rm -f $TMPSRC
 fi
