@@ -3,8 +3,8 @@
  
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:58:44 $
- * $Revision: 1.37 $
+ * $Date: 1999/05/23 02:51:14 $
+ * $Revision: 1.46 $
  */
  
 /*
@@ -25,10 +25,10 @@ static CDKFUNCS my_funcs = {
 CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *label, char *list[], int listSize, chtype fillerChar, chtype highlight, boolean Box, boolean shadow)
 {
    /* Set up some variables. */
-   CDKALPHALIST *alphalist	= (CDKALPHALIST *)malloc (sizeof (CDKALPHALIST));
+   CDKALPHALIST *alphalist	= newCDKObject(CDKALPHALIST, &my_funcs);
    chtype *chtypeLabel		= (chtype *)NULL;
-   int parentWidth		= WIN_WIDTH (cdkscreen->window);
-   int parentHeight		= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth		= getmaxx(cdkscreen->window) - 1;
+   int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
@@ -73,7 +73,6 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 
    /* Set some variables. */
    ScreenOf(alphalist)		= cdkscreen;
-   ObjOf(alphalist)->fn		= &my_funcs;
    alphalist->parent		= cdkscreen->window;
    alphalist->highlight		= highlight;
    alphalist->fillerChar	= fillerChar;
@@ -87,7 +86,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Do we want a shadow? */
    if (shadow)
    {
-      alphalist->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      alphalist->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* We need to sort the list before we use it. */
@@ -103,8 +102,8 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Create the entry field. */
    entryWidth = boxWidth - (labelLen + 4);
    alphalist->entryField = newCDKEntry (cdkscreen,
-					(alphalist->win)->_begx + 1,
-					(alphalist->win)->_begy + 1,
+					getbegx(alphalist->win) + 1,
+					getbegy(alphalist->win) + 1,
 					title, label,
 					A_NORMAL, fillerChar, 
 					vMIXED, entryWidth, 0, 512,
@@ -126,14 +125,14 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 
    /* Create the scrolling list. */
    alphalist->scrollField = newCDKScroll (cdkscreen, 
-						(alphalist->win)->_begx + 1,
-						(alphalist->win)->_begy+(alphalist->entryField)->titleLines + 3,
-						RIGHT,
-						boxHeight-((alphalist->entryField)->titleLines + 3),
-						boxWidth-3,
-						(char *)NULL, list, listSize,
-						NONUMBERS, A_REVERSE,
-						Box, FALSE);
+					  getbegx(alphalist->win) + 1,
+					  getbegy(alphalist->win) + (alphalist->entryField)->titleLines + 3,
+					  RIGHT,
+					  boxHeight-((alphalist->entryField)->titleLines + 3),
+					  boxWidth-3,
+					  (char *)NULL, list, listSize,
+					  NONUMBERS, A_REVERSE,
+					  Box, FALSE);
    setCDKScrollULChar (alphalist->scrollField, ACS_LTEE);
    setCDKScrollURChar (alphalist->scrollField, ACS_RTEE);
 
@@ -164,8 +163,8 @@ void _eraseCDKAlphalist (CDKOBJS *obj)
 void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = alphalist->win->_begx;
-   int currentY = alphalist->win->_begy;
+   int currentX = getbegx(alphalist->win);
+   int currentY = getbegy(alphalist->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -177,8 +176,8 @@ void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean 
     */
    if (relative)
    {
-      xpos = alphalist->win->_begx + xplace;
-      ypos = alphalist->win->_begy + yplace;
+      xpos = getbegx(alphalist->win) + xplace;
+      ypos = getbegy(alphalist->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -189,14 +188,12 @@ void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean 
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   alphalist->win->_begx = xpos;
-   alphalist->win->_begy = ypos;
+   moveCursesWindow(alphalist->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (alphalist->shadowWin != (WINDOW *)NULL)
    {
-      alphalist->shadowWin->_begx -= xdiff;
-      alphalist->shadowWin->_begy -= ydiff;
+      moveCursesWindow(alphalist->shadowWin, -xdiff, -ydiff);
    }
 
    /* Move the sub-widgets. */
@@ -221,8 +218,8 @@ void moveCDKAlphalist (CDKALPHALIST *alphalist, int xplace, int yplace, boolean 
 void positionCDKAlphalist (CDKALPHALIST *alphalist)
 {
    /* Declare some variables. */
-   int origX	= alphalist->win->_begx;
-   int origY	= alphalist->win->_begy;
+   int origX	= getbegx(alphalist->win);
+   int origY	= getbegy(alphalist->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -231,7 +228,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       key = wgetch (alphalist->win);
       if (key == KEY_UP || key == '8')
       {
-         if (alphalist->win->_begy > 0)
+         if (getbegy(alphalist->win) > 0)
          {
             moveCDKAlphalist (alphalist, 0, -1, TRUE, TRUE);
          }
@@ -242,7 +239,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (alphalist->win->_begy+alphalist->win->_maxy < WindowOf(alphalist)->_maxy-1)
+         if (getendy(alphalist->win) < getmaxy(WindowOf(alphalist))-1)
          {
             moveCDKAlphalist (alphalist, 0, 1, TRUE, TRUE);
          }
@@ -253,7 +250,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (alphalist->win->_begx > 0)
+         if (getbegx(alphalist->win) > 0)
          {
             moveCDKAlphalist (alphalist, -1, 0, TRUE, TRUE);
          }
@@ -264,7 +261,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (alphalist->win->_begx+alphalist->win->_maxx < WindowOf(alphalist)->_maxx-1)
+         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1)
          {
             moveCDKAlphalist (alphalist, 1, 0, TRUE, TRUE);
          }
@@ -275,7 +272,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == '7')
       {
-         if (alphalist->win->_begy > 0 && alphalist->win->_begx > 0)
+         if (getbegy(alphalist->win) > 0 && getbegx(alphalist->win) > 0)
          {
             moveCDKAlphalist (alphalist, -1, -1, TRUE, TRUE);
          }
@@ -286,8 +283,8 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == '9')
       {
-         if (alphalist->win->_begx+alphalist->win->_maxx < WindowOf(alphalist)->_maxx-1 &&
-		alphalist->win->_begy > 0)
+         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1
+	  && getbegy(alphalist->win) > 0)
          {
             moveCDKAlphalist (alphalist, 1, -1, TRUE, TRUE);
          }
@@ -298,7 +295,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == '1')
       {
-         if (alphalist->win->_begx > 0 && alphalist->win->_begx+alphalist->win->_maxx < WindowOf(alphalist)->_maxx-1)
+         if (getbegx(alphalist->win) > 0 && getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1)
          {
             moveCDKAlphalist (alphalist, -1, 1, TRUE, TRUE);
          }
@@ -309,8 +306,8 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == '3')
       {
-         if (alphalist->win->_begx+alphalist->win->_maxx < WindowOf(alphalist)->_maxx-1 &&
-		alphalist->win->_begy+alphalist->win->_maxy < WindowOf(alphalist)->_maxy-1)
+         if (getendx(alphalist->win) < getmaxx(WindowOf(alphalist))-1
+	  && getendy(alphalist->win) < getmaxy(WindowOf(alphalist))-1)
          {
             moveCDKAlphalist (alphalist, 1, 1, TRUE, TRUE);
          }
@@ -325,27 +322,27 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
       }
       else if (key == 't')
       {
-         moveCDKAlphalist (alphalist, alphalist->win->_begx, TOP, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, getbegx(alphalist->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKAlphalist (alphalist, alphalist->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, getbegx(alphalist->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKAlphalist (alphalist, LEFT, alphalist->win->_begy, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, LEFT, getbegy(alphalist->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKAlphalist (alphalist, RIGHT, alphalist->win->_begy, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, RIGHT, getbegy(alphalist->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKAlphalist (alphalist, CENTER, alphalist->win->_begy, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, CENTER, getbegy(alphalist->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKAlphalist (alphalist, alphalist->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKAlphalist (alphalist, getbegx(alphalist->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -366,7 +363,7 @@ void positionCDKAlphalist (CDKALPHALIST *alphalist)
 /*
  * This draws the file selector widget.
  */
-void _drawCDKAlphalist (CDKOBJS *obj, boolean Box)
+void _drawCDKAlphalist (CDKOBJS *obj, boolean Box GCC_UNUSED)
 {
     CDKALPHALIST * alphalist = (CDKALPHALIST *)obj;
 
@@ -626,7 +623,7 @@ void setCDKAlphalistPostProcess (CDKALPHALIST *alphalist, PROCESSFN callback, vo
 /*
  * Start of callback functions.
  */
-static int adjustAlphalistCB (EObjectType objectType, void *object, void *clientData, chtype key)
+static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKALPHALIST *alphalist	= (CDKALPHALIST *)clientData;
    CDKSCROLL *scrollp		= (CDKSCROLL*)alphalist->scrollField;
@@ -647,7 +644,7 @@ static int adjustAlphalistCB (EObjectType objectType, void *object, void *client
 /*
  * This is the heart-beat of the widget.
  */
-static int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, chtype input)
+static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype input)
 {
    CDKALPHALIST *alphalist	= (CDKALPHALIST *)clientData;
    CDKSCROLL *scrollp		= alphalist->scrollField;
@@ -692,7 +689,7 @@ static int preProcessEntryField (EObjectType cdktype, void *object, void *client
       else
       {
          pattern[infoLen] = (char)input;
-         pattern[infoLen+1] = '\0';
+         pattern[infoLen + 1] = '\0';
       }
 
       /* Look for the pattern in the list. */
@@ -757,7 +754,7 @@ static int preProcessEntryField (EObjectType cdktype, void *object, void *client
 /*
  * This tries to complete the word in the entry field.
  */
-static int completeWordCB (EObjectType objectType, void *object, void *clientData, chtype key)
+static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key GCC_UNUSED)
 {
    CDKALPHALIST *alphalist	= (CDKALPHALIST *)clientData;
    CDKENTRY *entry		= (CDKENTRY*)alphalist->entryField;
@@ -807,7 +804,7 @@ static int completeWordCB (EObjectType objectType, void *object, void *clientDat
    }
 
    /* Ok, we found a match, is the next item similar? */
-   ret = strncmp (alphalist->list[Index+1], entry->info, wordLength);
+   ret = strncmp (alphalist->list[Index + 1], entry->info, wordLength);
    if (ret == 0)
    {
       currentIndex	= Index;
@@ -817,8 +814,8 @@ static int completeWordCB (EObjectType objectType, void *object, void *clientDat
       selected		= -1;
 
       /* Start looking for alternate words. */
-      while ((currentIndex < alphalist->listSize) &&
-		(strncmp (alphalist->list[currentIndex], entry->info, wordLength) == 0))
+      while ((currentIndex < alphalist->listSize)
+          && (strncmp (alphalist->list[currentIndex], entry->info, wordLength) == 0))
       {
          altWords[altCount] = copyChar (alphalist->list[currentIndex]);
          currentIndex++;
@@ -826,7 +823,7 @@ static int completeWordCB (EObjectType objectType, void *object, void *clientDat
       }
       
       /* Determine the height of the scrolling list. */
-      height = (altCount < 8 ? altCount+3 : 11);
+      height = (altCount < 8 ? altCount + 3 : 11);
 
       /* Create a scrolling list of close matches. */
       scrollp = newCDKScroll (entry->obj.screen, CENTER, CENTER, RIGHT, height, -30,

@@ -15,7 +15,7 @@ int main (void)
    CDKSCREEN *cdkscreen	= (CDKSCREEN *)NULL;
    CDKENTRY *widget	= (CDKENTRY *)NULL;
    WINDOW *cursesWin	= (WINDOW *)NULL;
-   char *title		= "<C>Type in anything you want\n<C>but the dreaeded letter </B>G<!B>!";
+   char *title		= "<C>Type in anything you want\n<C>but the dreaded letter </B>G<!B>!";
    char	*info, *mesg[3], temp[256];
 
    /* Set up CDK. */
@@ -74,7 +74,7 @@ int main (void)
    exit (0);
 }
 
-int entryPreProcessCB (EObjectType cdkType, void *object, void *clientData, chtype input)
+int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)
 {
    CDKENTRY *entry	= (CDKENTRY *)object;
    CDKDIALOG *widget	= (CDKDIALOG *)NULL;

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 01:55:12 $
- * $Revision: 1.56 $
+ * $Date: 1999/05/23 01:18:49 $
+ * $Revision: 1.57 $
  */
 
 static void segvTrap (int sig);
@@ -38,6 +38,14 @@ static boolean validObjType(EObjectType type)
    default:
       return FALSE;
    }
+}
+
+void *_newCDKObject(unsigned size, CDKFUNCS *funcs)
+{
+   void *result = malloc(size);
+   memset(result, 0, sizeof(CDKOBJS));
+   ((CDKOBJS *)result)->fn = funcs;
+   return result;
 }
 
 /*

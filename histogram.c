@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:40:13 $
- * $Revision: 1.45 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.54 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -17,9 +17,9 @@ static CDKFUNCS my_funcs = {
 CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, int orient, char *title, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKHISTOGRAM *histogram	= (CDKHISTOGRAM *)malloc (sizeof (CDKHISTOGRAM));
-   int parentWidth		= WIN_WIDTH (cdkscreen->window);
-   int parentHeight		= WIN_HEIGHT (cdkscreen->window);
+   CDKHISTOGRAM *histogram	= newCDKObject(CDKHISTOGRAM, &my_funcs);
+   int parentWidth		= getmaxx(cdkscreen->window) - 1;
+   int parentHeight		= getmaxy(cdkscreen->window) - 1;
    int boxWidth			= width;
    int boxHeight		= height;
    int xpos			= xplace;
@@ -79,7 +79,6 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 
    /* Create the histogram pointer. */
    ScreenOf(histogram)		= cdkscreen;
-   ObjOf(histogram)->fn		= &my_funcs;
    histogram->parent		= cdkscreen->window;
    histogram->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    histogram->shadowWin		= (WINDOW *)NULL;
@@ -130,7 +129,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    /* Do we want a shadow? */
    if (shadow)
    {
-      histogram->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      histogram->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Register this baby. */
@@ -143,7 +142,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 /*
  * This was added for the builder.
  */
-void activateCDKHistogram (CDKHISTOGRAM *histogram, chtype *actions)
+void activateCDKHistogram (CDKHISTOGRAM *histogram, chtype *actions GCC_UNUSED)
 {
    drawCDKHistogram (histogram, ObjOf(histogram)->box);
 }
@@ -326,14 +325,14 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             sprintf (string, "%d", histogram->low);
             histogram->lowString	= copyChar (string);
             histogram->lowx		= 1;
-            histogram->lowy		= histogram->titleLines+1;
+            histogram->lowy		= histogram->titleLines + 1;
 
             /* Set the high label attributes. */
             sprintf (string, "%d", histogram->high);
             len				= (int)strlen(string);
             histogram->highString	= copyChar (string);
             histogram->highx		= histogram->boxWidth - len - 1;
-            histogram->highy		= histogram->titleLines+1;
+            histogram->highy		= histogram->titleLines + 1;
 
             /* Set the stats label attributes. */
             if (histogram->viewType == vPERCENT)
@@ -351,7 +350,7 @@ void setCDKHistogramValue (CDKHISTOGRAM *histogram, int low, int high, int value
             len				= (int)strlen(string);
             histogram->curString	= copyChar (string);
             histogram->curx		= (histogram->fieldWidth - len)/2 + 1;
-            histogram->cury		= histogram->titleLines+1;
+            histogram->cury		= histogram->titleLines + 1;
          }
          else if (histogram->statsPos == CENTER)
          {
@@ -566,8 +565,8 @@ void setCDKHistogramBackgroundColor (CDKHISTOGRAM *histogram, char *color)
 void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = histogram->win->_begx;
-   int currentY = histogram->win->_begy;
+   int currentX = getbegx(histogram->win);
+   int currentY = getbegy(histogram->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -579,8 +578,8 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
     */
    if (relative)
    {
-      xpos = histogram->win->_begx + xplace;
-      ypos = histogram->win->_begy + yplace;
+      xpos = getbegx(histogram->win) + xplace;
+      ypos = getbegy(histogram->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -591,14 +590,12 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   histogram->win->_begx = xpos;
-   histogram->win->_begy = ypos;
+   moveCursesWindow(histogram->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (histogram->shadowWin != (WINDOW *)NULL)
    {
-      histogram->shadowWin->_begx -= xdiff;
-      histogram->shadowWin->_begy -= ydiff;
+      moveCursesWindow(histogram->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -619,8 +616,8 @@ void moveCDKHistogram (CDKHISTOGRAM *histogram, int xplace, int yplace, boolean 
 void positionCDKHistogram (CDKHISTOGRAM *histogram)
 {
    /* Declare some variables. */
-   int origX	= histogram->win->_begx;
-   int origY	= histogram->win->_begy;
+   int origX	= getbegx(histogram->win);
+   int origY	= getbegy(histogram->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -629,7 +626,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       key = wgetch (histogram->win);
       if (key == KEY_UP || key == '8')
       {
-         if (histogram->win->_begy > 0)
+         if (getbegy(histogram->win) > 0)
          {
             moveCDKHistogram (histogram, 0, -1, TRUE, TRUE);
          }
@@ -640,7 +637,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (histogram->win->_begy+histogram->win->_maxy < WindowOf(histogram)->_maxy-1)
+         if (getendy(histogram->win) < getmaxy(WindowOf(histogram))-1)
          {
             moveCDKHistogram (histogram, 0, 1, TRUE, TRUE);
          }
@@ -651,7 +648,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (histogram->win->_begx > 0)
+         if (getbegx(histogram->win) > 0)
          {
             moveCDKHistogram (histogram, -1, 0, TRUE, TRUE);
          }
@@ -662,7 +659,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1)
+         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1)
          {
             moveCDKHistogram (histogram, 1, 0, TRUE, TRUE);
          }
@@ -673,7 +670,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '7')
       {
-         if (histogram->win->_begy > 0 && histogram->win->_begx > 0)
+         if (getbegy(histogram->win) > 0 && getbegx(histogram->win) > 0)
          {
             moveCDKHistogram (histogram, -1, -1, TRUE, TRUE);
          }
@@ -684,8 +681,8 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '9')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1 &&
-		histogram->win->_begy > 0)
+         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1
+	  && getbegy(histogram->win) > 0)
          {
             moveCDKHistogram (histogram, 1, -1, TRUE, TRUE);
          }
@@ -696,7 +693,7 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '1')
       {
-         if (histogram->win->_begx > 0 && histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1)
+         if (getbegx(histogram->win) > 0 && getendx(histogram->win) < getmaxx(WindowOf(histogram))-1)
          {
             moveCDKHistogram (histogram, -1, 1, TRUE, TRUE);
          }
@@ -707,8 +704,8 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == '3')
       {
-         if (histogram->win->_begx+histogram->win->_maxx < WindowOf(histogram)->_maxx-1
-	  && histogram->win->_begy+histogram->win->_maxy < WindowOf(histogram)->_maxy-1)
+         if (getendx(histogram->win) < getmaxx(WindowOf(histogram))-1
+	  && getendy(histogram->win) < getmaxy(WindowOf(histogram))-1)
          {
             moveCDKHistogram (histogram, 1, 1, TRUE, TRUE);
          }
@@ -723,27 +720,27 @@ void positionCDKHistogram (CDKHISTOGRAM *histogram)
       }
       else if (key == 't')
       {
-         moveCDKHistogram (histogram, histogram->win->_begx, TOP, FALSE, TRUE);
+         moveCDKHistogram (histogram, getbegx(histogram->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKHistogram (histogram, histogram->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKHistogram (histogram, getbegx(histogram->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKHistogram (histogram, LEFT, histogram->win->_begy, FALSE, TRUE);
+         moveCDKHistogram (histogram, LEFT, getbegy(histogram->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKHistogram (histogram, RIGHT, histogram->win->_begy, FALSE, TRUE);
+         moveCDKHistogram (histogram, RIGHT, getbegy(histogram->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKHistogram (histogram, CENTER, histogram->win->_begy, FALSE, TRUE);
+         moveCDKHistogram (histogram, CENTER, getbegy(histogram->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKHistogram (histogram, histogram->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKHistogram (histogram, getbegx(histogram->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -801,7 +798,7 @@ void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       {
          writeChtype (histogram->win,
 			histogram->titlePos[x],
-			x+1,
+			x + 1,
 			histogram->title[x],
 			HORIZONTAL, 0,
 			histogram->titleLen[x]);

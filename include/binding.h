@@ -1,5 +1,6 @@
 #ifndef CDKBINDING_H
 #define CDKBINDING_H	1
+
 #include "cdk.h"
 
 /*
@@ -15,7 +16,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
+ *    must display the following acknowledgment:
  * 	This product includes software developed by Mike Glover
  * 	and contributors.
  * 4. Neither the name of Mike Glover, nor the names of contributors
@@ -38,36 +39,56 @@
 /*
  * Create definitions for the key bindings.
  */
-#define	MAX_ARGS	100
 
 /*
  * This is the key binding prototype.
  */
-typedef int (*BINDFN) (EObjectType cdktype, void *object, void *clientData, chtype input);
+typedef int (*BINDFN) (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		void *		/* clientData */,
+		chtype		/* input */);
 
 /*
  * This is the prototype for the process callback functions.
  */
-typedef int (*PROCESSFN) (EObjectType cdktype, void *object, void *clientData, chtype input);
+typedef int (*PROCESSFN) (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		void *		/* clientData */,
+		chtype 		/* input */);
 
 /*
  * This binds the key to the event.
  */
-void bindCDKObject (EObjectType cdktype, void *object,
-			chtype key, BINDFN function, void *data);
+void bindCDKObject (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		chtype		/* key */,
+		BINDFN		/* function */,
+		void *		/* data */);
 
 /*
  * This unbinds the key from the event.
  */
-void unbindCDKObject (EObjectType cdktype, void *object, chtype key);
+void unbindCDKObject (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		chtype		/* key */);
 
 /*
  * This checks if the given key has an event 'attached' to it.
  */
-int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key);
+int checkCDKObjectBind (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		chtype		/* key */);
 
 /*
  * This cleans out all of the key bindings.
  */
-void cleanCDKObjectBindings (EObjectType cdktype, void *object);
-#endif
+void cleanCDKObjectBindings (
+		EObjectType	/* cdktype */,
+		void *		/* object */);
+
+#endif /* CDKBINDING_H */

@@ -23,7 +23,7 @@ int main (void)
    char *coltitle[10], *rowtitle[10], *mesg[100];
    int colwidth[10], colvalue[10];
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -38,8 +38,8 @@ int main (void)
    coltitle[5] = "</B/7>Flag";     colwidth[5] = 1 ; colvalue[5] = vUMIXED;
    rowtitle[1] = "</B/6>Course 1"; rowtitle[2] = "<C></B/6>Course 2";
    rowtitle[3] = "</B/6>Course 3"; rowtitle[4] = "<L></B/6>Course 4";
-   rowtitle[5] = "</B/6>Course 5"; rowtitle[6] = "<R></B/6>Course 6"; 
-   rowtitle[7] = "</B/6>Course 7"; rowtitle[8] = "<R></B/6>Course 8"; 
+   rowtitle[5] = "</B/6>Course 5"; rowtitle[6] = "<R></B/6>Course 6";
+   rowtitle[7] = "</B/6>Course 7"; rowtitle[8] = "<R></B/6>Course 8";
 
    /* Create the title. */
    title = "<C>This is the CDK\n<C>matrix widget.\n<C><#LT><#HL(30)><#RT>";
@@ -49,7 +49,7 @@ int main (void)
 				CENTER, CENTER,
 				rows, cols, vrows, vcols,
 				title, rowtitle, coltitle,
-				colwidth, colvalue, 
+				colwidth, colvalue,
 				rowSpace, colSpace, '.',
 				COL, TRUE, TRUE, TRUE);
 
@@ -59,7 +59,7 @@ int main (void)
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
       endCDK();
- 
+
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the matrix widget. Is the window too small ?\n");
       exit (1);

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 01:59:42 $
- * $Revision: 1.45 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.54 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -18,9 +18,9 @@ static CDKFUNCS my_funcs = {
 CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, boolean Box, boolean shadow)
 {
    /* Maintain the label information. */
-   CDKLABEL *label	= (CDKLABEL *)malloc (sizeof (CDKLABEL));
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   CDKLABEL *label	= newCDKObject(CDKLABEL, &my_funcs);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= INT_MIN;
    int boxHeight	= rows + 2;
    int xpos		= xplace;
@@ -53,7 +53,6 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
 
    /* Create the label. */
    ScreenOf(label)	= cdkscreen;
-   ObjOf(label)->fn	= &my_funcs;
    label->parent	= cdkscreen->window;
    label->win		= newwin (boxHeight, boxWidth, ypos, xpos);
    label->shadowWin	= (WINDOW *)NULL;
@@ -90,7 +89,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    /* If a shadow was requested, then create the shadow window. */
    if (shadow)
    {
-      label->shadowWin	= newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      label->shadowWin	= newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Register this baby. */
@@ -103,7 +102,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
 /*
  * This was added for the builder.
  */
-void activateCDKLabel (CDKLABEL *label, chtype *actions)
+void activateCDKLabel (CDKLABEL *label, chtype *actions GCC_UNUSED)
 {
    drawCDKLabel (label, ObjOf(label)->box);
 }
@@ -222,7 +221,7 @@ void setCDKLabelBackgroundColor (CDKLABEL *label, char *color)
 /*
  * This draws the label widget.
  */
-void _drawCDKLabel (CDKOBJS *object, boolean Box)
+void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
 {
    CDKLABEL *label = (CDKLABEL *)object;
    int x = 0;
@@ -246,7 +245,7 @@ void _drawCDKLabel (CDKOBJS *object, boolean Box)
    /* Draw in the message. */
    for (x=0; x < label->rows; x++)
    {
-      writeChtype (label->win, label->infoPos[x], x+1, label->info[x], HORIZONTAL, 0, label->infoLen[x]);
+      writeChtype (label->win, label->infoPos[x], x + 1, label->info[x], HORIZONTAL, 0, label->infoLen[x]);
    }
 
    /* Refresh the window. */
@@ -271,8 +270,8 @@ void _eraseCDKLabel (CDKOBJS *object)
 void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = label->win->_begx;
-   int currentY = label->win->_begy;
+   int currentX = getbegx(label->win);
+   int currentY = getbegy(label->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -284,8 +283,8 @@ void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, bo
     */
    if (relative)
    {
-      xpos = label->win->_begx + xplace;
-      ypos = label->win->_begy + yplace;
+      xpos = getbegx(label->win) + xplace;
+      ypos = getbegy(label->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -296,14 +295,12 @@ void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, bo
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   label->win->_begx = xpos;
-   label->win->_begy = ypos;
+   moveCursesWindow(label->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (label->shadowWin != (WINDOW *)NULL)
    {
-      label->shadowWin->_begx -= xdiff;
-      label->shadowWin->_begy -= ydiff;
+      moveCursesWindow(label->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -324,8 +321,8 @@ void moveCDKLabel (CDKLABEL *label, int xplace, int yplace, boolean relative, bo
 void positionCDKLabel (CDKLABEL *label)
 {
    /* Declare some variables. */
-   int origX	= label->win->_begx;
-   int origY	= label->win->_begy;
+   int origX	= getbegx(label->win);
+   int origY	= getbegy(label->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -334,7 +331,7 @@ void positionCDKLabel (CDKLABEL *label)
       key = wgetch (label->win);
       if (key == KEY_UP || key == '8')
       {
-         if (label->win->_begy > 0)
+         if (getbegy(label->win) > 0)
          {
             moveCDKLabel (label, 0, -1, TRUE, TRUE);
          }
@@ -345,7 +342,7 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (label->win->_begy+label->win->_maxy < WindowOf(label)->_maxy-1)
+         if (getendy(label->win) < getmaxy(WindowOf(label))-1)
          {
             moveCDKLabel (label, 0, 1, TRUE, TRUE);
          }
@@ -356,7 +353,7 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (label->win->_begx > 0)
+         if (getbegx(label->win) > 0)
          {
             moveCDKLabel (label, -1, 0, TRUE, TRUE);
          }
@@ -367,7 +364,7 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (label->win->_begx+label->win->_maxx < WindowOf(label)->_maxx-1)
+         if (getendx(label->win) < getmaxx(WindowOf(label))-1)
          {
             moveCDKLabel (label, 1, 0, TRUE, TRUE);
          }
@@ -378,7 +375,7 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == '7')
       {
-         if (label->win->_begy > 0 && label->win->_begx > 0)
+         if (getbegy(label->win) > 0 && getbegx(label->win) > 0)
          {
             moveCDKLabel (label, -1, -1, TRUE, TRUE);
          }
@@ -389,8 +386,8 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == '9')
       {
-         if (label->win->_begx+label->win->_maxx < WindowOf(label)->_maxx-1 &&
-		label->win->_begy > 0)
+         if (getendx(label->win) < getmaxx(WindowOf(label))-1
+	  && getbegy(label->win) > 0)
          {
             moveCDKLabel (label, 1, -1, TRUE, TRUE);
          }
@@ -401,7 +398,7 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == '1')
       {
-         if (label->win->_begx > 0 && label->win->_begx+label->win->_maxx < WindowOf(label)->_maxx-1)
+         if (getbegx(label->win) > 0 && getendx(label->win) < getmaxx(WindowOf(label))-1)
          {
             moveCDKLabel (label, -1, 1, TRUE, TRUE);
          }
@@ -412,8 +409,8 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == '3')
       {
-         if (label->win->_begx+label->win->_maxx < WindowOf(label)->_maxx-1
-	  && label->win->_begy+label->win->_maxy < WindowOf(label)->_maxy-1)
+         if (getendx(label->win) < getmaxx(WindowOf(label))-1
+	  && getendy(label->win) < getmaxy(WindowOf(label))-1)
          {
             moveCDKLabel (label, 1, 1, TRUE, TRUE);
          }
@@ -428,27 +425,27 @@ void positionCDKLabel (CDKLABEL *label)
       }
       else if (key == 't')
       {
-         moveCDKLabel (label, label->win->_begx, TOP, FALSE, TRUE);
+         moveCDKLabel (label, getbegx(label->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKLabel (label, label->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKLabel (label, getbegx(label->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKLabel (label, LEFT, label->win->_begy, FALSE, TRUE);
+         moveCDKLabel (label, LEFT, getbegy(label->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKLabel (label, RIGHT, label->win->_begy, FALSE, TRUE);
+         moveCDKLabel (label, RIGHT, getbegy(label->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKLabel (label, CENTER, label->win->_begy, FALSE, TRUE);
+         moveCDKLabel (label, CENTER, getbegy(label->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKLabel (label, label->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKLabel (label, getbegx(label->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {

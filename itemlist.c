@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:40:44 $
- * $Revision: 1.25 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.33 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -18,10 +18,10 @@ static CDKFUNCS my_funcs = {
 CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, char **item, int count, int defaultItem, boolean Box, boolean shadow)
 {
    /* Set up some variables.  */
-   CDKITEMLIST *itemlist = (CDKITEMLIST *)malloc (sizeof (CDKITEMLIST));
+   CDKITEMLIST *itemlist = newCDKObject(CDKITEMLIST, &my_funcs);
    chtype *holder	= (chtype *)NULL;
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int boxWidth		= 0;
    int boxHeight	= 3;
    int maxWidth		= INT_MIN;
@@ -49,7 +49,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    {
       /* Copy the item to the list. */
       itemlist->item[x]	= char2Chtype (item[x], &itemlist->itemLen[x], &itemlist->itemPos[x]);
-      maxWidth = MAXIMUM (maxWidth, itemlist->itemLen[x]+2);
+      maxWidth = MAXIMUM (maxWidth, itemlist->itemLen[x] + 2);
    }
 
    /* Set the field width and the box width. */
@@ -127,22 +127,21 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
 
    /* Make the field window. */
    itemlist->fieldWin = subwin (cdkscreen->window, 1, fieldWidth,
-				ypos+itemlist->titleLines+1,
-				xpos+itemlist->labelLen+horizontalAdjust+1);
+				ypos + itemlist->titleLines + 1,
+				xpos + itemlist->labelLen + horizontalAdjust + 1);
    keypad (itemlist->fieldWin, TRUE);
 
    /* Make the label window if there was a label. */
    if (itemlist->label != (chtype *)NULL)
    {
-      itemlist->labelWin = subwin (cdkscreen->window, 1, itemlist->labelLen+1,
-					ypos+itemlist->titleLines+1,
-					xpos+horizontalAdjust+2);
+      itemlist->labelWin = subwin (cdkscreen->window, 1, itemlist->labelLen + 1,
+					ypos + itemlist->titleLines + 1,
+					xpos + horizontalAdjust + 2);
    }
    keypad (itemlist->win, TRUE);
 
    /* Set up the rest of the structure. */
    ScreenOf(itemlist)			= cdkscreen;
-   ObjOf(itemlist)->fn			= &my_funcs;
    itemlist->parent			= cdkscreen->window;
    itemlist->shadowWin			= (WINDOW *)NULL;
    itemlist->boxHeight			= boxHeight;
@@ -179,7 +178,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Do we want a shadow??? */
    if (shadow)
    {
-      itemlist->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      itemlist->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -350,8 +349,8 @@ int injectCDKItemlist (CDKITEMLIST *itemlist, chtype input)
 void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = itemlist->win->_begx;
-   int currentY = itemlist->win->_begy;
+   int currentX = getbegx(itemlist->win);
+   int currentY = getbegy(itemlist->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -363,8 +362,8 @@ void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean rel
      */
    if (relative)
    {
-      xpos = itemlist->win->_begx + xplace;
-      ypos = itemlist->win->_begy + yplace;
+      xpos = getbegx(itemlist->win) + xplace;
+      ypos = getbegy(itemlist->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -375,21 +374,17 @@ void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean rel
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   itemlist->win->_begx = xpos;
-   itemlist->win->_begy = ypos;
-   itemlist->fieldWin->_begx -= xdiff;
-   itemlist->fieldWin->_begy -= ydiff;
+   moveCursesWindow(itemlist->win, -xdiff, -ydiff);
+   moveCursesWindow(itemlist->fieldWin, -xdiff, -ydiff);
    if (itemlist->labelWin != (WINDOW *)NULL)
    {
-      itemlist->labelWin->_begx -= xdiff;
-      itemlist->labelWin->_begy -= ydiff;
+      moveCursesWindow(itemlist->labelWin, -xdiff, -ydiff);
    }
 
    /* If there is a shadow box we have to move it too. */
    if (itemlist->shadow)
    {
-      itemlist->shadowWin->_begx -= xdiff;
-      itemlist->shadowWin->_begy -= ydiff;
+      moveCursesWindow(itemlist->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -410,8 +405,8 @@ void moveCDKItemlist (CDKITEMLIST *itemlist, int xplace, int yplace, boolean rel
 void positionCDKItemlist (CDKITEMLIST *itemlist)
 {
    /* Declare some variables. */
-   int origX	= itemlist->win->_begx;
-   int origY	= itemlist->win->_begy;
+   int origX	= getbegx(itemlist->win);
+   int origY	= getbegy(itemlist->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -420,7 +415,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       key = wgetch (itemlist->win);
       if (key == KEY_UP || key == '8')
       {
-         if (itemlist->win->_begy > 0)
+         if (getbegy(itemlist->win) > 0)
          {
             moveCDKItemlist (itemlist, 0, -1, TRUE, TRUE);
          }
@@ -431,7 +426,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (itemlist->win->_begy+itemlist->win->_maxy < WindowOf(itemlist)->_maxy-1)
+         if (getendy(itemlist->win) < getmaxy(WindowOf(itemlist))-1)
          {
             moveCDKItemlist (itemlist, 0, 1, TRUE, TRUE);
          }
@@ -442,7 +437,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (itemlist->win->_begx > 0)
+         if (getbegx(itemlist->win) > 0)
          {
             moveCDKItemlist (itemlist, -1, 0, TRUE, TRUE);
          }
@@ -453,7 +448,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (itemlist->win->_begx+itemlist->win->_maxx < WindowOf(itemlist)->_maxx-1)
+         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1)
          {
             moveCDKItemlist (itemlist, 1, 0, TRUE, TRUE);
          }
@@ -464,7 +459,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == '7')
       {
-         if (itemlist->win->_begy > 0 && itemlist->win->_begx > 0)
+         if (getbegy(itemlist->win) > 0 && getbegx(itemlist->win) > 0)
          {
             moveCDKItemlist (itemlist, -1, -1, TRUE, TRUE);
          }
@@ -475,8 +470,8 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == '9')
       {
-         if (itemlist->win->_begx+itemlist->win->_maxx < WindowOf(itemlist)->_maxx-1 &&
-		itemlist->win->_begy > 0)
+         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1
+	  && getbegy(itemlist->win) > 0)
          {
             moveCDKItemlist (itemlist, 1, -1, TRUE, TRUE);
          }
@@ -487,7 +482,7 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == '1')
       {
-         if (itemlist->win->_begx > 0 && itemlist->win->_begx+itemlist->win->_maxx < WindowOf(itemlist)->_maxx-1)
+         if (getbegx(itemlist->win) > 0 && getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1)
          {
             moveCDKItemlist (itemlist, -1, 1, TRUE, TRUE);
          }
@@ -498,8 +493,8 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == '3')
       {
-         if (itemlist->win->_begx+itemlist->win->_maxx < WindowOf(itemlist)->_maxx-1
-	  && itemlist->win->_begy+itemlist->win->_maxy < WindowOf(itemlist)->_maxy-1)
+         if (getendx(itemlist->win) < getmaxx(WindowOf(itemlist))-1
+	  && getendy(itemlist->win) < getmaxy(WindowOf(itemlist))-1)
          {
             moveCDKItemlist (itemlist, 1, 1, TRUE, TRUE);
          }
@@ -514,27 +509,27 @@ void positionCDKItemlist (CDKITEMLIST *itemlist)
       }
       else if (key == 't')
       {
-         moveCDKItemlist (itemlist, itemlist->win->_begx, TOP, FALSE, TRUE);
+         moveCDKItemlist (itemlist, getbegx(itemlist->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKItemlist (itemlist, itemlist->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKItemlist (itemlist, getbegx(itemlist->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKItemlist (itemlist, LEFT, itemlist->win->_begy, FALSE, TRUE);
+         moveCDKItemlist (itemlist, LEFT, getbegy(itemlist->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKItemlist (itemlist, RIGHT, itemlist->win->_begy, FALSE, TRUE);
+         moveCDKItemlist (itemlist, RIGHT, getbegy(itemlist->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKItemlist (itemlist, CENTER, itemlist->win->_begy, FALSE, TRUE);
+         moveCDKItemlist (itemlist, CENTER, getbegy(itemlist->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKItemlist (itemlist, itemlist->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKItemlist (itemlist, getbegx(itemlist->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -587,7 +582,7 @@ void _drawCDKItemlist (CDKOBJS *object, int Box)
       {
          writeChtype (itemlist->win,
 			itemlist->titlePos[x],
-			x+1,
+			x + 1,
 			itemlist->title[x],
 			HORIZONTAL, 0,
 			itemlist->titleLen[x]);
@@ -694,7 +689,7 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist)
    for (x=0; x < len; x++)
    {
       mvwaddch (itemlist->fieldWin, 0,
-		x+itemlist->itemPos[currentItem],
+		x + itemlist->itemPos[currentItem],
 		itemlist->item[currentItem][x]);
    }
 

@@ -44,7 +44,7 @@ struct AppointmentInfo {
 int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key);
 int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key);
 int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key);
-int accerlerateToDateCB (EObjectType objectType, void *object, void *clientData, chtype key);
+int accelerateToDateCB (EObjectType objectType, void *object, void *clientData, chtype key);
 void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo);
 void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo);
 
@@ -69,7 +69,7 @@ int main (int argc, char **argv)
    /*
     * Get the current dates and set the default values for
     * the day/month/year values for the calendar.
-    */ 
+    */
     time (&clck);
     dateInfo	= localtime (&clck);
     day		= dateInfo->tm_mday;
@@ -127,7 +127,7 @@ int main (int argc, char **argv)
    /* Read the appointment book information. */
    readAppointmentFile (filename, &appointmentInfo);
 
-   /* Set up CDK. */ 
+   /* Set up CDK. */
    cursesWin = initscr();
    cdkscreen = initCDKScreen (cursesWin);
 
@@ -161,10 +161,10 @@ int main (int argc, char **argv)
    bindCDKObject (vCALENDAR, calendar, 'r', removeCalendarMarkCB, &appointmentInfo);
    bindCDKObject (vCALENDAR, calendar, 'R', removeCalendarMarkCB, &appointmentInfo);
    bindCDKObject (vCALENDAR, calendar, '?', displayCalendarMarkCB, &appointmentInfo);
-   bindCDKObject (vCALENDAR, calendar, 'j', accerlerateToDateCB, &appointmentInfo);
-   bindCDKObject (vCALENDAR, calendar, 'J', accerlerateToDateCB, &appointmentInfo);
+   bindCDKObject (vCALENDAR, calendar, 'j', accelerateToDateCB, &appointmentInfo);
+   bindCDKObject (vCALENDAR, calendar, 'J', accelerateToDateCB, &appointmentInfo);
 
-   /* Set all the appiontments read from the file. */
+   /* Set all the appointments read from the file. */
    for (x=0; x < appointmentInfo.appointmentCount; x++)
    {
       chtype marker = GPAppointmentAttributes[appointmentInfo.appointment[x].type];
@@ -205,7 +205,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    char *lines[MAX_LINES];
    char *temp[MAX_LINES];
    int x, y;
-   
+
    /* Read the appointment file. */
    linesRead = readFile (filename, lines, MAX_LINES);
    if (linesRead == -1)
@@ -254,7 +254,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* Declare local variables. */
    FILE *fd;
    int x;
- 
+
    /* Can we open the file? */
    if ((fd = fopen (filename, "w")) == NULL)
    {
@@ -282,7 +282,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 /*
  * This adds a marker to the calendar.
  */
-int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key)
+int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    CDKENTRY *entry				= (CDKENTRY *)NULL;
@@ -321,7 +321,7 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    entry = newCDKEntry (ScreenOf(calendar),
 			CENTER, CENTER,
 			"<C>Enter a description of the appointment.",
-			"Description: ", 
+			"Description: ",
 			A_NORMAL, (chtype)'.',
 			vMIXED, 40, 1, 512,
 			TRUE, FALSE);
@@ -341,10 +341,10 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
    /* Set the marker. */
-   setCDKCalendarMarker (calendar, 
-				calendar->day, 
-				calendar->month, 
-				calendar->year, 
+   setCDKCalendarMarker (calendar,
+				calendar->day,
+				calendar->month,
+				calendar->year,
 				marker);
 
    /* Keep the marker. */
@@ -363,7 +363,7 @@ int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData
 /*
  * This removes a marker from the calendar.
  */
-int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key)
+int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    struct AppointmentInfo *appointmentInfo	= (struct AppointmentInfo *)clientData;
@@ -383,9 +383,9 @@ int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData
    }
 
    /* Remove the marker from the calendar. */
-   removeCDKCalendarMarker (calendar, 
-				calendar->day, 
-				calendar->month, 
+   removeCDKCalendarMarker (calendar,
+				calendar->day,
+				calendar->month,
 				calendar->year);
 
    /* Redraw the calendar. */
@@ -396,7 +396,7 @@ int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData
 /*
  * This displays the marker(s) on the given day.
  */
-int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key)
+int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar			= (CDKCALENDAR *)object;
    CDKLABEL *label				= (CDKLABEL *)NULL;
@@ -467,7 +467,7 @@ int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientDat
    /* If we didn't find the marker, create a different message. */
    if (found == 0)
    {
-      sprintf (temp, "<C>There is no appointment for %02d/%02d/%d", 
+      sprintf (temp, "<C>There is no appointment for %02d/%02d/%d",
 			calendar->day, calendar->month, calendar->year);
       mesg[mesgLines++] = copyChar (temp);
       mesg[mesgLines++] = copyChar ("<C><#HL(30)>");
@@ -495,7 +495,7 @@ int displayCalendarMarkCB (EObjectType objectType, void *object, void *clientDat
 /*
  * This allows the user to accelerate to a given date.
  */
-int accerlerateToDateCB (EObjectType objectType, void *object, void *clientData, chtype key)
+int accelerateToDateCB (EObjectType objectType GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    return 0;
 }

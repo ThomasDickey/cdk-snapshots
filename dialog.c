@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:35:52 $
- * $Revision: 1.47 $
+ * $Date: 1999/05/23 01:24:33 $
+ * $Revision: 1.56 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -17,7 +17,7 @@ static CDKFUNCS my_funcs = {
 CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg, int rows, char **buttonLabel, int buttonCount, chtype highlight, boolean separator, boolean Box, boolean shadow)
 {
    /* Declare local variables. */
-   CDKDIALOG *dialog	= (CDKDIALOG *)malloc (sizeof (CDKDIALOG));
+   CDKDIALOG *dialog	= newCDKObject(CDKDIALOG, &my_funcs);
    int boxWidth		= MIN_DIALOG_WIDTH;
    int boxHeight	= rows + 3 + separator;
    int maxmessagewidth	= -1;
@@ -53,7 +53,6 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
 
    /* Set up the dialog box attributes. */
    ScreenOf(dialog)		= cdkscreen;
-   ObjOf(dialog)->fn		= &my_funcs;
    dialog->parent		= cdkscreen->window;
    dialog->win			= newwin (boxHeight, boxWidth, ypos, xpos);
    dialog->shadowWin		= (WINDOW *)NULL;
@@ -117,7 +116,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    /* Was there a shadow? */
    if (shadow)
    {
-      dialog->shadowWin = newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      dialog->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Empty the key bindings. */
@@ -287,8 +286,8 @@ int injectCDKDialog (CDKDIALOG *dialog, chtype input)
 void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = dialog->win->_begx;
-   int currentY = dialog->win->_begy;
+   int currentX = getbegx(dialog->win);
+   int currentY = getbegy(dialog->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -300,8 +299,8 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
     */
    if (relative)
    {
-      xpos = dialog->win->_begx + xplace;
-      ypos = dialog->win->_begy + yplace;
+      xpos = getbegx(dialog->win) + xplace;
+      ypos = getbegy(dialog->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -312,14 +311,12 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   dialog->win->_begx = xpos;
-   dialog->win->_begy = ypos;
+   moveCursesWindow(dialog->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (dialog->shadowWin != (WINDOW *)NULL)
    {
-      dialog->shadowWin->_begx -= xdiff;
-      dialog->shadowWin->_begy -= ydiff;
+      moveCursesWindow(dialog->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -340,8 +337,8 @@ void moveCDKDialog (CDKDIALOG *dialog, int xplace, int yplace, boolean relative,
 void positionCDKDialog (CDKDIALOG *dialog)
 {
    /* Declare some variables. */
-   int origX	= dialog->win->_begx;
-   int origY	= dialog->win->_begy;
+   int origX	= getbegx(dialog->win);
+   int origY	= getbegy(dialog->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -350,7 +347,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       key = wgetch (dialog->win);
       if (key == KEY_UP || key == '8')
       {
-         if (dialog->win->_begy > 0)
+         if (getbegy(dialog->win) > 0)
          {
             moveCDKDialog (dialog, 0, -1, TRUE, TRUE);
          }
@@ -361,7 +358,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (dialog->win->_begy+dialog->win->_maxy < WindowOf(dialog)->_maxy-1)
+         if (getendy(dialog->win) < getmaxy(WindowOf(dialog))-1)
          {
             moveCDKDialog (dialog, 0, 1, TRUE, TRUE);
          }
@@ -372,7 +369,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (dialog->win->_begx > 0)
+         if (getbegx(dialog->win) > 0)
          {
             moveCDKDialog (dialog, -1, 0, TRUE, TRUE);
          }
@@ -383,7 +380,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1)
+         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1)
          {
             moveCDKDialog (dialog, 1, 0, TRUE, TRUE);
          }
@@ -394,7 +391,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '7')
       {
-         if (dialog->win->_begy > 0 && dialog->win->_begx > 0)
+         if (getbegy(dialog->win) > 0 && getbegx(dialog->win) > 0)
          {
             moveCDKDialog (dialog, -1, -1, TRUE, TRUE);
          }
@@ -405,8 +402,8 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '9')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1 &&
-		dialog->win->_begy > 0)
+         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1
+	  && getbegy(dialog->win) > 0)
          {
             moveCDKDialog (dialog, 1, -1, TRUE, TRUE);
          }
@@ -417,7 +414,7 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '1')
       {
-         if (dialog->win->_begx > 0 && dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1)
+         if (getbegx(dialog->win) > 0 && getendx(dialog->win) < getmaxx(WindowOf(dialog))-1)
          {
             moveCDKDialog (dialog, -1, 1, TRUE, TRUE);
          }
@@ -428,8 +425,8 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == '3')
       {
-         if (dialog->win->_begx+dialog->win->_maxx < WindowOf(dialog)->_maxx-1
-	  && dialog->win->_begy+dialog->win->_maxy < WindowOf(dialog)->_maxy-1)
+         if (getendx(dialog->win) < getmaxx(WindowOf(dialog))-1
+	  && getendy(dialog->win) < getmaxy(WindowOf(dialog))-1)
          {
             moveCDKDialog (dialog, 1, 1, TRUE, TRUE);
          }
@@ -444,27 +441,27 @@ void positionCDKDialog (CDKDIALOG *dialog)
       }
       else if (key == 't')
       {
-         moveCDKDialog (dialog, dialog->win->_begx, TOP, FALSE, TRUE);
+         moveCDKDialog (dialog, getbegx(dialog->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKDialog (dialog, dialog->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKDialog (dialog, getbegx(dialog->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKDialog (dialog, LEFT, dialog->win->_begy, FALSE, TRUE);
+         moveCDKDialog (dialog, LEFT, getbegy(dialog->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKDialog (dialog, RIGHT, dialog->win->_begy, FALSE, TRUE);
+         moveCDKDialog (dialog, RIGHT, getbegy(dialog->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKDialog (dialog, CENTER, dialog->win->_begy, FALSE, TRUE);
+         moveCDKDialog (dialog, CENTER, getbegy(dialog->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKDialog (dialog, dialog->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKDialog (dialog, getbegx(dialog->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -510,7 +507,7 @@ void _drawCDKDialog (CDKOBJS *object, boolean Box)
    for (x=0; x < dialog->messageRows; x++)
    {
       writeChtype (dialog->win,
-			dialog->infoPos[x], x+1,
+			dialog->infoPos[x], x + 1,
 			dialog->info[x],
 			HORIZONTAL, 0,
 			dialog->infoLen[x]);
@@ -701,11 +698,7 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
          mvwaddch (dialog->win, dialog->boxHeight-3, x, ACS_HLINE | dialog->BoxAttrib);
       }
       mvwaddch (dialog->win, dialog->boxHeight-3, 0, ACS_LTEE | dialog->BoxAttrib);
-#ifdef HAVE_LIBNCURSES
-      mvwaddch (dialog->win, dialog->boxHeight-3, dialog->win->_maxx, ACS_RTEE | dialog->BoxAttrib);
-#else
-      mvwaddch (dialog->win, dialog->boxHeight-3, dialog->win->_maxx-1, ACS_RTEE | dialog->BoxAttrib);
-#endif
+      mvwaddch (dialog->win, dialog->boxHeight-3, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);
    }
 }
 

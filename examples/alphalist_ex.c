@@ -77,6 +77,8 @@ int getUserList (char **list, int maxItems)
 
    while ( (ent = getpwent ()) != NULL)
    {
+      if (x+1 >= maxItems)
+	 break;
       list[x++] = copyChar (ent->pw_name);
    }
    return x;

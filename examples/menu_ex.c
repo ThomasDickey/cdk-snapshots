@@ -90,7 +90,7 @@ int main (void)
 /*
  * This gets called after every movement.
  */
-int displayCallback (EObjectType cdktype, void *object, void *clientData, chtype input)
+int displayCallback (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype input GCC_UNUSED)
 {
    CDKMENU *menu	= (CDKMENU *)object;
    CDKLABEL *infoBox	= (CDKLABEL *)clientData;

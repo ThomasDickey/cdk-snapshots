@@ -1,7 +1,7 @@
-# 
+#
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
-# 
+#
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
 #  are met:
@@ -11,13 +11,13 @@
 #     notice, this list of conditions and the following disclaimer in the
 #     documentation and/or other materials provided with the distribution.
 #  3. All advertising materials mentioning features or use of this software
-#     must display the following acknowledgement:
+#     must display the following acknowledgment:
 # 	This product includes software developed by Mike Glover
 # 	and contributors.
 #  4. Neither the name of Mike Glover, nor the names of contributors
 #     may be used to endorse or promote products derived from this software
 #     without specific prior written permission.
-# 
+#
 #  THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
 #  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 #  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,7 +29,7 @@
 #  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 #  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #  SUCH DAMAGE.
-# 
+#
 SHELL		= /bin/sh
 
 CDKLIB		= libcdk.a
@@ -57,6 +57,8 @@ LDFLAGS		= @LDFLAGS@
 LIBS		= @LIBS@
 RANLIB		= @RANLIB@
 
+RM		= rm -f
+
 INSTALL		= @INSTALL@
 INSTALL_PROGRAM	= @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
@@ -67,7 +69,8 @@ default:: cdklib
 # Create the file lists.
 #
 CDKHDR		= cdk.h alphalist.h binding.h buttonbox.h \
-			calendar.h cdk_util.h cdkscreen.h \
+			calendar.h cdk_config.h cdk_objs.h \
+			cdk_util.h cdkscreen.h \
 			curdefs.h dialog.h draw.h entry.h \
 			fselect.h graph.h histogram.h itemlist.h \
 			label.h marquee.h matrix.h mentry.h \
@@ -118,9 +121,9 @@ demos::
 #
 install \
 installCDKHeaderFiles:: $(INCLUDE_DIR)
-	@echo "Installing CDK header files..."
+	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
 	@for i in $(CDKHDR); do \
-	   echo "	$(INSTALL_DATA) include/$$i $(INCLUDE_DIR)"; \
+	   echo "	... include/$$i"; \
 	   $(INSTALL_DATA) include/$$i $(INCLUDE_DIR)/$$i; \
 	done
 
@@ -129,9 +132,9 @@ installCDKHeaderFiles:: $(INCLUDE_DIR)
 #
 install \
 installCDKReadme::
-	@echo "Installing CDK Readme files..."
+	@echo "Installing CDK Readme files in $(INCLUDE_DIR)..."
 	@for i in $(CDKREADME); do \
-	   echo "	$(INSTALL_DATA) $$i $(INCLUDE_DIR)"; \
+	   echo "	... $$i"; \
 	   $(INSTALL_DATA) $$i $(INCLUDE_DIR)/$$i; \
 	done
 
@@ -139,7 +142,7 @@ installCDKReadme::
 # This installs the CDK library.
 #
 install \
-installCDKLibrary:: $(LIB_DIR) $(CDKLIB) 
+installCDKLibrary:: $(LIB_DIR) $(CDKLIB)
 	@echo "Installing CDK library"
 	@echo "	$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)"
 	@$(INSTALL_DATA) $(CDKLIB) $(LIB_DIR)
@@ -149,9 +152,9 @@ installCDKLibrary:: $(LIB_DIR) $(CDKLIB)
 #
 install \
 installCDKManPages:: $(MAN_DIR)
-	@echo "Installing the CDK man pages ..."
+	@echo "Installing the CDK man pages in $(MAN_DIR) ..."
 	@for i in $(CDKMAN); do \
-	   echo "	$(INSTALL_DATA) man/$$i $(MAN_DIR)"; \
+	   echo "	... man/$$i"; \
 	   $(INSTALL_DATA) man/$$i $(MAN_DIR)/$$i; \
 	done
 
@@ -159,24 +162,28 @@ installCDKManPages:: $(MAN_DIR)
 # Clean up after ourselves...
 #
 clean::
-	$(RM) *.o $(CDKLIB) core
+	$(RM) *.o $(CDKLIB) core tags *~
 
 realclean:: clean
-	@(cd examples; make clean; rm Makefile)
-	@(cd demos; make clean; rm Makefile)
-	@rm Makefile
+	cd examples	&& make clean
+	cd demos	&& make clean
 
 #
 # Use this to clean the distribution.
 #
 distclean:: realclean
 	$(RM) config.cache config.log config.status
+	cd examples	&& $(RM) Makefile
+	cd demos	&& $(RM) Makefile
+	$(RM) include/cdk_config.h
+	$(RM) Makefile
 
 #
 # Standard .c to .o compile line.
 #
 .c.o:
-	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
+@RULE_CC@
+	@ECHO_CC@$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) -c $<
 
 #
 # Set up our PHONY tags.

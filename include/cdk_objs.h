@@ -34,6 +34,12 @@
  * SUCH DAMAGE.
  */
 
+typedef struct CDKBINDING {
+   BINDFN	bindFunction;
+   void *	bindData;
+   PROCESSFN	callbackfn;
+} CDKBINDING;
+
 /*
  * Methods common to all widgets.
  */
@@ -52,10 +58,15 @@ typedef struct CDKOBJS {
    CDKSCREEN *	screen;
    CDKFUNCS	*fn;
    boolean	box;
+   int		bindingCount;
+   CDKBINDING *	bindingList;
 } CDKOBJS;
 
 #define ObjOf(ptr)    (&(ptr)->obj)
 #define ScreenOf(ptr) (ObjOf(ptr)->screen)
 #define WindowOf(ptr) (ScreenOf(ptr)->window)
+
+void *	_newCDKObject(unsigned, CDKFUNCS *);
+#define newCDKObject(type,funcs) (type *)_newCDKObject(sizeof(type),funcs)
 
 #endif /* CDK_OBJS_H */

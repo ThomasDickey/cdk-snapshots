@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:28:20 $
- * $Revision: 1.31 $
+ * $Date: 1999/05/23 00:05:44 $
+ * $Revision: 1.34 $
  */
 
 /*
@@ -44,8 +44,8 @@ void boxWindow (WINDOW *window, chtype attr)
    /* Set some variables. */
    int tlx	= 0;
    int tly	= 0;
-   int brx	= window->_maxx - 1;
-   int bry	= window->_maxy;
+   int brx	= getmaxx(window) - 1;
+   int bry	= getmaxy(window) - 1;
    int x, y;
 
    /* Draw horizontal lines. */
@@ -79,13 +79,8 @@ void attrbox (WINDOW *win, chtype tlc, chtype trc, chtype blc, chtype brc, chtyp
    /* Set the coordinates. */
    int x1	= 0;
    int y1	= 0;
-#ifdef HAVE_LIBNCURSES
-   int y2	= win->_maxy;
-   int x2	= win->_maxx;
-#else
-   int y2	= win->_maxy-1;
-   int x2	= win->_maxx-1;
-#endif
+   int y2	= getmaxy(win) - 1;
+   int x2	= getmaxx(win) - 1;
    int count	= 0;
    int x, y;
 
@@ -256,30 +251,28 @@ void drawLine  (WINDOW *window, int startx, int starty, int endx, int endy, chty
  */
 void drawShadow (WINDOW *shadowWin)
 {
-   /* Declare local variables. */
-   int x = 0;
-
-   /* Make sure the window is not NULL. */
-   if (shadowWin == (WINDOW *)NULL)
+   if (shadowWin != 0)
    {
-      return;
-   }
+      int x = 0;
+      int x_hi = getmaxx(shadowWin) - 1;
+      int y_hi = getmaxy(shadowWin) - 1;
 
-   /* Draw the line on the bottom. */
-   for (x=1; x <= shadowWin->_maxx; x++)
-   {
-      mvwaddch (shadowWin, shadowWin->_maxy, x, ACS_HLINE | A_DIM);
-   }
+      /* Draw the line on the bottom. */
+      for (x=1; x <= x_hi; x++)
+      {
+	 mvwaddch (shadowWin, y_hi, x, ACS_HLINE    | A_DIM);
+      }
 
-   /* Draw the line on the right. */
-   for (x=0; x < shadowWin->_maxy; x++)
-   {
-      mvwaddch (shadowWin, x, shadowWin->_maxx, ACS_VLINE |A_DIM);
+      /* Draw the line on the right. */
+      for (x=0; x < y_hi; x++)
+      {
+	 mvwaddch (shadowWin, x, x_hi, ACS_VLINE    | A_DIM);
+      }
+      mvwaddch (shadowWin, 0,    x_hi, ACS_URCORNER | A_DIM);
+      mvwaddch (shadowWin, y_hi, 0,    ACS_LLCORNER | A_DIM);
+      mvwaddch (shadowWin, y_hi, x_hi, ACS_LRCORNER | A_DIM);
+      wrefresh (shadowWin);
    }
-   mvwaddch (shadowWin, 0, shadowWin->_maxx, ACS_URCORNER | A_DIM);
-   mvwaddch (shadowWin, shadowWin->_maxy, 0, ACS_LLCORNER | A_DIM);
-   mvwaddch (shadowWin, shadowWin->_maxy, shadowWin->_maxx, ACS_LRCORNER | A_DIM);
-   wrefresh (shadowWin);
 }
 
 /*
@@ -294,7 +287,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
    /* Check the alignment of the message. */
    if (align == HORIZONTAL)
    {
-      display = MINIMUM(display,window->_maxx-1);
+      display = MINIMUM(display,getmaxx(window)-1);
       for (x=0; x < display ; x++)
       {
          /* Draw the message on a horizontal axis. */
@@ -304,7 +297,7 @@ void writeChar (WINDOW *window, int xpos, int ypos, char *string, int align, int
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(display,window->_maxy-1);
+      display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
          mvwaddch (window, ypos+x, xpos, string[x+start] | A_NORMAL);
@@ -325,7 +318,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display		= MINIMUM(display,window->_maxx-1);
+      display = MINIMUM(display,getmaxx(window)-1);
       for (x=0; x < display ; x++)
       {
          mvwaddch (window, ypos, xpos+x, (string[x+start] & A_CHARTEXT) | attr);
@@ -334,7 +327,7 @@ void writeCharAttrib (WINDOW *window, int xpos, int ypos, char *string, chtype a
    else
    {
       /* Draw the message on a vertical axis. */
-      display		= MINIMUM(display,window->_maxy-1);
+      display = MINIMUM(display,getmaxy(window)-1);
       for (x=0; x < display ; x++)
       {
          mvwaddch (window, ypos+x, xpos, (string[x+start] & A_CHARTEXT) | attr);
@@ -362,7 +355,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,window->_maxx-1);
+      display = MINIMUM(diff,getmaxx(window)-1);
       for (x=0; x < display; x++)
       {
          mvwaddch (window, ypos, xpos+x, string[x+start]);
@@ -371,7 +364,7 @@ void writeChtype (WINDOW *window, int xpos, int ypos, chtype *string, int align,
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,window->_maxy-1);
+      display = MINIMUM(diff,getmaxy(window)-1);
       for (x=0; x < display; x++)
       {
          mvwaddch (window, ypos+x, xpos, string[x+start]);
@@ -401,7 +394,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
    if (align == HORIZONTAL)
    {
       /* Draw the message on a horizontal axis. */
-      display = MINIMUM(diff,window->_maxx-1);
+      display = MINIMUM(diff,getmaxx(window)-1);
       for (x=0; x < display; x++)
       {
          plain = string[x+start] & A_CHARTEXT;
@@ -411,7 +404,7 @@ void writeChtypeAttrib (WINDOW *window, int xpos, int ypos, chtype *string, chty
    else
    {
       /* Draw the message on a vertical axis. */
-      display = MINIMUM(diff,window->_maxy-1);
+      display = MINIMUM(diff,getmaxy(window)-1);
       for (x=0; x < display; x++)
       {
          plain = string[x+start] & A_CHARTEXT;

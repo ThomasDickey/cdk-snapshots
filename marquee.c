@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 02:41:30 $
- * $Revision: 1.38 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.46 $
  */
 
 static CDKFUNCS my_funcs = {
@@ -16,8 +16,8 @@ static CDKFUNCS my_funcs = {
  */
 CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean Box, boolean shadow)
 {
-   CDKMARQUEE *marquee	= (CDKMARQUEE *)malloc (sizeof (CDKMARQUEE));
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
+   CDKMARQUEE *marquee	= newCDKObject(CDKMARQUEE, &my_funcs);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
    int xpos		= xplace;
    int ypos		= yplace;
    int boxHeight	= 3;
@@ -35,7 +35,6 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
 
    /* Create the marquee pointer. */
    ScreenOf(marquee)	= cdkscreen;
-   ObjOf(marquee)->fn	= &my_funcs;
    ObjOf(marquee)->box	= Box;
    marquee->parent	= cdkscreen->window;
    marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
@@ -116,7 +115,7 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
       {
          /* Draw in the characters. */
          y = firstChar;
-         for (x=startPos ; x < (startPos+viewSize) ; x++)
+         for (x=startPos ; x < (startPos + viewSize) ; x++)
          {
             mvwaddch (marquee->win, 1, x, message[y]);
             y++;
@@ -219,8 +218,8 @@ void deactivateCDKMarquee (CDKMARQUEE *marquee)
 void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = marquee->win->_begx;
-   int currentY = marquee->win->_begy;
+   int currentX = getbegx(marquee->win);
+   int currentY = getbegy(marquee->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -232,8 +231,8 @@ void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relati
      */
    if (relative)
    {
-      xpos = marquee->win->_begx + xplace;
-      ypos = marquee->win->_begy + yplace;
+      xpos = getbegx(marquee->win) + xplace;
+      ypos = getbegy(marquee->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -244,14 +243,12 @@ void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relati
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   marquee->win->_begx = xpos;
-   marquee->win->_begy = ypos;
+   moveCursesWindow(marquee->win, -xdiff, -ydiff);
 
    /* If there is a shadow box we have to move it too. */
    if (marquee->shadowWin != (WINDOW *)NULL)
    {
-      marquee->shadowWin->_begx -= xdiff;
-      marquee->shadowWin->_begy -= ydiff;
+      moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -272,8 +269,8 @@ void moveCDKMarquee (CDKMARQUEE *marquee, int xplace, int yplace, boolean relati
 void positionCDKMarquee (CDKMARQUEE *marquee)
 {
    /* Declare some variables. */
-   int origX	= marquee->win->_begx;
-   int origY	= marquee->win->_begy;
+   int origX	= getbegx(marquee->win);
+   int origY	= getbegy(marquee->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -282,7 +279,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       key = wgetch (marquee->win);
       if (key == KEY_UP || key == '8')
       {
-         if (marquee->win->_begy > 0)
+         if (getbegy(marquee->win) > 0)
          {
             moveCDKMarquee (marquee, 0, -1, TRUE, TRUE);
          }
@@ -293,7 +290,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (marquee->win->_begy+marquee->win->_maxy < WindowOf(marquee)->_maxy-1)
+         if (getendy(marquee->win) < getmaxy(WindowOf(marquee))-1)
          {
             moveCDKMarquee (marquee, 0, 1, TRUE, TRUE);
          }
@@ -304,7 +301,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (marquee->win->_begx > 0)
+         if (getbegx(marquee->win) > 0)
          {
             moveCDKMarquee (marquee, -1, 0, TRUE, TRUE);
          }
@@ -315,7 +312,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1)
+         if (getendx(marquee->win) < getmaxx(WindowOf(marquee))-1)
          {
             moveCDKMarquee (marquee, 1, 0, TRUE, TRUE);
          }
@@ -326,7 +323,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '7')
       {
-         if (marquee->win->_begy > 0 && marquee->win->_begx > 0)
+         if (getbegy(marquee->win) > 0 && getbegx(marquee->win) > 0)
          {
             moveCDKMarquee (marquee, -1, -1, TRUE, TRUE);
          }
@@ -337,8 +334,8 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '9')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1 &&
-		marquee->win->_begy > 0)
+         if (getendx(marquee->win) < getmaxx(WindowOf(marquee))-1
+	  && getbegy(marquee->win) > 0)
          {
             moveCDKMarquee (marquee, 1, -1, TRUE, TRUE);
          }
@@ -349,7 +346,7 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '1')
       {
-         if (marquee->win->_begx > 0 && marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1)
+         if (getbegx(marquee->win) > 0 && getendx(marquee->win) < getmaxx(WindowOf(marquee))-1)
          {
             moveCDKMarquee (marquee, -1, 1, TRUE, TRUE);
          }
@@ -360,8 +357,8 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == '3')
       {
-         if (marquee->win->_begx+marquee->win->_maxx < WindowOf(marquee)->_maxx-1
-	  && marquee->win->_begy+marquee->win->_maxy < WindowOf(marquee)->_maxy-1)
+         if (getendx(marquee->win) < getmaxx(WindowOf(marquee))-1
+	  && getendy(marquee->win) < getmaxy(WindowOf(marquee))-1)
          {
             moveCDKMarquee (marquee, 1, 1, TRUE, TRUE);
          }
@@ -376,27 +373,27 @@ void positionCDKMarquee (CDKMARQUEE *marquee)
       }
       else if (key == 't')
       {
-         moveCDKMarquee (marquee, marquee->win->_begx, TOP, FALSE, TRUE);
+         moveCDKMarquee (marquee, getbegx(marquee->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKMarquee (marquee, marquee->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKMarquee (marquee, getbegx(marquee->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKMarquee (marquee, LEFT, marquee->win->_begy, FALSE, TRUE);
+         moveCDKMarquee (marquee, LEFT, getbegy(marquee->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKMarquee (marquee, RIGHT, marquee->win->_begy, FALSE, TRUE);
+         moveCDKMarquee (marquee, RIGHT, getbegy(marquee->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKMarquee (marquee, CENTER, marquee->win->_begy, FALSE, TRUE);
+         moveCDKMarquee (marquee, CENTER, getbegy(marquee->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKMarquee (marquee, marquee->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKMarquee (marquee, getbegx(marquee->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {

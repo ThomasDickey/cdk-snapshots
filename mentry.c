@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/16 01:51:15 $
- * $Revision: 1.98 $
+ * $Date: 1999/05/23 02:53:30 $
+ * $Revision: 1.105 $
  */
 
 /*
@@ -28,10 +28,10 @@ static CDKFUNCS my_funcs = {
 CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
 {
    /* Set up some variables */
-   CDKMENTRY *mentry	= (CDKMENTRY *)malloc (sizeof (CDKMENTRY));
+   CDKMENTRY *mentry	= newCDKObject(CDKMENTRY, &my_funcs);
    chtype *holder	= (chtype *)NULL;
-   int parentWidth	= WIN_WIDTH (cdkscreen->window);
-   int parentHeight	= WIN_HEIGHT (cdkscreen->window);
+   int parentWidth	= getmaxx(cdkscreen->window) - 1;
+   int parentHeight	= getmaxy(cdkscreen->window) - 1;
    int fieldWidth	= fWidth;
    int fieldRows	= fRows;
    int boxWidth		= 0;
@@ -140,15 +140,15 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    if (mentry->label != (chtype *)NULL)
    {
       mentry->labelWin = subwin (mentry->win, fieldRows,
-					mentry->labelLen+2,
-					ypos+mentry->titleLines+1,
-					xpos+horizontalAdjust+1);
+					mentry->labelLen + 2,
+					ypos + mentry->titleLines + 1,
+					xpos + horizontalAdjust + 1);
    }
 
    /* Make the field window. */
    mentry->fieldWin = subwin (mentry->win, fieldRows, fieldWidth,
-				ypos+mentry->titleLines+1,
-				xpos+mentry->labelLen+horizontalAdjust+1);
+				ypos + mentry->titleLines + 1,
+				xpos + mentry->labelLen + horizontalAdjust + 1);
 
    /* Turn on the keypad. */
    keypad (mentry->fieldWin, TRUE);
@@ -159,12 +159,11 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->totalWidth	= (fieldWidth*logicalRows) + 1;
 
    /* Create the info char * pointer. */
-   mentry->info = (char *)malloc (sizeof (char) * (mentry->totalWidth+3));
-   cleanChar (mentry->info, mentry->totalWidth+3, '\0');
+   mentry->info = (char *)malloc (sizeof (char) * (mentry->totalWidth + 3));
+   cleanChar (mentry->info, mentry->totalWidth + 3, '\0');
 
    /* Set up the rest of the widget information. */
    ScreenOf(mentry)		= cdkscreen;
-   ObjOf(mentry)->fn		= &my_funcs;
    mentry->shadowWin		= (WINDOW *)NULL;
    mentry->fieldAttr		= fieldAttr;
    mentry->fieldWidth		= fieldWidth;
@@ -198,7 +197,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Do we need to create a shadow. */
    if (shadow)
    {
-      mentry->shadowWin	= newwin (boxHeight, boxWidth, ypos+1, xpos+1);
+      mentry->shadowWin	= newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
    /* Clean the key bindings. */
@@ -359,7 +358,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
             case KEY_RIGHT : case CDK_FORCHAR :
                  if (mentry->currentCol < (mentry->fieldWidth - 1))
                  {
-                    if ((((mentry->topRow + mentry->currentRow) * mentry->fieldWidth) + mentry->currentCol+1) > (int)strlen (mentry->info)-1)
+                    if ((((mentry->topRow + mentry->currentRow) * mentry->fieldWidth) + mentry->currentCol + 1) > (int)strlen (mentry->info)-1)
                     {
                        Beep();
                     }
@@ -418,7 +417,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
                     else
                     {
                        infoLength = (int)strlen(mentry->info);
-                       if (((mentry->topRow+mentry->currentRow+1) * mentry->fieldWidth) > infoLength)
+                       if (((mentry->topRow + mentry->currentRow + 1) * mentry->fieldWidth) > infoLength)
                        {
                           Beep();
                        }
@@ -477,7 +476,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
                           /* We are deleting from the middle of the string.  */
                           for (x = cursorPos; x < infoLength; x++)
                           {
-                             mentry->info[x] = mentry->info[x+1];
+                             mentry->info[x] = mentry->info[x + 1];
                           }
                           mentry->info[--infoLength] = '\0';
       
@@ -543,8 +542,8 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
                  else
                  {
                     holder = mentry->info[cursorPos];
-                    mentry->info[cursorPos] = mentry->info[cursorPos+1];
-                    mentry->info[cursorPos+1] = holder;
+                    mentry->info[cursorPos] = mentry->info[cursorPos + 1];
+                    mentry->info[cursorPos + 1] = holder;
                     drawCDKMentryField (mentry);
                  }
                  break;
@@ -600,7 +599,7 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
 
             case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
                  infoLength = (int)strlen(mentry->info);
-                 if (infoLength < mentry->min+1) 
+                 if (infoLength < mentry->min + 1) 
                  {
                     Beep();
                  }
@@ -659,8 +658,8 @@ char *injectCDKMentry (CDKMENTRY *mentry, chtype input)
 void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    /* Declare local variables. */
-   int currentX = mentry->win->_begx;
-   int currentY = mentry->win->_begy;
+   int currentX = getbegx(mentry->win);
+   int currentY = getbegy(mentry->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -672,8 +671,8 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
      */
    if (relative)
    {
-      xpos = mentry->win->_begx + xplace;
-      ypos = mentry->win->_begy + yplace;
+      xpos = getbegx(mentry->win) + xplace;
+      ypos = getbegy(mentry->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
@@ -684,19 +683,15 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   mentry->win->_begx = xpos;
-   mentry->win->_begy = ypos;
-   mentry->fieldWin->_begx -= xdiff;
-   mentry->fieldWin->_begy -= ydiff;
+   moveCursesWindow(mentry->win, -xdiff, -ydiff);
+   moveCursesWindow(mentry->fieldWin, -xdiff, -ydiff);
    if (mentry->labelWin != (WINDOW *)NULL)
    {
-      mentry->labelWin->_begx -= xdiff;
-      mentry->labelWin->_begy -= ydiff;
+      moveCursesWindow(mentry->labelWin, -xdiff, -ydiff);
    }
    if (mentry->shadowWin != (WINDOW *)NULL)
    {
-      mentry->shadowWin->_begx -= xdiff;
-      mentry->shadowWin->_begy -= ydiff;
+      moveCursesWindow(mentry->shadowWin, -xdiff, -ydiff);
    }
 
    /* Touch the windows so they 'move'. */
@@ -718,8 +713,8 @@ void moveCDKMentry (CDKMENTRY *mentry, int xplace, int yplace, boolean relative,
 void positionCDKMentry (CDKMENTRY *mentry)
 {
    /* Declare some variables. */
-   int origX	= mentry->win->_begx;
-   int origY	= mentry->win->_begy;
+   int origX	= getbegx(mentry->win);
+   int origY	= getbegy(mentry->win);
    chtype key	= (chtype)NULL;
 
    /* Let them move the widget around until they hit return. */
@@ -728,7 +723,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       key = wgetch (mentry->win);
       if (key == KEY_UP || key == '8')
       {
-         if (mentry->win->_begy > 0)
+         if (getbegy(mentry->win) > 0)
          {
             moveCDKMentry (mentry, 0, -1, TRUE, TRUE);
          }
@@ -739,7 +734,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == KEY_DOWN || key == '2')
       {
-         if (mentry->win->_begy+mentry->win->_maxy < WindowOf(mentry)->_maxy-1)
+         if (getendy(mentry->win) < getmaxy(WindowOf(mentry))-1)
          {
             moveCDKMentry (mentry, 0, 1, TRUE, TRUE);
          }
@@ -750,7 +745,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == KEY_LEFT || key == '4')
       {
-         if (mentry->win->_begx > 0)
+         if (getbegx(mentry->win) > 0)
          {
             moveCDKMentry (mentry, -1, 0, TRUE, TRUE);
          }
@@ -761,7 +756,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == KEY_RIGHT || key == '6')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1)
+         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1)
          {
             moveCDKMentry (mentry, 1, 0, TRUE, TRUE);
          }
@@ -772,7 +767,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '7')
       {
-         if (mentry->win->_begy > 0 && mentry->win->_begx > 0)
+         if (getbegy(mentry->win) > 0 && getbegx(mentry->win) > 0)
          {
             moveCDKMentry (mentry, -1, -1, TRUE, TRUE);
          }
@@ -783,8 +778,8 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '9')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1 &&
-		mentry->win->_begy > 0)
+         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1
+	  && getbegy(mentry->win) > 0)
          {
             moveCDKMentry (mentry, 1, -1, TRUE, TRUE);
          }
@@ -795,7 +790,7 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '1')
       {
-         if (mentry->win->_begx > 0 && mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1)
+         if (getbegx(mentry->win) > 0 && getendx(mentry->win) < getmaxx(WindowOf(mentry))-1)
          {
             moveCDKMentry (mentry, -1, 1, TRUE, TRUE);
          }
@@ -806,8 +801,8 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == '3')
       {
-         if (mentry->win->_begx+mentry->win->_maxx < WindowOf(mentry)->_maxx-1
-	  && mentry->win->_begy+mentry->win->_maxy < WindowOf(mentry)->_maxy-1)
+         if (getendx(mentry->win) < getmaxx(WindowOf(mentry))-1
+	  && getendy(mentry->win) < getmaxy(WindowOf(mentry))-1)
          {
             moveCDKMentry (mentry, 1, 1, TRUE, TRUE);
          }
@@ -822,27 +817,27 @@ void positionCDKMentry (CDKMENTRY *mentry)
       }
       else if (key == 't')
       {
-         moveCDKMentry (mentry, mentry->win->_begx, TOP, FALSE, TRUE);
+         moveCDKMentry (mentry, getbegx(mentry->win), TOP, FALSE, TRUE);
       }
       else if (key == 'b')
       {
-         moveCDKMentry (mentry, mentry->win->_begx, BOTTOM, FALSE, TRUE);
+         moveCDKMentry (mentry, getbegx(mentry->win), BOTTOM, FALSE, TRUE);
       }
       else if (key == 'l')
       {
-         moveCDKMentry (mentry, LEFT, mentry->win->_begy, FALSE, TRUE);
+         moveCDKMentry (mentry, LEFT, getbegy(mentry->win), FALSE, TRUE);
       }
       else if (key == 'r')
       {
-         moveCDKMentry (mentry, RIGHT, mentry->win->_begy, FALSE, TRUE);
+         moveCDKMentry (mentry, RIGHT, getbegy(mentry->win), FALSE, TRUE);
       }
       else if (key == 'c')
       {
-         moveCDKMentry (mentry, CENTER, mentry->win->_begy, FALSE, TRUE);
+         moveCDKMentry (mentry, CENTER, getbegy(mentry->win), FALSE, TRUE);
       }
       else if (key == 'C')
       {
-         moveCDKMentry (mentry, mentry->win->_begx, CENTER, FALSE, TRUE);
+         moveCDKMentry (mentry, getbegx(mentry->win), CENTER, FALSE, TRUE);
       }
       else if (key == CDK_REFRESH)
       {
@@ -884,7 +879,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
       {
          writeChtype (mentry->win,
 			mentry->titlePos[x],
-			x+1,
+			x + 1,
 			mentry->title[x],
 			HORIZONTAL, 0,
 			mentry->titleLen[x]);
@@ -991,7 +986,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
       if (cursorPos != infoLength-1)
       {
          /* We are adding in the middle of the string. */
-         for (x = infoLength+1; x > cursorPos; x--)
+         for (x = infoLength + 1; x > cursorPos; x--)
          {
             mentry->info[x] = mentry->info[x-1];
          }
