@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.25 2004/08/30 00:00:57 tom Exp $
+ * $Id: scroll.h,v 1.26 2005/03/08 19:40:50 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -109,7 +109,7 @@ CDKSCROLL *newCDKScroll (
 		int		/* height */,
 		int		/* width */,
 		char *		/* title */,
-		char **		/* scrollItems */,
+		char **		/* itemList */,
 		int		/* items */,
 		boolean		/* numbers */,
 		chtype		/* highlight */,
@@ -133,8 +133,8 @@ int activateCDKScroll (
  */
 void setCDKScroll (
 		CDKSCROLL *	/* scroll */,
-		char **		/* scrollItems */,
-		int		/* listSize */,
+		char **		/* itemList */,
+		int		/* items */,
 		boolean		/* numbers */,
 		chtype		/* highlight */,
 		boolean		/* Box */);
@@ -155,13 +155,13 @@ void setCDKScrollCurrent(
  */
 void setCDKScrollItems (
 		CDKSCROLL *	/* scroll */,
-		char **		/* items */,
-		int		/* listSize */,
+		char **		/* itemList */,
+		int		/* items */,
 		boolean		/* numbers */);
 
 int getCDKScrollItems (
 		CDKSCROLL *	/* scroll */,
-		char **		/* items */);
+		char **		/* itemList */);
 
 /*
  * This sets the highlight bar of the scrolling list.

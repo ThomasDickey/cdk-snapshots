@@ -1,4 +1,4 @@
-/* $Id: cdkscroll.c,v 1.6 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkscroll.c,v 1.7 2005/03/08 19:52:29 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,12 +9,12 @@ char *XCursesProgramName="cdkscroll";
 /*
  * Declare file local prototypes.
  */
-int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
  */
-char *FPUsage = "-l List | -f filename [-s Scroll Bar Position] [-n Numbers] [-i Item Index] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static char *FPUsage = "-l List | -f filename [-s Scroll Bar Position] [-n Numbers] [-i Item Index] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *
@@ -278,7 +278,7 @@ int main (int argc, char **argv)
    exit (selection);
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.18 2004/08/29 23:28:40 tom Exp $
+.\" $Id: cdk_binding.3,v 1.19 2005/03/08 23:45:44 tom Exp $
 .TH cdk_binding 3
 .SH NAME
 bindCDKObject,
@@ -33,6 +33,11 @@ getcCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .B "void cleanCDKObjectBindings ("
 .BI "EObjectType " "cdkType",
 .BI "void *" "object");
+.TP 15
+.B "bool isCDKObjectBind ("
+.BI "EObjectType " "cdkType",
+.BI "void *" "object",
+.BI "chtype " "key");
 .TP 15
 .B "void unbindCDKObject ("
 .BI "EObjectType " "cdkType",
@@ -114,6 +119,11 @@ the widget sets \fIexitType\fP to that value.
 .TP 5
 .B cleanCDKObjectBindings
 removes all user defined key bindings from the given widget.
+.TP 5
+.B isCDKObjectBind
+check to see if a binding for the given \fBkey\fP exists.
+If it does return TRUE.
+If no binding exists, return FALSE.
 .TP 5
 .B unbindCDKObject
 removes a specific binding to an object.

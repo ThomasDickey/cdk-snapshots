@@ -1,5 +1,5 @@
 /*
- * $Id: binding.h,v 1.13 2004/08/18 23:16:50 tom Exp $
+ * $Id: binding.h,v 1.14 2005/03/08 23:44:25 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003,2004 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -101,9 +101,18 @@ void unbindCDKObject (
 		chtype		/* key */);
 
 /*
- * This checks if the given key has an event 'attached' to it.
+ * This checks if the given key has an event 'attached' to it, executes the
+ * bound function if so.
  */
 int checkCDKObjectBind (
+		EObjectType	/* cdktype */,
+		void *		/* object */,
+		chtype		/* key */);
+
+/*
+ * This checks if the given key has an event 'attached' to it.
+ */
+bool isCDKObjectBind (
 		EObjectType	/* cdktype */,
 		void *		/* object */,
 		chtype		/* key */);

@@ -6,9 +6,10 @@ char *XCursesProgramName="command";
 
 /* Define some global variables. */
 #define MAXHISTORY	5000
-char *introductionMessage[] = {"<C></B/16>Little Command Interface", "",
-				"<C>Written by Mike Glover", "",
-				"<C>Type </B>help<!B> to get help."};
+static char *introductionMessage[] = {
+   "<C></B/16>Little Command Interface", "",
+   "<C>Written by Mike Glover", "",
+   "<C>Type </B>help<!B> to get help."};
 
 /* This structure is used for keeping command history. */
 struct history_st {

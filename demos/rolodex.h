@@ -9,12 +9,12 @@
 /*
  * Declare some global variables.
  */
-char *GCurrentGroup	= 0;
-char *GRCFile		= 0;
-char *GDBMDir		= 0;
-int GGroupModified	= FALSE;
-int GPhoneListModified	= FALSE;
-char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third FAX", "First Data Line", "Second Data Line", "Third Data Line"};
+static char *GCurrentGroup	= 0;
+static char *GRCFile		= 0;
+static char *GDBMDir		= 0;
+static int GGroupModified	= FALSE;
+static int GPhoneListModified	= FALSE;
+static char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third FAX", "First Data Line", "Second Data Line", "Third Data Line"};
 
 /*
  * Create some definitions.

@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.7 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.8 2005/03/08 19:53:13 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,14 +9,14 @@ char *XCursesProgramName="cdkviewer";
 /*
  * Declare file local prototypes.
  */
-void saveInformation (CDKVIEWER *widget);
-int dumpViewer (CDKVIEWER *widget, char *filename);
-int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static void saveInformation (CDKVIEWER *widget);
+static int dumpViewer (CDKVIEWER *widget, char *filename);
+static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
  */
-char *FPUsage = "-f filename [-i Interpret] [-l Show Line Stats] [-T Title] [-B Buttons] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static char *FPUsage = "-f filename [-i Interpret] [-l Show Line Stats] [-T Title] [-B Buttons] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *
@@ -189,7 +189,7 @@ int main (int argc, char **argv)
  * This function allows the user to dump the
  * information from the viewer into a file.
  */
-void saveInformation (CDKVIEWER *widget)
+static void saveInformation (CDKVIEWER *widget)
 {
    /* Declare local variables. */
    CDKENTRY *entry	= 0;
@@ -262,7 +262,7 @@ void saveInformation (CDKVIEWER *widget)
 /*
  * This actually dumps the information from the viewer to a file.
  */
-int dumpViewer (CDKVIEWER *widget, char *filename)
+static int dumpViewer (CDKVIEWER *widget, char *filename)
 {
    /* Declare local variables. */
    FILE *outputFile	= 0;
@@ -290,7 +290,7 @@ int dumpViewer (CDKVIEWER *widget, char *filename)
    return listSize;
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKVIEWER *widget = (CDKVIEWER *)object;
    saveInformation (widget);

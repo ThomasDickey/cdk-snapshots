@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:41:53 $
- * $Revision: 1.128 $
+ * $Date: 2005/03/08 20:17:23 $
+ * $Revision: 1.129 $
  */
 
 /*
@@ -740,7 +740,7 @@ void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
 
    /* Readjust all of the variables ... */
    selection->listSize		= listSize;
-   selection->viewSize		= selection->boxHeight - (2 + TitleLinesOf(selection));
+   selection->viewSize		= selection->boxHeight - (2 * BorderOf(selection) + TitleLinesOf(selection));
    selection->lastItem		= listSize - 1;
    selection->maxTopItem	= listSize - selection->viewSize;
 

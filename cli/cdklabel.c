@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.7 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdklabel.c,v 1.8 2005/03/08 19:52:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,7 +9,7 @@ char *XCursesProgramName="cdklabel";
 /*
  * Declare file local variables.
  */
-char *FPUsage = "-m Message String | -f filename [-c Command] [-p Pause Character] [-s Sleep] [-X X Position] [-Y Y Position] [-N] [-S]";
+static char *FPUsage = "-m Message String | -f filename [-c Command] [-p Pause Character] [-s Sleep] [-X X Position] [-Y Y Position] [-N] [-S]";
 
 /*
  *

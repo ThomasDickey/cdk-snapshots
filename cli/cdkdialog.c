@@ -1,4 +1,4 @@
-/* $Id: cdkdialog.c,v 1.6 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.7 2005/03/08 19:51:24 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,7 +9,7 @@ char *XCursesProgramName="cdkdialog";
 /*
  * Define file local variables.
  */
-char *FPUsage = "-m Message String | -f filename [-B Buttons] [-O Output file] [-X X Position] [-Y Y Position] [-N] [-S]";
+static char *FPUsage = "-m Message String | -f filename [-B Buttons] [-O Output file] [-X X Position] [-Y Y Position] [-N] [-S]";
 
 /*
  *

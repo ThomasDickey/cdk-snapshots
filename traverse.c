@@ -2,17 +2,25 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/22 19:46:21 $
- * $Revision: 1.16 $
+ * $Date: 2005/03/08 21:48:30 $
+ * $Revision: 1.17 $
  */
+
+#define limitFocusIndex(screen, value) \
+ 	(((value) >= (screen)->objectCount || (value) < 0) \
+	 ? 0 \
+	 : (value))
 
 static int getFocusIndex (CDKSCREEN *screen)
 {
-   int result = screen->objectFocus;
+   int result = limitFocusIndex (screen, screen->objectFocus);
 
-   if (result < 0 || result >= screen->objectCount)
-      result = 0;
    return result;
+}
+
+static void setFocusIndex (CDKSCREEN *screen, int value)
+{
+   screen->objectFocus = limitFocusIndex (screen, value);
 }
 
 static void unsetFocus (CDKOBJS *obj)
@@ -174,13 +182,16 @@ CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
 	 result = curobj;
 	 break;
       }
-      else if (n == first)
+      else
       {
-	 break;
+	 if (n == first)
+	 {
+	    break;
+	 }
       }
    }
 
-   screen->objectFocus = (result != 0) ? n : -1;
+   setFocusIndex (screen, (result != 0) ? n : -1);
    return result;
 }
 
@@ -210,7 +221,7 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
       }
    }
 
-   screen->objectFocus = (result != 0) ? n : -1;
+   setFocusIndex (screen, (result != 0) ? n : -1);
    return result;
 }
 
@@ -219,20 +230,21 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
  */
 int traverseCDKScreen (CDKSCREEN *screen)
 {
-   CDKOBJS *curobj = switchFocus (setCDKFocusNext (screen), 0);
+   CDKOBJS *curobj;
 
+   setFocusIndex (screen, screen->objectCount - 1);
+   curobj = switchFocus (setCDKFocusNext (screen), 0);
    if (curobj == 0)
       return 0;
 
    refreshDataCDKScreen (screen);
 
-   screen->objectFocus = -1;
-
    screen->exitStatus = CDKSCREEN_NOEXIT;
 
    while ((curobj != 0) && (screen->exitStatus == CDKSCREEN_NOEXIT))
    {
-      int key = getcCDKObject (curobj);
+      int key;
+      key = getcCDKObject (curobj);
 
       switch (key)
       {

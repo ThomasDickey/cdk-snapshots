@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.8 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.9 2005/03/08 19:54:04 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,13 +9,12 @@ char *XCursesProgramName="cdkcalendar";
 /*
  * Declare file local prototypes.
  */
-int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
  */
-char *FPUsage = "[-d Day] [-m Month] [-y Year] [-T Title] [-B Buttons] [-O Output file] [-X X Position] [-Y Y Position] [-N] [-S]";
-void getTodaysDate (int *day, int *month, int *year);
+static void getTodaysDate (int *day, int *month, int *year);
 
 int main (int argc, char **argv)
 {
@@ -227,7 +226,7 @@ int main (int argc, char **argv)
 /*
  * This returns what day of the week the month starts on.
  */
-void getTodaysDate (int *day, int *month, int *year)
+static void getTodaysDate (int *day, int *month, int *year)
 {
    struct tm *dateInfo;
    time_t clck;
@@ -242,7 +241,7 @@ void getTodaysDate (int *day, int *month, int *year)
    (*year)  = dateInfo->tm_year + 1900;
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.17 2004/08/27 23:03:32 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.18 2005/03/08 19:36:32 tom Exp $"
 .TH cdk_scroll 3
 .SH NAME
 activateCDKScroll,
@@ -92,8 +92,8 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .BI "int " "height",
 .BI "int " "width",
 .BI "char *" "title",
-.BI "char **" "scrollList",
-.BI "int " "scrollListLength",
+.BI "char **" "itemList",
+.BI "int " "items",
 .BI "boolean " "numbers",
 .BI "chtype " "highlight",
 .BI "boolean " "box",
@@ -104,9 +104,10 @@ setCDKScrollVerticalChar \- curses scrolling list widget.
 .TP 15
 .B "void setCDKScroll ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char *" "value",
-.BI "int " "minimumLength",
-.BI "int " "maximumLength",
+.BI "char **" "itemList",
+.BI "int " "items",
+.BI "boolean " "numbers",
+.BI "chtype " "highlight",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKScrollBackgroundAttrib ("
@@ -297,8 +298,8 @@ The \fBtitle\fR parameter is the string which will be displayed
 at the top of the widget.
 The title can be more than one line; just provide a
 carriage return character at the line break.
-The parameter \fBscrollList\fR is
-the list of items to be displayed in the scrolling list; \fBscrollListLength\fR
+The parameter \fBitemList\fR is
+the list of items to be displayed in the scrolling list; \fBitems\fR
 is the number of elements in the given list.
 The parameter \fBnumbers\fR is a
 boolean value stating that you want the items in the list to have a number

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:41:53 $
- * $Revision: 1.114 $
+ * $Date: 2005/03/08 20:17:33 $
+ * $Revision: 1.115 $
  */
 
 /*
@@ -736,7 +736,7 @@ void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
 
    /* Readjust all of the variables ... */
    radio->listSize	= listSize;
-   radio->viewSize	= radio->boxHeight - (2 + TitleLinesOf(radio));
+   radio->viewSize	= radio->boxHeight - (2 * BorderOf(radio) + TitleLinesOf(radio));
    radio->lastItem	= listSize - 1;
    radio->maxTopItem	= listSize - radio->viewSize;
 

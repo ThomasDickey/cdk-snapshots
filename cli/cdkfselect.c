@@ -1,4 +1,4 @@
-/* $Id: cdkfselect.c,v 1.6 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkfselect.c,v 1.7 2005/03/08 19:54:14 tom Exp $ */
 
 #include <cdk.h>
 
@@ -9,16 +9,8 @@ char *XCursesProgramName="cdkfselect";
 /*
  * Declare file local prototypes.
  */
-int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
-/*
- * Define file local variables.
- */
-char *FPUsage = "[-d Directory] [-T title ] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
-
-/*
- *
- */
 int main (int argc, char **argv)
 {
    /* Declare variables. */
@@ -240,7 +232,7 @@ int main (int argc, char **argv)
    exit (selection);
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);

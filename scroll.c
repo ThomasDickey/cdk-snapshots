@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:41:53 $
- * $Revision: 1.118 $
+ * $Date: 2005/03/09 00:17:04 $
+ * $Revision: 1.120 $
  */
 
 /*
@@ -905,7 +905,7 @@ void setCDKScrollItems (CDKSCROLL *scrollp, char **list, int listSize, boolean n
 
    /* Readjust all of the variables ... */
    scrollp->listSize	= listSize;
-   scrollp->viewSize	= scrollp->boxHeight - (2 + TitleLinesOf(scrollp));
+   scrollp->viewSize	= scrollp->boxHeight - (2*BorderOf(scrollp) + TitleLinesOf(scrollp));
    scrollp->lastItem	= listSize - 1;
    scrollp->maxTopItem	= listSize - scrollp->viewSize;
 
@@ -1020,7 +1020,7 @@ void addCDKScrollItem (CDKSCROLL *scrollp, char *item)
 }
 
 /*
- * This adds a single item to a scrolling list.
+ * This removes a single item from a scrolling list.
  */
 void deleteCDKScrollItem (CDKSCROLL *scrollp, int position)
 {
@@ -1030,7 +1030,7 @@ void deleteCDKScrollItem (CDKSCROLL *scrollp, int position)
    freeChtype (scrollp->item[position]);
 
    /* Adjust the list. */
-   for (x=position; x < scrollp->listSize-1; x++)
+   for (x=position; x < scrollp->listSize; x++)
    {
       scrollp->item[x]		= scrollp->item[x + 1];
       scrollp->itemLen[x]	= scrollp->itemLen[x + 1];

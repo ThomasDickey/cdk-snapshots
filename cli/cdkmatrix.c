@@ -1,4 +1,4 @@
-/* $Id: cdkmatrix.c,v 1.9 2004/08/28 00:52:41 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.10 2005/03/08 19:52:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -11,12 +11,12 @@ char *XCursesProgramName = "cdkmatrix";
 /*
  * Declare file local prototypes.
  */
-int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
+static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 
 /*
  * Define file local variables.
  */
-char *FPUsage = "-r Row Titles -c Column Titles -v Visible Rows -w Column Widths [-t Column Types] [-d Default Values] [-F Field Character] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-N] [-S]";
+static char *FPUsage = "-r Row Titles -c Column Titles -v Visible Rows -w Column Widths [-t Column Types] [-d Default Values] [-F Field Character] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-N] [-S]";
 
 /*
  *
@@ -385,7 +385,7 @@ int main (int argc, char **argv)
    exit (selection);
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
    injectCDKButtonbox (buttonbox, key);
