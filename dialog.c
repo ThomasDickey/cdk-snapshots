@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 15:00:02 $
- * $Revision: 1.72 $
+ * $Date: 2002/08/07 18:15:23 $
+ * $Revision: 1.73 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, Int);
@@ -545,13 +545,6 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
 			HORIZONTAL, 0,
 			dialog->buttonLen[x]);
    }
-   writeChtypeAttrib (dialog->win,
-			dialog->buttonPos[dialog->currentButton],
-			dialog->boxHeight-1-borderSize,
-			dialog->buttonLabel[dialog->currentButton],
-			dialog->highlight,
-			HORIZONTAL, 0,
-			dialog->buttonLen[dialog->currentButton]);
 
    /* Draw the separation line. */
    if (dialog->separator)
@@ -563,6 +556,14 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
       mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, 0, ACS_LTEE | dialog->BoxAttrib);
       mvwaddch (dialog->win, dialog->boxHeight-2-borderSize, getmaxx(dialog->win)-1, ACS_RTEE | dialog->BoxAttrib);
    }
+   writeChtypeAttrib (dialog->win,
+			dialog->buttonPos[dialog->currentButton],
+			dialog->boxHeight-1-borderSize,
+			dialog->buttonLabel[dialog->currentButton],
+			dialog->highlight,
+			HORIZONTAL, 0,
+			dialog->buttonLen[dialog->currentButton]);
+
 }
 
 /*

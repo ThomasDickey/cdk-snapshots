@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2002/07/27 16:39:26 $
- * $Revision: 1.97 $
+ * $Date: 2002/08/10 00:28:56 $
+ * $Revision: 1.98 $
  */
 
 /*
@@ -450,8 +450,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
    }
    else
    {
-      /* To be safe, we should cast the chtype to a char */
-      char newchar = (char)input;
+      int newchar = A_CHARTEXT & input;
 
       /* Make sure we don't go out of bounds. */
       if (cdktemplate->platePos >= cdktemplate->fieldWidth)
@@ -462,7 +461,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
 
       /* We should check to see if what they typed in matches */
       /* what the plate states. */
-      if (isdigit((int)newchar) && (
+      if (isdigit(newchar) && (
 		cdktemplate->plate[cdktemplate->platePos] == 'A' ||
 		cdktemplate->plate[cdktemplate->platePos] == 'C' ||
 		cdktemplate->plate[cdktemplate->platePos] == 'c'))
@@ -470,7 +469,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
 	 Beep();
 	 return;
       }
-      if (!isdigit((int)newchar) && cdktemplate->plate[cdktemplate->platePos] == '#')
+      if (!isdigit(newchar) && cdktemplate->plate[cdktemplate->platePos] == '#')
       {
 	 Beep();
 	 return;
@@ -480,12 +479,12 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
       if (cdktemplate->plate[cdktemplate->platePos] == 'C' ||
 		cdktemplate->plate[cdktemplate->platePos] == 'X')
       {
-	 newchar = toupper ((char)input);
+	 newchar = toupper (newchar);
       }
       else if (cdktemplate->plate[cdktemplate->platePos] == 'c' ||
 		cdktemplate->plate[cdktemplate->platePos] == 'x')
       {
-	 newchar = tolower ((char)input);
+	 newchar = tolower (newchar);
       }
 
       /* Add it and redisplay.... */
@@ -706,7 +705,7 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 	 if (isPlateChar(cdktemplate->plate[x]) && pos < infolen)
 	 {
 	    fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
-	    mvwaddch (cdktemplate->fieldWin, 0, x, cdktemplate->info[pos++]|fieldColor);
+	    mvwaddch (cdktemplate->fieldWin, 0, x, (A_CHARTEXT & cdktemplate->info[pos++])|fieldColor);
 	 }
       }
       wmove (cdktemplate->fieldWin, 0, cdktemplate->screenPos);
