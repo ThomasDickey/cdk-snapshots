@@ -16,7 +16,7 @@ int main (void)
    CDKENTRY *widget	= (CDKENTRY *)NULL;
    WINDOW *cursesWin	= (WINDOW *)NULL;
    char *title		= "<C>Type in anything you want\n<C>but the dreaded letter </B>G<!B>!";
-   char	*info, *mesg[3], temp[256];
+   char	*info, *mesg[10], temp[256];
 
    /* Set up CDK. */
    cursesWin = initscr();

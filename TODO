@@ -33,21 +33,21 @@ work on in the near future. They are:
 	in the X/Cdk idea mentioned above.)
 	* I'm also working on fixing the way the default callback function
 	for the widget editing functions is called. (i know this is brief,
-	but it's there more to remind me of an idea which was spured on by
+	but it's there more to remind me of an idea which was spurred on by
 	someone else's suggestion.)
 	* Version 5 should have the ability to properly attach widgets
-	together via contraints, positioning within forms, etc... The
+	together via constraints, positioning within forms, etc... The
 	next inception should make it simpler to create home-grown widgets.
 	(Version 5 may also only support Ncurses because I'm losing a lot
 	of functionality by being backward compatible.)
 
 If you want to get a hold of me mail me at one of the following:
         glover@credit.erin.utoronto.ca
-        vexus@home.com
+	mike@vexus.ca
 
 The CDK Web page has several homes. They are:
-        http://members.home.net/vexus/CDK.html (official)
-        http://www.datasoft.on.ca/~cdk (Sponsered by the nice folks at Datasoft)
+        http://www.vexus.ca/CDK.html (official)
+        http://www.datasoft.on.ca/~cdk (Sponsored by the nice folks at Datasoft)
 
 ttfn,
 	Mike

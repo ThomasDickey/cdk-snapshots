@@ -17,7 +17,7 @@ int main(void)
    WINDOW *cursesWin;
    char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], *title[5];
    char *home, temp[256], *mesg[15];
-   int subMenuSize[3], menuLocations[4], selection;
+   int subMenuSize[10], menuLocations[10], selection;
    int group, ret, x;
    int groupCount = 0;
 
@@ -531,7 +531,7 @@ int openNewRCFile (CDKSCREEN *screen, SRolodex *groupList, int groupCount)
 {
    /* Declare local variables. */
    CDKFSELECT *fileSelector;
-   char *filename, *mesg[3], temp[256];
+   char *filename, *mesg[10], temp[256];
    int x;
 
    /* Get the filename. */

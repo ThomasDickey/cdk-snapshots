@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.57 $
+ * $Date: 1999/12/20 02:40:48 $
+ * $Revision: 1.58 $
  */
 
 DeclareCDKObjects(my_funcs,Label)
@@ -343,7 +343,7 @@ void destroyCDKLabel (CDKLABEL *label)
 char waitCDKLabel (CDKLABEL *label, char key)
 {
    /* If the key is null, we'll accept anything. */
-   if ( key == (char)NULL )
+   if ( key == 0 )
    {
       return (wgetch (label->win));
    }

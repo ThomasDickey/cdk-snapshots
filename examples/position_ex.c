@@ -14,7 +14,9 @@ int main (void)
    CDKENTRY *directory	= (CDKENTRY *)NULL;
    WINDOW *cursesWin	= (WINDOW *)NULL;
    char *label		= "</U/5>Directory:<!U!5> ";
-   char	*info, *mesg[3], temp[256];
+   char	*info		= 0;
+   char *mesg[10];
+   char temp[256];
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -25,7 +27,7 @@ int main (void)
 
    /* Create the entry field widget. */
    directory = newCDKEntry (cdkscreen, CENTER, CENTER,
-				NULL, label, A_NORMAL, '.', vMIXED, 
+				NULL, label, A_NORMAL, '.', vMIXED,
 				40, 0, 256, TRUE, FALSE);
 
    /* Is the widget NULL? */
@@ -46,7 +48,7 @@ int main (void)
 
    /* Activate the entry field. */
    info	= activateCDKEntry (directory, (chtype *)NULL);
-   
+
    /* Tell them what they typed. */
    if (directory->exitType == vESCAPE_HIT)
    {

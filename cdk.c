@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/27 01:32:25 $
- * $Revision: 1.152 $
+ * $Date: 1999/12/20 02:14:44 $
+ * $Revision: 1.153 $
  */
 
 char *GPasteBuffer = 0;
@@ -1145,11 +1145,11 @@ int checkForLink (char *line, char *filename)
    int x	= 3;
 
    /* Make sure the line isn't null. */
-   if ((line == 0) || (strlen (line) == 0))
+   if (line == 0)
    {
       return -1;
    }
-  len = (int)strlen (line);
+   len = (int)strlen (line);
 
    /* Strip out the filename. */
    if (line[0] == '<' && line[1] == 'F' && line[2] == '=')

@@ -12,8 +12,7 @@ me.
 If you do this, I will mail you back telling you if the information was
 sufficient or not. If it is, I will tell you when I hope to have this bug
 licked by. If you need an urgent update (i.e., your boss is crawling down your
-throat for your program to work) tell me, I'll get to it ASAP. BTW, thanks for
-trusting my code enough to use in the 'real world' :).
+throat for your program to work) tell me, I'll get to it ASAP. 
 
 If you find a bug and fixed it yourself, I will need the same as above with a
 few extras.
@@ -207,3 +206,9 @@ Release	Widget		Problem						Fixed
 			during development.
 ------------------------------------------------------------------------------
 4.9.6	None reported. Yeaahhhhhhhh!!!!!!!!!!!!!!! Whoo hooooo!!!!
+4.9.7
+------------------------------------------------------------------------------
+4.9.8	Entry field.	Incorrect return code. Found by both  		July/99
+			Daniel Novy (dnovy@rbeep.com.br) and
+			Jorgen Granstam (Jorgen.Granstam@abc.se)
+

@@ -15,7 +15,7 @@ int main (void)
    WINDOW *cursesWin		= (WINDOW *)NULL;
    char *title			= "<C>Pick A Month";
    char *label			= "</U/5>Month:";
-   char *info[MAX_ITEMS], temp[256], *mesg[4];
+   char *info[MAX_ITEMS], temp[256], *mesg[10];
    int choice, startMonth;
    struct tm *dateInfo;
    time_t clck;

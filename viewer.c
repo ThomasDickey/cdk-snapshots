@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/06/05 17:31:04 $
- * $Revision: 1.99 $
+ * $Date: 1999/12/20 02:43:29 $
+ * $Revision: 1.100 $
  */
 
 /*
@@ -213,7 +213,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **info, int infoSize, boolean inte
    int x		= 0;
 
    /* Clean out the old viewer info. (if there is any) */
-   for (x=0; x <= viewer->infoSize; x++)
+   for (x=0; x < viewer->infoSize; x++)
    {
       freeChtype (viewer->info[x]);
       viewer->info[x] = (chtype *)NULL;
@@ -1145,7 +1145,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
    }
 
    /* Determine the last line to draw. */
-   lastLine = (viewer->infoSize < viewer->viewSize ? viewer->infoSize : viewer->viewSize);
+   lastLine = (viewer->infoSize <= viewer->viewSize ? viewer->infoSize : viewer->viewSize);
    lastLine -= infoAdjust;
 
    /* Redraw the list. */

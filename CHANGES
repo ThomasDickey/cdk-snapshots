@@ -6,6 +6,11 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+1999/12/19 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ update email and url for Mike Glover based on 4.9.9 version dated
+	  1999/7/29.
+	
 1999/6/26 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add configure options --with-dbmalloc and --with-dmalloc to simplify
@@ -258,10 +263,10 @@ were fixed from release to release.
 
 If you want to get a hold of me mail me at one of the following:
         glover@credit.erin.utoronto.ca
-        vexus@home.com
+    	mike@vexus.ca
 
 The CDK Web page has several homes. They are:
-        http://members.home.net/vexus/CDK.html (official)
+        http://www.vexus.ca/CDK.html (official)
         http://www.datasoft.on.ca/~cdk (Sponsered by the nice folks at Datasoft)
 
 ttfn,
