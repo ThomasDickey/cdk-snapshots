@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/02/18 23:20:55 $
- * $Revision: 1.60 $
+ * $Date: 2000/08/19 00:47:17 $
+ * $Revision: 1.61 $
  */
 
 DeclareCDKObjects(my_funcs,Label);
@@ -349,13 +349,13 @@ char waitCDKLabel (CDKLABEL *label, char key)
    else
    {
       /* Only exit when a specific key is hit. */
-      char newkey;
+      int code;
       for (;;)
       {
-	 newkey = wgetch(label->win);
-	 if (newkey == key)
+	 code = wgetch(label->win);
+	 if (code == key)
 	 {
-	    return ( newkey );
+	    return ( code );
 	 }
       }
    }
