@@ -48,9 +48,9 @@
 		EObjectType	/* cdktype */, \
 		void *		/* object */, \
 		void *		/* clientData */, \
-		chtype		/* input */);
+		chtype		/* input */)
 
-typedef BINDFN_PROTO((*BINDFN));
+typedef BINDFN_PROTO(*BINDFN);
 
 /*
  * This is the prototype for the process callback functions.

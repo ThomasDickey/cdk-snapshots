@@ -6,6 +6,10 @@ This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
+2000/1/8 - T.E.Dickey <dickey@clark.net>
+==========================================
+	+ fix compiler warnings with Solaris cc.
+
 1999/12/19 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ update email and url for Mike Glover based on 4.9.9 version dated
