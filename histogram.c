@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.77 $
+ * $Date: 2003/12/06 16:35:37 $
+ * $Revision: 1.78 $
  */
 
 DeclareCDKObjects(HISTOGRAM, Histogram, setCdk, Unknown);
@@ -669,19 +669,22 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKHistogram (CDKOBJS *object)
 {
-   CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
+   if (object != 0)
+   {
+      CDKHISTOGRAM *histogram = (CDKHISTOGRAM *)object;
 
-   freeChar (histogram->curString);
-   freeChar (histogram->lowString);
-   freeChar (histogram->highString);
-   cleanCdkTitle (object);
+      freeChar (histogram->curString);
+      freeChar (histogram->lowString);
+      freeChar (histogram->highString);
+      cleanCdkTitle (object);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (histogram->shadowWin);
-   deleteCursesWindow (histogram->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (histogram->shadowWin);
+      deleteCursesWindow (histogram->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vHISTOGRAM, histogram);
+      /* Unregister this object. */
+      unregisterCDKObject (vHISTOGRAM, histogram);
+   }
 }
 
 /*

@@ -1,10 +1,12 @@
-/* $Id: cdkmatrix.c,v 1.6 2003/11/28 22:23:06 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.8 2003/12/06 12:51:01 tom Exp $ */
 
 #include <cdk.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkmatrix";
+char *XCursesProgramName = "cdkmatrix";
 #endif
+
+#define MY_INFO(x,y)	info[(x + 1) * cols + (y + 1)]
 
 /*
  * Declare file local prototypes.
@@ -37,15 +39,13 @@ int main (int argc, char **argv)
    int selection		= 0;
    int shadowHeight		= 0;
    FILE *fp			= stderr;
-   char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COLS];
-   char *rowTitles[MAX_MATRIX_ROWS];
-   char *colTitles[MAX_MATRIX_COLS];
+   char **rowTitles;
+   char **colTitles;
    char **rowTemp		= 0;
    char **colTemp		= 0;
    char **buttonList		= 0;
-   int subSize[MAX_MATRIX_COLS];
-   int colWidths[MAX_MATRIX_COLS];
-   int colTypes[MAX_MATRIX_COLS];
+   int *colWidths;
+   int *colTypes;
    int count, infoLines, x, y, j1, j2;
 
    CDK_PARAMS params;
@@ -104,20 +104,24 @@ int main (int argc, char **argv)
    /* Convert the char * titles to a char ** */
    rowTemp = CDKsplitString (myRowTitles, '\n');
    rows = CDKcountStrings (rowTemp);
+   rowTitles = (char **) calloc (rows + 1, sizeof(char *));
    for (x=0; x < rows; x++)
    {
       rowTitles[x+1] = rowTemp[x];
    }
    colTemp = CDKsplitString (myColTitles, '\n');
    cols = CDKcountStrings (colTemp);
+   colTitles = (char **) calloc (cols + 1, sizeof(char *));
    for (x=0; x < cols; x++)
    {
       colTitles[x+1] = colTemp[x];
    }
+   free (colTemp);
 
    /* Convert the column widths. */
    colTemp = CDKsplitString (myColWidths, '\n');
    count = CDKcountStrings (colTemp);
+   colWidths = (int *) calloc (count + 1, sizeof(int));
    for (x=0; x < count; x++)
    {
       colWidths[x+1] = atoi (colTemp[x]);
@@ -129,6 +133,7 @@ int main (int argc, char **argv)
    {
       colTemp = CDKsplitString (myColTypes, '\n');
       count = CDKcountStrings (colTemp);
+      colTypes = (int *) calloc (MAXIMUM(cols, count) + 1, sizeof(int));
       for (x=0; x < count; x++)
       {
 	 colTypes[x+1] = char2DisplayType (colTemp[x]);
@@ -138,6 +143,7 @@ int main (int argc, char **argv)
    else
    {
       /* If they didn't set default values. */
+      colTypes = (int *) calloc (cols + 1, sizeof(int));
       for (x=0; x < cols; x++)
       {
 	 colTypes[x+1] = vMIXED;
@@ -205,10 +211,15 @@ int main (int argc, char **argv)
    */
    if (defaultValue != 0)
    {
+      int limit = (rows + 1) * (cols + 1);
+      char **info = (char **) calloc (limit, sizeof(char *));
+
       /* Read the file. */
       infoLines = CDKreadFile (defaultValue, &rowTemp);
       if (infoLines > 0)
       {
+	 int *subSize = (int *) calloc(infoLines + 1, sizeof(int *));
+
 	 /* For each line, split on a CTRL-V. */
 	 for (x=0; x < infoLines; x++)
 	 {
@@ -216,21 +227,24 @@ int main (int argc, char **argv)
 	    subSize[x+1] = CDKcountStrings (colTemp);
 	    for (y=0; y < subSize[x+1]; y++)
 	    {
-	       info[x+1][y+1] = colTemp[y];
+	       MY_INFO(x, y) = colTemp[y];
 	    }
+	    free (colTemp);
 	 }
+	 CDKfreeStrings (rowTemp);
 
-	 /* Call setCDKMatrix. */
-	 setCDKMatrix (widget, info, rows, subSize);
+	 setCDKMatrixCells (widget, info, rows, cols, subSize);
 
 	 /* Clean up. */
 	 for (x=0; x < infoLines; x++)
 	 {
 	    for (y=0; y < subSize[x+1]; y++)
 	    {
-	       freeChar (info[x+1][y+1]);
+	       freeChar (MY_INFO(x, y));
 	    }
 	 }
+	 free (info);
+	 free (subSize);
       }
    }
 
@@ -249,6 +263,7 @@ int main (int argc, char **argv)
 					NULL, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
@@ -277,7 +292,7 @@ int main (int argc, char **argv)
   /*
    * If the user asked for a shadow, we need to create one.
    * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
+   * the button widget isn't part of the main widget and if
    * the user asks for both buttons and a shadow, we need to
    * create a shadow big enough for both widgets. We'll create
    * the shadow window using the widgets shadowWin element, so
@@ -325,9 +340,10 @@ int main (int argc, char **argv)
       {
 	 for (y=0; y < widget->cols; y++)
 	 {
-	    if (widget->info[x][y] != 0)
+	    char *data = getCDKMatrixCell(widget, x, y);
+	    if (data != 0)
 	    {
-	       fprintf (fp, "%s%c", widget->info[x][y], CTRL('V'));
+	       fprintf (fp, "%s%c", data, CTRL('V'));
 	    }
 	    else
 	    {
@@ -345,10 +361,28 @@ int main (int argc, char **argv)
       destroyCDKButtonbox (buttonWidget);
    }
 
-   /* Shut down curses. */
+   /* cleanup (not really needed) */
+   CDKfreeStrings (buttonList);
+   free (colTypes);
+   free (colWidths);
+
+   for (x=0; x < rows; x++)
+   {
+      free (rowTitles[x+1]);
+   }
+   free (rowTitles);
+
+   for (x=0; x < cols; x++)
+   {
+      free (colTitles[x+1]);
+   }
+   free (colTitles);
+
    destroyCDKMatrix (widget);
    destroyCDKScreen (cdkScreen);
    delwin (cursesWindow);
+
+   /* this is needed */
    endCDK();
    exit (selection);
 }

@@ -1,4 +1,4 @@
-.\" $Id: cdk_label.3,v 1.9 2003/04/17 23:20:52 tom Exp $
+.\" $Id: cdk_label.3,v 1.10 2003/12/11 01:26:11 tom Exp $
 .TH cdk_label 3
 .SH NAME
 destroyCDKLabel,
@@ -10,6 +10,7 @@ moveCDKLabel,
 newCDKLabel,
 positionCDKLabel,
 setCDKLabel,
+setCDKLabelBackgroundAttrib,
 setCDKLabelBackgroundColor,
 setCDKLabelBox,
 setCDKLabelBoxAttribute,
@@ -72,6 +73,10 @@ waitCDKLabel \- Creates a managed curses label widget.
 .BI "char **" "message",
 .BI "int " "messageLines",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKLabelBackgroundAttrib ("
+.BI "CDKLABEL *" "label",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKLabelBackgroundColor ("
 .BI "CDKLABEL *" "label",
@@ -192,6 +197,10 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKLabel
 allows the user to change the contents of the label widget.
 The parameters are the same as the \fInewCDKLabel\fR.
+.TP 5
+.B setCDKLabelBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKLabelBackgroundColor
 sets the background color of the widget.

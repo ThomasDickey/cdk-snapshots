@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/01 22:21:01 $
- * $Revision: 1.189 $
+ * $Date: 2003/12/06 16:45:38 $
+ * $Revision: 1.190 $
  */
 
 #define L_MARKER '<'
@@ -141,14 +141,12 @@ int justifyString (int boxWidth, int mesgLength, int justify)
  */
 void freeChar (char *string)
 {
-   if (string != 0)
-      free (string);
+   freeChecked (string);
 }
 
 void freeChtype (chtype *string)
 {
-   if (string != 0)
-      free (string);
+   freeChecked (string);
 }
 
 /*

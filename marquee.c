@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.65 $
+ * $Date: 2003/12/06 16:37:01 $
+ * $Revision: 1.66 $
  */
 
 DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
@@ -279,14 +279,17 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKMarquee (CDKOBJS *object)
 {
-   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+   if (object != 0)
+   {
+      CDKMARQUEE *marquee = (CDKMARQUEE *)object;
 
-   /* Clean up the windows. */
-   deleteCursesWindow (marquee->shadowWin);
-   deleteCursesWindow (marquee->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (marquee->shadowWin);
+      deleteCursesWindow (marquee->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vMARQUEE, marquee);
+      /* Unregister this object. */
+      unregisterCDKObject (vMARQUEE, marquee);
+   }
 }
 
 /*

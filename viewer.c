@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.136 $
+ * $Date: 2003/12/06 16:48:55 $
+ * $Revision: 1.138 $
  */
 
 /*
@@ -27,7 +27,7 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer);
  * Declare file local variables.
  */
 static char *	SearchPattern	= 0;
-int		SearchDirection = DOWN;
+static int	SearchDirection = DOWN;
 
 DeclareCDKObjects(VIEWER, Viewer, setCdk, Unknown);
 
@@ -85,6 +85,13 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen, int xplace, int yplace, int heigh
    viewer->buttonCount = buttonCount;
    if (buttonCount > 0)
    {
+      if ((viewer->button    = typeCallocN(chtype *, buttonCount + 1)) == 0
+       || (viewer->buttonLen = typeCallocN(int,      buttonCount + 1)) == 0
+       || (viewer->buttonPos = typeCallocN(int,      buttonCount + 1)) == 0)
+      {
+	 destroyCDKObject(viewer);
+	 return (0);
+      }
       for (x=0; x < buttonCount; x++)
       {
 	 viewer->button[x]	= char2Chtype (buttons[x], &viewer->buttonLen[x], &buttonAdj);
@@ -1033,9 +1040,9 @@ void setCDKViewerBackgroundAttrib (CDKVIEWER *viewer, chtype attrib)
  */
 static void destroyInfo(CDKVIEWER *viewer)
 {
-   CDKfreeChtypes(viewer->list);
-   if (viewer->listPos != 0) free(viewer->listPos);
-   if (viewer->listLen != 0) free(viewer->listLen);
+   CDKfreeChtypes (viewer->list);
+   freeChecked (viewer->listPos);
+   freeChecked (viewer->listLen);
 
    viewer->list = 0;
    viewer->listPos = 0;
@@ -1047,23 +1054,24 @@ static void destroyInfo(CDKVIEWER *viewer)
  */
 static void _destroyCDKViewer (CDKOBJS *object)
 {
-   CDKVIEWER *viewer = (CDKVIEWER *)object;
-   int x;
-
-   destroyInfo(viewer);
-
-   cleanCdkTitle (object);
-   for (x=0; x < viewer->buttonCount; x++)
+   if (object != 0)
    {
-      freeChtype (viewer->button[x]);
+      CDKVIEWER *viewer = (CDKVIEWER *)object;
+
+      destroyInfo(viewer);
+
+      cleanCdkTitle (object);
+      CDKfreeChtypes(viewer->button);
+      freeChecked (viewer->buttonLen);
+      freeChecked (viewer->buttonPos);
+
+      /* Clean up the windows. */
+      deleteCursesWindow (viewer->shadowWin);
+      deleteCursesWindow (viewer->win);
+
+      /* Unregister this object. */
+      unregisterCDKObject (vVIEWER, viewer);
    }
-
-   /* Clean up the windows. */
-   deleteCursesWindow (viewer->shadowWin);
-   deleteCursesWindow (viewer->win);
-
-   /* Unregister this object. */
-   unregisterCDKObject (vVIEWER, viewer);
 }
 
 /*
@@ -1246,8 +1254,8 @@ static int createList(CDKVIEWER *swindow, int listSize)
       if (!status)
       {
 	 CDKfreeChtypes(newList);
-	 if (newPos != 0) free(newPos);
-	 if (newLen != 0) free(newLen);
+	 freeChecked(newPos);
+	 freeChecked(newLen);
       }
    }
    return status;

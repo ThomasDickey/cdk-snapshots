@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.149 $
+ * $Date: 2003/12/06 16:45:06 $
+ * $Revision: 1.154 $
  */
 
 /*
@@ -47,11 +47,15 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    setCDKMatrixBox (matrix, Box);
 
    /* Make sure that the number of rows/cols/vrows/vcols is not zero. */
-   if (rows == 0 || cols == 0 || vrows == 0 || vcols == 0)
+   if (rows <= 0 || cols <= 0 || vrows <= 0 || vcols <= 0)
    {
       destroyCDKObject(matrix);
       return (0);
    }
+#if NEW_CDKMATRIX
+   matrix->cell = typeCallocN(WINDOW *, (rows + 1) * (cols + 1));
+   matrix->info = typeCallocN(char   *, (rows + 1) * (cols + 1));
+#endif
 
   /*
    * Make sure the number of virtual cells is not larger than
@@ -59,6 +63,23 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    */
    vrows = (vrows > rows ? rows : vrows);
    vcols = (vcols > cols ? cols : vcols);
+
+   /*
+    * Set these early, since they are used in matrix index computations.
+    */
+   matrix->rows			= rows;
+   matrix->cols			= cols;
+
+   matrix->colwidths   = typeCallocN(int, cols + 1);
+   matrix->colvalues   = typeCallocN(int, cols + 1);
+
+   matrix->coltitle    = typeCallocN(chtype *, cols + 1);
+   matrix->coltitleLen = typeCallocN(int, cols + 1);
+   matrix->coltitlePos = typeCallocN(int, cols + 1);
+
+   matrix->rowtitle    = typeCallocN(chtype *, rows + 1);
+   matrix->rowtitleLen = typeCallocN(int, rows + 1);
+   matrix->rowtitlePos = typeCallocN(int, rows + 1);
 
    /*
     * Count the number of lines in the title (see setCdkTitle).
@@ -133,16 +154,16 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    begy = ypos + 1 + TitleLinesOf(matrix);
 
    /* Make the 'empty' 0x0 cell. */
-   matrix->cell[0][0] = subwin (matrix->win, 3, matrix->maxrt, begy, begx);
+   MATRIX_CELL(matrix,0,0) = subwin (matrix->win, 3, matrix->maxrt, begy, begx);
    begx += matrix->maxrt + 1;
 
    /* Make the column titles. */
    for (x=1; x <= vcols; x++)
    {
       cellWidth = colwidths[x] + 3;
-      matrix->cell[0][x] = subwin (matrix->win, 1, cellWidth, begy, begx);
+      MATRIX_CELL(matrix,0,x) = subwin (matrix->win, 1, cellWidth, begy, begx);
 
-      if (matrix->cell[0][x] == 0)
+      if (MATRIX_CELL(matrix,0,x) == 0)
       {
 	 destroyCDKObject(matrix);
 	 return (0);
@@ -155,9 +176,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    for (x=1; x <= vrows; x++)
    {
       /* Make the row titles */
-      matrix->cell[x][0] = subwin (matrix->win, 3, matrix->maxrt, begy, xpos+1);
+      MATRIX_CELL(matrix,x,0) = subwin (matrix->win, 3, matrix->maxrt, begy, xpos+1);
 
-      if (matrix->cell[x][0] == 0)
+      if (MATRIX_CELL(matrix,x,0) == 0)
       {
 	 destroyCDKObject(matrix);
 	 return (0);
@@ -170,15 +191,15 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       for (y=1; y <= vcols; y++)
       {
 	 cellWidth = colwidths[y] + 3;
-	 matrix->cell[x][y] = subwin (matrix->win, 3, cellWidth, begy, begx);
+	 MATRIX_CELL(matrix,x,y) = subwin (matrix->win, 3, cellWidth, begy, begx);
 
-	 if (matrix->cell[x][y] == 0)
+	 if (MATRIX_CELL(matrix,x,y) == 0)
 	 {
 	    destroyCDKObject(matrix);
 	    return (0);
 	 }
 	 begx += cellWidth + colSpace - 1;
-	 keypad (matrix->cell[x][y], TRUE);
+	 keypad (MATRIX_CELL(matrix,x,y), TRUE);
       }
       begy += rowSpace + 2;
    }
@@ -192,24 +213,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
       matrix->colwidths[x]	= colwidths[x];
    }
 
-   /* Make room for the cell information. */
-   for (x=1; x <= rows; x++)
-   {
-      for (y=1; y <= cols; y++)
-      {
-	 matrix->info[x][y]	= (char *)malloc (sizeof (char) * 256);
-	 matrix->colvalues[y]	= colvalues[y];
-	 matrix->colwidths[y]	= colwidths[y];
-	 cleanChar (matrix->info[x][y], colwidths[y]+1, '\0');
-      }
-   }
-
    /* Keep the rest of the info. */
    ScreenOf(matrix)		= cdkscreen;
    ObjOf(matrix)->inputWindow	= matrix->win;
    matrix->parent		= cdkscreen->window;
-   matrix->rows			= rows;
-   matrix->cols			= cols;
    matrix->vrows		= vrows;
    matrix->vcols		= vcols;
    matrix->boxWidth		= boxWidth;
@@ -238,6 +245,17 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen, int xplace, int yplace, int rows,
    matrix->postProcessFunction	= 0;
    matrix->postProcessData	= 0;
    matrix->shadowWin		= 0;
+
+   /* Make room for the cell information. */
+   for (x=1; x <= rows; x++)
+   {
+      for (y=1; y <= cols; y++)
+      {
+	 MATRIX_INFO(matrix, x, y) = typeCallocN(char, (colwidths[y] + 1));
+	 matrix->colvalues[y]	= colvalues[y];
+	 matrix->colwidths[y]	= colwidths[y];
+      }
+   }
 
    /* Do we want a shadow??? */
    if (shadow)
@@ -271,7 +289,7 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
       for (;;)
       {
 	 /* Get the input. */
-	 input = wgetch (matrix->cell[matrix->crow][matrix->ccol]);
+	 input = wgetch (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMatrix (matrix, input);
@@ -310,11 +328,11 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    CDKMATRIX *matrix = (CDKMATRIX *)object;
    int refreshCells	= FALSE;
    int movedCell	= FALSE;
-   int charcount	= (int)strlen (matrix->info[matrix->row][matrix->col]);
+   int charcount	= (int)strlen (MATRIX_INFO(matrix, matrix->row, matrix->col));
    int ppReturn		= 1;
    int x, y, infolen;
-   int ret              = unknownInt;
-   bool complete        = FALSE;
+   int ret		= unknownInt;
+   bool complete	= FALSE;
 
    /* Set the exit type. */
    matrix->exitType = vEARLY_EXIT;
@@ -322,21 +340,21 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    /* Move the cursor to the correct position within the cell. */
    if (matrix->colwidths[matrix->ccol] == 1)
    {
-      wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
+      wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, 1);
    }
    else
    {
-      wmove (matrix->cell[matrix->crow][matrix->ccol], 1,
-		(int)strlen (matrix->info[matrix->row][matrix->col])+1);
+      wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1,
+		(int)strlen (MATRIX_INFO(matrix, matrix->row, matrix->col))+1);
    }
 
    /* Put the focus on the current cell */
-   attrbox (matrix->cell[matrix->crow][matrix->ccol],
+   attrbox (MATRIX_CELL(matrix, matrix->crow, matrix->ccol),
 		ACS_ULCORNER,	ACS_URCORNER,
 		ACS_LLCORNER,	ACS_LRCORNER,
 		ACS_HLINE,	ACS_VLINE,
 		A_BOLD);
-   wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+   wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
    highlightCDKMatrixCell (matrix);
 
    /* Check if there is a pre-process function to be called. */
@@ -378,10 +396,10 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 		    if (charcount > 0)
 		    {
 		       charcount--;
-		       mvwdelch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1);
-		       mvwinsch (matrix->cell[matrix->crow][matrix->ccol], 1, charcount+1, matrix->filler);
-		       wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
-		       matrix->info[matrix->row][matrix->col][charcount] = '\0';
+		       mvwdelch (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, charcount+1);
+		       mvwinsch (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, charcount+1, matrix->filler);
+		       wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
+		       MATRIX_INFO(matrix, matrix->row, matrix->col)[charcount] = '\0';
 		    }
 		    else
 		    {
@@ -619,32 +637,32 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	      }
 	      else
 	      {
-		 strcpy (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], GPasteBuffer);
+		 strcpy (MATRIX_INFO(matrix, matrix->trow+matrix->crow-1, matrix->lcol+matrix->ccol-1), GPasteBuffer);
 		 drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
 	      }
 	      break;
 
 	 case CDK_COPY :
 	      freeChar (GPasteBuffer);
-	      GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
+	      GPasteBuffer	= copyChar (MATRIX_INFO(matrix, matrix->trow+matrix->crow-1, matrix->lcol+matrix->ccol-1));
 	      break;
 
 	 case CDK_CUT :
 	      freeChar (GPasteBuffer);
-	      GPasteBuffer	= copyChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-	      cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
+	      GPasteBuffer	= copyChar (MATRIX_INFO(matrix, matrix->trow+matrix->crow-1, matrix->lcol+matrix->ccol-1));
+	      cleanCDKMatrixCell (matrix, matrix->trow + matrix->crow - 1, matrix->lcol + matrix->ccol - 1);
 	      drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
 	      break;
 
 	 case CDK_ERASE :
-	      cleanChar (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1], matrix->colwidths[matrix->lcol+matrix->ccol-1], '\0');
+	      cleanCDKMatrixCell (matrix, matrix->trow + matrix->crow - 1, matrix->lcol + matrix->ccol - 1);
 	      drawCDKMatrixCell (matrix, matrix->crow, matrix->ccol, matrix->row, matrix->col, A_NORMAL, matrix->boxCell);
 	      break;
 
 	 case KEY_RETURN : case KEY_ENTER :
 	      if (!matrix->boxCell)
 	      {
-		 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+		 attrbox (MATRIX_CELL(matrix, matrix->oldcrow, matrix->oldccol),
 				' ',	' ',
 				' ',	' ',
 				' ',	' ',
@@ -660,7 +678,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 				A_NORMAL,
 				matrix->boxCell);
 	      }
-	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	      wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 	      matrix->exitType = vNORMAL;
 	      ret = 1;
 	      complete = TRUE;
@@ -669,7 +687,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	 case KEY_ESC :
 	      if (!matrix->boxCell)
 	      {
-		 attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+		 attrbox (MATRIX_CELL(matrix, matrix->oldcrow, matrix->oldccol),
 				' ',	' ',
 				' ',	' ',
 				' ',	' ',
@@ -685,7 +703,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 				A_NORMAL,
 				matrix->boxCell);
 	      }
-	      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	      wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 	      matrix->exitType = vESCAPE_HIT;
 	      complete = TRUE;
 	      break;
@@ -709,7 +727,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    /* un-highlight the old box  */
 	    if (!matrix->boxCell)
 	    {
-	       attrbox (matrix->cell[matrix->oldcrow][matrix->oldccol],
+	       attrbox (MATRIX_CELL(matrix, matrix->oldcrow, matrix->oldccol),
 			   ' ',	' ',
 			   ' ',	' ',
 			   ' ',	' ',
@@ -725,15 +743,15 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 				   0,
 				   matrix->boxCell);
 	    }
-	    wrefresh (matrix->cell[matrix->oldcrow][matrix->oldccol]);
+	    wrefresh (MATRIX_CELL(matrix, matrix->oldcrow, matrix->oldccol));
 
 	    /* Highlight the new cell. */
-	    attrbox (matrix->cell[matrix->crow][matrix->ccol],
+	    attrbox (MATRIX_CELL(matrix, matrix->crow, matrix->ccol),
 			   ACS_ULCORNER,	ACS_URCORNER,
 			   ACS_LLCORNER,	ACS_LRCORNER,
 			   ACS_HLINE,	ACS_VLINE,
 			   A_BOLD);
-	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	    wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 	    highlightCDKMatrixCell (matrix);
 	 }
 
@@ -754,12 +772,12 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 
 	    /* Highlight the current cell. */
-	    attrbox (matrix->cell[matrix->crow][matrix->ccol],
+	    attrbox (MATRIX_CELL(matrix, matrix->crow, matrix->ccol),
 			   ACS_ULCORNER,	ACS_URCORNER,
 			   ACS_LLCORNER,	ACS_LRCORNER,
 			   ACS_HLINE,	ACS_VLINE,
 			   A_BOLD);
-	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	    wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 	    highlightCDKMatrixCell (matrix);
 	 }
 
@@ -768,14 +786,14 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	 {
 	    if (matrix->colwidths[matrix->ccol] == 1)
 	    {
-	       wmove (matrix->cell[matrix->crow][matrix->ccol], 1, 1);
+	       wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, 1);
 	    }
 	    else
 	    {
-	       infolen = (int)strlen (matrix->info[matrix->trow+matrix->crow-1][matrix->lcol+matrix->ccol-1]);
-	       wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
+	       infolen = (int)strlen (MATRIX_INFO(matrix, matrix->trow+matrix->crow-1, matrix->lcol+matrix->ccol-1));
+	       wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, infolen+1);
 	    }
-	    wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+	    wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 	 }
 
 	 /* Should we call a post-process? */
@@ -807,7 +825,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
 {
    EDisplayType disptype	= (EDisplayType)matrix->colvalues[matrix->col];
-   int charcount		= (int)strlen (matrix->info[matrix->row][matrix->col]);
+   int charcount		= (int)strlen (MATRIX_INFO(matrix, matrix->row, matrix->col));
    chtype newchar		= 0;
 
    /* Check the types */
@@ -851,13 +869,13 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
       }
 
       /* Update the screen. */
-      wmove (matrix->cell[matrix->crow][matrix->ccol], 1, (int)strlen (matrix->info[matrix->row][matrix->col])+1);
-      waddch (matrix->cell[matrix->crow][matrix->ccol], newchar);
-      wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+      wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, (int)strlen (MATRIX_INFO(matrix, matrix->row, matrix->col))+1);
+      waddch (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), newchar);
+      wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 
       /* Update the character pointer. */
-      matrix->info[matrix->row][matrix->col][charcount++] = newchar;
-      matrix->info[matrix->row][matrix->col][charcount] = '\0';
+      MATRIX_INFO(matrix, matrix->row, matrix->col)[charcount++] = newchar;
+      MATRIX_INFO(matrix, matrix->row, matrix->col)[charcount] = '\0';
    }
 }
 
@@ -868,7 +886,7 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 {
    chtype highlight	= matrix->highlight;
    int x		= 0;
-   int infolen		= (int)strlen (matrix->info[matrix->row][matrix->col]);
+   int infolen		= (int)strlen (MATRIX_INFO(matrix, matrix->row, matrix->col));
 
   /*
    * Given the dominance of the colors/attributes, we need to set the
@@ -887,13 +905,13 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
    for (x=1; x <= matrix->colwidths[matrix->ccol]; x++)
    {
       chtype ch = (x <= infolen)
-      		? (A_CHARTEXT & matrix->info[matrix->row][matrix->col][x-1])
+		? (A_CHARTEXT & MATRIX_INFO(matrix, matrix->row, matrix->col)[x-1])
 		: matrix->filler;
 
-      mvwaddch (matrix->cell[matrix->crow][matrix->ccol], 1, x, ch | highlight);
+      mvwaddch (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, x, ch | highlight);
    }
-   wmove (matrix->cell[matrix->crow][matrix->ccol], 1, infolen+1);
-   wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+   wmove (MATRIX_CELL(matrix, matrix->crow, matrix->ccol), 1, infolen+1);
+   wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
 }
 
 /*
@@ -934,7 +952,7 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-	 moveCursesWindow(matrix->cell[x][y], -xdiff, -ydiff);
+	 moveCursesWindow(MATRIX_CELL(matrix, x, y), -xdiff, -ydiff);
       }
    }
 
@@ -956,11 +974,11 @@ static void _moveCDKMatrix (CDKOBJS *object, int xplace, int yplace, boolean rel
  */
 static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, int vcol, chtype attr, boolean Box)
 {
-   WINDOW *cell		= matrix->cell[row][col];
+   WINDOW *cell		= MATRIX_CELL(matrix, row, col);
    chtype highlight	= matrix->filler & A_ATTRIBUTES;
    int rows		= matrix->vrows;
    int cols		= matrix->vcols;
-   int infolen		= (int)strlen (matrix->info[vrow][vcol]);
+   int infolen		= (int)strlen (MATRIX_INFO(matrix, vrow, vcol));
    int x;
 
    /*
@@ -980,7 +998,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    for (x=1; x <= matrix->colwidths[col]; x++)
    {
       chtype ch = (x <= infolen)
-      		? ((A_CHARTEXT & matrix->info[vrow][vcol][x-1])|highlight)
+		? ((A_CHARTEXT & MATRIX_INFO(matrix, vrow, vcol)[x-1])|highlight)
 		: matrix->filler;
 
       mvwaddch (cell, 1, x, ch | highlight);
@@ -1084,7 +1102,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
       {
 	 /* Draw the top right corner */
 	 attrbox (cell, ACS_TTEE, ACS_URCORNER,
-			ACS_PLUS, ACS_LTEE,
+			ACS_PLUS, ACS_RTEE,
 			ACS_HLINE, ACS_VLINE,
 			attr);
       }
@@ -1145,12 +1163,12 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix, int row, int col, int vrow, in
    }
 
    /* Highlight the current cell. */
-   attrbox (matrix->cell[matrix->crow][matrix->ccol],
+   attrbox (MATRIX_CELL(matrix, matrix->crow, matrix->ccol),
 		ACS_ULCORNER,	ACS_URCORNER,
 		ACS_LLCORNER,	ACS_LRCORNER,
 		ACS_HLINE,	ACS_VLINE,
 		A_BOLD);
-   wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+   wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
    highlightCDKMatrixCell (matrix);
 }
 
@@ -1182,24 +1200,24 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    /* Draw in the column titles. */
    for (x=1; x <= matrix->vcols; x++)
    {
-      writeChtype (matrix->cell[0][x],
+      writeChtype (MATRIX_CELL(matrix, 0, x),
 			matrix->coltitlePos[matrix->lcol + x-1], 0,
 			matrix->coltitle[matrix->lcol + x-1],
 			HORIZONTAL,
 			0, matrix->coltitleLen[matrix->lcol + x-1]);
-      wrefresh (matrix->cell[0][x]);
+      wrefresh (MATRIX_CELL(matrix, 0, x));
    }
 
    /* Fill in the rest of the matrix. */
    for (x=1; x <= matrix->vrows; x++)
    {
       /* Draw in the row titles */
-      writeChtype (matrix->cell[x][0],
+      writeChtype (MATRIX_CELL(matrix, x, 0),
 			matrix->rowtitlePos[matrix->trow + x-1], 1,
 			matrix->rowtitle[matrix->trow + x-1],
 			HORIZONTAL,
 			0, matrix->rowtitleLen[matrix->trow + x-1]);
-      wrefresh (matrix->cell[x][0]);
+      wrefresh (MATRIX_CELL(matrix, x, 0));
 
       /* Draw in the cells.. */
       for (y=1; y <= matrix->vcols; y++)
@@ -1213,12 +1231,12 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    }
 
    /* Highlight the current cell. */
-   attrbox (matrix->cell[matrix->crow][matrix->ccol],
+   attrbox (MATRIX_CELL(matrix, matrix->crow, matrix->ccol),
 		ACS_ULCORNER,	ACS_URCORNER,
 		ACS_LLCORNER,	ACS_LRCORNER,
 		ACS_HLINE,	ACS_VLINE,
 		A_BOLD);
-   wrefresh (matrix->cell[matrix->crow][matrix->ccol]);
+   wrefresh (MATRIX_CELL(matrix, matrix->crow, matrix->ccol));
    highlightCDKMatrixCell (matrix);
 }
 
@@ -1227,55 +1245,75 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKMatrix (CDKOBJS *object)
 {
-   CDKMATRIX *matrix = (CDKMATRIX *)object;
-   int x = 0;
-   int y = 0;
-
-   cleanCdkTitle (object);
-
-   /* Clear out the col titles. */
-   for (x=1; x <= matrix->cols; x++)
+   if (object != 0)
    {
-      freeChtype (matrix->coltitle[x]);
-   }
+      CDKMATRIX *matrix = (CDKMATRIX *)object;
+      int x = 0;
+      int y = 0;
 
-   /* Clear out the row titles. */
-   for (x=1; x <= matrix->rows; x++)
-   {
-      freeChtype (matrix->rowtitle[x]);
-   }
+      cleanCdkTitle (object);
 
-   /* Clear out the matrix cells. */
-   for (x=1; x <= matrix->rows; x++)
-   {
-      for (y=1; y <= matrix->cols; y++)
+      /* Clear out the col titles. */
+      for (x=1; x <= matrix->cols; x++)
       {
-	 freeChar (matrix->info[x][y]);
+	 freeChtype (matrix->coltitle[x]);
       }
-   }
 
-   /* Clear the matrix windows. */
-   deleteCursesWindow (matrix->cell[0][0]);
-   for (x=1; x <= matrix->vrows; x++)
-   {
-      deleteCursesWindow (matrix->cell[x][0]);
-   }
-   for (x=1; x <= matrix->vcols; x++)
-   {
-      deleteCursesWindow (matrix->cell[0][x]);
-   }
-   for (x=1; x <= matrix->vrows; x++)
-   {
-      for (y=1; y <= matrix->vcols; y++)
+      /* Clear out the row titles. */
+      for (x=1; x <= matrix->rows; x++)
       {
-	 deleteCursesWindow (matrix->cell[x][y]);
+	 freeChtype (matrix->rowtitle[x]);
       }
-   }
-   deleteCursesWindow (matrix->shadowWin);
-   deleteCursesWindow (matrix->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vMATRIX, matrix);
+      /* Clear out the matrix cells. */
+      for (x=1; x <= matrix->rows; x++)
+      {
+	 for (y=1; y <= matrix->cols; y++)
+	 {
+	    freeChar (MATRIX_INFO(matrix, x, y));
+	 }
+      }
+
+      /* Clear the matrix windows. */
+      deleteCursesWindow (MATRIX_CELL(matrix, 0, 0));
+      for (x=1; x <= matrix->vrows; x++)
+      {
+	 deleteCursesWindow (MATRIX_CELL(matrix, x, 0));
+      }
+      for (x=1; x <= matrix->vcols; x++)
+      {
+	 deleteCursesWindow (MATRIX_CELL(matrix, 0, x));
+      }
+      for (x=1; x <= matrix->vrows; x++)
+      {
+	 for (y=1; y <= matrix->vcols; y++)
+	 {
+	    deleteCursesWindow (MATRIX_CELL(matrix, x, y));
+	 }
+      }
+
+#if NEW_CDKMATRIX
+      freeChecked (matrix->cell);
+      freeChecked (matrix->info);
+#endif
+
+      freeChecked (matrix->colwidths);
+      freeChecked (matrix->colvalues);
+
+      freeChecked (matrix->coltitle);
+      freeChecked (matrix->coltitleLen);
+      freeChecked (matrix->coltitlePos);
+
+      freeChecked (matrix->rowtitle);
+      freeChecked (matrix->rowtitleLen);
+      freeChecked (matrix->rowtitlePos);
+
+      deleteCursesWindow (matrix->shadowWin);
+      deleteCursesWindow (matrix->win);
+
+      /* Unregister this object. */
+      unregisterCDKObject (vMATRIX, matrix);
+   }
 }
 
 /*
@@ -1290,20 +1328,20 @@ static void _eraseCDKMatrix (CDKOBJS *object)
       int y	= 0;
 
       /* Clear the matrix cells. */
-      eraseCursesWindow (matrix->cell[0][0]);
+      eraseCursesWindow (MATRIX_CELL(matrix, 0, 0));
       for (x=1; x <= matrix->vrows; x++)
       {
-	 eraseCursesWindow (matrix->cell[x][0]);
+	 eraseCursesWindow (MATRIX_CELL(matrix, x, 0));
       }
       for (x=1; x <= matrix->vcols; x++)
       {
-	 eraseCursesWindow (matrix->cell[0][x]);
+	 eraseCursesWindow (MATRIX_CELL(matrix, 0, x));
       }
       for (x=1; x <= matrix->vrows; x++)
       {
 	 for (y=1; y <= matrix->vcols; y++)
 	 {
-	    eraseCursesWindow (matrix->cell[x][y]);
+	    eraseCursesWindow (MATRIX_CELL(matrix, x, y));
 	 }
       }
       eraseCursesWindow (matrix->shadowWin);
@@ -1314,41 +1352,44 @@ static void _eraseCDKMatrix (CDKOBJS *object)
 /*
  * This function sets the values of the matrix widget.
  */
-void setCDKMatrix (CDKMATRIX *matrix, char *info[MAX_MATRIX_ROWS][MAX_MATRIX_COLS], int rows, int *subSize)
+void setCDKMatrixCells (CDKMATRIX *matrix, char **info, int rows, int maxcols, int *subSize)
 {
    int x	= 0;
    int y	= 0;
 
-   /* Clear out all the cells. */
-   for (x=1; x <= matrix->rows; x++)
-   {
-      for (y=1; y <= matrix->cols; y++)
-      {
-	 /* Clean the old info, and copy in the new. */
-	 if (matrix->info[x][y] != 0)
-	 {
-	    /* Clean the cell information. */
-	    cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
-	 }
-      }
-   }
+   if (rows > matrix->rows)
+      rows = matrix->rows;
 
    /* Copy in the new info. */
    for (x=1; x <= rows; x++)
    {
-      for (y=1; y <= subSize[x]; y++)
+      for (y=1; y <= matrix->cols; y++)
       {
-	 /* Copy in the new information. */
-	 if (info[x][y] != 0)
+	 if (x <= rows && y <= subSize[x])
 	 {
-	    strncpy (matrix->info[x][y], info[x][y], matrix->colwidths[y]);
+	    char *source = info[(x * maxcols) + y];
+
+	    /* Copy in the new information. */
+	    if (source != 0)
+	    {
+	       char *target = MATRIX_INFO(matrix, x, y);
+
+	       if (target == 0)	/* this should not happen... */
+	       {
+		  target = typeCallocN(char, matrix->colwidths[y] + 1);
+		  MATRIX_INFO(matrix, x, y) = target;
+	       }
+	       strncpy (MATRIX_INFO(matrix, x, y), source, matrix->colwidths[y]);
+	    }
 	 }
+	 else
+	    cleanCDKMatrixCell(matrix, x, y);
       }
    }
 }
 
 /*
- * This sets the widgets box attribute.
+ * This sets the widget's box attribute.
  */
 void setCDKMatrixBox (CDKMATRIX *matrix, boolean Box)
 {
@@ -1372,9 +1413,19 @@ void cleanCDKMatrix (CDKMATRIX *matrix)
    {
       for (y=1; y <= matrix->cols; y++)
       {
-	 cleanChar (matrix->info[x][y], matrix->colwidths[y], '\0');
+	 cleanCDKMatrixCell (matrix, x, y);
       }
    }
+}
+
+/*
+ * This cleans one cell in the matrix widget.
+ */
+void cleanCDKMatrixCell (CDKMATRIX *matrix, int row, int col)
+{
+   if (row > 0 && row <= matrix->rows
+    && col > 0 && col <= matrix->cols)
+      cleanChar (MATRIX_INFO(matrix, row, col), matrix->colwidths[col], '\0');
 }
 
 /*
@@ -1577,13 +1628,13 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
    {
       for (x=1; x <= matrix->vrows; x++)
       {
-	 werase (matrix->cell[x][0]);
-	 writeChtype (matrix->cell[x][0],
+	 werase (MATRIX_CELL(matrix, x, 0));
+	 writeChtype (MATRIX_CELL(matrix, x, 0),
 			matrix->rowtitlePos[matrix->trow+x-1], 1,
 			matrix->rowtitle[matrix->trow+x-1],
 			HORIZONTAL,
 			0, matrix->rowtitleLen[matrix->trow+x-1]);
-	 wrefresh (matrix->cell[x][0]);
+	 wrefresh (MATRIX_CELL(matrix, x, 0));
       }
    }
 
@@ -1592,13 +1643,13 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
    {
       for (x=1; x <=matrix->vcols; x++)
       {
-	 werase (matrix->cell[0][x]);
-	 writeChtype (matrix->cell[0][x],
+	 werase (MATRIX_CELL(matrix, 0, x));
+	 writeChtype (MATRIX_CELL(matrix, 0, x),
 			matrix->coltitlePos[matrix->lcol+x-1], 0,
 			matrix->coltitle[matrix->lcol+x-1],
 			HORIZONTAL,
 			0, matrix->coltitleLen[matrix->lcol+x-1]);
-	 wrefresh (matrix->cell[0][x]);
+	 wrefresh (MATRIX_CELL(matrix, 0, x));
       }
    }
 }
@@ -1614,11 +1665,8 @@ int setCDKMatrixCell (CDKMATRIX *matrix, int row, int col, char *value)
       return -1;
    }
 
-   /* Clean out the old value. */
-   cleanChar (matrix->info[row][col], matrix->colwidths[col]+1, '\0');
-
-   /* Copy the new version in and return. */
-   strncpy (matrix->info[row][col], value, matrix->colwidths[col]);
+   cleanCDKMatrixCell (matrix, row, col);
+   strncpy (MATRIX_INFO(matrix, row, col), value, matrix->colwidths[col]);
    return 1;
 }
 
@@ -1632,7 +1680,7 @@ char *getCDKMatrixCell (CDKMATRIX *matrix, int row, int col)
    {
       return 0;
    }
-   return matrix->info[row][col];
+   return MATRIX_INFO(matrix, row, col);
 }
 
 /*
@@ -1660,13 +1708,10 @@ void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
       return;
    }
 
-   /* Convert the value of the environment variable to a chtype. */
    holder = char2Chtype (color, &junk1, &junk2);
 
-   /* Set the widgets background color. */
    setCDKMatrixBackgroundAttrib (matrix, holder[0]);
 
-   /* Clean up. */
    freeChtype (holder);
 }
 
@@ -1676,13 +1721,13 @@ void setCDKMatrixBackgroundColor (CDKMATRIX *matrix, char *color)
 void setCDKMatrixBackgroundAttrib (CDKMATRIX *matrix, chtype attrib)
 {
    int x, y;
-   /* Set the widgets background attribute. */
+
    wbkgd (matrix->win, attrib);
    for (x=0; x <= matrix->vrows; x++)
    {
       for (y=0; y <= matrix->vcols; y++)
       {
-	 wbkgd (matrix->cell[x][y], attrib);
+	 wbkgd (MATRIX_CELL(matrix, x, y), attrib);
       }
    }
 }

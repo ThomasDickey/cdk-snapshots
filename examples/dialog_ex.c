@@ -1,4 +1,4 @@
-/* $Id: dialog_ex.c,v 1.7 2003/11/29 16:13:11 tom Exp $ */
+/* $Id: dialog_ex.c,v 1.8 2003/12/06 16:17:11 tom Exp $ */
 
 #include <cdk.h>
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
    else if (question->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected button #%d", selection);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 3);

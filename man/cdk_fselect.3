@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_fselect.3,v 1.16 2003/04/18 00:06:33 tom Exp $
+.\" $Id: cdk_fselect.3,v 1.17 2003/12/11 01:25:49 tom Exp $
 .TH cdk_fselect 3
 .SH NAME
 activateCDKFselect,
@@ -19,6 +19,7 @@ moveCDKFselect,
 newCDKFselect,
 positionCDKFselect,
 setCDKFselect,
+setCDKFselectBackgroundAttrib,
 setCDKFselectBackgroundColor,
 setCDKFselectBox,
 setCDKFselectBoxAttribute,
@@ -126,6 +127,10 @@ setCDKFselectVerticalChar \- curses file selector widget.
 .BI "char *" "linkAttribute",
 .BI "char *" "sockAttribute",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKFselectBackgroundAttrib ("
+.BI "CDKFSELECT *" "fselect",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKFselectBackgroundColor ("
 .BI "CDKFSELECT *" "fselect",
@@ -333,6 +338,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing fselect widget.
 The parameter names correspond to the same parameter
 names listed in the \fInewCDKFselect\fR function.
+.TP 5
+.B setCDKFselectBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKFselectBackgroundColor
 sets the background color of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: button.h,v 1.7 2003/11/16 21:44:06 tom Exp $
+ * $Id: button.h,v 1.9 2003/12/06 16:28:18 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -18,7 +18,8 @@
 #endif
 
 /*
- * Copyright 2002,2003, Thomas Dickey
+ * Changes 2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Grant Edwards
  * All rights reserved.
  *

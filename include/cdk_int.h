@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.5 2003/11/29 00:09:25 tom Exp $
+ * $Id: cdk_int.h,v 1.7 2003/12/06 16:42:06 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003, Thomas Dickey
+ * Copyright 2003, Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,8 @@ extern "C" {
 
 #define typeCallocN(type,n)     (type*)calloc(n, sizeof(type))
 #define typeCalloc(type)        typeCallocN(type,1)
+
+#define freeChecked(p)		if ((p) != 0) free (p)
 
 #define CharOf(c)               ((unsigned char)(c))
 

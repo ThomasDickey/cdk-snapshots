@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.108 $
+ * $Date: 2003/12/06 16:39:23 $
+ * $Revision: 1.109 $
  */
 
 /*
@@ -695,22 +695,25 @@ void setCDKTemplateBackgroundAttrib (CDKTEMPLATE *cdktemplate, chtype attrib)
  */
 static void _destroyCDKTemplate (CDKOBJS *object)
 {
-   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
+   if (object != 0)
+   {
+      CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
 
-   cleanCdkTitle (object);
-   freeChtype (cdktemplate->label);
-   freeChtype (cdktemplate->overlay);
-   freeChar (cdktemplate->plate);
-   freeChar (cdktemplate->info);
+      cleanCdkTitle (object);
+      freeChtype (cdktemplate->label);
+      freeChtype (cdktemplate->overlay);
+      freeChar (cdktemplate->plate);
+      freeChar (cdktemplate->info);
 
-   /* Delete the windows. */
-   deleteCursesWindow (cdktemplate->fieldWin);
-   deleteCursesWindow (cdktemplate->labelWin);
-   deleteCursesWindow (cdktemplate->shadowWin);
-   deleteCursesWindow (cdktemplate->win);
+      /* Delete the windows. */
+      deleteCursesWindow (cdktemplate->fieldWin);
+      deleteCursesWindow (cdktemplate->labelWin);
+      deleteCursesWindow (cdktemplate->shadowWin);
+      deleteCursesWindow (cdktemplate->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vTEMPLATE, cdktemplate);
+      /* Unregister this object. */
+      unregisterCDKObject (vTEMPLATE, cdktemplate);
+   }
 }
 
 /*

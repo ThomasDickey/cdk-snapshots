@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_slider.3,v 1.13 2003/04/17 23:29:08 tom Exp $"
+.\" $Id: cdk_slider.3,v 1.14 2003/12/11 01:27:17 tom Exp $"
 .TH cdk_slider 3
 .SH NAME
 activateCDKSlider,
@@ -15,6 +15,7 @@ moveCDKSlider,
 newCDKSlider,
 positionCDKSlider,
 setCDKSlider,
+setCDKSliderBackgroundAttrib,
 setCDKSliderBackgroundColor,
 setCDKSliderBox,
 setCDKSliderBoxAttribute,
@@ -100,6 +101,10 @@ setCDKSliderVerticalChar \- curses slider widget
 .BI "int " "highValue",
 .BI "int " "currentValue",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKSliderBackgroundAttrib ("
+.BI "CDKSLIDER *" "slider",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKSliderBackgroundColor ("
 .BI "CDKSLIDER *" "slider",
@@ -278,6 +283,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing slider widget.
 The parameter names correspond to the same parameter
 names listed in the \fInewCDKSlider\fR function.
+.TP 5
+.B setCDKSliderBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKSliderBackgroundColor
 sets the background color of the widget.

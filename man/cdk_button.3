@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_button.3,v 1.4 2003/04/18 00:03:43 tom Exp $
+.\" $Id: cdk_button.3,v 1.5 2003/12/11 01:25:50 tom Exp $
 .TH cdk_button 3
 .SH NAME
 activateCDKButton,
@@ -13,6 +13,7 @@ moveCDKButton,
 newCDKButton,
 positionCDKButton,
 setCDKButton,
+setCDKButtonBackgroundAttrib,
 setCDKButtonBackgroundColor,
 setCDKButtonBox,
 setCDKButtonBoxAttribute,
@@ -72,6 +73,10 @@ typedef void (*tButtonCallback)(struct SButton *button);
 .BI "CDKBUTTON *" "b",
 .BI "char *" "message",
 .BI "boolean " "box");
+.TP 15
+.BI "void setCDKButtonBackgroundAttrib ("
+.BI "CDKBUTTON *" "b",
+.BI "chtype " "attribute");
 .TP 15
 .BI "void setCDKButtonBackgroundColor ("
 .BI "CDKBUTTON *" "b",
@@ -240,6 +245,10 @@ lets the programmer modify certain elements of an existing
 buttonbox widget.
 The parameter names correspond to the same parameter names listed
 in the \fBnewCDKButton\fR function.
+.TP 5
+.B setCDKButtonBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKButtonBackgroundColor
 sets the background color of the widget.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.73 $
+ * $Date: 2003/12/06 16:45:56 $
+ * $Revision: 1.74 $
  */
 
 DeclareCDKObjects(GRAPH, Graph, setCdk, Unknown);
@@ -515,22 +515,24 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKGraph (CDKOBJS *object)
 {
-   CDKGRAPH *graph = (CDKGRAPH *)object;
+   if (object != 0)
+   {
+      CDKGRAPH *graph = (CDKGRAPH *)object;
 
-   cleanCdkTitle (object);
+      cleanCdkTitle (object);
 
-   freeChtype (graph->xtitle);
-   freeChtype (graph->ytitle);
-   freeChtype (graph->graphChar);
+      freeChtype (graph->xtitle);
+      freeChtype (graph->ytitle);
+      freeChtype (graph->graphChar);
 
-   if (graph->values != 0)
-      free (graph->values);
+      freeChecked (graph->values);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vGRAPH, graph);
+      /* Unregister this object. */
+      unregisterCDKObject (vGRAPH, graph);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (graph->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (graph->win);
+   }
 }
 
 /*

@@ -1,5 +1,5 @@
 /*
- * $Id: binding.h,v 1.9 2002/04/30 21:43:10 tom Exp $
+ * $Id: binding.h,v 1.10 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,6 +17,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *

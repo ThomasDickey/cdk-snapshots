@@ -2,9 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.61 $
+ * $Date: 2003/12/11 00:16:08 $
+ * $Revision: 1.64 $
  */
+
+#define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
 
 /*
  * Declare file local variables.
@@ -71,7 +73,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    int boxHeight		= 11;
    int xpos			= xplace;
    int ypos			= yplace;
-   int x, y, z;
+   int x;
    struct tm *dateInfo;
    time_t clck;
    char *dayname		= "Su Mo Tu We Th Fr Sa";
@@ -100,7 +102,7 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    /* Is the window null? */
    if (calendar->win == 0)
    {
-      _destroyCDKCalendar (ObjOf(calendar));
+      destroyCDKObject (calendar);
       return (0);
    }
    keypad (calendar->win, TRUE);
@@ -144,16 +146,11 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
 
    setCDKCalendarBox (calendar, Box);
 
-   /* Clear out the markers. */
-   for (z=0; z < MAX_YEARS; z++)
+   calendar->marker = typeCallocN(chtype, CALENDAR_LIMIT);
+   if (calendar->marker == 0)
    {
-      for (y=0; y < MAX_MONTHS; y++)
-      {
-	 for (x=0; x < MAX_DAYS; x++)
-	 {
-	    calendar->marker[x][y][z] = 0;
-	 }
-      }
+      destroyCDKObject (calendar);
+      return (0);
    }
 
    /* If the day/month/year values were 0, then use today's date. */
@@ -440,7 +437,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    char *monthName	= calendar->MonthName[calendar->month];
    int monthNameLength	= (int)strlen (monthName);
    int monthLength	= getMonthLength (calendar->year, calendar->month);
-   int yearIndex	= calendar->year - 1900;
+   int yearIndex	= YEAR2INDEX(calendar->year);
    int yearLen		= 0;
    int day		= 1;
    int x, y, Ten, One;
@@ -462,10 +459,12 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
       }
       else
       {
+	 chtype marker = getCDKCalendarMarker(calendar,day,calendar->month,yearIndex);
+
 	 /* Check if there is a marker to set. */
-	 if (calendar->marker[day][calendar->month][yearIndex] != 0)
+	 if (marker != 0)
 	 {
-	    chtype marker = calendar->marker[day][calendar->month][yearIndex] | calendar->dayAttrib;
+	    marker |= calendar->dayAttrib;
 	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3)-1, Ten | marker);
 	    mvwaddch (calendar->fieldWin, 1, ((x + 1)*3), One | marker);
 	 }
@@ -493,10 +492,12 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	    }
 	    else
 	    {
+	       chtype marker = getCDKCalendarMarker(calendar,day,calendar->month,yearIndex);
+
 	       /* Check if there is a marker to set. */
-	       if (calendar->marker[day][calendar->month][yearIndex] != 0)
+	       if (marker != 0)
 	       {
-		  chtype marker = calendar->marker[day][calendar->month][yearIndex] | calendar->dayAttrib;
+		  marker |= calendar->dayAttrib;
 		  mvwaddch (calendar->fieldWin, x, (y*3)-1, Ten | marker);
 		  mvwaddch (calendar->fieldWin, x, (y*3), One | marker);
 	       }
@@ -702,26 +703,31 @@ static void _eraseCDKCalendar (CDKOBJS *object)
  */
 static void _destroyCDKCalendar (CDKOBJS *object)
 {
-   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
-   int x;
-
-   cleanCdkTitle (object);
-
-   freeChar(calendar->DayName);
-
-   for (x=0; x < MAX_MONTHS; x++)
+   if (object != 0)
    {
-      freeChar(calendar->MonthName[x]);
+      CDKCALENDAR *calendar = (CDKCALENDAR *)object;
+      int x;
+
+      cleanCdkTitle (object);
+
+      freeChar(calendar->DayName);
+
+      for (x=0; x < MAX_MONTHS; x++)
+      {
+	 freeChar(calendar->MonthName[x]);
+      }
+
+      freeChecked(calendar->marker);
+
+      /* Free up the window pointers. */
+      deleteCursesWindow (calendar->labelWin);
+      deleteCursesWindow (calendar->fieldWin);
+      deleteCursesWindow (calendar->shadowWin);
+      deleteCursesWindow (calendar->win);
+
+      /* Unregister the object. */
+      unregisterCDKObject (vCALENDAR, calendar);
    }
-
-   /* Free up the window pointers. */
-   deleteCursesWindow (calendar->labelWin);
-   deleteCursesWindow (calendar->fieldWin);
-   deleteCursesWindow (calendar->shadowWin);
-   deleteCursesWindow (calendar->win);
-
-   /* Unregister the object. */
-   unregisterCDKObject (vCALENDAR, calendar);
 }
 
 /*
@@ -729,18 +735,27 @@ static void _destroyCDKCalendar (CDKOBJS *object)
  */
 void setCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year, chtype marker)
 {
-   int yearIndex = year-1900;
+   int yearIndex = YEAR2INDEX(year);
+   chtype oldmarker = getCDKCalendarMarker(calendar, day, month, year);
 
    /* Check to see if a marker has not already been set. */
-   if (calendar->marker[day][month][yearIndex] != 0)
+   if (oldmarker != 0)
    {
-      chtype duplicateMarker = calendar->marker[day][month][yearIndex] | A_BLINK;
-      calendar->marker[day][month][yearIndex] = duplicateMarker;
+      CALENDAR_CELL(calendar,day,month,yearIndex) = oldmarker | A_BLINK;
    }
    else
    {
-      calendar->marker[day][month][yearIndex] = marker;
+      CALENDAR_CELL(calendar,day,month,yearIndex) = marker;
    }
+}
+chtype getCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year)
+{
+   int result = 0;
+
+   year = YEAR2INDEX(year);
+   if (calendar->marker != 0)
+      result = CALENDAR_CELL(calendar, day, month, year);
+   return result;
 }
 
 /*
@@ -748,8 +763,8 @@ void setCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year, 
  */
 void removeCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year)
 {
-   int yearIndex = year-1900;
-   calendar->marker[day][month][yearIndex] = 0;
+   int yearIndex = YEAR2INDEX(year);
+   CALENDAR_CELL(calendar,day,month,yearIndex) = 0;
 }
 
 /*
@@ -836,13 +851,13 @@ static int getMonthStartWeekday (int year, int month)
    struct tm Date;
 
    /* Set the tm structure correctly. */
-   Date.tm_sec			= 0;
-   Date.tm_min			= 0;
-   Date.tm_hour			= 10;
-   Date.tm_mday			= 1;
-   Date.tm_mon			= month-1;
-   Date.tm_year			= year-1900;
-   Date.tm_isdst		= 1;
+   Date.tm_sec		= 0;
+   Date.tm_min		= 0;
+   Date.tm_hour		= 10;
+   Date.tm_mday		= 1;
+   Date.tm_mon		= month - 1;
+   Date.tm_year		= YEAR2INDEX(year);
+   Date.tm_isdst	= 1;
 
    /* Call the mktime function to fill in the holes. */
    if (mktime (&Date) == (time_t)-1)
@@ -1092,12 +1107,12 @@ static time_t getCurrentTime (CDKCALENDAR *calendar)
    dateInfo = localtime (&clck);
 
    /* Set the tm structure correctly. */
-   Date.tm_sec		= 1;
+   Date.tm_sec		= 0;
    Date.tm_min		= 0;
    Date.tm_hour		= 0;
    Date.tm_mday		= calendar->day;
-   Date.tm_mon		= calendar->month-1;
-   Date.tm_year		= calendar->year-1900;
+   Date.tm_mon		= calendar->month - 1;
+   Date.tm_year		= YEAR2INDEX(calendar->year);
    Date.tm_isdst	= dateInfo->tm_isdst;
 
    /* Call the mktime function to fill in the holes. */

@@ -1,5 +1,5 @@
 /*
- * $Id: cdkscreen.h,v 1.10 2002/07/17 21:06:24 tom Exp $
+ * $Id: cdkscreen.h,v 1.11 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,6 +17,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *

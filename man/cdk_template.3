@@ -1,4 +1,4 @@
-.\" $Id: cdk_template.3,v 1.17 2003/04/18 00:18:02 tom Exp $
+.\" $Id: cdk_template.3,v 1.18 2003/12/11 01:27:31 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -19,6 +19,7 @@ injectCDKTemplate,
 mixCDKTemplate,
 newCDKTemplate,
 setCDKTemplate,
+setCDKTemplateBackgroundAttrib,
 setCDKTemplateBackgroundColor,
 setCDKTemplateBox,
 setCDKTemplateBoxAttribute,
@@ -102,6 +103,10 @@ unmixCDKTemplate \- a curses template widget.
 .BI "CDKTEMPLATE *" "template",
 .BI "char *" "value",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKTemplateBackgroundAttrib ("
+.BI "CDKTEMPLATE *" "template",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKTemplateBackgroundColor ("
 .BI "CDKTEMPLATE *" "template",
@@ -339,6 +344,10 @@ lets the programmer modify certain elements of an existing
 template widget.
 The parameter names correspond to the same parameter names
 listed in the \fInewCDKTemplate\fR function.
+.TP 5
+.B setCDKTemplateBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKTemplateBackgroundColor
 sets the background color of the widget.

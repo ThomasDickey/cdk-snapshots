@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.47 $
+ * $Date: 2003/12/06 16:45:29 $
+ * $Revision: 1.49 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -25,8 +25,16 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    int currentButton		= 0;
    int x, y, junk;
 
-   if ((buttonbox = newCDKObject(CDKBUTTONBOX, &my_funcs)) == 0)
+   if (buttonCount <= 0
+    || (buttonbox = newCDKObject(CDKBUTTONBOX, &my_funcs)) == 0
+    || (buttonbox->button       = typeCallocN(chtype *, buttonCount + 1)) == 0
+    || (buttonbox->buttonLen    = typeCallocN(int, buttonCount + 1)) == 0
+    || (buttonbox->buttonPos    = typeCallocN(int, buttonCount + 1)) == 0
+    || (buttonbox->columnWidths = typeCallocN(int, buttonCount + 1)) == 0)
+   {
+      destroyCDKObject (buttonbox);
       return (0);
+   }
 
    setCDKButtonboxBox (buttonbox, Box);
 
@@ -122,7 +130,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    /* If we couldn't create the window, we should return a null value. */
    if (buttonbox->win == 0)
    {
-      _destroyCDKButtonbox (ObjOf(buttonbox));
+      destroyCDKObject (buttonbox);
       return (0);
    }
    keypad (buttonbox->win, TRUE);
@@ -509,21 +517,23 @@ static void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean 
  */
 static void _destroyCDKButtonbox (CDKOBJS *object)
 {
-   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
-   int x;
-
-   cleanCdkTitle(object);
-   for (x=0; x < buttonbox->buttonCount; x++)
+   if (object != 0)
    {
-      freeChtype (buttonbox->button[x]);
+      CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
+
+      cleanCdkTitle (object);
+      CDKfreeChtypes (buttonbox->button);
+      freeChecked (buttonbox->buttonLen);
+      freeChecked (buttonbox->buttonPos);
+      freeChecked (buttonbox->columnWidths);
+
+      /* Delete the windows. */
+      deleteCursesWindow (buttonbox->shadowWin);
+      deleteCursesWindow (buttonbox->win);
+
+      /* Unregister this object. */
+      unregisterCDKObject (vBUTTONBOX, buttonbox);
    }
-
-   /* Delete the windows. */
-   deleteCursesWindow (buttonbox->shadowWin);
-   deleteCursesWindow (buttonbox->win);
-
-   /* Unregister this object. */
-   unregisterCDKObject (vBUTTONBOX, buttonbox);
 }
 
 /*

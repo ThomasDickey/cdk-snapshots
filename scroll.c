@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.103 $
+ * $Date: 2003/12/06 16:47:20 $
+ * $Revision: 1.104 $
  */
 
 /*
@@ -768,21 +768,24 @@ void setCDKScrollBackgroundAttrib (CDKSCROLL *scrollp, chtype attrib)
  */
 static void _destroyCDKScroll (CDKOBJS *object)
 {
-   CDKSCROLL *scrollp = (CDKSCROLL *)object;
+   if (object != 0)
+   {
+      CDKSCROLL *scrollp = (CDKSCROLL *)object;
 
-   cleanCdkTitle (object);
-   CDKfreeChtypes (scrollp->item);
-   if (scrollp->itemPos != 0) free (scrollp->itemPos);
-   if (scrollp->itemLen != 0) free (scrollp->itemLen);
+      cleanCdkTitle (object);
+      CDKfreeChtypes (scrollp->item);
+      freeChecked (scrollp->itemPos);
+      freeChecked (scrollp->itemLen);
 
-   /* Clean up the windows. */
-   deleteCursesWindow (scrollp->scrollbarWin);
-   deleteCursesWindow (scrollp->shadowWin);
-   deleteCursesWindow (scrollp->listWin);
-   deleteCursesWindow (scrollp->win);
+      /* Clean up the windows. */
+      deleteCursesWindow (scrollp->scrollbarWin);
+      deleteCursesWindow (scrollp->shadowWin);
+      deleteCursesWindow (scrollp->listWin);
+      deleteCursesWindow (scrollp->win);
 
-   /* Unregister this object. */
-   unregisterCDKObject (vSCROLL, scrollp);
+      /* Unregister this object. */
+      unregisterCDKObject (vSCROLL, scrollp);
+   }
 }
 
 /*
@@ -857,8 +860,8 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers, char **
 	 if (status)
 	 {
 	    CDKfreeChtypes (scrollp->item);
-	    if (scrollp->itemPos != 0) free (scrollp->itemPos);
-	    if (scrollp->itemLen != 0) free (scrollp->itemLen);
+	    freeChecked (scrollp->itemPos);
+	    freeChecked (scrollp->itemLen);
 
 	    scrollp->item = newList;
 	    scrollp->itemPos = newPos;
@@ -881,8 +884,8 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers, char **
 	 else
 	 {
 	    CDKfreeChtypes (newList);
-	    if (newPos != 0) free (newPos);
-	    if (newLen != 0) free (newLen);
+	    freeChecked (newPos);
+	    freeChecked (newLen);
 	 }
       }
    }

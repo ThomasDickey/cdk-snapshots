@@ -1,7 +1,7 @@
-# $Id: cdk.spec,v 1.10 2003/12/02 02:15:08 tom Exp $
+# $Id: cdk.spec,v 1.11 2003/12/11 00:20:28 tom Exp $
 # Note that this is NOT a relocatable package
-%define ver      4.9.10
-%define subver   20031201
+%define ver      4.9.11
+%define subver   20031210
 %define rel      1
 %define prefix   /usr
 

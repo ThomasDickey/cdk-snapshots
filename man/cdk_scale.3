@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scale.3,v 1.15 2003/04/17 23:45:48 tom Exp $"
+.\" $Id: cdk_scale.3,v 1.16 2003/12/11 01:27:03 tom Exp $"
 .TH cdk_scale 3
 .SH NAME
 activateCDKScale,
@@ -15,6 +15,7 @@ moveCDKScale,
 newCDKScale,
 positionCDKScale,
 setCDKScale,
+setCDKScaleBackgroundAttrib,
 setCDKScaleBackgroundColor,
 setCDKScaleBox,
 setCDKScaleBoxAttribute,
@@ -100,6 +101,10 @@ setCDKScaleVerticalChar \- curses scale widget.
 .BI "int " "highValue",
 .BI "int " "currentValue",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKScaleBackgroundAttrib ("
+.BI "CDKSCALE *" "scale",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKScaleBackgroundColor ("
 .BI "CDKSCALE *" "scale",
@@ -279,6 +284,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing scale widget.
 The parameter names correspond to the same parameter
 names listed in the \fInewCDKScale\fR function.
+.TP 5
+.B setCDKScaleBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKScaleBackgroundColor
 sets the background color of the widget.

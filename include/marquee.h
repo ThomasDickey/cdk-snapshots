@@ -1,5 +1,5 @@
 /*
- * $Id: marquee.h,v 1.16 2003/11/15 18:11:09 tom Exp $
+ * $Id: marquee.h,v 1.17 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *

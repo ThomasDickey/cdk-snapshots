@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.75 $
+ * $Date: 2003/12/06 16:42:19 $
+ * $Revision: 1.77 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -23,8 +23,15 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    int ypos		= yplace;
    int x		= 0;
 
-   if ((label = newCDKObject(CDKLABEL, &my_funcs)) == 0)
+   if (rows <= 0
+    || (label = newCDKObject(CDKLABEL, &my_funcs)) == 0
+    || (label->info    = typeCallocN(chtype *, rows + 1)) == 0
+    || (label->infoLen = typeCallocN(int,      rows + 1)) == 0
+    || (label->infoPos = typeCallocN(int,      rows + 1)) == 0)
+   {
+      destroyCDKObject(label);
       return (0);
+   }
 
    setCDKLabelBox (label, Box);
    boxHeight		= rows + 2 * BorderOf(label);
@@ -278,21 +285,21 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
  */
 static void _destroyCDKLabel (CDKOBJS *object)
 {
-   CDKLABEL *label = (CDKLABEL *)object;
-   int x;
-
-   /* Free up the character pointers. */
-   for (x=0; x < label->rows ; x++)
+   if (object != 0)
    {
-      freeChtype (label->info[x]);
+      CDKLABEL *label = (CDKLABEL *)object;
+
+      CDKfreeChtypes (label->info);
+      freeChecked (label->infoLen);
+      freeChecked (label->infoPos);
+
+      /* Free up the window pointers. */
+      deleteCursesWindow (label->shadowWin);
+      deleteCursesWindow (label->win);
+
+      /* Unregister the object. */
+      unregisterCDKObject (vLABEL, label);
    }
-
-   /* Free up the window pointers. */
-   deleteCursesWindow (label->shadowWin);
-   deleteCursesWindow (label->win);
-
-   /* Unregister the object. */
-   unregisterCDKObject (vLABEL, label);
 }
 
 /*

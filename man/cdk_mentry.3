@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.15 2003/04/17 23:48:33 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.16 2003/12/11 01:27:03 tom Exp $
 .TH cdk_mentry 3
 .SH NAME
 activateCDKMentry,
@@ -16,6 +16,7 @@ moveCDKMentry,
 newCDKMentry,
 positionCDKMentry,
 setCDKMentry,
+setCDKMentryBackgroundAttrib,
 setCDKMentryBackgroundColor,
 setCDKMentryBox,
 setCDKMentryBoxAttribute,
@@ -105,6 +106,10 @@ setCDKMentryVerticalChar \- curses multiple line entry widget.
 .BI "char *" "value",
 .BI "int " "minimumLength",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKMentryBackgroundAttrib ("
+.BI "CDKMENTRY *" "mentry",
+.BI "chtype " "attribute");
 .TP 15
 .B "void setCDKMentryBackgroundColor ("
 .BI "CDKMENTRY *" "mentry",
@@ -381,6 +386,10 @@ lets the programmer modify certain elements of an existing
 entry widget.
 The parameter names correspond to the same parameter names listed
 in the \fInewCDKMentry\fR function.
+.TP 5
+.B setCDKMentryBackgroundAttrib
+sets the background attribute of the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKMentryBackgroundColor
 sets the background color of the widget.

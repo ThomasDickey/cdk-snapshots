@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.19 2003/11/27 14:55:27 tom Exp $
+ * $Id: buttonbox.h,v 1.21 2003/12/06 16:27:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,6 +20,8 @@ extern "C" {
 #endif
 
 /*
+ * Changes 1999-2003 copyright Thomas E. Dickey
+ *
  * Copyright 1999, Mike Glover
  * All rights reserved.
  *
@@ -61,10 +63,10 @@ struct SButtonBox {
    WINDOW *	win;
    WINDOW *	shadowWin;
    int		titleAdj;
-   chtype *	button[MAX_BUTTONS];
-   int		buttonLen[MAX_BUTTONS];
-   int		buttonPos[MAX_BUTTONS];
-   int		columnWidths[MAX_BUTTONS];
+   chtype **	button;
+   int *	buttonLen;
+   int *	buttonPos;
+   int *	columnWidths;
    int		buttonCount;
    int		buttonWidth;
    int		currentButton;

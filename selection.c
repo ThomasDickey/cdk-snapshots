@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/30 21:15:51 $
- * $Revision: 1.111 $
+ * $Date: 2003/12/06 16:51:06 $
+ * $Revision: 1.113 $
  */
 
 /*
@@ -30,8 +30,14 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int x			= 0;
    int junk2;
 
-   if ((selection = newCDKObject(CDKSELECTION, &my_funcs)) == 0)
+   if (choiceCount <= 0
+    || (selection = newCDKObject(CDKSELECTION, &my_funcs)) == 0
+    || (selection->choice    = typeCallocN(chtype *, choiceCount + 1)) == 0
+    || (selection->choicelen = typeCallocN(int,      choiceCount + 1)) == 0)
+   {
+      destroyCDKObject(selection);
       return (0);
+   }
 
    setCDKSelectionBox (selection, Box);
 
@@ -688,27 +694,27 @@ void setCDKSelectionBackgroundAttrib (CDKSELECTION *selection, chtype attrib)
  */
 static void _destroyCDKSelection (CDKOBJS *object)
 {
-   CDKSELECTION *selection = (CDKSELECTION *)object;
-   int x;
-
-   cleanCdkTitle (object);
-   for (x = 0; x < selection->choiceCount; x++)
+   if (object != 0)
    {
-      freeChtype (selection->choice[x]);
+      CDKSELECTION *selection = (CDKSELECTION *)object;
+
+      cleanCdkTitle (object);
+      CDKfreeChtypes (selection->choice);
+      freeChecked (selection->choicelen);
+      CDKfreeChtypes (selection->item);
+      freeChecked (selection->itemPos);
+      freeChecked (selection->itemLen);
+      freeChecked (selection->selections);
+      freeChecked (selection->mode);
+
+      /* Clean up the windows. */
+      deleteCursesWindow (selection->scrollbarWin);
+      deleteCursesWindow (selection->shadowWin);
+      deleteCursesWindow (selection->win);
+
+      /* Unregister this object. */
+      unregisterCDKObject (vSELECTION, selection);
    }
-   CDKfreeChtypes(selection->item);
-   if (selection->itemPos    != 0) free (selection->itemPos);
-   if (selection->itemLen    != 0) free (selection->itemLen);
-   if (selection->selections != 0) free (selection->selections);
-   if (selection->mode	     != 0) free (selection->mode);
-
-   /* Clean up the windows. */
-   deleteCursesWindow (selection->scrollbarWin);
-   deleteCursesWindow (selection->shadowWin);
-   deleteCursesWindow (selection->win);
-
-   /* Unregister this object. */
-   unregisterCDKObject (vSELECTION, selection);
 }
 
 /*
@@ -1115,11 +1121,11 @@ static int createList(CDKSELECTION *selection, char **list, int listSize)
 
 	 if (status)
 	 {
-	    CDKfreeChtypes(selection->item);
-	    if (selection->itemPos    != 0) free (selection->itemPos);
-	    if (selection->itemLen    != 0) free (selection->itemLen);
-	    if (selection->selections != 0) free (selection->selections);
-	    if (selection->mode	      != 0) free (selection->mode);
+	    CDKfreeChtypes (selection->item);
+	    freeChecked (selection->itemPos);
+	    freeChecked (selection->itemLen);
+	    freeChecked (selection->selections);
+	    freeChecked (selection->mode);
 
 	    selection->item	  = newList;
 	    selection->itemPos	  = newPos;
@@ -1129,11 +1135,11 @@ static int createList(CDKSELECTION *selection, char **list, int listSize)
 	 }
 	 else
 	 {
-	    CDKfreeChtypes(newList);
-	    if (newPos  != 0) free (newPos);
-	    if (newLen  != 0) free (newLen);
-	    if (newSel	!= 0) free (newSel);
-	    if (newMode	!= 0) free (newMode);
+	    CDKfreeChtypes (newList);
+	    freeChecked (newPos);
+	    freeChecked (newLen);
+	    freeChecked (newSel);
+	    freeChecked (newMode);
 	 }
       }
    }

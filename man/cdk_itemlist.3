@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_itemlist.3,v 1.11 2003/04/18 00:22:08 tom Exp $
+.\" $Id: cdk_itemlist.3,v 1.12 2003/12/11 01:25:49 tom Exp $
 .TH cdk_itemlist 3
 .SH NAME
 activateCDKItemlist,
@@ -15,6 +15,7 @@ moveCDKItemlist,
 newCDKItemlist,
 positionCDKItemlist,
 setCDKItemlist,
+setCDKItemlistBackgroundAttrib,
 setCDKItemlistBackgroundColor,
 setCDKItemlistBox,
 setCDKItemlistBoxAttribute,
@@ -98,6 +99,10 @@ setCDKItemlistVerticalChar \- curses itemlist widget.
 .BI "int " "itemCount",
 .BI "int " "currentSelection",
 .BI "boolean " "box");
+.TP 15
+.B "void setCDKItemlistBackgroundAttrib ("
+.BI "CDKITEMLIST *" "itemlist",
+.BI "chtype" "attribute");
 .TP 15
 .B "void setCDKItemlistBackgroundColor ("
 .BI "CDKITEMLIST *" "itemlist",
@@ -276,6 +281,10 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing itemlist widget.
 The parameter names correspond to the same parameter names
 listed in the \fInewCDKItemlist\fR function.
+.TP 5
+.B setCDKItemlistBackgroundAttrib
+the background color attribute the widget.
+The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKItemlistBackgroundColor
 sets the background color of the widget.
