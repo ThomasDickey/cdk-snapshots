@@ -1,5 +1,5 @@
 /*
- * $Id: mentry.h,v 1.19 2003/12/06 16:27:28 tom Exp $
+ * $Id: mentry.h,v 1.22 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -89,10 +89,6 @@ struct SMentry {
    chtype	filler;
    chtype	hidden;
    MENTRYCB	callbackfn;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 
 /*
@@ -199,16 +195,12 @@ boolean getCDKMentryBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKMentryBackgroundColor (
-		CDKMENTRY *	/* mentry */,
-		char *		/* color */);
+#define setCDKMentryBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKMentryBackgroundAttrib (
-		CDKMENTRY *	/* mentry */,
-		chtype		/* attribute */);
+#define setCDKMentryBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the widget on the screen.
@@ -257,15 +249,8 @@ void setCDKMentryCB (
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKMentryPreProcess (
-		CDKMENTRY *	/* mentry */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKMentryPostProcess (
-		CDKMENTRY *	/* mentry */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKMentryPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKMentryPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

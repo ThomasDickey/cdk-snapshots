@@ -1,4 +1,4 @@
-/* $Id: buttonbox_ex.c,v 1.14 2003/12/06 13:56:01 tom Exp $ */
+/* $Id: buttonbox_ex.c,v 1.16 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -64,7 +64,6 @@ int main (void)
    destroyCDKButtonbox (buttonWidget);
    destroyCDKEntry (entry);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK ();
 
    /* Spit out some info. */
@@ -73,7 +72,7 @@ int main (void)
 	   buttons[selection]);
 
    freeChar (info);
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 static int entryCB (EObjectType cdktype GCC_UNUSED,

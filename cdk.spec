@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.11 2003/12/11 00:20:28 tom Exp $
+# $Id: cdk.spec,v 1.12 2004/08/31 23:56:51 tom Exp $
 # Note that this is NOT a relocatable package
 %define ver      4.9.11
-%define subver   20031210
-%define rel      1
+%define subver   20040831
+%define rel      2
 %define prefix   /usr
 
 Summary: A Curses Development Library (ncurses-based widgets)

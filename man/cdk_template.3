@@ -1,10 +1,4 @@
-.\" $Id: cdk_template.3,v 1.18 2003/12/11 01:27:31 tom Exp $
-.de It
-.br
-.ie \\n(.$>=3 .ne \\$3
-.el .ne 3
-.IP "\\$1" \\$2
-..
+.\" $Id: cdk_template.3,v 1.20 2004/08/27 23:03:32 tom Exp $
 .TH cdk_template 3
 .SH NAME
 activateCDKTemplate,
@@ -221,18 +215,28 @@ returns the current value of the widget.
 .TP 5
 .B injectCDKTemplate
 injects a single character into the widget.
-The parameter \fBtemplate\fR is a pointer to a non-NULL template.
+The parameter \fBtemplate\fR is a pointer to a non-NULL template widget.
 The parameter \fBcharacter\fR is the character to inject into the widget.
-If the character
-injected into this widget was \fIRETURN\fR or \fITAB\fR then this function will
-return a \fIchar\ *\fR representing the information typed into the widget and the
-widget data \fIexitType\fR will be set to \fIvNORMAL\fR.
-If the character
-entered was \fIESCAPE\fR then the function will return \fINULL\fR pointer and
-the widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
-Any other
-character injected into the widget will set the widget data \fIexitType\fR
-to \fIvEARLY_EXIT\fR and the function will return a \fINULL\fR pointer.
+The return value and side-effect (setting the widget data \fIexitType\fP)
+depend upon the injected character:
+.RS
+.TP
+\fIRETURN\fP or \fITAB\fR
+the function returns
+a \fIchar\ *\fR representing the information typed into the widget.
+The widget data \fIexitType\fR is set to \fIvNORMAL\fR.
+.TP
+\fIESCAPE\fP
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
+.TP
+Otherwise
+unless modified by preprocessing, postprocessing or key bindings,
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
+.RE
 .TP 5
 .B mixCDKTemplate
 returns a \fIchar*\fR pointer to the field value and the plate.

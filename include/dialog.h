@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.h,v 1.20 2003/12/06 16:27:28 tom Exp $
+ * $Id: dialog.h,v 1.23 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -84,10 +84,6 @@ struct SDialogBox {
    boolean	separator;
    boolean	shadow;
    chtype	highlight;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SDialogBox CDKDIALOG;
 
@@ -172,16 +168,12 @@ boolean getCDKDialogBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKDialogBackgroundColor (
-		CDKDIALOG *	/* dialog */,
-		char *		/* color */);
+#define setCDKDialogBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKDialogBackgroundAttrib (
-		CDKDIALOG *	/* dialog */,
-		chtype		/* attribute */);
+#define setCDKDialogBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws a dialog box button.
@@ -227,15 +219,8 @@ void drawCDKDialogButtons (
 /*
  * These set the pre/post process functions of the dialog widget.
  */
-void setCDKDialogPreProcess (
-		CDKDIALOG *	/* dialog */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKDialogPostProcess (
-		CDKDIALOG *	/* dialog */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKDialogPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKDialogPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

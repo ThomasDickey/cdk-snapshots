@@ -36,14 +36,13 @@ int main(void)
    title = newCDKLabel (cdkscreen, CENTER, TOP, mesg, 5, FALSE, FALSE);
    stopSign = newCDKLabel (cdkscreen, CENTER, CENTER, sign, 3, TRUE, TRUE);
 
-   /* Draw the labels. */
-   drawCDKLabel (title, FALSE);
-   drawCDKLabel (stopSign, TRUE);
-
    /* Do this until they hit q or escape. */
-   while (1)
+   for (;;)
    {
-      key = wgetch (cursesWin);
+      drawCDKLabel (title, FALSE);
+      drawCDKLabel (stopSign, TRUE);
+
+      key = getcCDKObject (ObjOf(stopSign));
       if (key == KEY_ESC || key == 'q' || key == 'Q')
       {
 	 break;
@@ -72,15 +71,12 @@ int main(void)
 
       /* Set the contents of the label and re-draw it. */
       setCDKLabel (stopSign, sign, 3, TRUE);
-      drawCDKLabel (stopSign, TRUE);
-      drawCDKLabel (title, FALSE);
    }
 
    /* Clean up. */
    destroyCDKLabel (title);
    destroyCDKLabel (stopSign);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

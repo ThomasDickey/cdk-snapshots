@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.6 2003/11/30 19:55:29 tom Exp $ */
+/* $Id: selection_ex.c,v 1.11 2004/08/31 00:14:40 tom Exp $ */
 
 #include <cdk.h>
 
@@ -33,6 +33,8 @@ int main (int argc, char **argv)
    count = 0;
    while ((ent = getpwent ()) != 0)
    {
+      if (count >= (int)(sizeof(item)/sizeof(item[0])))
+	 break;
       item[count++] = copyChar (ent->pw_name);
    }
    count--;
@@ -58,7 +60,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can;t seem to create the selection list. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the selection list. */
@@ -80,7 +82,7 @@ int main (int argc, char **argv)
       {
 	 if (selection->selections[x] == 1)
 	 {
-	    sprintf (temp, "<C></5>%s", item[x]);
+	    sprintf (temp, "<C></5>%.*s", (int)(sizeof(temp) - 20), item[x]);
 	    mesg[y++] = copyChar (temp);
 	 }
       }
@@ -96,7 +98,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKSelection (selection);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

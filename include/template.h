@@ -1,5 +1,5 @@
 /*
- * $Id: template.h,v 1.20 2003/12/06 16:27:28 tom Exp $
+ * $Id: template.h,v 1.23 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -89,10 +89,6 @@ struct STemplate {
    EExitType	exitType;
    boolean	shadow;
    TEMPLATECB	callbackfn;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 
 /*
@@ -173,16 +169,12 @@ boolean getCDKTemplateBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKTemplateBackgroundColor (
-		CDKTEMPLATE *	/* cdktemplate */,
-		char *		/* color */);
+#define setCDKTemplateBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKTemplateBackgroundAttrib (
-		CDKTEMPLATE *	/* template */,
-		chtype		/* attribute */);
+#define setCDKTemplateBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the cdktemplate on the screen.
@@ -240,15 +232,8 @@ char *unmixCDKTemplate (
 /*
  * These set the pre/post callback functions.
  */
-void setCDKTemplatePreProcess (
-		CDKTEMPLATE *	/* cdktemplate */,
-		PROCESSFN 	/* callback */,
-		void *		/* data */);
-
-void setCDKTemplatePostProcess (
-		CDKTEMPLATE *	/* cdktemplate */,
-		PROCESSFN 	/* callback */,
-		void *		/* data */);
+#define setCDKTemplatePreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKTemplatePostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

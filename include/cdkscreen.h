@@ -1,5 +1,5 @@
 /*
- * $Id: cdkscreen.h,v 1.11 2003/12/06 16:27:28 tom Exp $
+ * $Id: cdkscreen.h,v 1.14 2004/08/20 22:16:54 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ * Changes 1999-2003,2004 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -54,7 +54,7 @@ extern "C" {
 /*
  * Declare and definitions needed for the widget.
  */
-#define MAX_OBJECTS	1000
+#define MAX_OBJECTS	1000	/* not used by widgets */
 
 struct CDKOBJS;
 
@@ -69,9 +69,11 @@ typedef enum {
  */
 struct SScreen {
    WINDOW *		window;
-   struct CDKOBJS *	object[MAX_OBJECTS];
-   int			objectCount;
+   struct CDKOBJS **	object;
+   int			objectCount;	/* last-used index in object[] */
+   int			objectLimit;	/* sizeof(object[]) */
    EExitStatus		exitStatus;
+   int			objectFocus;	/* focus index in object[] */
 };
 typedef struct SScreen CDKSCREEN;
 
@@ -148,6 +150,12 @@ void raiseCDKObject (
 void lowerCDKObject (
 		EObjectType	/* cdktype */,
 		void *		/* object */);
+
+/*
+ * This redraws a window, forcing it to the top of the stack.
+ */
+void refreshCDKWindow (
+		WINDOW *	/* win */);
 
 /*
  * This redraws all the widgets associated with the given screen.

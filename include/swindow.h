@@ -1,5 +1,5 @@
 /*
- * $Id: swindow.h,v 1.20 2003/11/27 14:55:27 tom Exp $
+ * $Id: swindow.h,v 1.23 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -79,10 +79,6 @@ struct SSwindow {
    int		saveLines;
    EExitType	exitType;
    boolean	shadow;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SSwindow CDKSWINDOW;
 typedef void (*SWINDOWCB) (CDKSWINDOW *swindow, chtype input);
@@ -195,16 +191,12 @@ boolean getCDKSwindowBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKSwindowBackgroundColor (
-		CDKSWINDOW *	/* swindow */,
-		char *		/* color */);
+#define setCDKSwindowBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKSwindowBackgroundAttrib (
-		CDKSWINDOW *	/* swindow */,
-		chtype		/* attribute */);
+#define setCDKSwindowBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the scrolling window on the screen.
@@ -256,15 +248,8 @@ void trimCDKSwindow (
 /*
  * These set the pre/post process callback functions.
  */
-void setCDKSwindowPreProcess (
-		CDKSWINDOW *	/* swindow */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKSwindowPostProcess (
-		CDKSWINDOW *	/* swindow */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKSwindowPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKSwindowPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

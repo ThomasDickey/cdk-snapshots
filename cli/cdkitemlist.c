@@ -1,4 +1,4 @@
-/* $Id: cdkitemlist.c,v 1.5 2003/11/28 22:17:54 tom Exp $ */
+/* $Id: cdkitemlist.c,v 1.6 2004/08/28 00:52:41 tom Exp $ */
 
 #include <cdk.h>
 
@@ -146,7 +146,6 @@ int main (int argc, char **argv)
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      delwin (cursesWindow);
       endCDK();
 
       /* Spit out the message. */
@@ -250,7 +249,6 @@ int main (int argc, char **argv)
    /* Shut down curses. */
    destroyCDKItemlist (widget);
    destroyCDKScreen (cdkScreen);
-   delwin (cursesWindow);
    endCDK();
 
    /* Print out the answer. */

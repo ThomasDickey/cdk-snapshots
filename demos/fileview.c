@@ -86,7 +86,7 @@ int main (int argc, char **argv)
 	 destroyCDKScreen (cdkscreen);
 	 endCDK();
 
-	 exit (0);
+	 exit (EXIT_SUCCESS);
       }
    }
 
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-      exit (0);
+      exit (EXIT_SUCCESS);
    }
 
    /* Open the file and read the contents. */
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
    if (lines == -1)
    {
       printf ("Could not open %s\n", filename);
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Set up the viewer title, and the contents to the widget. */
@@ -144,9 +144,8 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKViewer (example);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    CDKfreeStrings (info);
    freeChar (filename);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

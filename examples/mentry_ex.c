@@ -1,4 +1,4 @@
-/* $Id: mentry_ex.c,v 1.5 2003/11/30 19:21:19 tom Exp $ */
+/* $Id: mentry_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -10,66 +10,65 @@ int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
-   CDKMENTRY *filename	= 0;
-   WINDOW *cursesWin	= 0;
-   char *info		= 0;
-   char *label		= "</R>Message";
-   char *title		= "<C></5>Enter a message.<!5>";
+   CDKMENTRY *widget = 0;
+   WINDOW *cursesWin = 0;
+   char *info = 0;
+   char *label = "</R>Message";
+   char *title = "<C></5>Enter a message.<!5>";
 
    CDK_PARAMS params;
 
    CDKparseParams (argc, argv, &params, "w:h:l:" CDK_MIN_PARAMS);
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
-   /* Start CDK Colors.*/
-   initCDKColor();
+   /* Start CDK Colors. */
+   initCDKColor ();
 
    /* Set up the multi-line entry field. */
-   filename = newCDKMentry (cdkscreen,
-			    CDKparamValue(&params, 'X', CENTER),
-			    CDKparamValue(&params, 'Y', CENTER),
-			    title, label, A_BOLD, '.', vMIXED,
-			    CDKparamValue(&params, 'w', 20),
-			    CDKparamValue(&params, 'h', 5),
-			    CDKparamValue(&params, 'l', 20),
-			    0,
-			    CDKparamValue(&params, 'N', TRUE),
-			    CDKparamValue(&params, 'S', FALSE));
+   widget = newCDKMentry (cdkscreen,
+			  CDKparamValue (&params, 'X', CENTER),
+			  CDKparamValue (&params, 'Y', CENTER),
+			  title, label, A_BOLD, '.', vMIXED,
+			  CDKparamValue (&params, 'w', 20),
+			  CDKparamValue (&params, 'h', 5),
+			  CDKparamValue (&params, 'l', 20),
+			  0,
+			  CDKparamValue (&params, 'N', TRUE),
+			  CDKparamValue (&params, 'S', FALSE));
 
    /* Is the object null? */
-   if (filename == 0)
+   if (widget == 0)
    {
       /* Shut down CDK. */
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
       /* Print out a message. */
       printf ("Oops. Can not create CDK object. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Draw the CDK screen. */
    refreshCDKScreen (cdkscreen);
 
    /* Set what ever was given from the command line. */
-   setCDKMentry (filename, argv[optind], 0, TRUE);
+   setCDKMentry (widget, argv[optind], 0, TRUE);
 
    /* Activate this thing. */
-   activateCDKMentry (filename, 0);
-   info = strdup (filename->info);
+   activateCDKMentry (widget, 0);
+   info = strdup (widget->info);
 
    /* Clean up. */
-   destroyCDKMentry (filename);
+   destroyCDKMentry (widget);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
-   endCDK();
+   endCDK ();
 
    /* Spit out the results. */
    printf ("\n\n\n");
    printf ("Your message was : <%s>\n", info);
-   free(info);
-   exit (0);
+   free (info);
+   exit (EXIT_SUCCESS);
 }

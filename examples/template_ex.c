@@ -1,4 +1,4 @@
-/* $Id: template_ex.c,v 1.5 2003/11/30 20:14:39 tom Exp $ */
+/* $Id: template_ex.c,v 1.9 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can;'t seem to create template. Is the window too small?");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the template. */
@@ -70,9 +70,9 @@ int main (int argc, char **argv)
       mixed = mixCDKTemplate (phoneNumber);
 
       /* Create the message to display.				*/
-      sprintf (temp, "Phone Number with out plate mixing  : %s", info);
+      sprintf (temp, "Phone Number with out plate mixing  : %.*s", (int)(sizeof(temp) - 50), info);
       mesg[0] = copyChar (temp);
-      sprintf (temp, "Phone Number with the plate mixed in: %s", mixed);
+      sprintf (temp, "Phone Number with the plate mixed in: %.*s", (int)(sizeof(temp) - 50), mixed);
       mesg[1] = copyChar (temp);
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
@@ -83,7 +83,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKTemplate (phoneNumber);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

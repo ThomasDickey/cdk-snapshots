@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:34:48 $
- * $Revision: 1.187 $
+ * $Date: 2004/08/31 23:25:19 $
+ * $Revision: 1.203 $
  */
 
 /*
@@ -98,7 +98,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    }
 
    /* Make room for the info char * pointer. */
-   entry->info		= (char *)malloc (sizeof(char) * (max + 3));
+   entry->info		= typeMallocN(char, max + 3);
    cleanChar (entry->info, max + 3, '\0');
    entry->infoWidth	= max + 3;
 
@@ -111,7 +111,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    entry->filler		= filler;
    entry->hidden		= filler;
    ObjOf(entry)->inputWindow    = entry->fieldWin;
-   ObjOf(entry)->acceptsFocus   = 1;
+   ObjOf(entry)->acceptsFocus   = TRUE;
    ReturnOf(entry)              = NULL;
    entry->shadow		= shadow;
    entry->screenCol		= 0;
@@ -120,13 +120,9 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    entry->max			= max;
    entry->boxWidth		= boxWidth;
    entry->boxHeight		= boxHeight;
-   entry->exitType		= vNEVER_ACTIVATED;
+   initExitType(entry);
    entry->dispType		= dispType;
    entry->callbackfn		= CDKEntryCallBack;
-   entry->preProcessFunction	= 0;
-   entry->preProcessData	= 0;
-   entry->postProcessFunction	= 0;
-   entry->postProcessData	= 0;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -213,16 +209,16 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   entry->exitType = vEARLY_EXIT;
+   setExitType(entry, 0);
 
    /* Refresh the entry field. */
    drawCDKEntryField (entry);
 
    /* Check if there is a pre-process function to be called. */
-   if (entry->preProcessFunction != 0)
+   if (PreProcessFuncOf(entry) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = entry->preProcessFunction (vENTRY, entry, entry->preProcessData, input);
+      ppReturn = PreProcessFuncOf(entry) (vENTRY, entry, PreProcessDataOf(entry), input);
    }
 
    /* Should we continue? */
@@ -231,7 +227,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
       /* Check a predefined binding... */
       if (checkCDKObjectBind (vENTRY, entry, input) != 0)
       {
-	 entry->exitType = vEARLY_EXIT;
+	 checkEarlyExit(entry);
 	 complete = TRUE;
       }
       else
@@ -242,7 +238,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 Beep();
 		 break;
 
-	    case KEY_HOME : case CDK_BEGOFLINE :
+	    case KEY_HOME :
 		 entry->leftChar = 0;
 		 entry->screenCol = 0;
 		 drawCDKEntryField (entry);
@@ -264,7 +260,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_END : case CDK_ENDOFLINE :
+	    case KEY_END :
 		 stringLen = (int)strlen (entry->info);
 		 if (stringLen >= entry->fieldWidth)
 		 {
@@ -280,7 +276,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 drawCDKEntryField (entry);
 		 break;
 
-	    case KEY_LEFT : case CDK_BACKCHAR :
+	    case KEY_LEFT :
 		 if (entry->screenCol == 0)
 		 {
 		    if (entry->leftChar == 0)
@@ -301,7 +297,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RIGHT : case CDK_FORCHAR :
+	    case KEY_RIGHT :
 		 if (entry->screenCol == entry->fieldWidth-1)
 		 {
 		    temp = (int)strlen (entry->info);
@@ -332,7 +328,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case DELETE : case CONTROL('H') : case KEY_BACKSPACE : case KEY_DC :
+	    case KEY_BACKSPACE : case KEY_DC :
 		 if (entry->dispType == vVIEWONLY)
 		 {
 		    Beep();
@@ -400,7 +396,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
-		 entry->exitType = vESCAPE_HIT;
+		 setExitType(entry, input);
 		 complete = TRUE;
 		 break;
 
@@ -450,10 +446,10 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
+	    case KEY_TAB : case KEY_ENTER :
 		 if ((int)strlen (entry->info) >= entry->min)
 		 {
-		    entry->exitType = vNORMAL;
+		    setExitType(entry, input);
 		    ret = (entry->info);
 		    complete = TRUE;
 		 }
@@ -475,14 +471,14 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (entry->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(entry) != 0))
       {
-	 entry->postProcessFunction (vENTRY, entry, entry->postProcessData, input);
+	 PostProcessFuncOf(entry) (vENTRY, entry, PostProcessDataOf(entry), input);
       }
    }
 
    if (!complete) {
-      entry->exitType = vEARLY_EXIT;
+      setExitType(entry, 0);
    }
 
    ResultOf(entry).valueString = ret;
@@ -526,8 +522,7 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
    moveCursesWindow(entry->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(entry));
-   wrefresh (WindowOf(entry));
+   refreshCDKWindow (WindowOf(entry));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -546,17 +541,17 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
  */
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
-   int plainchar = (character & A_CHARTEXT);
+   int plainchar = CharOf(character);
    unsigned temp, x;
 
    /* Start checking the input. */
-   if (character <= 0 || character >= KEY_MIN)
+   if (!isChar(character))
    {
       Beep();
    }
    else if ((entry->dispType == vINT ||
 	entry->dispType ==vHINT) &&
-	!isdigit((int)plainchar))
+	!isdigit(CharOf(plainchar)))
    {
       Beep();
    }
@@ -565,7 +560,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 		entry->dispType == vLCHAR ||
 		entry->dispType == vUHCHAR ||
 		entry->dispType == vLHCHAR) &&
-		isdigit((int)plainchar))
+		isdigit(CharOf(plainchar)))
    {
       Beep();
    }
@@ -584,7 +579,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 	     entry->dispType == vUHCHAR ||
 	     entry->dispType == vUMIXED ||
 	     entry->dispType == vUHMIXED)
-	     && !isdigit(plainchar))
+	     && !isdigit(CharOf(plainchar)))
       {
 	 plainchar = toupper (plainchar);
       }
@@ -592,7 +587,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 		     entry->dispType == vLHCHAR ||
 		     entry->dispType == vLMIXED ||
 		     entry->dispType == vLHMIXED) &&
-		     !isdigit(plainchar))
+		     !isdigit(CharOf(plainchar)))
       {
 	 plainchar = tolower (plainchar);
       }
@@ -615,7 +610,9 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 	 temp = strlen (entry->info);
 	 entry->info[temp]     = plainchar;
 	 entry->info[temp + 1] = '\0';
-	 entry->leftChar++;
+	 /* Do not update the pointer if it's the last character */
+	 if ((int)(temp + 1) < entry->max)
+	     entry->leftChar++;
       }
 
       /* Update the entry field. */
@@ -667,15 +664,13 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
    drawCdkTitle (entry->win, object);
 
    /* Refresh the window. */
-   touchwin (entry->win);
-   wrefresh (entry->win);
+   refreshCDKWindow (entry->win);
 
    /* Draw in the label to the widget. */
    if (entry->labelWin != 0)
    {
       writeChtype (entry->labelWin, 0, 0, entry->label, HORIZONTAL, 0, entry->labelLen);
-      touchwin (entry->labelWin);
-      wrefresh (entry->labelWin);
+      refreshCDKWindow (entry->labelWin);
    }
 
    /* Redraw the entry field. */
@@ -716,15 +711,14 @@ static void drawCDKEntryField (CDKENTRY *entry)
       {
 	 for (x=entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, (A_CHARTEXT & entry->info[x]) | entry->fieldAttr);
+	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, CharOf(entry->info[x]) | entry->fieldAttr);
 	 }
       }
       wmove (entry->fieldWin, 0, entry->screenCol);
    }
 
    /* Refresh the field. */
-   touchwin (entry->fieldWin);
-   wrefresh (entry->fieldWin);
+   refreshCDKWindow (entry->fieldWin);
 }
 
 /*
@@ -894,40 +888,20 @@ boolean getCDKEntryBox (CDKENTRY *entry)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKEntryBackgroundColor (CDKENTRY *entry, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKEntryBackgroundAttrib (entry, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKEntryBackgroundAttrib (CDKENTRY *entry, chtype attrib)
+static void _setBKattrEntry (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (entry->win, attrib);
-   wbkgd (entry->fieldWin, attrib);
-   if (entry->labelWin != 0)
+   if (object != 0)
    {
-      wbkgd (entry->labelWin, attrib);
+      CDKENTRY *widget = (CDKENTRY *)object;
+
+      wbkgd (widget->win, attrib);
+      wbkgd (widget->fieldWin, attrib);
+      if (widget->labelWin != 0)
+      {
+	 wbkgd (widget->labelWin, attrib);
+      }
    }
 }
 
@@ -940,8 +914,8 @@ void setCDKEntryHighlight (CDKENTRY *entry, chtype highlight, boolean cursor)
    entry->fieldAttr = highlight;
    curs_set (cursor);
    /*
-   **  FIXME -  if (cursor) { move the cursor to this widget }
-   */
+    *  FIXME -  if (cursor) { move the cursor to this widget }
+    */
 }
 
 /*
@@ -952,38 +926,23 @@ void setCDKEntryCB (CDKENTRY *entry, ENTRYCB callback)
    entry->callbackfn = callback;
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKEntryPreProcess (CDKENTRY *entry, PROCESSFN callback, void *data)
-{
-   entry->preProcessFunction = callback;
-   entry->preProcessData = data;
-}
-
-/*
- * This function sets the post-process function.
- */
-void setCDKEntryPostProcess (CDKENTRY *entry, PROCESSFN callback, void *data)
-{
-   entry->postProcessFunction = callback;
-   entry->postProcessData = data;
-}
-
 static void _focusCDKEntry(CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 
    wmove (entry->fieldWin, 0, entry->screenCol);
-   curs_set(1);
    wrefresh (entry->fieldWin);
 }
 
-static void _unfocusCDKEntry(CDKOBJS *entry GCC_UNUSED)
+static void _unfocusCDKEntry(CDKOBJS *object)
 {
-   /* FIXME */
+   CDKENTRY *entry = (CDKENTRY *)object;
+
+   drawCDKEntry (entry, ObjOf(entry)->box);
+   wrefresh (entry->fieldWin);
 }
 
+#if 0
 static void _refreshDataCDKEntry(CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
@@ -1021,7 +980,7 @@ static void _saveDataCDKEntry(CDKOBJS *object)
       {
       default:
       case DataTypeString:
-	 strcpy(ReturnOf(entry), entry->info);
+	 strcpy((char *)ReturnOf(entry), entry->info);
 	 break;
       case DataTypeInt:
 	 *((int*)ReturnOf(entry)) = atoi(entry->info);
@@ -1035,3 +994,7 @@ static void _saveDataCDKEntry(CDKOBJS *object)
       }
    }
 }
+#else
+dummyRefreshData(Entry)
+dummySaveData(Entry)
+#endif

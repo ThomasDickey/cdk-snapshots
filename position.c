@@ -2,17 +2,12 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/16 21:08:13 $
- * $Revision: 1.5 $
+ * $Date: 2004/08/22 21:28:55 $
+ * $Revision: 1.10 $
  */
 
 #undef	ObjOf
 #define ObjOf(ptr)    (ptr)
-
-int getcCDKObject (CDKOBJS *obj)
-{
-   return wgetch(InputWindowOf(obj));
-}
 
 /*
  * This allows the user to use the cursor keys to adjust the
@@ -20,17 +15,24 @@ int getcCDKObject (CDKOBJS *obj)
  */
 void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 {
+   CDKSCREEN *screen = ScreenOf(obj);
+   WINDOW *parent = screen->window;
    int origX	= getbegx(win);
    int origY	= getbegy(win);
    chtype key	= 0;
+   int begX	= getbegx(parent);
+   int begY	= getbegy(parent);
+   int endX	= begX + getmaxx(WindowOf(obj));
+   int endY	= begY + getmaxy(WindowOf(obj));
 
    /* Let them move the widget around until they hit return. */
-   while ((key != KEY_RETURN) && (key != KEY_ENTER))
+   while ((key = getcCDKObject(obj)) != KEY_ENTER)
    {
-      key = getcCDKObject(obj);
-      if (key == KEY_UP || key == '8')
+      switch (key)
       {
-	 if (getbegy(win) > 0)
+      case KEY_UP:
+      case '8':
+	 if (getbegy(win) > begY)
 	 {
 	    moveCDKObject (obj, 0, -1, TRUE, TRUE);
 	 }
@@ -38,10 +40,10 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == KEY_DOWN || key == '2')
-      {
-	 if (getendy(win) < getmaxy(WindowOf(obj))-1)
+	 break;
+      case KEY_DOWN:
+      case '2':
+	 if (getendy(win) < endY)
 	 {
 	    moveCDKObject (obj, 0, 1, TRUE, TRUE);
 	 }
@@ -49,10 +51,10 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == KEY_LEFT || key == '4')
-      {
-	 if (getbegx(win) > 0)
+	 break;
+      case KEY_LEFT:
+      case '4':
+	 if (getbegx(win) > begX)
 	 {
 	    moveCDKObject (obj, -1, 0, TRUE, TRUE);
 	 }
@@ -60,10 +62,10 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == KEY_RIGHT || key == '6')
-      {
-	 if (getendx(win) < getmaxx(WindowOf(obj))-1)
+	 break;
+      case KEY_RIGHT:
+      case '6':
+	 if (getendx(win) < endX)
 	 {
 	    moveCDKObject (obj, 1, 0, TRUE, TRUE);
 	 }
@@ -71,10 +73,9 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == '7')
-      {
-	 if (getbegy(win) > 0 && getbegx(win) > 0)
+	 break;
+      case '7':
+	 if (getbegy(win) > begY && getbegx(win) > begX)
 	 {
 	    moveCDKObject (obj, -1, -1, TRUE, TRUE);
 	 }
@@ -82,11 +83,9 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == '9')
-      {
-	 if (getendx(win) < getmaxx(WindowOf(obj))-1
-	  && getbegy(win) > 0)
+	 break;
+      case '9':
+	 if (getendx(win) < endX && getbegy(win) > begY)
 	 {
 	    moveCDKObject (obj, 1, -1, TRUE, TRUE);
 	 }
@@ -94,10 +93,9 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == '1')
-      {
-	 if (getbegx(win) > 0 && getendx(win) < getmaxx(WindowOf(obj))-1)
+	 break;
+      case '1':
+	 if (getbegx(win) > begX && getendy(win) < endY)
 	 {
 	    moveCDKObject (obj, -1, 1, TRUE, TRUE);
 	 }
@@ -105,11 +103,9 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == '3')
-      {
-	 if (getendx(win) < getmaxx(WindowOf(obj))-1
-	  && getendy(win) < getmaxy(WindowOf(obj))-1)
+	 break;
+      case '3':
+	 if (getendx(win) < endX && getendy(win) < endY)
 	 {
 	    moveCDKObject (obj, 1, 1, TRUE, TRUE);
 	 }
@@ -117,47 +113,38 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
 	 {
 	    Beep();
 	 }
-      }
-      else if (key == '5')
-      {
+	 break;
+      case '5':
 	 moveCDKObject (obj, CENTER, CENTER, FALSE, TRUE);
-      }
-      else if (key == 't')
-      {
+	 break;
+      case 't':
 	 moveCDKObject (obj, getbegx(win), TOP, FALSE, TRUE);
-      }
-      else if (key == 'b')
-      {
+	 break;
+      case 'b':
 	 moveCDKObject (obj, getbegx(win), BOTTOM, FALSE, TRUE);
-      }
-      else if (key == 'l')
-      {
+	 break;
+      case 'l':
 	 moveCDKObject (obj, LEFT, getbegy(win), FALSE, TRUE);
-      }
-      else if (key == 'r')
-      {
+	 break;
+      case 'r':
 	 moveCDKObject (obj, RIGHT, getbegy(win), FALSE, TRUE);
-      }
-      else if (key == 'c')
-      {
+	 break;
+      case 'c':
 	 moveCDKObject (obj, CENTER, getbegy(win), FALSE, TRUE);
-      }
-      else if (key == 'C')
-      {
+	 break;
+      case 'C':
 	 moveCDKObject (obj, getbegx(win), CENTER, FALSE, TRUE);
-      }
-      else if (key == CDK_REFRESH)
-      {
+	 break;
+      case CDK_REFRESH:
 	 eraseCDKScreen (ScreenOf(obj));
 	 refreshCDKScreen (ScreenOf(obj));
-      }
-      else if (key == KEY_ESC)
-      {
+	 break;
+      case KEY_ESC:
 	 moveCDKObject (obj, origX, origY, FALSE, TRUE);
-      }
-      else if ((key != KEY_RETURN) && (key != KEY_ENTER))
-      {
+	 break;
+      default:
 	 Beep();
+	 break;
       }
    }
 }

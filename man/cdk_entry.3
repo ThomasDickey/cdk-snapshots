@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.14 2003/12/11 01:25:50 tom Exp $
+.\" $Id: cdk_entry.3,v 1.17 2004/08/27 23:03:32 tom Exp $
 .TH cdk_entry 3
 .SH NAME
 activateCDKEntry,
@@ -245,18 +245,28 @@ returns the current value of the widget.
 .TP 5
 .B injectCDKEntry
 injects a single character into the widget.
-The parameter \fBentry\fR is a pointer to a non-NULL entry.
+The parameter \fBentry\fR is a pointer to a non-NULL entry widget.
 The parameter \fBcharacter\fR is the character to inject into the widget.
-If the character
-injected into this widget was \fIRETURN\fR or \fITAB\fR then this function will
-return a \fIchar *\fR representing the information typed into the widget and the
-widget data \fIexitType\fR will be set to \fIvNORMAL\fR.
-If the character
-entered was \fIESCAPE\fR then the function will return \fINULL\fR pointer and
-the widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
-Any other
-character injected into the widget will set the widget data \fIexitType\fR
-to \fIvEARLY_EXIT\fR and the function will return a \fINULL\fR pointer.
+The return value and side-effect (setting the widget data \fIexitType\fP)
+depend upon the injected character:
+.RS
+.TP
+\fIRETURN\fP or \fITAB\fR
+the function returns
+a \fIchar *\fR representing the information typed into the widget.
+The widget data \fIexitType\fR is set to \fIvNORMAL\fR.
+.TP
+\fIESCAPE\fP
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
+.TP
+Otherwise
+unless modified by preprocessing, postprocessing or key bindings,
+the function returns
+a \fINULL\fR pointer.
+The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
+.RE
 .TP 5
 .B moveCDKEntry
 moves the given widget to the given position.
@@ -419,7 +429,6 @@ Right Arrow/Moves the cursor to the right.
 CTRL-F/Moves the cursor to the right.
 Delete/Deletes the character before cursor.
 Backspace/Deletes the character before cursor.
-CTRL-H/Deletes the character before cursor.
 CTRL-V/T{
 Pastes whatever is in the paste buffer, into the widget.
 T}
@@ -431,13 +440,13 @@ Copies the contents of the widget into the paste buffer.
 T}
 CTRL-U/Erases the contents of the widget.
 CTRL-A/T{
-Moves the cursor to the begining of the entry field.
+Moves the cursor to the beginning of the entry field.
 T}
 CTRL-E/T{
 Moves the cursor to the end of the entry field.
 T}
 CTRL-T/T{
-Transposes the characer under the cursor with the character to the right.
+Transposes the character under the cursor with the character to the right.
 T}
 Return/T{
 Exits the widget and returns a \fIchar *\fR representing the information which was typed into the field.

@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.9 2003/11/29 16:20:34 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.12 2004/08/28 01:03:01 tom Exp $ */
 
 #include <cdk.h>
 
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
       destroyCDKFselect (fSelect);
       destroyCDKScreen (cdkscreen);
       endCDK();
-      exit (0);
+      exit (EXIT_SUCCESS);
    }
 
    /* Create the file viewer to view the file selected.*/
@@ -90,7 +90,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-      exit (0);
+      exit (EXIT_SUCCESS);
    }
 
    /* Open the file and read the contents. */
@@ -98,8 +98,8 @@ int main (int argc, char **argv)
    if (lines == -1)
    {
       endCDK();
-      printf ("Could not open %s\n", filename);
-      exit (1);
+      printf ("Could not open \"%s\"\n", filename);
+      exit (EXIT_FAILURE);
    }
 
    /* Set up the viewer title, and the contents to the widget. */
@@ -132,7 +132,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKViewer (example);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

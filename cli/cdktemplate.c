@@ -1,4 +1,4 @@
-/* $Id: cdktemplate.c,v 1.5 2003/11/28 22:49:36 tom Exp $ */
+/* $Id: cdktemplate.c,v 1.6 2004/08/28 00:52:41 tom Exp $ */
 
 #include <cdk.h>
 
@@ -120,7 +120,6 @@ int main (int argc, char **argv)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      delwin (cursesWindow);
       endCDK();
 
       /* Spit out the message. */
@@ -243,7 +242,6 @@ int main (int argc, char **argv)
    /* End CDK. */
    destroyCDKTemplate (widget);
    destroyCDKScreen (cdkScreen);
-   delwin (cursesWindow);
    endCDK();
 
    /* Print the value from the widget. */

@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.27 2003/12/06 16:27:28 tom Exp $
+ * $Id: cdk.h,v 1.34 2004/08/29 21:49:32 tom Exp $
  */
 
 #ifndef CDK_H
@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 2000-2002,2003 copyright Thomas E. Dickey
+ * Changes 2000-2003,2004 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -148,9 +148,11 @@ typedef enum {	vNULL = 0
 		,vBUTTONBOX
 		,vCALENDAR
 		,vDIALOG
+		,vDSCALE
 		,vENTRY
 		,vFSCALE
 		,vFSELECT
+		,vFSLIDER
 		,vGRAPH
 		,vHISTOGRAM
 		,vITEMLIST
@@ -167,6 +169,8 @@ typedef enum {	vNULL = 0
 		,vSWINDOW
 		,vTEMPLATE
 		,vTRAVERSE
+		,vUSCALE
+		,vUSLIDER
 		,vVIEWER
 		} EObjectType;
 
@@ -236,29 +240,9 @@ typedef int boolean;
 #define ROW		1
 #define COL		2
 
-#define MAX_BINDINGS	300
+#define MAX_BINDINGS	300	/* unused by widgets */
 #define MAX_ITEMS	2000	/* unused by widgets */
 #define MAX_BUTTONS	200	/* unused by widgets */
-
-/*
- * Not all variants of curses define getmaxx, etc.  But use the provided ones
- * if they exist, to work around differences in the underlying implementation.
- */
-#if !(defined(getmaxx) || defined(HAVE_GETMAXX))
-#define getmaxx(a)	((a)->_maxx)
-#endif
-
-#if !(defined(getmaxy) || defined(HAVE_GETMAXY))
-#define getmaxy(a)	((a)->_maxy)
-#endif
-
-#if !(defined(getbegx) || defined(HAVE_GETBEGX))
-#define getbegx(a)	((a)->_begx)
-#endif
-
-#if !(defined(getbegy) || defined(HAVE_GETBEGY))
-#define getbegy(a)	((a)->_begy)
-#endif
 
 #define	MAXIMUM(a,b)	((a) > (b) ? (a) : (b))
 #define	MINIMUM(a,b)	((a) < (b) ? (a) : (b))
@@ -268,13 +252,7 @@ typedef int boolean;
 #define	COLOR_PAIR(a)	A_NORMAL
 #endif
 
-#define CONTROL(c)	((c) & 0x1f)
-
-/*
- * Derived macros
- */
-#define getendx(a)	(getbegx(a) + getmaxx(a))
-#define getendy(a)	(getbegy(a) + getmaxy(a))
+#define CONTROL(c)	((c) & 0x1f)	/* obsolete: use CTRL() */
 
 /* Define the 'GLOBAL DEBUG FILEHANDLE'	*/
 extern  FILE	*CDKDEBUG;
@@ -309,7 +287,6 @@ void stopCDKDebug (FILE *fd);
 #include <calendar.h>
 #include <dialog.h>
 #include <entry.h>
-#include <fscale.h>
 #include <fselect.h>
 #include <graph.h>
 #include <histogram.h>
@@ -320,15 +297,25 @@ void stopCDKDebug (FILE *fd);
 #include <mentry.h>
 #include <menu.h>
 #include <radio.h>
-#include <scale.h>
 #include <scroll.h>
 #include <selection.h>
-#include <slider.h>
 #include <swindow.h>
 #include <template.h>
 #include <viewer.h>
 #include <traverse.h>
 #include <button.h>
+
+/*
+ * Generated headers:
+ */
+#include <dscale.h>
+#include <fscale.h>
+#include <scale.h>
+#include <uscale.h>
+
+#include <fslider.h>
+#include <slider.h>
+#include <uslider.h>
 
 /*
  * Low-level object drawing

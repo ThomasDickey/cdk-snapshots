@@ -1,4 +1,4 @@
-/* $Id: swindow_ex.c,v 1.7 2003/11/30 20:12:32 tom Exp $ */
+/* $Id: swindow_ex.c,v 1.10 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not seem to create the scrolling window. Is the window too small??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Draw the scrolling window. */
@@ -109,7 +109,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKSwindow (swindow);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

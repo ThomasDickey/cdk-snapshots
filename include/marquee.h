@@ -1,5 +1,5 @@
 /*
- * $Id: marquee.h,v 1.17 2003/12/06 16:27:28 tom Exp $
+ * $Id: marquee.h,v 1.18 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -146,16 +146,12 @@ boolean getCDKMarqueeBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKMarqueeBackgroundColor (
-		CDKMARQUEE *	/* marquee */,
-		char *		/* color */);
+#define setCDKMarqueeBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKMarqueeBackgroundAttrib (
-		CDKMARQUEE *	/* marquee */,
-		chtype		/* attribute */);
+#define setCDKMarqueeBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 #ifdef __cplusplus
 }

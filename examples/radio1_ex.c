@@ -1,4 +1,4 @@
-/* $Id: radio1_ex.c,v 1.4 2003/11/30 19:34:11 tom Exp $ */
+/* $Id: radio1_ex.c,v 1.8 2004/08/28 01:02:30 tom Exp $ */
 
 #include "cdk.h"
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create the radio widget. ");
       printf ("Is the window too small??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the radio list. */
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
    else if (radio->exitType == vNORMAL)
    {
       mesg[0] = "<C>You selected the filename";
-      sprintf (temp, "<C>%s", item[selection]);
+      sprintf (temp, "<C>%.*s", (int)(sizeof(temp) - 20), item[selection]);
       mesg[1] = copyChar (temp);
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
@@ -81,7 +81,6 @@ int main(int argc, char **argv)
 
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK ();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

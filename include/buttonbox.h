@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.21 2003/12/06 16:27:28 tom Exp $
+ * $Id: buttonbox.h,v 1.24 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -80,10 +80,6 @@ struct SButtonBox {
    EExitType	exitType;
    boolean	shadow;
    chtype	highlight;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SButtonBox CDKBUTTONBOX;
 
@@ -173,16 +169,12 @@ void setCDKButtonboxButtonAttrib (
 /*
  * This sets the background color of the widget.
  */
-void setCDKButtonboxBackgroundColor (
-		CDKBUTTONBOX *	/* buttonbox */,
-		char *		/* color */);
+#define setCDKButtonboxBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKButtonboxBackgroundAttrib (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* attribute */);
+#define setCDKButtonboxBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws a button in the buttonbox widget.
@@ -230,15 +222,8 @@ void redrawCDKButtonboxButtonboxs (
 /*
  * These set the pre/post process functions of the buttonbox widget.
  */
-void setCDKButtonboxPreProcess (
-		CDKBUTTONBOX *	/* buttonbox */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-
-void setCDKButtonboxPostProcess (
-		CDKBUTTONBOX *	/* buttonbox */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKButtonboxPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKButtonboxPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

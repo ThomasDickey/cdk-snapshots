@@ -1,4 +1,4 @@
-/* $Id: viewer_ex.c,v 1.11 2003/11/30 20:22:51 tom Exp $ */
+/* $Id: viewer_ex.c,v 1.15 2004/08/31 23:31:32 tom Exp $ */
 
 #include <cdk.h>
 
@@ -107,13 +107,13 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-      exit (0);
+      exit (EXIT_SUCCESS);
    }
 
    if (link_it)
    {
-      info = calloc(2, sizeof(char *));
-      info[0] = malloc(5 + strlen(filename));
+      info = (char **) calloc(2, sizeof(char *));
+      info[0] = (char *) malloc(5 + strlen(filename));
       sprintf (info[0], "<F=%s>", filename);
       lines = -1;
       interp_it = TRUE;
@@ -126,8 +126,8 @@ int main (int argc, char **argv)
       if (lines == -1)
       {
 	 endCDK();
-	 printf ("Could not open %s\n", filename);
-	 exit (1);
+	 printf ("Could not open \"%s\"\n", filename);
+	 exit (EXIT_FAILURE);
       }
    }
 
@@ -161,7 +161,6 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKViewer (example);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

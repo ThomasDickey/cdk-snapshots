@@ -1,11 +1,138 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas Dickey 1999-2002, 2003
+Modifications copyright Thomas E. Dickey 1999-2003, 2004
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
-You should also look at the BUGS file for information related to bugs which
-were fixed from release to release.
+
+2004/08/31 - T.E.Dickey <dickey@his.com>
+========================================
+	+ add a simple compatibility header (cdk_compat.h), which can be
+	  put in an application's include-path when compiling old applications
+	  against new/old Cdk.
+	+ update libtool ABI to 2.0.0 since several items are added to CDKOBJS,
+	  as well as cleanup of slider- and scale-header templates.
+	+ add check for ANSI compiler, needed for example with HPUX 10.20.
+	+ ifdef'd out nonfunctional saveData and refreshData methods of entry
+	  and itemlist widgets.
+	+ moved functions for setting background color or attribute into
+	  CDKOBJS.
+	+ moved pre- and post-processing data into CDKOBJS, changing the
+	  functions that set those per-widget into macros using cdk_objs.c
+	+ modify scale and slider widgets to allow the user to directly modify
+	  the value by typing over it (request by Keith Outwater).
+	+ add slider widgets for types float, unsigned.
+	+ add scale widgets for types double, unsigned.
+	+ add script gen-scale.sh, and templates (e.g., gen-scale.c,
+	  gen-scale.h) to allow easy generation of scale and slider widgets of
+	  various types.  Use this to replace the existing CDKSCALE, CDKFSCALE,
+	  CDKSLIDER widgets (discussion with Keith Outwater).
+	+ adapt fix from dialog for porting getmaxx(), etc., to systems such
+	  as HPUX which do not provide these legacy definitions.
+	+ remove duplicate vinstall.c from examples directory.
+	+ modify install scripting to translate generated names in cdk_config.h
+	  to add "CDK_" prefix to most, reducing name-pollution.  These names
+	  are used to allow applications to compile against the Cdk header
+	  files, but are otherwise of no general interest.  In particular,
+	  "PACKAGE" is no longer conflicting (report by Phuah Yee Keat).
+	+ add earlyExit member to CDKOBJS, using this to implement a method
+	  for applications to specify whether the widget's exitType should
+	  be modified after calling checkCDKObjectBind(), and what value
+	  (discussion with Bernhard Walle, comparing with NetBSD variation).
+	+ correct logic in calendar widget for decrementing day- and
+	  month-values.
+	+ modify treatment of exitType field so it is only set to vESCAPE_HIT
+	  if an escape character was received.  Hide most of the internal
+	  details of exitType, making it available as an object value (but
+	  retaining the widget field to ease upgrading old applications).
+	+ implement shadow option for newCDKMarquee().
+	+ rewrite activateCDKMarquee(), eliminating an infinite-loop bug
+	  found in traverse_ex.c, as well as making it work properly with and
+	  without box-outline.
+	+ modify deleteCursesWindow() to call eraseCursesWindow(), so that
+	  deleting an object will also erase it, following the various manpages
+	  comment about removing the object from the screen (report by
+	  Mukovoz I.S.).
+	+ correct positionCDKObject() for CDKSCREEN's which do not happen to
+	  be the same size/shape as stdscr.
+	+ change layout of menus to account for parent window's origin
+	  since subwin() since uses absolute screen position (report by "Anna"
+	  w/o a return address).
+	+ correct off-by-one in positionCDKObject() which prevented user from
+	  reaching the right- and bottom-margins.
+	+ fix a few limits on sprintf's involving strings.
+	+ eliminate fixed array limit MAX_OBJECT in CDKSCREEN.
+	+ use CTRL() macro consistently in preference to CONTROL().
+	+ remove delwin(stdscr) from example programs since it is both unneeded
+	  and nonportable.
+	+ use EXIT_SUCCESS and EXIT_FAILURE consistently in example programs.
+	+ remove all KEY_xxx symbols which are in X/Open curses from curdefs.h
+	+ remove all ACS_xxx symbols from curdefs.h
+	+ remove all A_xxx symbols from curdefs.h
+	+ add/use isChar() and CharOf() macros to get rid of A_CHARTEXT usage.
+	+ fix menus to allow them to scroll if there are too many entries to
+	  fit on the screen.
+	+ collect most uses of touchwin/refresh into new function
+	  refreshCDKWindow().
+	+ clear background of menu windows, in case they are drawn over another
+	  widget.
+	+ correct length of title in menu if more than one is placed on the
+	  right side of the screen.
+	+ add getcCDKBind() function, to which keys can be bound for simple
+	  translation of the inputs via getcCDKObject().  Use this in
+	  examples/traverse_ex.c to bind F1 to menu.
+	+ eliminate mapChtype() function, since it could conflict with curses'
+	  definitions.  Use the given key value instead, since it is always
+	  positive.
+	+ use KEY_MAX in preference to MAX_BINDINGS symbol.
+	+ eliminate internal use of literal backspace, DEL, tab, newline and
+	  carriage-return constants, etc., by mapping them to KEY_BACKSPACE,
+	  KEY_DC, KEY_ENTER, etc., in getcCDKObject().
+	+ modify examples and demos to read input using getcCDKObject(), to
+	  solve problems with stdscr refresh overwriting the widgets.
+	+ modify matrix.c and menu.c to read input using getcCDKObject(), like
+	  all of the other widgets.
+	+ rewrote examples/traverse_ex.c to use menus to select the left,
+	  center and right widgets used for demonstrating traversal.
+	+ modify traversal to update object focus properly if a menu action
+	  removes or moves the object associated with the focus.
+	+ cleanup menu in traverse.c if escape character is used to cancel it.
+	+ move curs_set() calls out of focus/unfocus functions, into traverse.c
+	+ remove the SIGBUS/SIGSEGV handler, since it is redundant.
+	+ updated configure script (CF_ADD_CFLAGS, CF_CHECK_CACHE,
+	  CF_GCC_WARNINGS, CF_NCURSES_LIBS, CF_PROG_EXT, CF_WITH_DBMALLOC,
+	  CF_WITH_DMALLOC, CF_WITH_LIBTOOL, CF_WITH_WARNINGS, CF_X_ATHENA,
+	  CF_X_TOOLKIT).
+	+ updated config.guess, config.sub
+	> patches by ewigg (Ed Wigg?) for fselect.c:
+	+ add a range check to ensure that filename completion at the end of
+	  the list does not reference past the end of the list.
+	+ correct the value returned from filename completion (fixes in
+	  2002/07/27 mistook an assignment that removed the last character
+	  of the result - it is actually used to trim the "/", "@" or similar
+	  character from the displayed filename).
+	+ remove an unnecessary if statement.
+	> patches by Phuah Yee Keat:
+	+ enable focus in mentry.c, radio.c
+	+ implement unfocus in entry.c
+	+ implement focus/unfocus in mentry.c, template.c
+	+ add setCDKRadioCurrentItem() and getCDKRadioCurrentItem().
+	+ improve entry.c:  When the user types until the last character, do
+	  not shift the cursor to one character beyond the end of the maximum
+	  value allowed in the field, that will create an extra '.' that will
+	  give the user an impression that he can still enter more characters,
+	  when he actually can't.
+	+ fix two core dumps with Solaris curses in scroll.c:
+	  + On solaris curses, just pressing the "down" key on a scroll list
+	    will coredump, on certain sizes of the scroll list.  On my
+	    fullscreen test, it will coredump on any number of items unless if
+	    the number of items is a multiple of 5.  I assume that it's because
+	    that under certain conditions, the togglePos actually exceeds the
+	    boundary at the end of the scroll bar.  Does not happen in ncurses.
+	  + On solaris curses, press 'G' will coredump.
+	    Does not happen in ncurses.
+	+ make wording in COPYING consistent with other fixes from 1999/05/15 
+	  (report by Ahmad Attia).
 
 2003/12/10 - T.E.Dickey <dickey@his.com>
 ========================================
@@ -43,7 +170,7 @@ were fixed from release to release.
 	+ remove borderSize parameter from alignxy().
 	+ modify all widgets to account for borderSize consistently, allowing
 	  one to display a widget that uses the full screen size (report by
-	  Yee_Keat Phuah <yk.phuah@nestac.com>).
+	  Phuah Yee Keat <yk.phuah@nestac.com>).
 	+ add cdk_params.c, use this to simplify cli programs and add getopt
 	  processing systematically to the demos and examples.
 	+ correct an off-by-one in baseName() that would return the slash

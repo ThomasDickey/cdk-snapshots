@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:45:29 $
- * $Revision: 1.49 $
+ * $Date: 2004/08/30 00:12:09 $
+ * $Revision: 1.59 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -106,14 +106,11 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    buttonbox->boxHeight			= boxHeight;
    buttonbox->boxWidth			= boxWidth;
    buttonbox->highlight			= highlight;
-   buttonbox->exitType			= vNEVER_ACTIVATED;
+   initExitType(buttonbox);
+   ObjOf(buttonbox)->acceptsFocus	= TRUE;
    ObjOf(buttonbox)->inputWindow	= buttonbox->win;
    buttonbox->shadow			= shadow;
    buttonbox->ButtonAttrib		= A_NORMAL;
-   buttonbox->preProcessFunction	= 0;
-   buttonbox->preProcessData		= 0;
-   buttonbox->postProcessFunction	= 0;
-   buttonbox->postProcessData		= 0;
 
    /* Set up the row adjustment. */
    if (boxHeight - rows - TitleLinesOf(buttonbox) > 0)
@@ -195,7 +192,7 @@ int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
    }
 
    /* Set the exit type and exit. */
-   buttonbox->exitType = vEARLY_EXIT;
+   setExitType(buttonbox, 0);
    return -1;
 }
 
@@ -212,12 +209,12 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
    bool complete        = FALSE;
 
    /* Set the exit type. */
-   buttonbox->exitType = vEARLY_EXIT;
+   setExitType(buttonbox, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (buttonbox->preProcessFunction != 0)
+   if (PreProcessFuncOf(buttonbox) != 0)
    {
-      ppReturn = buttonbox->preProcessFunction (vBUTTONBOX, buttonbox, buttonbox->preProcessData, input);
+      ppReturn = PreProcessFuncOf(buttonbox) (vBUTTONBOX, buttonbox, PreProcessDataOf(buttonbox), input);
    }
 
    /* Should we continue? */
@@ -226,14 +223,14 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind (vBUTTONBOX, buttonbox, input) != 0)
       {
-	 buttonbox->exitType = vESCAPE_HIT;
+	 checkEarlyExit(buttonbox);
 	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_LEFT : case CDK_PREV : case KEY_BTAB : case '\b' :
+	    case KEY_LEFT : case KEY_BTAB : case KEY_BACKSPACE :
 		 if ((buttonbox->currentButton-buttonbox->rows) < firstButton)
 		 {
 		    buttonbox->currentButton = lastButton;
@@ -244,7 +241,7 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
+	    case KEY_RIGHT : case KEY_TAB : case SPACE :
 		 if ((buttonbox->currentButton + buttonbox->rows) > lastButton)
 		 {
 		    buttonbox->currentButton = firstButton;
@@ -283,12 +280,12 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
-		 buttonbox->exitType = vESCAPE_HIT;
+		 setExitType(buttonbox, input);
 		 complete = TRUE;
 		 break;
 
-	    case KEY_RETURN : case KEY_ENTER :
-		 buttonbox->exitType = vNORMAL;
+	    case KEY_ENTER :
+		 setExitType(buttonbox, input);
 		 ret = buttonbox->currentButton;
 		 complete = TRUE;
 		 break;
@@ -299,15 +296,15 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (buttonbox->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(buttonbox) != 0))
       {
-	 buttonbox->postProcessFunction (vBUTTONBOX, buttonbox, buttonbox->postProcessData, input);
+	 PostProcessFuncOf(buttonbox) (vBUTTONBOX, buttonbox, PostProcessDataOf(buttonbox), input);
       }
    }
 
    if (!complete) {
       drawCDKButtonboxButtons (buttonbox);
-      buttonbox->exitType = vEARLY_EXIT;
+      setExitType(buttonbox, 0);
    }
 
    ResultOf(buttonbox).valueInt = ret;
@@ -349,36 +346,16 @@ boolean getCDKButtonboxBox (CDKBUTTONBOX *buttonbox)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKButtonboxBackgroundColor (CDKBUTTONBOX *buttonbox, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKButtonboxBackgroundAttrib (buttonbox, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKButtonboxBackgroundAttrib (CDKBUTTONBOX *buttonbox, chtype attrib)
+static void _setBKattrButtonbox (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (buttonbox->win, attrib);
+   if (object != 0)
+   {
+      CDKBUTTONBOX *widget = (CDKBUTTONBOX *) object;
+
+      wbkgd (widget->win, attrib);
+   }
 }
 
 /*
@@ -449,8 +426,7 @@ void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
    }
    if (cur_row >= 0 && cur_col >= 0)
       wmove(buttonbox->win, cur_row, cur_col);
-   touchwin (buttonbox->win);
-   wrefresh (buttonbox->win);
+   refreshCDKWindow (buttonbox->win);
 }
 
 /*
@@ -502,8 +478,7 @@ static void _moveCDKButtonbox (CDKOBJS *object, int xplace, int yplace, boolean 
    moveCursesWindow(buttonbox->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(buttonbox));
-   wrefresh (WindowOf(buttonbox));
+   refreshCDKWindow (WindowOf(buttonbox));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -537,20 +512,6 @@ static void _destroyCDKButtonbox (CDKOBJS *object)
 }
 
 /*
- * These set the pre/post process functions of the buttonbox widget.
- */
-void setCDKButtonboxPreProcess (CDKBUTTONBOX *buttonbox, PROCESSFN callback, void *data)
-{
-   buttonbox->preProcessFunction = callback;
-   buttonbox->preProcessData = data;
-}
-void setCDKButtonboxPostProcess (CDKBUTTONBOX *buttonbox, PROCESSFN callback, void *data)
-{
-   buttonbox->postProcessFunction = callback;
-   buttonbox->postProcessData = data;
-}
-
-/*
  *
  */
 void setCDKButtonboxCurrentButton (CDKBUTTONBOX * buttonbox, int button)
@@ -569,22 +530,20 @@ int getCDKButtonboxButtonCount (CDKBUTTONBOX * buttonbox)
    return buttonbox->buttonCount;
 }
 
-static void _focusCDKButtonbox (CDKOBJS * object GCC_UNUSED)
+static void _focusCDKButtonbox (CDKOBJS * object)
 {
-   /* FIXME */
+   CDKBUTTONBOX *widget = (CDKBUTTONBOX *)object;
+
+   drawCDKButtonbox (widget, ObjOf(widget)->box);
 }
 
-static void _unfocusCDKButtonbox (CDKOBJS * entry GCC_UNUSED)
+static void _unfocusCDKButtonbox (CDKOBJS * object)
 {
-   /* FIXME */
+   CDKBUTTONBOX *widget = (CDKBUTTONBOX *)object;
+
+   drawCDKButtonbox (widget, ObjOf(widget)->box);
 }
 
-static void _refreshDataCDKButtonbox (CDKOBJS * entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Buttonbox)
 
-static void _saveDataCDKButtonbox (CDKOBJS * entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Buttonbox)

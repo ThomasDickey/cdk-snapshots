@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.10 2003/12/06 16:56:01 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.13 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
    else if (alphaList->exitType == vNORMAL)
    {
       mesg[0] = "<C>You selected the following";
-      sprintf (temp, "<C>(%s)", word);
+      sprintf (temp, "<C>(%.*s)", (int)(sizeof(temp) - 10), word);
       mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
@@ -90,7 +90,6 @@ int main(int argc, char **argv)
    /* Clean up. */
    destroyCDKAlphalist (alphaList);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

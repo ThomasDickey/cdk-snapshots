@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:45:47 $
- * $Revision: 1.82 $
+ * $Date: 2004/08/30 00:13:40 $
+ * $Revision: 1.92 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -76,13 +76,10 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
    dialog->boxWidth		= boxWidth;
    dialog->highlight		= highlight;
    dialog->separator		= separator;
-   dialog->exitType		= vNEVER_ACTIVATED;
+   initExitType(dialog);
+   ObjOf(dialog)->acceptsFocus	= TRUE;
    ObjOf(dialog)->inputWindow	= dialog->win;
    dialog->shadow		= shadow;
-   dialog->preProcessFunction	= 0;
-   dialog->preProcessData	= 0;
-   dialog->postProcessFunction	= 0;
-   dialog->postProcessData	= 0;
 
    /* If we couldn't create the window, we should return a null value. */
    if (dialog->win == 0)
@@ -176,7 +173,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    }
 
    /* Set the exit type and exit. */
-   dialog->exitType = vEARLY_EXIT;
+   setExitType(dialog, 0);
    return -1;
 }
 
@@ -193,12 +190,12 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
    bool complete	= FALSE;
 
    /* Set the exit type. */
-   dialog->exitType = vEARLY_EXIT;
+   setExitType(dialog, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (dialog->preProcessFunction != 0)
+   if (PreProcessFuncOf(dialog) != 0)
    {
-      ppReturn = dialog->preProcessFunction (vDIALOG, dialog, dialog->preProcessData, input);
+      ppReturn = PreProcessFuncOf(dialog) (vDIALOG, dialog, PreProcessDataOf(dialog), input);
    }
 
    /* Should we continue? */
@@ -207,14 +204,14 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
       /* Check for a key binding. */
       if (checkCDKObjectBind (vDIALOG, dialog, input) != 0)
       {
-	 dialog->exitType = vESCAPE_HIT;
+	 checkEarlyExit(dialog);
 	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_LEFT : case CDK_PREV : case KEY_BTAB : case '\b' :
+	    case KEY_LEFT : case KEY_BTAB : case KEY_BACKSPACE :
 		 if (dialog->currentButton == firstButton)
 		 {
 		    dialog->currentButton = lastButton;;
@@ -225,7 +222,7 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RIGHT : case CDK_NEXT : case KEY_TAB : case ' ' :
+	    case KEY_RIGHT : case KEY_TAB : case SPACE :
 		 if (dialog->currentButton == lastButton)
 		 {
 		    dialog->currentButton = firstButton;
@@ -246,12 +243,12 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
-		 dialog->exitType = vESCAPE_HIT;
+		 setExitType(dialog, input);
 		 complete = TRUE;
 		 break;
 
-	    case KEY_RETURN : case KEY_ENTER :
-		 dialog->exitType = vNORMAL;
+	    case KEY_ENTER :
+		 setExitType(dialog, input);
 		 ret = dialog->currentButton;
 		 complete = TRUE;
 		 break;
@@ -262,16 +259,16 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (dialog->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(dialog) != 0))
       {
-	 dialog->postProcessFunction (vDIALOG, dialog, dialog->postProcessData, input);
+	 PostProcessFuncOf(dialog) (vDIALOG, dialog, PostProcessDataOf(dialog), input);
       }
    }
 
    if (!complete) {
       drawCDKDialogButtons (dialog);
       wrefresh (dialog->win);
-      dialog->exitType = vEARLY_EXIT;
+      setExitType(dialog, 0);
    }
 
    ResultOf(dialog).valueInt = ret;
@@ -313,8 +310,7 @@ static void _moveCDKDialog (CDKOBJS *object, int xplace, int yplace, boolean rel
    moveCursesWindow(dialog->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(dialog));
-   wrefresh (WindowOf(dialog));
+   refreshCDKWindow (WindowOf(dialog));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -357,8 +353,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    drawCDKDialogButtons (dialog);
 
    /* Refresh the window. */
-   touchwin (dialog->win);
-   wrefresh (dialog->win);
+   refreshCDKWindow (dialog->win);
 }
 
 /*
@@ -449,36 +444,16 @@ boolean getCDKDialogBox (CDKDIALOG *dialog)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKDialogBackgroundColor (CDKDIALOG *dialog, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKDialogBackgroundAttrib (dialog, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKDialogBackgroundAttrib (CDKDIALOG *dialog, chtype attrib)
+static void _setBKattrDialog (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (dialog->win, attrib);
+   if (object != 0)
+   {
+      CDKDIALOG *widget = (CDKDIALOG *) object;
+
+      wbkgd (widget->win, attrib);
+   }
 }
 
 /*
@@ -520,40 +495,20 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
 
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKDialogPreProcess (CDKDIALOG *dialog, PROCESSFN callback, void *data)
+static void _focusCDKDialog(CDKOBJS *object)
 {
-   dialog->preProcessFunction = callback;
-   dialog->preProcessData = data;
+   CDKDIALOG *widget = (CDKDIALOG *)object;
+
+   drawCDKDialog (widget, ObjOf(widget)->box);
 }
 
-/*
- * This function sets the post-process function.
- */
-void setCDKDialogPostProcess (CDKDIALOG *dialog, PROCESSFN callback, void *data)
+static void _unfocusCDKDialog(CDKOBJS *object)
 {
-   dialog->postProcessFunction = callback;
-   dialog->postProcessData = data;
+   CDKDIALOG *widget = (CDKDIALOG *)object;
+
+   drawCDKDialog (widget, ObjOf(widget)->box);
 }
 
-static void _focusCDKDialog(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Dialog)
 
-static void _unfocusCDKDialog(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _refreshDataCDKDialog(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _saveDataCDKDialog(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Dialog)

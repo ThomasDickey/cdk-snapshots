@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:42:19 $
- * $Revision: 1.77 $
+ * $Date: 2004/08/30 00:21:35 $
+ * $Revision: 1.81 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -158,36 +158,16 @@ boolean getCDKLabelBox (CDKLABEL *label)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKLabelBackgroundColor (CDKLABEL *label, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKLabelBackgroundAttrib (label, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKLabelBackgroundAttrib (CDKLABEL *label, chtype attrib)
+static void _setBKattrLabel (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (label->win, attrib);
+   if (object != 0)
+   {
+      CDKLABEL *widget = (CDKLABEL *) object;
+
+      wbkgd (widget->win, attrib);
+   }
 }
 
 /*
@@ -217,8 +197,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    }
 
    /* Refresh the window. */
-   touchwin (label->win);
-   wrefresh (label->win);
+   refreshCDKWindow (label->win);
 }
 
 /*
@@ -270,8 +249,7 @@ static void _moveCDKLabel (CDKOBJS *object, int xplace, int yplace, boolean rela
    moveCursesWindow(label->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(label));
-   wrefresh (WindowOf(label));
+   refreshCDKWindow (WindowOf(label));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -327,27 +305,12 @@ char waitCDKLabel (CDKLABEL *label, char key)
    }
 }
 
-static int _injectCDKLabel (CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
-{
-   return 0;
-}
+dummyInject(Label)
 
-static void _focusCDKLabel(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyFocus(Label)
 
-static void _unfocusCDKLabel(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Label)
 
-static void _refreshDataCDKLabel(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Label)
 
-static void _saveDataCDKLabel(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Label)

@@ -1,4 +1,4 @@
-/* $Id: histogram_ex.c,v 1.6 2003/11/30 22:10:18 tom Exp $ */
+/* $Id: histogram_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
 
 #include <cdk.h>
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make volume histogram. Is the window big enough??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    bass = newCDKHistogram (cdkscreen,
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make bass histogram. Is the window big enough??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    treble = newCDKHistogram (cdkscreen,
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make treble histogram. Is the window big enough??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
 #define BAR(a,b,c) A_BOLD, a, b, c, ' '|A_REVERSE|COLOR_PAIR(3), Box
@@ -141,7 +141,6 @@ int main(int argc, char **argv)
    destroyCDKHistogram (bass);
    destroyCDKHistogram (treble);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.18 2003/11/16 14:14:17 tom Exp $
+ * $Id: alphalist.h,v 1.20 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -79,10 +79,6 @@ struct SAlphalist {
    chtype	fillerChar;
    boolean	shadow;
    EExitType	exitType;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 typedef struct SAlphalist CDKALPHALIST;
 
@@ -183,16 +179,12 @@ boolean getCDKAlphalistBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKAlphalistBackgroundColor (
-		CDKALPHALIST *	/* alphalist */,
-		char *		/* color */);
+#define setCDKAlphalistBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKAlphalistBackgroundAttrib (
-		CDKALPHALIST *	/* alphalist */,
-		chtype		/* attribute */);
+#define setCDKAlphalistBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This draws the widget on the screen.

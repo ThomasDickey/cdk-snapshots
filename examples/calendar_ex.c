@@ -1,4 +1,4 @@
-/* $Id: calendar_ex.c,v 1.9 2003/11/29 16:13:53 tom Exp $ */
+/* $Id: calendar_ex.c,v 1.12 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the calendar. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Create a key binding to mark days on the calendar. */
@@ -107,11 +107,10 @@ int main (int argc, char **argv)
    /* Clean up and exit. */
    destroyCDKCalendar (calendar);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
    fflush (stdout);
    printf ("Selected Time: %s\n", ctime(&retVal));
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 /*

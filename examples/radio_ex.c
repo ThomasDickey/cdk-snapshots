@@ -1,4 +1,4 @@
-/* $Id: radio_ex.c,v 1.9 2003/11/30 19:38:55 tom Exp $ */
+/* $Id: radio_ex.c,v 1.13 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
    WINDOW *cursesWin	= 0;
    char *title		= "<C></5>Select a filename";
    char **item		= 0;
-   char *mesg[5], temp[100];
+   char *mesg[5], temp[256];
    int selection, count;
 
    CDK_PARAMS params;
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create the radio widget. Is the window too small??\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* loop until user selects a file, or cancels */
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 	    char **nitem = 0;
 
 	    mesg[0] = "<C>You selected a directory";
-	    sprintf (temp, "<C>%s", item[selection]);
+	    sprintf (temp, "<C>%.*s", (int)(sizeof(temp) - 20), item[selection]);
 	    mesg[1] = temp;
 	    mesg[2] = "";
 	    mesg[3] = "<C>Press any key to continue.";
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 	    }
 	 } else {
 	    mesg[0] = "<C>You selected the filename";
-	    sprintf (temp, "<C>%s", item[selection]);
+	    sprintf (temp, "<C>%.*s", (int)(sizeof(temp) - 20), item[selection]);
 	    mesg[1] = temp;
 	    mesg[2] = "";
 	    mesg[3] = "<C>Press any key to continue.";
@@ -111,7 +111,6 @@ int main(int argc, char **argv)
    CDKfreeStrings (item);
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

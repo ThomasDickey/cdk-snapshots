@@ -1,4 +1,4 @@
-/* $Id: entry_ex.c,v 1.9 2003/11/29 13:18:20 tom Exp $ */
+/* $Id: entry_ex.c,v 1.14 2004/08/28 01:02:30 tom Exp $ */
 
 #include <cdk.h>
 
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Draw the screen. */
@@ -73,25 +73,33 @@ int main(int argc, char **argv)
       mesg[0] = "<C>You hit escape. No information passed back.";
       mesg[1] = "",
       mesg[2] = "<C>Press any key to continue.";
+
+      destroyCDKEntry (directory);
+
       popupLabel (cdkscreen, mesg, 3);
    }
    else if (directory->exitType == vNORMAL)
    {
       mesg[0] = "<C>You typed in the following";
-      sprintf (temp, "<C>(%s)", info);
+      sprintf (temp, "<C>(%.*s)", (int)(sizeof(temp) - 10), info);
       mesg[1] = copyChar (temp);
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
+
+      destroyCDKEntry (directory);
+
       popupLabel (cdkscreen, mesg, 4);
       freeChar (mesg[1]);
    }
+   else
+   {
+      destroyCDKEntry (directory);
+   }
 
    /* Clean up and exit. */
-   destroyCDKEntry (directory);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }
 
 static int  XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:45:38 $
- * $Revision: 1.190 $
+ * $Date: 2004/08/31 00:00:35 $
+ * $Revision: 1.197 $
  */
 
 #define L_MARKER '<'
@@ -184,7 +184,7 @@ char *copyChar (char *original)
 
    if (original != 0)
    {
-      if ((newstring = (char *)malloc (strlen(original) + 1)) != 0)
+      if ((newstring = typeMallocN(char, strlen(original) + 1)) != 0)
 	 strcpy (newstring, original);
    }
    return (newstring);
@@ -199,7 +199,7 @@ chtype *copyChtype (chtype *original)
       int len = chlen (original);
       int x;
 
-      if ((newstring = (chtype *)malloc (sizeof(chtype) * (len + 4))) != 0)
+      if ((newstring = typeMallocN(chtype, len + 4)) != 0)
       {
 	 for (x=0; x < len; x++)
 	 {
@@ -266,7 +266,7 @@ static int encodeAttribute(char *string, int from, chtype *mask)
    {
       from++;
    }
-   else if (isdigit((int)string[from + 1]) && isdigit((int)string[from + 2]))
+   else if (isdigit(CharOf(string[from + 1])) && isdigit(CharOf(string[from + 2])))
    {
 #ifdef HAVE_START_COLOR
       pair	= DigitOf(string[from + 1]) * 10 + DigitOf(string[from + 2]);
@@ -276,7 +276,7 @@ static int encodeAttribute(char *string, int from, chtype *mask)
 #endif
       from += 2;
    }
-   else if (isdigit((int)string[from + 1]))
+   else if (isdigit(CharOf(string[from + 1])))
    {
 #ifdef HAVE_START_COLOR
       pair	= DigitOf(string[from + 1]);
@@ -412,7 +412,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
       {
 	 if (pass != 0)
 	 {
-	    if ((result = (chtype *)malloc((used+2) * sizeof(chtype))) == 0)
+	    if ((result = typeMallocN(chtype, used + 2)) == 0)
 	    {
 	       used = 0;
 	       break;
@@ -472,7 +472,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 
 	       while (string[++from] != R_MARKER && string[from] != 0)
 	       {
-		  if (isdigit((int)string[from]))
+		  if (isdigit(CharOf(string[from])))
 		  {
 		     adjust = (adjust * 10) + DigitOf(string[from]);
 		     x++;
@@ -510,7 +510,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       {
 		  from++;
 		  if (result != 0)
-		     result[used] = (A_CHARTEXT & string[from]) | attrib;
+		     result[used] = CharOf(string[from]) | attrib;
 		  used++;
 		  from++;
 	       }
@@ -527,7 +527,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       else
 	       {
 		  if (result != 0)
-		     result[used] = (A_CHARTEXT & string[from]) | attrib;
+		     result[used] = CharOf(string[from]) | attrib;
 		  used++;
 	       }
 	    }
@@ -621,7 +621,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 
 			while (string[++from] != ')' && string[from] != 0)
 			{
-			   if (isdigit((int)string[from]))
+			   if (isdigit(CharOf(string[from])))
 			   {
 			      adjust = (adjust * 10) + DigitOf(string[from]);
 			   }
@@ -701,7 +701,7 @@ int cmpStrChstr(char *str, chtype *chstr)
 
    while (!r && *str && *chstr)
    {
-      r = *str - (*chstr & A_CHARTEXT);
+      r = *str - CharOf(*chstr);
       ++str;
       ++chstr;
    }
@@ -720,7 +720,7 @@ void chstrncpy(char *dest, chtype *src, int maxcount)
    int i = 0;
 
    while (i < maxcount && *src)
-      *dest++ = (*src++ & A_CHARTEXT);
+      *dest++ = CharOf(*src++);
 
    *dest = '\0';
 }
@@ -738,11 +738,11 @@ char *chtype2Char (chtype *string)
       int len = chlen(string);
       int x;
 
-      if ((newstring = (char *)malloc (sizeof (char) * (len + 1))) != 0)
+      if ((newstring = typeMallocN(char, len + 1)) != 0)
       {
 	 for (x=0; x < len; x++)
 	 {
-	    newstring[x] = (char)(string[x] & A_CHARTEXT);
+	    newstring[x] = (char)CharOf(string[x]);
 	 }
 	 newstring[len] = '\0';
       }
@@ -774,7 +774,7 @@ char *chtype2String (chtype *string)
 				   (x > 0) ? string[x-1] : 0,
 				   string[x]);
 	    if (newstring != 0)
-	       newstring[need] = string[x] & A_CHARTEXT;
+	       newstring[need] = CharOf(string[x]);
 	    ++need;
 	 }
 	 if (pass)
@@ -782,7 +782,7 @@ char *chtype2String (chtype *string)
 	 ++need;
 	 if (!pass)
 	 {
-	    if ((newstring = (char *)malloc(need)) == 0)
+	    if ((newstring = typeMallocN(char, need)) == 0)
 	       break;
 	 }
       }
@@ -909,7 +909,7 @@ char **CDKsplitString(char *string, int separator)
    if (string != 0 && *string != 0)
    {
       need = countChar(string, separator) + 2;
-      if ((result = (char **)malloc(need * sizeof(char *))) != 0)
+      if ((result = typeMallocN(char *, need)) != 0)
       {
 	 item = 0;
 	 first = string;
@@ -919,7 +919,7 @@ char **CDKsplitString(char *string, int separator)
 	       string++;
 
 	    need = string - first;
-	    if ((temp = (char *)malloc(need+1)) == 0)
+	    if ((temp = typeMallocN(char, need + 1)) == 0)
 	       break;
 
 	    memcpy(temp, first, need);
@@ -949,9 +949,9 @@ unsigned CDKallocStrings(char ***list, char *item, unsigned length, unsigned use
    if (need > used) {
       used = need;
       if (*list == 0) {
-	 *list = (char **)malloc(used * sizeof(list[0]));
+	 *list = typeMallocN(char *, used);
       } else {
-	 *list = (char **)realloc(*list, used * sizeof(list[0]));
+	 *list = typeReallocN(char *, *list, used);
       }
    }
    (*list)[length++] = copyChar(item);
@@ -1325,7 +1325,6 @@ void eraseCursesWindow (WINDOW *window)
    if (window != 0)
    {
       werase (window);
-      touchwin (window);
       wrefresh (window);
    }
 }
@@ -1337,8 +1336,8 @@ void deleteCursesWindow (WINDOW *window)
 {
    if (window != 0)
    {
+      eraseCursesWindow (window);
       delwin (window);
-      window = 0;
    }
 }
 
@@ -1353,11 +1352,16 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
       int xpos, ypos;
 
       getbegyx(window, ypos, xpos);
-      if (setbegyx(window, ypos, xpos) != ERR) {
+      if (setbegyx(window, ypos, xpos) != ERR)
+      {
 	 xpos += xdiff;
 	 ypos += ydiff;
 	 werase(window);
-	 setbegyx(window, ypos, xpos);
+	 (void) setbegyx(window, ypos, xpos);
+      }
+      else
+      {
+	 Beep();
       }
    }
 }
@@ -1380,3 +1384,40 @@ int ceilCDK(double value)
 {
    return -floorCDK(-value);
 }
+
+/*
+ * Compatibility for different versions of curses.
+ */
+#if !(defined(HAVE_GETBEGX) && defined(HAVE_GETBEGY))
+int
+getbegx(WINDOW *win)
+{
+    int y, x;
+    getbegyx(win, y, x);
+    return x;
+}
+int
+getbegy(WINDOW *win)
+{
+    int y, x;
+    getbegyx(win, y, x);
+    return y;
+}
+#endif
+
+#if !(defined(HAVE_GETMAXX) && defined(HAVE_GETMAXY))
+int
+getmaxx(WINDOW *win)
+{
+    int y, x;
+    getmaxyx(win, y, x);
+    return x;
+}
+int
+getmaxy(WINDOW *win)
+{
+    int y, x;
+    getmaxyx(win, y, x);
+    return y;
+}
+#endif

@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist_ex.c,v 1.8 2003/11/30 18:38:33 tom Exp $
+ * $Id: itemlist_ex.c,v 1.11 2004/08/28 01:02:30 tom Exp $
  */
 #include <cdk.h>
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the itemlist box. Is the window too small?\n");
-      exit (1);
+      exit (EXIT_FAILURE);
    }
 
    /* Activate the widget. */
@@ -102,7 +102,6 @@ int main(int argc, char **argv)
    /* Clean up. */
    destroyCDKItemlist (monthlist);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

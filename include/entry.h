@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.21 2003/12/06 16:27:28 tom Exp $
+ * $Id: entry.h,v 1.24 2004/08/30 00:00:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -86,10 +86,6 @@ struct SEntry {
    chtype	filler;
    chtype	hidden;
    ENTRYCB	callbackfn;
-   PROCESSFN	preProcessFunction;
-   void *	preProcessData;
-   PROCESSFN	postProcessFunction;
-   void *	postProcessData;
 };
 
 /*
@@ -202,16 +198,12 @@ boolean getCDKEntryBox (
 /*
  * This sets the background color of the widget.
  */
-void setCDKEntryBackgroundColor (
-		CDKENTRY *	/* entry */,
-		char *		/* color */);
+#define setCDKEntryBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
  */ 
-void setCDKEntryBackgroundAttrib (
-		CDKENTRY *	/* entry */,
-		chtype		/* attribute */);
+#define setCDKEntryBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
  * This sets the attribute of the entry field.
@@ -262,14 +254,8 @@ void setCDKEntryCB (
 /*
  * These set the callbacks to the pre and post process functions.
  */
-void setCDKEntryPreProcess (
-		CDKENTRY *	/* entry */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
-void setCDKEntryPostProcess (
-		CDKENTRY *	/* entry */,
-		PROCESSFN	/* callback */,
-		void *		/* data */);
+#define setCDKEntryPreProcess(w,f,d)  setCDKObjectPreProcess(ObjOf(w),f,d)
+#define setCDKEntryPostProcess(w,f,d) setCDKObjectPostProcess(ObjOf(w),f,d)
 
 #ifdef __cplusplus
 }

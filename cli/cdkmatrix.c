@@ -1,4 +1,4 @@
-/* $Id: cdkmatrix.c,v 1.8 2003/12/06 12:51:01 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.9 2004/08/28 00:52:41 tom Exp $ */
 
 #include <cdk.h>
 
@@ -195,7 +195,6 @@ int main (int argc, char **argv)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      delwin (cursesWindow);
       endCDK();
 
       /* Spit out the message. */
@@ -380,7 +379,6 @@ int main (int argc, char **argv)
 
    destroyCDKMatrix (widget);
    destroyCDKScreen (cdkScreen);
-   delwin (cursesWindow);
 
    /* this is needed */
    endCDK();

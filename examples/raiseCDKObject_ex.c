@@ -1,4 +1,4 @@
-/* $Id: raiseCDKObject_ex.c,v 1.5 2003/11/30 19:42:06 tom Exp $ */
+/* $Id: raiseCDKObject_ex.c,v 1.7 2004/08/28 00:53:46 tom Exp $ */
 
 #include "cdk.h"
 
@@ -141,6 +141,5 @@ int main(int argc, char **argv)
    destroyCDKLabel (instruct);
    destroyCDKScreen (cdkscreen);
    endCDK ();
-   delwin (cursesWin);
-   exit (0);
+   exit (EXIT_SUCCESS);
 }

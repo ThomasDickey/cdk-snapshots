@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:37:01 $
- * $Revision: 1.66 $
+ * $Date: 2004/08/30 00:22:24 $
+ * $Revision: 1.73 $
  */
 
 DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
@@ -52,6 +52,13 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int wid
       destroyCDKObject(marquee);
       return (0);
    }
+
+   /* Do we want a shadow? */
+   if (shadow)
+   {
+      marquee->shadowWin = subwin (cdkscreen->window, boxHeight, boxWidth, ypos+1, xpos+1);
+   }
+
    keypad (marquee->win, TRUE);
 
    /* Register this baby. */
@@ -73,125 +80,122 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
    int lastChar		= 1;
    int repeatCount	= 0;
    int viewSize		= 0;
-   int x, y, junk;
-
-   /* Keep the box info. */
-   ObjOf(marquee)->box = Box;
+   int viewLimit;
+   int padding;
+   int x, y, junk, oldcurs;
+   bool firstTime	= TRUE;
 
    /* Make sure the message has some content. */
-   if (mesg == 0)
+   if (mesg == 0 || *mesg == '\0')
    {
       return (-1);
    }
+
+   /* Keep the box info, setting BorderOf() */
+   setCDKMarqueeBox(marquee, Box);
+
+   padding = (mesg[strlen(mesg) - 1] == ' ') ? 0 : 1;
 
    /* Translate the char * to a chtype * */
    message = char2Chtype (mesg, &mesgLength, &junk);
 
    /* Draw in the marquee. */
    drawCDKMarquee (marquee, ObjOf(marquee)->box);
-
-   /* Set up the variables. */
-   viewSize = lastChar - firstChar;
-   startPos = marquee->width - viewSize;
-   if (ObjOf(marquee)->box == TRUE)
-   {
-      startPos--;
-   }
+   viewLimit = marquee->width - (2 * BorderOf(marquee));
 
    /* Start doing the marquee thing... */
-   for (;;)
+   oldcurs = curs_set(0);
+   while (marquee->active)
    {
-      if (marquee->active)
+      if (firstTime)
       {
-	 /* Draw in the characters. */
-	 y = firstChar;
-	 for (x=startPos ; x < (startPos + viewSize) ; x++)
-	 {
-	    mvwaddch (marquee->win, 1, x, message[y]);
-	    y++;
-	 }
-	 wrefresh (marquee->win);
+	 firstChar = 0;
+	 lastChar = 1;
+	 viewSize = lastChar - firstChar;
+	 startPos = marquee->width - viewSize - BorderOf(marquee);
 
-	 /* Set my variables. */
-	 if (mesgLength < (marquee->width-2))
+	 firstTime = FALSE;
+      }
+
+      /* Draw in the characters. */
+      y = firstChar;
+      for (x=startPos ; x < (startPos + viewSize) ; x++)
+      {
+	 chtype ch = (y < mesgLength) ? message[y] : ' ';
+	 mvwaddch (marquee->win, BorderOf(marquee), x, ch);
+	 y++;
+      }
+      wrefresh (marquee->win);
+
+      /* Set my variables. */
+      if (mesgLength < viewLimit)
+      {
+	 if (lastChar < (mesgLength + padding))
 	 {
-	    if (lastChar < mesgLength)
-	    {
-	       lastChar ++;
-	       viewSize ++;
-	       startPos = marquee->width - viewSize + 1;
-	    }
-	    else if (lastChar == mesgLength)
-	    {
-	       if (startPos > 1)
-	       {
-		  /* This means the whole string is visible. */
-		  startPos --;
-		  viewSize = mesgLength - 1;
-	       }
-	       else
-	       {
-		 /* We have to start chopping the viewSize */
-		 startPos = 1;
-		 firstChar++;
-		 viewSize--;
-	       }
-	    }
+	    lastChar ++;
+	    viewSize ++;
+	    startPos = marquee->width - viewSize - BorderOf(marquee);
+	 }
+	 else if (startPos > BorderOf(marquee))
+	 {
+	    /* This means the whole string is visible. */
+	    startPos --;
+	    viewSize = mesgLength + padding;
 	 }
 	 else
 	 {
-	    if (startPos > 1)
-	    {
-	       lastChar ++;
-	       viewSize ++;
-	       startPos --;
-	    }
-	    else
-	    {
-	       if (lastChar < mesgLength)
-	       {
-		  firstChar ++;
-		  lastChar  ++;
-		  startPos = 1;
-		  viewSize = marquee->width - 2;
-	       }
-	       else
-	       {
-		  firstChar ++;
-		  viewSize --;
-		  startPos = 1;
-	       }
-	    }
+	   /* We have to start chopping the viewSize */
+	   startPos = BorderOf(marquee);
+	   firstChar++;
+	   viewSize--;
 	 }
-
-	 /* OK, lets check if we have to start over. */
-	 if ( viewSize == 0 && firstChar == mesgLength)
-	 {
-	    /* Check if we need to repeat or not. */
-	    repeatCount ++;
-	    if (repeat > 0 && repeatCount == repeat)
-	    {
-	       freeChtype (message);
-	       return (0);
-	    }
-
-	    /* Time to start over.  */
-	    mvwaddch (marquee->win, 1, 1, ' '|A_NORMAL);
-	    wrefresh (marquee->win);
-	    firstChar = 0;
-	    lastChar = 1;
-	    viewSize = lastChar - firstChar;
-	    startPos = marquee->width - viewSize;
-	    if (ObjOf(marquee)->box)
-	    {
-	       startPos--;
-	    }
-	 }
-
-	 /* Now sleep */
-	 napms (delay * 10);
       }
+      else
+      {
+	 if (startPos > BorderOf(marquee))
+	 {
+	    lastChar ++;
+	    viewSize ++;
+	    startPos --;
+	 }
+	 else if (lastChar < (mesgLength + padding))
+	 {
+	    firstChar ++;
+	    lastChar  ++;
+	    startPos = BorderOf(marquee);
+	    viewSize = viewLimit;
+	 }
+	 else
+	 {
+	    startPos = BorderOf(marquee);
+	    firstChar++;
+	    viewSize--;
+	 }
+      }
+
+      /* OK, lets check if we have to start over. */
+      if (viewSize <= 0 && firstChar == mesgLength + padding)
+      {
+	 /* Check if we repeat a specified number, or loop indefinitely. */
+	 if ((repeat > 0) && (++repeatCount >= repeat))
+	 {
+	    break;
+	 }
+
+	 /* Time to start over.  */
+	 mvwaddch (marquee->win, BorderOf(marquee), BorderOf(marquee), ' ');
+	 wrefresh (marquee->win);
+	 firstTime = TRUE;
+      }
+
+      /* Now sleep */
+      napms (delay * 10);
    }
+   if (oldcurs < 0)
+      oldcurs = 1;
+   curs_set(oldcurs);
+   freeChtype (message);
+   return (0);
 }
 
 /*
@@ -237,8 +241,7 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
    moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(marquee));
-   wrefresh (WindowOf(marquee));
+   refreshCDKWindow (WindowOf(marquee));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -270,8 +273,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
    }
 
    /* Refresh the window. */
-   touchwin (marquee->win);
-   wrefresh (marquee->win);
+   refreshCDKWindow (marquee->win);
 }
 
 /*
@@ -320,59 +322,24 @@ boolean getCDKMarqueeBox (CDKMARQUEE *marquee)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKMarqueeBackgroundColor (CDKMARQUEE *marquee, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKMarqueeBackgroundAttrib (marquee, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKMarqueeBackgroundAttrib (CDKMARQUEE *marquee, chtype attrib)
+static void _setBKattrMarquee (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (marquee->win, attrib);
+   if (object != 0)
+   {
+      CDKMARQUEE *marquee = (CDKMARQUEE *) object;
+
+      wbkgd (marquee->win, attrib);
+   }
 }
 
-static int _injectCDKMarquee(CDKOBJS *object GCC_UNUSED, chtype input GCC_UNUSED)
-{
-   return 0;
-}
+dummyInject(Marquee)
 
-static void _focusCDKMarquee(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyFocus(Marquee)
 
-static void _unfocusCDKMarquee(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyUnfocus(Marquee)
 
-static void _refreshDataCDKMarquee(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Marquee)
 
-static void _saveDataCDKMarquee(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Marquee)

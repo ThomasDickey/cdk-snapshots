@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/12/06 16:37:38 $
- * $Revision: 1.136 $
+ * $Date: 2004/08/30 00:25:05 $
+ * $Revision: 1.151 $
  */
 
 /*
@@ -14,7 +14,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
 DeclareCDKObjects(MENTRY, Mentry, setCdk, String);
 
 /*
- * This creates a pointer to a muliple line entry widget.
+ * This creates a pointer to a multiple line entry widget.
  */
 CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
 {
@@ -112,7 +112,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->totalWidth	= (fieldWidth*logicalRows) + 1;
 
    /* Create the info char * pointer. */
-   mentry->info = (char *)malloc (sizeof (char) * (mentry->totalWidth + 3));
+   mentry->info = typeMallocN(char, mentry->totalWidth + 3);
    cleanChar (mentry->info, mentry->totalWidth + 3, '\0');
 
    /* Set up the rest of the widget information. */
@@ -126,6 +126,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->filler		= filler;
    mentry->hidden		= filler;
    ObjOf(mentry)->inputWindow	= mentry->win;
+   ObjOf(mentry)->acceptsFocus	= TRUE;
    mentry->currentRow		= 0;
    mentry->currentCol		= 0;
    mentry->topRow		= 0;
@@ -133,12 +134,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->dispType		= dispType;
    mentry->min			= min;
    mentry->logicalRows		= logicalRows;
-   mentry->exitType		= vNEVER_ACTIVATED;
+   initExitType(mentry);
    mentry->callbackfn		= CDKMentryCallBack;
-   mentry->preProcessFunction	= 0;
-   mentry->preProcessData	= 0;
-   mentry->postProcessFunction	= 0;
-   mentry->postProcessData	= 0;
 
    /* Do we need to create a shadow. */
    if (shadow)
@@ -200,7 +197,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
    }
 
    /* Set the exit type and exit. */
-   mentry->exitType = vEARLY_EXIT;
+   setExitType(mentry, 0);
    return 0;
 }
 
@@ -219,16 +216,16 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   mentry->exitType = vEARLY_EXIT;
+   setExitType(mentry, 0);
 
    /* Refresh the field. */
    drawCDKMentryField (mentry);
 
    /* Check if there is a pre-process function to be called. */
-   if (mentry->preProcessFunction != 0)
+   if (PreProcessFuncOf(mentry) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = mentry->preProcessFunction (vMENTRY, mentry, mentry->preProcessData, input);
+      ppReturn = PreProcessFuncOf(mentry) (vMENTRY, mentry, PreProcessDataOf(mentry), input);
    }
 
    /* Should we continue? */
@@ -237,21 +234,21 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
       /* Check for a key binding... */
       if (checkCDKObjectBind (vMENTRY, mentry, input) != 0)
       {
-	 mentry->exitType = vESCAPE_HIT;
+	 checkEarlyExit(mentry);
 	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_HOME : case CDK_BEGOFLINE :
+	    case KEY_HOME :
 		 mentry->currentCol = 0;
 		 mentry->currentRow = 0;
 		 mentry->topRow = 0;
 		 drawCDKMentryField (mentry);
 		 break;
 
-	    case KEY_END : case CDK_ENDOFLINE :
+	    case KEY_END :
 		 infoLength = (int)strlen(mentry->info);
 		 fieldCharacters = mentry->rows * mentry->fieldWidth;
 		 if (infoLength < fieldCharacters)
@@ -269,7 +266,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 		 drawCDKMentryField (mentry);
 		 break;
 
-	    case KEY_LEFT : case CDK_BACKCHAR :
+	    case KEY_LEFT :
 		 if (mentry->currentCol != 0)
 		 {
 		    mentry->currentCol--;
@@ -302,7 +299,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RIGHT : case CDK_FORCHAR :
+	    case KEY_RIGHT :
 		 if (mentry->currentCol < (mentry->fieldWidth - 1))
 		 {
 		    if ((((mentry->topRow + mentry->currentRow) * mentry->fieldWidth) + mentry->currentCol + 1) > (int)strlen (mentry->info)-1)
@@ -398,7 +395,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case DELETE : case KEY_BACKSPACE : case CONTROL('H') : case KEY_DC :
+	    case KEY_BACKSPACE : case KEY_DC :
 		 if (mentry->dispType == vVIEWONLY)
 		 {
 		    Beep();
@@ -544,7 +541,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 		 }
 		 break;
 
-	    case KEY_RETURN : case KEY_TAB : case KEY_ENTER :
+	    case KEY_TAB : case KEY_ENTER :
 		 infoLength = (int)strlen(mentry->info);
 		 if (infoLength < mentry->min + 1)
 		 {
@@ -552,14 +549,14 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 		 }
 		 else
 		 {
-		    mentry->exitType = vNORMAL;
+		    setExitType(mentry, input);
 		    ret = (mentry->info);
 		    complete = TRUE;
 		 }
 		 break;
 
 	    case KEY_ESC :
-		 mentry->exitType = vESCAPE_HIT;
+		 setExitType(mentry, input);
 		 complete = TRUE;
 		 break;
 
@@ -583,14 +580,14 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (mentry->postProcessFunction != 0))
+      if (!complete && (PostProcessFuncOf(mentry) != 0))
       {
-	 mentry->postProcessFunction (vMENTRY, mentry, mentry->postProcessData, input);
+	 PostProcessFuncOf(mentry) (vMENTRY, mentry, PostProcessDataOf(mentry), input);
       }
    }
 
    if (!complete) {
-      mentry->exitType = vEARLY_EXIT;
+      setExitType(mentry, 0);
    }
 
    ResultOf(mentry).valueString = ret;
@@ -634,8 +631,7 @@ static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean rel
    moveCursesWindow(mentry->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   touchwin (WindowOf(mentry));
-   wrefresh (WindowOf(mentry));
+   refreshCDKWindow (WindowOf(mentry));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -662,8 +658,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 
    drawCdkTitle (mentry->win, ObjOf(mentry));
 
-   touchwin (mentry->win);
-   wrefresh (mentry->win);
+   refreshCDKWindow (mentry->win);
 
    /* The information isn't null, redraw the field. */
    length = (int)strlen (mentry->info);
@@ -689,7 +684,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	    else
 	    {
 	       mvwaddch (mentry->fieldWin, x, y,
-			(mentry->info[currchar++] & A_CHARTEXT ) | mentry->fieldAttr);
+			CharOf(mentry->info[currchar++]) | mentry->fieldAttr);
 	    }
 	 }
 	 else
@@ -701,8 +696,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 
    /* Refresh the screen. */
    wmove (mentry->fieldWin, mentry->currentRow, mentry->currentCol);
-   touchwin (mentry->fieldWin);
-   wrefresh (mentry->fieldWin);
+   refreshCDKWindow (mentry->fieldWin);
 }
 
 /*
@@ -719,13 +713,13 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
    int x;
 
    /* Check the type of character we are looking for. */
-   if (character <= 0 || character >= KEY_MIN)
+   if (!isChar(character))
    {
       Beep();
    }
    else if ((mentry->dispType == vINT ||
 	mentry->dispType == vHINT) &&
-	!isdigit((int)character))
+	!isdigit(CharOf(character)))
    {
       Beep();
    }
@@ -734,7 +728,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 		mentry->dispType == vLCHAR ||
 		mentry->dispType == vUHCHAR ||
 		mentry->dispType == vLHCHAR) &&
-		isdigit((int)character))
+		isdigit(CharOf(character)))
    {
       Beep();
    }
@@ -746,7 +740,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 		mentry->dispType == vUHCHAR ||
 		mentry->dispType == vUMIXED ||
 		mentry->dispType == vUHMIXED) &&
-		!isdigit((int)character))
+		!isdigit(CharOf(character)))
       {
 	 newchar = toupper (character);
       }
@@ -754,7 +748,7 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 		mentry->dispType == vLHCHAR ||
 		mentry->dispType == vLMIXED ||
 		mentry->dispType == vLHMIXED) &&
-		!isdigit((int)character))
+		!isdigit(CharOf(character)))
       {
 	 newchar = tolower (character);
       }
@@ -814,9 +808,9 @@ static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 	 mentry->currentRow++;
 
 	 /*
-	  * If we have gone outside of the visual boundries, we
+	  * If we have gone outside of the visual boundaries, we
 	  * need to scroll the window.
-	   */
+	  */
 	 if (mentry->currentRow == mentry->rows)
 	 {
 	    /* We have to redraw the screen. */
@@ -865,40 +859,20 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
 }
 
 /*
- * This sets the background color of the widget.
- */
-void setCDKMentryBackgroundColor (CDKMENTRY *mentry, char *color)
-{
-   chtype *holder = 0;
-   int junk1, junk2;
-
-   /* Make sure the color isn't null. */
-   if (color == 0)
-   {
-      return;
-   }
-
-   /* Convert the value of the environment variable to a chtype. */
-   holder = char2Chtype (color, &junk1, &junk2);
-
-   /* Set the widgets background color. */
-   setCDKMentryBackgroundAttrib (mentry, holder[0]);
-
-   /* Clean up. */
-   freeChtype (holder);
-}
-
-/*
  * This sets the background attribute of the widget.
  */
-void setCDKMentryBackgroundAttrib (CDKMENTRY *mentry, chtype attrib)
+static void _setBKattrMentry (CDKOBJS *object, chtype attrib)
 {
-   /* Set the widgets background attribute. */
-   wbkgd (mentry->win, attrib);
-   wbkgd (mentry->fieldWin, attrib);
-   if (mentry->labelWin != 0)
+   if (object != 0)
    {
-      wbkgd (mentry->labelWin, attrib);
+      CDKMENTRY *widget = (CDKMENTRY *)object;
+
+      wbkgd (widget->win, attrib);
+      wbkgd (widget->fieldWin, attrib);
+      if (widget->labelWin != 0)
+      {
+	 wbkgd (widget->labelWin, attrib);
+      }
    }
 }
 
@@ -1070,40 +1044,21 @@ void setCDKMentryCB (CDKMENTRY *mentry, MENTRYCB callback)
    mentry->callbackfn = callback;
 }
 
-/*
- * This function sets the pre-process function.
- */
-void setCDKMentryPreProcess (CDKMENTRY *mentry, PROCESSFN callback, void *data)
+static void _focusCDKMentry(CDKOBJS *object)
 {
-   mentry->preProcessFunction = callback;
-   mentry->preProcessData = data;
+   CDKMENTRY *mentry = (CDKMENTRY*)object;
+
+   wmove(mentry->fieldWin, 0, mentry->currentCol);
+   wrefresh (mentry->fieldWin);
 }
 
-/*
- * This function sets the post-process function.
- */
-void setCDKMentryPostProcess (CDKMENTRY *mentry, PROCESSFN callback, void *data)
+static void _unfocusCDKMentry(CDKOBJS *object)
 {
-   mentry->postProcessFunction = callback;
-   mentry->postProcessData = data;
+   CDKMENTRY *mentry = (CDKMENTRY*)object;
+
+   wrefresh (mentry->fieldWin);
 }
 
-static void _focusCDKMentry(CDKOBJS *object GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummyRefreshData(Mentry)
 
-static void _unfocusCDKMentry(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _refreshDataCDKMentry(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
-
-static void _saveDataCDKMentry(CDKOBJS *entry GCC_UNUSED)
-{
-   /* FIXME */
-}
+dummySaveData(Mentry)
