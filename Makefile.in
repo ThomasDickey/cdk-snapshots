@@ -1,0 +1,174 @@
+# 
+#  Copyright (c) 1990 The Regents of the University of California.
+#  All rights reserved.
+# 
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. All advertising materials mentioning features or use of this software
+#     must display the following acknowledgement:
+# 	This product includes software developed by the University of
+# 	California, Berkeley and its contributors.
+#  4. Neither the name of the University nor the names of its contributors
+#     may be used to endorse or promote products derived from this software
+#     without specific prior written permission.
+# 
+#  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+#  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+#  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+#  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#  SUCH DAMAGE.
+# 
+
+CDKLIB		= libcdk.a
+VERSION		= 4.9.8
+CFLAGS		= -Iinclude @CFLAGS@ @DEFS@
+CC		= @CC@
+LDFLAGS		= @LDFLAGS@
+LIBS		= @LIBS@
+RANLIB		= @RANLIB@
+INSTALL		= @INSTALL@
+INSTALL_DIR	= @prefix@
+INCLUDE_DIR	= $(INSTALL_DIR)/include/cdk
+LIB_DIR		= $(INSTALL_DIR)/lib
+MAN_DIR		= $(INSTALL_DIR)/man/man3
+
+default:: cdklib
+
+#
+# Create the file lists.
+#
+CDKHDR		= cdk.h alphalist.h binding.h buttonbox.h \
+			calendar.h cdk_util.h cdkscreen.h \
+			curdefs.h dialog.h draw.h entry.h \
+			fselect.h graph.h histogram.h itemlist.h \
+			label.h marquee.h matrix.h mentry.h \
+			menu.h radio.h scale.h scroll.h selection.h \
+			slider.h swindow.h template.h viewer.h
+CDKSRC		= draw.c cdk.c cdkscreen.c binding.c debug.c \
+			alphalist.c buttonbox.c calendar.c dialog.c \
+			entry.c graph.c fselect.c histogram.c itemlist.c \
+			label.c marquee.c matrix.c mentry.c menu.c radio.c \
+			scale.c scroll.c selection.c slider.c swindow.c \
+			template.c viewer.c
+CDKMAN		= cdk_alphalist.3 cdk_binding.3 cdk_buttonbox.3 cdk_calendar.3 \
+			cdk_cdk.3 cdk_dialog.3 cdk_display.3 cdk_entry.3 \
+			cdk_fselect.3 cdk_graph.3 cdk_histogram.3 cdk_itemlist.3 \
+			cdk_label.3 cdk_marquee.3 cdk_matrix.3 cdk_mentry.3 \
+			cdk_menu.3 cdk_misc.3 cdk_radio.3 cdk_scale.3 cdk_screen.3 \
+			cdk_scroll.3 cdk_selection.3 cdk_slider.3 cdk_swindow.3 \
+			cdk_template.3 cdk_viewer.3
+CDKREADME	= BUGS EXPANDING NOTES TODO COPYING INSTALL README
+CDKOBJS		= $(CDKSRC:.c=.o)
+
+#
+# Standard library directive.
+#
+cdklib $(CDKLIB): $(CDKOBJS)
+	$(AR) -cr $(CDKLIB) $(CDKOBJS)
+	$(RANLIB) $(CDKLIB)
+
+#
+# Make the examples directory.
+#
+examples::
+	@(cd examples; make)
+
+#
+# Make the demos directory.
+#
+demos::
+	@(cd demos; make)
+
+#
+# This installs all of the CDK library release.
+#
+install:: installCDKHeaderFiles installCDKReadme installCDKLibrary installCDKManPages
+
+#
+# This installs the header files.
+#
+installCDKHeaderFiles::
+	@echo "Installing CDK header files..."
+	@if [ ! -d $(INCLUDE_DIR) ]; then \
+	   mkdir $(INCLUDE_DIR); \
+	fi
+	@for i in $(CDKHDR); do \
+	   echo "	$(INSTALL) include/$$i $(INCLUDE_DIR)"; \
+	   $(INSTALL) include/$$i $(INCLUDE_DIR); \
+	done
+
+#
+# This installs the informational readme files.
+#
+installCDKReadme::
+	@echo "Installing CDK Readme files..."
+	@for i in $(CDKREADME); do \
+	   echo "	$(INSTALL) $$i $(INCLUDE_DIR)"; \
+	   $(INSTALL) $$i $(INCLUDE_DIR); \
+	done
+
+#
+# This installs the CDK library.
+#
+installCDKLibrary::
+	@echo "Installing CDK library"
+	@if [ ! -d $(LIB_DIR) ]; then \
+	   mkdir $(LIB_DIR); \
+	fi
+	@echo "	$(INSTALL) $(CDKLIB) $(LIB_DIR)"
+	@$(INSTALL) $(CDKLIB) $(LIB_DIR)
+
+#
+# This installs the CDK man pages.
+#
+installCDKManPages::
+	@echo "Installing the CDK man pages ..."
+	@if [ ! -d $(MAN_DIR) ]; then \
+	   mkdir $(MAN_DIR); \
+	fi
+	@for i in $(CDKMAN); do \
+	   echo "	$(INSTALL) man/$$i $(MAN_DIR)"; \
+	   $(INSTALL) man/$$i $(MAN_DIR); \
+	done
+
+#
+# Clean up after ourselves...
+#
+clean::
+	$(RM) *.o $(CDKLIB) Makefile core
+
+realclean::
+	@(cd examples; make clean; rm Makefile)
+	@(cd demos; make clean; rm Makefile)
+	@make clean
+	@rm Makefile
+
+#
+# Use this to clean the distribution.
+#
+distclean:: realclean
+	$(RM) config.cache config.log config.status
+
+#
+# Standard .c to .o compile line.
+#
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+#
+# Set up our PHONY tags.
+#
+.PHONY: examples
+.PHONY: demos

@@ -1,0 +1,112 @@
+#
+# Makefile for the examples directory.
+#
+CC	= @CC@
+LIBS	= -lcdk @LIBS@
+CFLAGS	= @CFLAGS@ @DEFS@
+INCDIR	= -I../include -I.. -I. 
+LIBDIR	= -L.. @LDFLAGS@
+BINS	= fileview rolodex command clock stopSign \
+		appointment serial vinstall
+
+#
+# If you have Sybase installed on your system, try making
+# syb. It's a full screen interface to Sybase.
+#
+SYBROOT		= $(SYBASE)
+SYBINCDIR	= -I$(SYBROOT)/include
+SYBLIBDIR	= -L$(SYBROOT)/devlib
+SYBLIBS		= -lnsl -lsybdb
+
+#
+# Default compile option is stripped.
+#
+default: stripped
+
+#
+# Strip each of the binaries then strip them.
+#
+stripped:: $(BINS) stripBinaries
+
+#
+# Unstripped option for those who want it.
+#
+unstripped:: $(BINS)
+
+#
+# Strip all the binaries.
+#
+stripBinaries::
+	@for i in $(BINS); do \
+	   printf "Stripping %s ... " $$i; \
+	   strip $$i; \
+	   printf "Done.\n"; \
+	done
+
+#
+# Basic file selector/file viewer combination.
+#
+fileview: fileview.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A fairly robust rolodex.
+#
+rolodex: rolodex.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A basic command interface with command history.
+#
+command: command.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A simple little clock.
+#
+clock: clock.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A simple demo I wrote after a couple of pints. :)
+#
+stopSign: stopSign.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A basic appointment book/date keeper.
+#
+appointment: appointment.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# This probes the serial port.
+#
+serial: serial.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# This prints out the keys ASCII and Octal values.
+#
+keycheck: keycheck.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# CDK based installer.
+#
+vinstall: vinstall.c
+	$(CC) $(CFLAGS) $(INCDIR) $? -o $@ $(LIBDIR) $(LIBS)
+
+#
+# A Sybase interface.
+#
+syb: syb.c
+	$(CC) $(CFLAGS) -o $@ $? $(INCDIR) $(SYBINCDIR) $(LIBDIR) $(SYBLIBDIR) $(LIBS) $(SYBLIBS)
+
+#
+# Standard clean directives.
+#
+clean::
+	$(RM) core *.o $(BINS)
+distclean:: clean
+	$(RM) Makefile
