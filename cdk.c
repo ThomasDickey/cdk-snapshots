@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2000/10/21 21:57:52 $
- * $Revision: 1.169 $
+ * $Date: 2001/12/05 01:08:18 $
+ * $Revision: 1.170 $
  */
 
 char *GPasteBuffer = 0;
@@ -306,7 +306,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
    (*to) = 0;
    *align = LEFT;
 
-   if (string != 0)
+   if (string != 0 && *string != 0)
    {
       len = (int)strlen(string);
       used = 0;
@@ -760,7 +760,7 @@ char **CDKsplitString(char *string, int separator)
    unsigned item;
    unsigned need;
 
-   if (string != 0)
+   if (string != 0 && *string != 0)
    {
       need = countChar(string, separator) + 2;
       if ((result = (char **)malloc(need * sizeof(char *))) != 0)

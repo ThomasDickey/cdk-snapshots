@@ -1,5 +1,6 @@
-# $Id: Makefile.in,v 1.22 2001/04/21 16:25:04 tom Exp $
+# $Id: Makefile.in,v 1.25 2001/12/05 00:10:07 tom Exp $
 #
+#  Copyright 2001, Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -93,6 +94,7 @@ CDKHDR		= \
 		dialog.h \
 		draw.h \
 		entry.h \
+		fscale.h \
 		fselect.h \
 		graph.h \
 		histogram.h \
@@ -122,6 +124,7 @@ CDKSRC		= \
 		dialog.c \
 		draw.c \
 		entry.c \
+		fscale.c \
 		fselect.c \
 		graph.c \
 		histogram.c \
@@ -150,6 +153,7 @@ CDKMAN		= \
 		cdk_dialog.3 \
 		cdk_display.3 \
 		cdk_entry.3 \
+		cdk_fscale.3 \
 		cdk_fselect.3 \
 		cdk_graph.3 \
 		cdk_histogram.3 \
@@ -286,7 +290,7 @@ installCDKManPages :: headers.sed $(MAN_DIR)
 	done
 
 uninstall \
-installCDKManPages ::
+uninstallCDKManPages ::
 	@- for i in $(CDKMAN); do \
 	    $(RM) $(MAN_DIR)/$$i; \
 	done

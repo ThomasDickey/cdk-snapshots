@@ -104,15 +104,32 @@ extern char * optarg;
 #endif
 
 /*
- * This enumerated typedef lists all the CDK widget types.
+ * This enumerated typedef lists all of the CDK widget types.
  */
-typedef enum {vNULL,
-		vALPHALIST, vBUTTONBOX, vCALENDAR, vDIALOG,
-		vENTRY, vFSELECT, vGRAPH, vHISTOGRAM,
-		vITEMLIST, vLABEL, vMARQUEE, vMATRIX,
-		vMENTRY, vMENU, vRADIO, vSCALE, vSCROLL,
-		vSELECTION, vSLIDER, vSWINDOW, vTEMPLATE,
-		vTAB, vVIEWER
+typedef enum {	vNULL = 0
+		,vALPHALIST
+		,vBUTTONBOX
+		,vCALENDAR
+		,vDIALOG
+		,vENTRY
+		,vFSCALE
+		,vFSELECT
+		,vGRAPH
+		,vHISTOGRAM
+		,vITEMLIST
+		,vLABEL
+		,vMARQUEE
+		,vMATRIX
+		,vMENTRY
+		,vMENU
+		,vRADIO
+		,vSCALE
+		,vSCROLL
+		,vSELECTION
+		,vSLIDER
+		,vSWINDOW
+		,vTEMPLATE
+		,vVIEWER
 		} EObjectType;
 
 /*
@@ -242,6 +259,7 @@ void stopCDKDebug (FILE *fd);
 #include <calendar.h>
 #include <dialog.h>
 #include <entry.h>
+#include <fscale.h>
 #include <fselect.h>
 #include <graph.h>
 #include <histogram.h>
@@ -259,6 +277,10 @@ void stopCDKDebug (FILE *fd);
 #include <swindow.h>
 #include <template.h>
 #include <viewer.h>
+
+/*
+ * Low-level object drawing
+ */
 #include <draw.h>
 
 #endif /* CDK_H */

@@ -1,14 +1,24 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas Dickey 1999, 2000
+Modifications copyright Thomas Dickey 1999, 2000, 2001
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 You should also look at the BUGS file for information related to bugs which
 were fixed from release to release.
 
-2001/4/21 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2001/12/04 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
+	+ add floatized-scale widget (Lutz Mueller <urc8@rz.uni-karlsruhe.de>).
+	+ modify headers.sh script to remove gzip'd versions of the manpages
+	  just in case some were previously installed that way, i.e., by
+	  hand.  The gzip'd version would be found instead of the new install.
+	  (prompted by a report by Ron Poulton <thok@technologist.com>).
+	+ correct typo in uninstall rule for manpages which made
+	  "make installCDKHeaderFiles" remove the manpages after installing.
+
+2001/04/21 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ add an uninstall rule.
 	+ move the installed documentation to /usr/local/doc/cdk (it does not
 	  belong in /usr/local/include/cdk).
@@ -33,15 +43,15 @@ were fixed from release to release.
 	  ensure it is not actually the compiler name versus an existence
 	  check.
 
-2001/1/6 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2001/01/06 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ reverted part of 1999/6/5 change, allowing callback functions to
 	  return a value.  Note that this makes PROCESSFN and BINDFN use
-	  the same prototype (report by Ian Eure <ieure@insynq.com>).  
+	  the same prototype (report by Ian Eure <ieure@insynq.com>).
 	+ SCO OpenServer does not define S_IFSOCK
 
-2000/9/23 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/09/23 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ change literal 48's in calendar.c to '0'.
 	+ eliminate nonprinting/nonspace characters using macro CTRL().
 	+ integrated new examples into makefiles.
@@ -60,8 +70,8 @@ were fixed from release to release.
 	+ did not use casts to unsigned char, since those are incorrect
 	  (they are casting chtype's which are wider than a char).
 
-2000/9/15 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/09/15 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ add/use configure check for some curses functions/macros which use
 	  internals of the WINDOW struct, which is opaque on NetBSD (patch by
 	  Simon Burge <simonb@wasabisystems.com>).
@@ -72,26 +82,26 @@ were fixed from release to release.
 	  prototypes shown only in the SYNOPSIS section (and formatted for
 	  readability), remove excess wording and convert as needed to use tbl.
 
-2000/8/28 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/08/28 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ add cdk_position.3 man page.
 	+ rename cdk_cdk.3 to cdk.3
 
-2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/08/20 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ remove obsolete comments from manpages telling users to define
 	  NCURSES for that library.  The configure script creates cdk_config.h,
 	  which has settings as needed.
 
-2000/8/20 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/08/20 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ fix some array-overruns in viewer.c if it happens to load a binary
 	  file.
 	+ fix symbol conflict with newkey in waitCDKLabel(), as well as keycode
 	  truncation in that function.
 
-2000/6/28 - T.E.Dickey <dickey@herndon4.his.com>
-================================================
+2000/06/28 - T.E.Dickey <dickey@herndon4.his.com>
+=================================================
 	+ add RPM spec-file (Wai-Sun Chia <waisun.chia@msa.dec.com>).
 	+ add Linux-specific makefile rule for generating a shared library
 	  (patch by Pawel Gajda <pawelg@obop.com.pl>).
@@ -108,7 +118,7 @@ were fixed from release to release.
 	  CF_NCURSES_LIBS and CF_XOPEN_CURSES
 	+ updated config.guess, config.sub
 
-2000/4/9 - T.E.Dickey <dickey@clark.net>
+2000/04/09 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ modify newwin() call in subwindow_ex.c to account for actual screen
 	  size rather than assuming 25 lines (reported by Gary Funck
@@ -119,7 +129,7 @@ were fixed from release to release.
 	+ correct typo in configure check for HPUX 11.x (reported by Bjorn
 	  Helgaas <helgaas@rsn.hp.com>).
 
-2000/2/18 - T.E.Dickey <dickey@clark.net>
+2000/02/18 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add case for HPUX 11.x use of cur_colr library (reported by
 	  Bjorn Helgaas <helgaas@rsn.hp.com>).
@@ -131,13 +141,13 @@ were fixed from release to release.
 	+ minor fixes for building with SunOS 5lib version: configure check
 	  for getopt variables, correction to demos/Makefile.in
 
-2000/1/17 - T.E.Dickey <dickey@clark.net>
+2000/01/17 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add lib-prefix and executable suffix checks to configure script for
 	  port to OS/2 EMX.
 	+ add configure check for lstat().
 
-2000/1/16 - T.E.Dickey <dickey@clark.net>
+2000/01/16 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ drop dependency on usleep(), using napms() which is standard with
 	  SVr4 curses.
@@ -154,7 +164,7 @@ were fixed from release to release.
 	+ modify demo/Makefile.in to work around Solaris' make program which
 	  does not process ".c" rule as desired.
 
-2000/1/8 - T.E.Dickey <dickey@clark.net>
+2000/01/08 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ fix compiler warnings with Solaris cc.
 
@@ -163,13 +173,13 @@ were fixed from release to release.
 	+ update email and url for Mike Glover based on 4.9.9 version dated
 	  1999/7/29.
 
-1999/6/26 - T.E.Dickey <dickey@clark.net>
+1999/06/26 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ add configure options --with-dbmalloc and --with-dmalloc to simplify
 	  testing with those libraries.
 	+ correct error in rewrite of char2Chtype which broke repeat-counts.
 
-1999/6/5 - T.E.Dickey <dickey@clark.net>
+1999/06/05 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ correct reference to uninitialized memory in bindCDKObject()
 	+ add/use BINDFN_PROTO macro to simplify maintenance of Perl extension,
@@ -181,7 +191,7 @@ were fixed from release to release.
 	+ simplify char2Chtype, eliminate fixed-buffer limits.
 	+ prevent recursion in segvTrap.
 
-1999/5/29 - T.E.Dickey <dickey@clark.net>
+1999/05/29 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ remove bindFunction and bindData arrays from individual widgets
 	+ make draw, erase, move methods accessed only via the CDKFUNCS table
@@ -189,7 +199,7 @@ were fixed from release to release.
 	+ add move method for menu.c
 	+ split-out positionCDKObject function from widget code.
 
-1999/5/23 - T.E.Dickey <dickey@clark.net>
+1999/05/23 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ remove WIN_WIDTH and related macros, use the more common getmaxx,
 	  and similar macros.  Provide fallback definitions for those.
@@ -205,7 +215,7 @@ were fixed from release to release.
 	  structure.
 	+ correct overlap between title and percentage in drawCDKViewerInfo()
 
-1999/5/15 - T.E.Dickey <dickey@clark.net>
+1999/05/15 - T.E.Dickey <dickey@clark.net>
 ==========================================
 	+ revised configure script, using autoconf macros which I've written
 	  for other programs to check for ncurses configuration.
