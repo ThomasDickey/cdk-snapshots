@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.85 $
+ * $Date: 1999/06/05 17:29:40 $
+ * $Revision: 1.86 $
  */
 
 /*
@@ -31,7 +31,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int xpos			= xplace;
    int ypos			= yplace;
    int x			= 0;
-   char *temp[MAX_LINES];
+   char **temp			= 0;
    int len, junk2;
 
   /*
@@ -49,10 +49,10 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Translate the char * title to a chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      selection->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      selection->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < selection->titleLines; x++)
@@ -67,13 +67,13 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
       for (x=0; x < selection->titleLines; x++)
       {
          selection->title[x] = char2Chtype (temp[x], 
-						&selection->titleLen[x], 
-						&selection->titlePos[x]);
+					    &selection->titleLen[x], 
+					    &selection->titlePos[x]);
          selection->titlePos[x] = justifyString (boxWidth, 
-							selection->titleLen[x], 
-							selection->titlePos[x]);
-         freeChar (temp[x]);
+					        selection->titleLen[x], 
+					        selection->titlePos[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {
@@ -945,11 +945,11 @@ int getCDKSelectionItems (CDKSELECTION *selection, char *list[])
  */
 void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
 {
-   char *temp[MAX_LINES];
+   char **temp;
    int x;
 
    /* Make sure the title isn't NULL. */
-   if (title == (char *)NULL)
+   if (title == 0)
    {
       return;
    }
@@ -960,8 +960,8 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
       freeChtype (selection->title[x]);
    }
 
-   /* We need to split the title on \n. */
-   selection->titleLines = splitString (title, temp, '\n');
+   temp = CDKsplitString (title, '\n');
+   selection->titleLines = CDKcountStrings (temp);
 
    /* For each line in the title, convert from char * to chtype * */
    for (x=0; x < selection->titleLines; x++)
@@ -972,8 +972,8 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
       selection->titlePos[x] = justifyString (selection->boxWidth, 
 						selection->titleLen[x], 
 						selection->titlePos[x]);
-      freeChar (temp[x]);
    }
+   CDKfreeStrings(temp);
 
    /* Set the rest of the variables. */
    selection->titleAdj		= selection->titleLines + 1;

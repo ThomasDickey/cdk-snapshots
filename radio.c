@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.76 $
+ * $Date: 1999/06/05 17:28:34 $
+ * $Revision: 1.77 $
  */
 
 /*
@@ -31,7 +31,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    int ypos		= yplace;
    int widestItem	= 0;
    int x		= 0;
-   char *temp[MAX_LINES];
+   char **temp		= 0;
    int len, junk2;
 
   /*
@@ -49,10 +49,10 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    boxWidth = setWidgetDimension (parentWidth, width, 5);
 
    /* Translate the char * title to a chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on '\n' */
-      radio->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      radio->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < radio->titleLines; x++)
@@ -68,8 +68,8 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
       {
          radio->title[x]	= char2Chtype (temp[x], &radio->titleLen[x], &radio->titlePos[x]);
          radio->titlePos[x]	= justifyString (boxWidth, radio->titleLen[x], radio->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

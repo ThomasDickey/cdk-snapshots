@@ -41,8 +41,8 @@ int main (int argc, char **argv)
    int 		sWindowHeight	= 0;
    char		*titleMessage[10], *fileList[2000], *mesg[20];
    char		oldPath[512], newPath[512], temp[2000];
-   char		*files[10];
-   int count, chunks, ret, x, y;
+   char		**files;
+   int count, chunks, ret, x;
 
    /* Parse up the command line. */
    while (1)
@@ -261,7 +261,8 @@ int main (int argc, char **argv)
       * the source filename, the second being the destination
       * filename.
       */
-      chunks = splitString (fileList[x], files, ' ');
+      files = CDKsplitString (fileList[x], ' ');
+      chunks = CDKcountStrings (files);
       if (chunks == 2)
       {
          /* Create the correct paths. */
@@ -274,12 +275,7 @@ int main (int argc, char **argv)
          sprintf (oldPath, "%s/%s", sourceDir, fileList[x]);
          sprintf (newPath, "%s/%s", destDir, fileList[x]);
       }
-
-      /* Clean up the memory. */
-      for (y=0; y < chunks; y++)
-      {
-         freeChar (files[y]);
-      }
+      CDKfreeStrings(files);
 
       /* Copy the file from the source to the destination. */
       ret = copyFile (cdkScreen, oldPath, newPath);

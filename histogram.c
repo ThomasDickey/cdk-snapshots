@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.57 $
+ * $Date: 1999/06/05 17:14:35 $
+ * $Revision: 1.58 $
  */
 
 DeclareCDKObjects(my_funcs,Histogram)
@@ -23,7 +23,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int ypos			= yplace;
    int oldWidth			= 0;
    int oldHeight		= 0;
-   char *temp[256];
+   char **temp			= 0;
    int x;
 
   /*
@@ -46,15 +46,16 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    if (title != (char *)NULL)
    {
       /* We need to split the title on \n. */
-      histogram->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      histogram->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < histogram->titleLines; x++)
       {
          histogram->title[x]	= char2Chtype (temp[x], &histogram->titleLen[x], &histogram->titlePos[x]);
          histogram->titlePos[x]	= justifyString (boxWidth, histogram->titleLen[x], histogram->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

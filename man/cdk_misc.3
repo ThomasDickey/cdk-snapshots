@@ -1,3 +1,4 @@
+.\" $Id: cdk_misc.3,v 1.2 1999/06/05 18:50:02 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -20,6 +21,12 @@
 .BI "void Beep()" "";
 .LP
 .BI "char * baseName (char *" "pathname");
+.LP
+.B unsigned CDKcountStrings (char **\fIlist\fP);
+.LP
+.B void CDKfreeStrings (char **\fIlist\fP);
+.LP
+.B char ** CDKsplitString (char *\fIstring\fP, char \fIsplitChar\fP);
 .LP
 .BI "chtype * char2Chtype (char *" "string",
 .BI "int *" "length",
@@ -95,11 +102,6 @@
 .LP
 .BI "void stripWhiteSpace (EStripType " "stripType",
 .BI "char *" "string");
-.LP
-.BI "int splitString (char *" "string",
-.BI "char **" "items",
-.BI "char " "splitChar");
-.LP
 .SH DESCRIPTION
 The functions provided in this manual page are miscellaneous functions 
 which may be required when using the Cdk widget set.
@@ -116,6 +118,23 @@ char *baseName (char *\f2pathname\f1);
 .RS 3
 This function returns a pointer to the first character of the filename in
 the given pathname.
+.RE
+
+unsigned CDKcountStrings (char **\fIlist\fP);
+.RS 3
+Return the number of strings in the given \fIlist\fP.
+.RE
+
+void CDKfreeStrings (char **\fIlist\fP);
+.RS 3
+Free the strings in the list, and the given \fIlist\fP itself.
+.RE
+
+char ** CDKsplitString (char *\f2string\f1, char \f2splitChar\f1);
+.RS 3
+Split the given \f2string\f1 into strings based on the split 
+character in \f2splitChar\f1.
+The return value is a null-terminated list of the strings.
 .RE
 
 chtype *char2Chtype (char *\f2string\f1, int *\f2length\f1, int *\f2align\f1);
@@ -278,14 +297,6 @@ vBOTH           This tells the function to remove
                 string.
 .fi
 .RE
-.RE
-
-int splitString (char *\f2string\f1, char **\f2items\f1, char \f2splitChar\f1);
-.RS 3
-This function splits the given \f2string\f1 into parts based on the split 
-character in \f2splitChar\f1. The array \f2items\f1 will contain each individual
-segment. The value returned is the number of segments created from the given
-string.
 .RE
 
 .SH SEE ALSO

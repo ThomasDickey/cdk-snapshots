@@ -56,7 +56,7 @@ int main(void)
    rolodexTitle = newCDKLabel (cdkscreen, CENTER, CENTER, title, 2, FALSE, FALSE);
 
    /* Define the help key binding. */
-   bindCDKObject (vMENU, rolodexMenu, '?', helpCB, NULL);
+   bindCDKObject (vMENU, rolodexMenu, '?', helpCB, 0);
 
    /* Draw the CDK screen. */
    refreshCDKScreen (cdkscreen);
@@ -592,8 +592,9 @@ int readRCFile (char *filename, SRolodex *groupList)
    /* Declare variables. */
    int groupsFound= 0;
    int errorsFound= 0;
-   char *lines[MAX_LINES], *items[100];
-   int linesRead, chunks, x, y;
+   char *lines[MAX_LINES];
+   char **items;
+   int linesRead, chunks, x;
 
    /* Open the file and start reading. */
    linesRead = readFile (filename, lines, MAX_LINES);
@@ -615,8 +616,8 @@ int readRCFile (char *filename, SRolodex *groupList)
       /* Only split lines which do not start with a # */
       if (strlen (lines[x]) != 0 && lines[x][0] != '#')
       {
-         /* Split the line on the = sign. */
-         chunks = splitString (lines[x], items, '');
+         items = CDKsplitString (lines[x], '');
+         chunks = CDKcountStrings (items);
 
          /* Only take the ones which fit the format. */
          if (chunks == 3)
@@ -631,14 +632,11 @@ int readRCFile (char *filename, SRolodex *groupList)
             groupList[groupsFound].desc = items[1];
             groupList[groupsFound].dbm = items[2];
             groupsFound++;
+            free(items);
          }
          else
          {
-            /* Don't forget the clean up the memory. */
-            for (y=0; y < chunks; y++)
-            {
-               freeChar (items[y]);
-            }
+	    CDKfreeStrings(items);
             errorsFound++;
          }
       }
@@ -787,11 +785,12 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc, char 
 int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
 {
    /* Declare variables. */
-   char *lines[MAX_LINES], *items[30];
+   char *lines[MAX_LINES];
+   char **items;
    int linesRead= 0;
    int chunks= 0;
    int linesFound= 0;
-   int x, y;
+   int x;
  
    /* Open the file and start reading. */
    linesRead = readFile (dataFile, lines, MAX_LINES);
@@ -810,8 +809,8 @@ int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
       if (lines[x][0] != '#')
       {
          /* Split the string. */
-         chunks = 0;
-         chunks = splitString (lines[x], items, '');
+         items = CDKsplitString (lines[x], '');
+         chunks = CDKcountStrings (items);
 
          /* Copy the chunks. */
          if (chunks == 8)
@@ -825,15 +824,13 @@ int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
             phoneData->record[linesFound].postalCode	= items[6];
             phoneData->record[linesFound].desc		= items[7];
             freeChar (items[1]);
+            free (items);
             linesFound++;
          }
          else
          {
             /* Bad line in the file; recover the memory. */
-            for (y=0; y <= chunks; y++)
-            {
-               freeChar (items[y]);
-            }
+	    CDKfreeStrings(items);
          }
       }
    }
@@ -1614,7 +1611,7 @@ int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object GCC_UNUSED, 
 /*
  * This allows the user to insert a new phone entry into the database.
  */
-int insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+void insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
@@ -1634,13 +1631,12 @@ int insertPhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clie
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
-   return 0;
 }
 
 /*
  * This allows the user to delete a phone entry from the database.
  */
-int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+void deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1658,7 +1654,6 @@ int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clie
    {
       mesg[0] = "There are no more numbers to delete.";
       popupLabel (ScreenOf(scrollp), mesg, 1);
-      return 0;
    }
 
    /* Ask the user if they really want to delete the listing. */
@@ -1690,13 +1685,12 @@ int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void *clie
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
-   return 0;
 }
 
 /*
  * This function provices help for the phone list editor.
  */
-int phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+void phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
@@ -1725,14 +1719,13 @@ int phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void *client
    freeChar (mesg[0]); freeChar (mesg[1]);
    freeChar (mesg[2]); freeChar (mesg[3]);
    freeChar (mesg[4]);
-   return 0;
 }
 
 /*
  * This is a callback to the menu widget. It allows the user to 
  * ask for help about any sub-menu item.
  */
-int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+void helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKMENU *menu= (CDKMENU *)object;
@@ -1799,13 +1792,12 @@ int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_U
 
    /* Redraw the submenu window. */
    drawCDKMenuSubwin (menu);
-   return 0;
 }
 
 /*
  * This is a callback to the group list scrolling list.
  */
-int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+void groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp= (CDKSCROLL *)object;
@@ -1832,5 +1824,4 @@ int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData,
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
-   return 0;
 }

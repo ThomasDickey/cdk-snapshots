@@ -4,8 +4,8 @@
 char *XCursesProgramName="calendar_ex";
 #endif
 
-int createCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key);
-int removeCalendarMarkCB (EObjectType objectType, void *object, void *clientData, chtype key);
+static BINDFN_PROTO(createCalendarMarkCB);
+static BINDFN_PROTO(removeCalendarMarkCB);
 
 /*
  * This program demonstrates the Cdk calendar widget.
@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 /*
  * This adds a marker to the calendar.
  */
-int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static void createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
@@ -147,13 +147,12 @@ int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void 
 				COLOR_PAIR (5) | A_REVERSE);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
-   return 0;
 }
 
 /*
  * This removes a marker from the calendar.
  */
-int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static void removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
 
@@ -163,5 +162,4 @@ int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object, void 
 				calendar->year);
 
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
-   return 0;
 }

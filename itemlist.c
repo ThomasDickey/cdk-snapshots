@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.36 $
+ * $Date: 1999/06/05 17:15:26 $
+ * $Revision: 1.37 $
  */
 
 DeclareCDKObjects(my_funcs,Itemlist)
@@ -26,7 +26,7 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    int xpos		= xplace;
    int ypos		= yplace;
    int horizontalAdjust	= 0;
-   char *temp[256];
+   char **temp		= 0;
    int x, len, junk, junk2;
 
    /* Set some basic values of the itemlist. */
@@ -62,8 +62,8 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    /* Translate the char * items to chtype * */
    if (title != (char *)NULL)
    {
-      /* We need to split the title on \n. */
-      itemlist->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      itemlist->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < itemlist->titleLines; x++)
@@ -88,8 +88,8 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       {
          itemlist->title[x]	= char2Chtype (temp[x], &itemlist->titleLen[x], &itemlist->titlePos[x]);
          itemlist->titlePos[x]	= justifyString (boxWidth, itemlist->titleLen[x], itemlist->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.21 $
+ * $Date: 1999/06/05 16:40:51 $
+ * $Revision: 1.22 $
  */
 
 DeclareCDKObjects(my_funcs,Buttonbox)
@@ -27,7 +27,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    int ypos			= yPos;
    int currentButton		= 0;
    chtype *holder		= (chtype *)NULL;
-   char *temp[256];
+   char **temp			= 0;
    int x, y, len, junk;
 
    /* Set some default values for the widget. */
@@ -49,10 +49,11 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
       /* We need to split the title on \n. */
-      buttonbox->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      buttonbox->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < buttonbox->titleLines; x++)
@@ -68,8 +69,8 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
       {
          buttonbox->title[x]	= char2Chtype (temp[x], &buttonbox->titleLen[x], &buttonbox->titlePos[x]);
          buttonbox->titlePos[x]	= justifyString (boxWidth, buttonbox->titleLen[x], buttonbox->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

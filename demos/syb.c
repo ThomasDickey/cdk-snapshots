@@ -369,26 +369,23 @@ int main (int argc, char **argv)
 void useDatabase (CDKSWINDOW *swindow, DBPROCESS *dbProc, char *command)
 {
    char *database = (char *)NULL;
-   char *words[500], temp[256];
+   char temp[256];
+   char **words;
    int wordCount, x;
 
-   /* Split the comamnd linew up and get the database name. */
-   wordCount = splitString (command, words, ' ');
+   /* Split the command line up and get the database name. */
+   words = CDKsplitString (command, ' ');
+   wordCount = CDKcountStrings (words);
 
    /* Look for the name. */
    for (x=1; x < wordCount; x++)
    {
-      if ((int)strlen (words[x]) != 0)
+      if (strlen (words[x]) != 0)
       {
          database = copyChar (words[x]);
       }
    }
-
-   /* Clean up. */
-   for (x=0; x < wordCount; x++)
-   {
-      freeChar (words[x]);
-   }
+   CDKfreeStrings(words);
 
    /* Try to actually use the database. */
    if (dbuse(dbProc, database) == FAIL)

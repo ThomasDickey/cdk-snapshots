@@ -2,20 +2,10 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:27:07 $
- * $Revision: 1.144 $
+ * $Date: 1999/06/05 21:44:46 $
+ * $Revision: 1.149 $
  */
 
-/*
- * As much as I hate to do this, I need to define a global char * pointer.
- * This is for the injectCDKXXX routines which return a char * type. Since
- * returning a NULL pointer is acceptable, this is the only other solution.
- */
-char *GCdkObjects[] = {"", "ENTRY", "MENTRY", "LABEL", "SCROLL", "DIALOG", \
-			"SCALE", "MARQUEE", "MENU", "MATRIX", "HISTOGRAM", \
-			"SELECTION", "VIEWER", "GRAPH", "RADIO", "TEMPLATE", \
-			"SWINDOW", "ITEMLIST", "FSELECT", "SLIDER", \
-			"ALPHALIST", "CALENDAR"};
 char *GPasteBuffer = (char *)NULL;
 
 /*
@@ -252,7 +242,7 @@ chtype *copyChtype (chtype *original)
    {
       return (original);
    }
- 
+
    /* Copy from one to the other.  */
    for (x=0; x < len; x++)
    {
@@ -279,7 +269,7 @@ int readFile (char *filename, char **array, int maxlines)
    {
       return (-1);
    }
-                                                                                
+
    /* Start reading the file in.  */
    while ((fgets (temp, sizeof(temp), fd) != (char *)NULL) && lines < maxlines)
    {
@@ -293,6 +283,50 @@ int readFile (char *filename, char **array, int maxlines)
    return (lines);
 }
 
+#define DigitOf(c) ((c)-'0')
+
+static int parseAttribute(char *string, int from, chtype *mask)
+{
+   int pair = 0;
+
+   *mask = 0;
+   switch (string[from + 1])
+   {
+   case 'B':	*mask = A_BOLD;		break;
+   case 'D':	*mask = A_DIM;		break;
+   case 'K':	*mask = A_BLINK;	break;
+   case 'R':	*mask = A_REVERSE;	break;
+   case 'S':	*mask = A_STANDOUT;	break;
+   case 'U':	*mask = A_UNDERLINE;	break;
+   }
+
+   if (*mask != 0)
+   {
+      from++;
+   }
+   else if (isdigit((int)string[from + 1]) && isdigit((int)string[from + 2]))
+   {
+#ifdef HAVE_COLOR
+      pair	= DigitOf(string[from + 1]) * 10 + DigitOf(string[from + 2]);
+      *mask	= COLOR_PAIR(pair);
+#else
+      *mask	= A_BOLD;
+#endif
+      from += 2;
+   }
+   else if (isdigit((int)string[from + 1]))
+   {
+#ifdef HAVE_COLOR
+      pair	= DigitOf(string[from + 1]);
+      *mask	= COLOR_PAIR(pair);
+#else
+      *mask	= A_BOLD;
+#endif
+      from++;
+   }
+   return from;
+}
+
 /*
  * This function takes a character string, full of format markers
  * and translates them into a chtype * array. This is better suited
@@ -300,427 +334,283 @@ int readFile (char *filename, char **array, int maxlines)
  */
 chtype *char2Chtype (char *string, int *to, int *align)
 {
-   chtype attrib	= A_NORMAL;
-   int insideMarker	= FALSE;
-   int start		= 0;
-   int from		= 0;
-   int pair		= 0;
-   int x 		= 3;
-   int len		= 0;
-   chtype newstring[500], lastChar;
-   char temp[50];
+   chtype *result = 0;
+   chtype attrib;
+   chtype lastChar;
+   chtype mask;
    int adjust;
+   int from;
+   int insideMarker;
+   int len;
+   int pass;
+   int start;
+   int used;
+   int x;
 
-   /* Is the string NULL?  */
-   if (string == (char *)NULL)
-   {
-      (*align) = LEFT;
-      (*to) = 0;
-      return ((chtype *)NULL);
-   }
-   len = (int)strlen(string);
+   (*to) = 0;
+   *align = LEFT;
 
-   /* Set up some default values.  */
-   (*to)		= 0;
-   (*align)		= LEFT;
-   temp[0]		= '\0';
-   pair			= 0;
-
-   /* Lets make some room for the chtype string.  */
-   /*cleanChtype (newstring, 500, '\0');*/
-
-   /* Look for an alignment marker.  */
-   if (string[0] == '<' && string[1] == 'C' && string[2] == '>')
+   if (string != 0)
    {
-      (*align)	= CENTER;
-      start	= 3;
-   }
-   else if (string[0] == '<' && string[1] == 'R' && string[2] == '>')
-   {
-      (*align)	= RIGHT;
-      start	= 3;
-   }
-   else if (string[0] == '<' && string[1] == 'L' && string[2] == '>')
-   {
-      (*align)	= LEFT;
-      start	= 3;
-   }
-   else if (string[0] == '<' && string[1] == 'B' && string[2] == '=')
-   {
-      /* Set the item index value in the string.  */
-      newstring[0] = ' ';
-      newstring[1] = ' ';
-      newstring[2] = ' ';
-
-      /* Pull out the bullet marker.  */
-      while (string[x] != '>')
+      len = (int)strlen(string);
+      used = 0;
+      /*
+       * We make two passes because we may have indents and tabs to expand, and
+       * do not know in advance how large the result will be.
+       */
+      for (pass = 0; pass < 2; pass++)
       {
-         newstring[x] = string[x] | A_BOLD;
-         x++;
-      }
-      newstring[x++] = ' ';
+	 if (pass != 0)
+	 {
+	    if ((result = malloc((used+2) * sizeof(chtype))) == 0)
+	    {
+	       used = 0;
+	       break;
+	    }
+	 }
+	 adjust = 0;
+	 attrib = A_NORMAL;
+	 lastChar = 0;
+	 start = 0;
+	 used = 0;
+	 x = 3;
 
-      /* Set the alignment variables.  */
-      (*align)	= LEFT;
-      start	= x;
-      (*to)	= x;
+	 /* Look for an alignment marker.  */
+	 if (!strncmp(string, "<C>", 3))
+	 {
+	    (*align) = CENTER;
+	    start = 3;
+	 }
+	 else if (!strncmp(string, "<R>", 3))
+	 {
+	    (*align) = RIGHT;
+	    start = 3;
+	 }
+	 else if (!strncmp(string, "<L>", 3))
+	 {
+	    start = 3;
+	 }
+	 else if (!strncmp(string, "<B=", 3))
+	 {
+	    /* Set the item index value in the string.  */
+	    if (result != 0)
+	    {
+	       result[0] = ' ';
+	       result[1] = ' ';
+	       result[2] = ' ';
+	    }
+
+	    /* Pull out the bullet marker.  */
+	    while (string[x] != '>' && string[x] != 0)
+	    {
+	       if (result != 0)
+		  result[x] = string[x] | A_BOLD;
+	       x++;
+	    }
+	    adjust = 1;
+
+	    /* Set the alignment variables.  */
+	    start = x;
+	    used = x;
+	 }
+	 else if (!strncmp(string, "<I=", 3))
+	 {
+	    from = 2;
+	    x = 0;
+
+	    while (string[++from] != '>' && string[from] != 0)
+	    {
+	       if (isdigit((int)string[from]))
+	       {
+		  adjust = (adjust * 10) + DigitOf(string[from]);
+	       }
+	    }
+
+	    start = x + 4;
+	 }
+
+	 while (adjust-- > 0)
+	 {
+	    if (result != 0)
+	       result[used] = ' ';
+	    used++;
+	 }
+
+	 /* Set the format marker boolean to false.  */
+	 insideMarker	= FALSE;
+
+	 /* Start parsing the character string.  */
+	 for (from = start; from < len; from++)
+	 {
+	    /* Are we inside a format marker?  */
+	    if (! insideMarker)
+	    {
+	       if (string[from] == '<'
+		&& (string[from + 1] == '/'
+		 || string[from + 1] == '!'
+		 || string[from + 1] == '#'))
+	       {
+		  insideMarker = TRUE;
+	       }
+	       else if (string[from] == '\\' && string[from + 1] == '<')
+	       {
+		  from++;
+		  if (result != 0)
+		     result[used] = (A_CHARTEXT & string[from]) | attrib;
+		  used++;
+		  from++;
+	       }
+	       else if (string[from] == '\t')
+	       {
+		  for (x=0; x < 8; x++)
+		  {
+		     if (result != 0)
+			result[used] = ' ';
+		     used++;
+		  }
+	       }
+	       else
+	       {
+		  if (result != 0)
+		     result[used] = (A_CHARTEXT & string[from]) | attrib;
+		  used++;
+	       }
+	    }
+	    else
+	    {
+	       switch (string[from])
+	       {
+	       case '>':
+		  insideMarker = 0;
+		  break;
+	       case '#':
+	       {
+		  lastChar = 0;
+		  switch(string[from + 2])
+		  {
+		  case 'L':
+		     switch (string[from + 1])
+		     {
+		     case 'L': lastChar = ACS_LLCORNER; break;
+		     case 'U': lastChar = ACS_LRCORNER; break;
+		     case 'H': lastChar = ACS_HLINE; break;
+		     case 'V': lastChar = ACS_VLINE; break;
+		     case 'P': lastChar = ACS_PLUS; break;
+		     }
+		     break;
+		  case 'U':
+		     switch (string[from + 1])
+		     {
+		     case 'L': lastChar = ACS_ULCORNER; break;
+		     case 'U': lastChar = ACS_URCORNER; break;
+		     }
+		     break;
+		  case 'T':
+		     switch (string[from + 1])
+		     {
+		     case 'T': lastChar = ACS_TTEE; break;
+		     case 'R': lastChar = ACS_RTEE; break;
+		     case 'L': lastChar = ACS_LTEE; break;
+		     case 'B': lastChar = ACS_BTEE; break;
+		     }
+		     break;
+		  case 'A':
+		     switch (string[from + 1])
+		     {
+		     case 'L': lastChar = ACS_LARROW; break;
+		     case 'R': lastChar = ACS_RARROW; break;
+		     case 'U': lastChar = ACS_UARROW; break;
+		     case 'D': lastChar = ACS_DARROW; break;
+		     }
+		     break;
+		  default:
+		     if (string[from + 1] == 'D'
+		      && string[from + 2] == 'I')
+			lastChar = ACS_DIAMOND;
+		     else
+		     if (string[from + 1] == 'C'
+		      && string[from + 2] == 'B')
+			lastChar = ACS_CKBOARD;
+		     else
+		     if (string[from + 1] == 'D'
+		      && string[from + 2] == 'G')
+			lastChar = ACS_DEGREE;
+		     else
+		     if (string[from + 1] == 'P'
+		      && string[from + 2] == 'M')
+			lastChar = ACS_PLMINUS;
+		     else
+		     if (string[from + 1] == 'B'
+		      && string[from + 2] == 'U')
+			lastChar = ACS_BULLET;
+		     else
+		     if (string[from + 1] == 'S'
+		      && string[from + 2] == '1')
+			lastChar = ACS_S1;
+		     else
+		     if (string[from + 1] == 'S'
+		      && string[from + 2] == '9')
+			lastChar = ACS_S9;
+		  }
+
+		  if (lastChar != 0)
+		  {
+		     adjust = 1;
+		     from += 2;
+		  }
+		  else if (string[from + 1] == '(')
+		  /* Check for a possible numeric modifier.  */
+		  {
+		     from++;
+		     adjust = 0;
+
+		     while (string[++from] != ')' && string[from] != 0)
+		     {
+			if (isdigit((int)string[from]))
+			{
+			   adjust = (adjust * 10) + DigitOf(string[from]);
+			}
+		     }
+		  }
+		  for (x=0; x < adjust; x++)
+		  {
+		     if (result != 0)
+			result[used] = lastChar | attrib;
+		     used++;
+		  }
+		  break;
+	       }
+	       case '/':
+		  from = parseAttribute(string, from, &mask);
+		  attrib = attrib | mask;
+		  break;
+	       case '!':
+		  from = parseAttribute(string, from, &mask);
+		  attrib = attrib & ~mask;
+		  break;
+	       }
+	    }
+	 }
+
+	 if (result != 0)
+	 {
+	    result[used] = 0;
+	    result[used + 1] = 0;
+	 }
+
+	 /*
+	  * If there are no characters, put the attribute into the
+	  * the first character of the array.
+	  */
+	 if (used == 0
+	  && result != 0)
+	 {
+	    result[0] = attrib;
+	 }
+      }
+      *to = used;
    }
-   else if (string[0] == '<' && string[1] == 'I' && string[2] == '=')
-   {
-      cleanChar (temp, 49, '\0');
-      from=2;
-      x=0;
-
-      /* Strip out the number.  */
-      while (string[++from] != '>')
-      {
-         if (isdigit((int)string[from]))
-         {
-            temp[x++] = string[from];
-         }
-      }
-
-      /* Set the alignment variables.  */
-      (*align)	= LEFT;
-      start	= x + 4;
-      
-      /* Add on the spaces.  */
-      adjust = atoi (temp);
-      for (x=0; x < adjust; x++)
-      {
-         newstring[(*to)++] = ' ';
-      }
-   }
-      
-   /* Set the format marker boolean to false.  */
-   insideMarker	= FALSE;
-
-   /* Start parsing the character string.  */
-   for (from=start; from < len; from++)
-   {
-      /* Are we inside a format marker?  */
-      if (! insideMarker)
-      {
-         if (string[from] == '<' && string[from + 1] == '/')
-         {
-            insideMarker = 1;
-         }
-         else if (string[from] == '<' && string[from + 1] == '!')
-         {
-            insideMarker = 2;
-         }
-         else if (string[from] == '<' && string[from + 1] == '#')
-         {
-            insideMarker = 3;
-         }
-         else if (string[from] == '\\' && string[from + 1] == '<')
-         {
-            from++;
-            newstring[(*to)++]	= (A_CHARTEXT & string[from++]) | attrib;
-         }
-         else if (string[from] == '\t')
-         {
-            for (x=0; x < 8; x++)
-            {
-               newstring[(*to)++] = ' ';
-            }
-         }
-         else
-         {
-            newstring[(*to)++]	= (A_CHARTEXT & string[from]) | attrib;
-         }
-      }
-      else
-      {
-         /* We are in the format marker.  */
-         if (string[from] == '>')
-         {
-            insideMarker = 0;
-         }
-         else if (string[from] == '#')
-         {
-            lastChar = (chtype)NULL;
-            if (string[from + 1] == 'L' && string[from + 2] == 'L')
-            {
-               newstring[(*to)++] = ACS_LLCORNER | attrib;
-               lastChar = ACS_LLCORNER;
-               from += 2;
-            }
-            else if (string[from + 1] == 'L' && string[from + 2] == 'R')
-            {
-               newstring[(*to)++] = ACS_LRCORNER | attrib;
-               lastChar = ACS_LRCORNER;
-               from += 2;
-            }
-            else if (string[from + 1] == 'U' && string[from + 2] == 'R')
-            {
-               newstring[(*to)++] = ACS_URCORNER | attrib;
-               lastChar = ACS_URCORNER;
-               from += 2;
-            }
-            else if (string[from + 1] == 'U' && string[from + 2] == 'L')
-            {
-               newstring[(*to)++] = ACS_ULCORNER | attrib;
-               lastChar = ACS_ULCORNER;
-               from += 2;
-            }
-            else if (string[from + 1] == 'R' && string[from + 2] == 'T')
-            {
-               newstring[(*to)++] = ACS_RTEE | attrib;
-               lastChar = ACS_RTEE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'L' && string[from + 2] == 'T')
-            {
-               newstring[(*to)++] = ACS_LTEE | attrib;
-               lastChar = ACS_LTEE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'B' && string[from + 2] == 'T')
-            {
-               newstring[(*to)++] = ACS_BTEE | attrib;
-               lastChar = ACS_BTEE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'T' && string[from + 2] == 'T')
-            {
-               newstring[(*to)++] = ACS_TTEE | attrib;
-               lastChar = ACS_TTEE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'H' && string[from + 2] == 'L')
-            {
-               newstring[(*to)++] = ACS_HLINE | attrib;
-               lastChar = ACS_HLINE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'V' && string[from + 2] == 'L')
-            {
-               newstring[(*to)++] = ACS_VLINE | attrib;
-               lastChar = ACS_VLINE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'P' && string[from + 2] == 'L')
-            {
-               newstring[(*to)++] = ACS_PLUS | attrib;
-               lastChar = ACS_PLUS;
-               from += 2;
-            }
-            else if (string[from + 1] == 'D' && string[from + 2] == 'I')
-            {
-               newstring[(*to)++] = ACS_DIAMOND | attrib;
-               lastChar = ACS_DIAMOND;
-               from += 2;
-            }
-            else if (string[from + 1] == 'C' && string[from + 2] == 'B')
-            {
-               newstring[(*to)++] = ACS_CKBOARD | attrib;
-               lastChar = ACS_CKBOARD;
-               from += 2;
-            }
-            else if (string[from + 1] == 'D' && string[from + 2] == 'G')
-            {
-               newstring[(*to)++] = ACS_DEGREE | attrib;
-               lastChar = ACS_DEGREE;
-               from += 2;
-            }
-            else if (string[from + 1] == 'P' && string[from + 2] == 'M')
-            {
-               newstring[(*to)++] = ACS_PLMINUS | attrib;
-               lastChar = ACS_PLMINUS;
-               from += 2;
-            }
-            else if (string[from + 1] == 'B' && string[from + 2] == 'U')
-            {
-               newstring[(*to)++] = ACS_BULLET | attrib;
-               lastChar = ACS_BULLET;
-               from += 2;
-            }
-            else if (string[from + 1] == 'S' && string[from + 2] == '1')
-            {
-               newstring[(*to)++] = ACS_S1 | attrib;
-               lastChar = ACS_S1;
-               from += 2;
-            }
-            else if (string[from + 1] == 'S' && string[from + 2] == '9')
-            {
-               newstring[(*to)++] = ACS_S9 | attrib;
-               lastChar = ACS_S9;
-               from += 2;
-            }
-            else if (string[from + 1] == 'L' && string[from + 2] == 'A')
-            {
-               newstring[(*to)++] = ACS_LARROW | attrib;
-               lastChar = ACS_LARROW;
-               from += 2;
-            }
-            else if (string[from + 1] == 'R' && string[from + 2] == 'A')
-            {
-               newstring[(*to)++] = ACS_RARROW | attrib;
-               lastChar = ACS_RARROW;
-               from += 2;
-            }
-            else if (string[from + 1] == 'U' && string[from + 2] == 'A')
-            {
-               newstring[(*to)++] = ACS_UARROW | attrib;
-               lastChar = ACS_UARROW;
-               from += 2;
-            }
-            else if (string[from + 1] == 'D' && string[from + 2] == 'A')
-            {
-               newstring[(*to)++] = ACS_DARROW | attrib;
-               lastChar = ACS_DARROW;
-               from += 2;
-            }
-
-            /* Check for a possible numeric modifier.  */
-            if (string[from + 1] == '(' && lastChar != (chtype)NULL)
-            {
-               /* Set up some variables.  */
-               cleanChar (temp, 49, '\0');
-               from++;
-               x=0;
-
-               /* Strip out the number.  */
-               while (string[++from] != ')')
-               {
-                  if (isdigit((int)string[from]))
-                  {
-                     temp[x++] = string[from];
-                  }
-               }
-
-               /* Convert the number.  */
-               if (x != 0)
-               {
-                  adjust = atoi (temp);
-                  for (x=0; x < adjust; x++)
-                  {
-                     newstring[(*to)++] = lastChar | attrib;
-                  }
-               }
-            }
-         }
-         else if (string[from] == '/' && string[from + 1] == 'B')
-         {
-            attrib	= attrib | A_BOLD;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'B')
-         {
-            attrib	= attrib & (~A_BOLD);
-            from++;
-         }
-         else if (string[from] == '/' && string[from + 1] == 'U')
-         {
-            attrib	= attrib | A_UNDERLINE;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'U')
-         {
-            attrib	= attrib & (~A_UNDERLINE);
-            from++;
-         }
-         else if (string[from] == '/' && string[from + 1] == 'S')
-         {
-            attrib	= attrib | A_STANDOUT;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'S')
-         {
-            attrib	= attrib & (~A_STANDOUT);
-            from++;
-         }
-         else if (string[from] == '/' && string[from + 1] == 'R')
-         {
-            attrib	= attrib | A_REVERSE;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'R')
-         {
-            attrib	= attrib & (~A_REVERSE);
-            from++;
-         }
-         else if (string[from] == '/' && string[from + 1] == 'K')
-         {
-            attrib	= attrib | A_BLINK;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'K')
-         {
-            attrib	= attrib & (~A_BLINK);
-            from++;
-         }
-         else if (string[from] == '/' && string[from + 1] == 'D')
-         {
-            attrib	= attrib | A_DIM;
-            from++;
-         }
-         else if (string[from] == '!' && string[from + 1] == 'D')
-         {
-            attrib	= attrib & (~A_DIM);
-            from++;
-         }
-         else if (string[from] == '/' && isdigit((int)string[from + 1]) && isdigit((int)string[from + 2]))
-         {
-#ifdef HAVE_COLOR
-            sprintf (temp, "%c%c", string[from + 1],string[from + 2]);
-            pair	= atoi(temp);
-            attrib	= attrib | COLOR_PAIR(pair);
-#else
-            attrib	= attrib | A_BOLD;
-            from += 2;
-#endif
-         }
-         else if (string[from] == '!' && isdigit((int)string[from + 1]) && isdigit((int)string[from + 2]))
-         {
-#ifdef HAVE_COLOR
-            sprintf (temp, "%c%c", string[from + 1],string[from + 2]);
-            pair	= atoi(temp);
-            attrib	= attrib & (~COLOR_PAIR(pair));
-#else
-            attrib	= attrib & (~A_BOLD);
-            from += 2;
-#endif
-         }
-         else if (string[from] == '/' && isdigit((int)string[from + 1]))
-         {
-#ifdef HAVE_COLOR
-            pair	= string[++from] - '0';
-            attrib	= attrib | COLOR_PAIR(pair);
-#else
-            attrib	= attrib | A_BOLD;
-            from++;
-#endif
-         }
-         else if (string[from] == '!' && isdigit((int)string[from + 1]))
-         {
-#ifdef HAVE_COLOR
-            pair	= string[++from] - '0';
-            attrib	= attrib & (~COLOR_PAIR(pair));
-#else
-            attrib	= attrib & (~A_BOLD);
-            from++;
-#endif
-         }
-      }
-   }
-
-   /* Add the NULL character to the end of the string. */
-   newstring[(*to)] = '\0';
-   newstring[(*to) + 1] = '\0';
-
-   /*
-    * If there are no characters, put the attribute into the
-    * the first character of the array.
-     */
-   if (chlen(newstring) == 0)
-   {
-      newstring[0] = attrib;
-   }
-
-   /* Return the new string.  */
-   return (copyChtype (newstring));
+   return result;
 }
 
 /*
@@ -728,18 +618,15 @@ chtype *char2Chtype (char *string, int *to, int *align)
  */
 int chlen (chtype *string)
 {
-   /* Declare local variables.  */
-   int x = 0;
+   int result = 0;
 
-   /* Make sure we wern't given a NULL string.  */
-   if (string == (chtype *)NULL)
+   if (string != 0)
    {
-      return (0);
+      while (string[result] != 0)
+	 result++;
    }
 
-   /* Find out how long this string is.  */
-   while (string[x++] != (chtype)NULL);
-   return ((x-1));
+   return (result);
 }
 
 /*
@@ -784,77 +671,39 @@ char *chtype2Char (chtype *string)
  */
 EDisplayType char2DisplayType (char *string)
 {
-   /* Make sure we cover our bases... */
-   if (string == (char *)NULL)
-   {
-      return (EDisplayType)vINVALID;
-   }
+   static const struct {
+      const char *name;
+      EDisplayType code;
+   } table[] = {
+      { "CHAR",		vCHAR },
+      { "HCHAR",	vHCHAR },
+      { "INT",		vINT },
+      { "HINT",		vHINT },
+      { "UCHAR",	vUCHAR },
+      { "LCHAR",	vLCHAR },
+      { "UHCHAR",	vUHCHAR },
+      { "LHCHAR",	vLHCHAR },
+      { "MIXED",	vMIXED },
+      { "HMIXED",	vHMIXED },
+      { "UMIXED",	vUMIXED },
+      { "LMIXED",	vLMIXED },
+      { "UHMIXED",	vUHMIXED },
+      { "LHMIXED",	vLHMIXED },
+      { "VIEWONLY",	vVIEWONLY },
+      { NULL, 		vINVALID },
+   };
 
-   /* Start looking. */
-   if (strcmp (string, "CHAR") == 0)
+   /* Make sure we cover our bases... */
+   if (string != 0)
    {
-      return (EDisplayType)vCHAR;
+      int n;
+      for (n = 0; table[n].name != 0; n++)
+      {
+	 if (!strcmp(string, table[n].name))
+	    return table[n].code;
+      }
    }
-   else if (strcmp (string, "HCHAR") == 0)
-   {
-      return (EDisplayType)vHCHAR;
-   }
-   else if (strcmp (string, "INT") == 0)
-   {
-      return (EDisplayType)vINT;
-   }
-   else if (strcmp (string, "HINT") == 0)
-   {
-      return (EDisplayType)vHINT;
-   }
-   else if (strcmp (string, "UCHAR") == 0)
-   {
-      return (EDisplayType)vUCHAR;
-   }
-   else if (strcmp (string, "LCHAR") == 0)
-   {
-      return (EDisplayType)vLCHAR;
-   }
-   else if (strcmp (string, "UHCHAR") == 0)
-   {
-      return (EDisplayType)vUHCHAR;
-   }
-   else if (strcmp (string, "LHCHAR") == 0)
-   {
-      return (EDisplayType)vLHCHAR;
-   }
-   else if (strcmp (string, "MIXED") == 0)
-   {
-      return (EDisplayType)vMIXED;
-   }
-   else if (strcmp (string, "HMIXED") == 0)
-   {
-      return (EDisplayType)vHMIXED;
-   }
-   else if (strcmp (string, "UMIXED") == 0)
-   {
-      return (EDisplayType)vUMIXED;
-   }
-   else if (strcmp (string, "LMIXED") == 0)
-   {
-      return (EDisplayType)vLMIXED;
-   }
-   else if (strcmp (string, "UHMIXED") == 0)
-   {
-      return (EDisplayType)vUHMIXED;
-   }
-   else if (strcmp (string, "LHMIXED") == 0)
-   {
-      return (EDisplayType)vLHMIXED;
-   }
-   else if (strcmp (string, "VIEWONLY") == 0)
-   {
-      return (EDisplayType)vVIEWONLY;
-   }
-   else
-   {
-      return (EDisplayType)vINVALID;
-   }
+   return (EDisplayType)vINVALID;
 }
 
 /*
@@ -886,7 +735,7 @@ void quickSort (char *list[], int left, int right)
 
    swapIndex (list, left, (left + right)/2);
    last = left;
-   
+
    for (i=left + 1; i <= right; i++)
    {
       if (strcmp (list[i], list[left]) < 0)
@@ -909,7 +758,7 @@ void stripWhiteSpace (EStripType stripType, char *string)
    int stringLength = 0;
    int alphaChar = 0;
    int x = 0;
-   
+
    /* Make sure the string is not NULL.  */
    if (string == (char *)NULL)
    {
@@ -962,62 +811,91 @@ void stripWhiteSpace (EStripType stripType, char *string)
    }
 }
 
-/*
- * This splits a string into X parts given the split character.
- */
-int splitString (char *string, char *items[], char splitChar)
+static unsigned countChar(char *string, int separator)
 {
-   /* Declare local variables.  */
-   char temp[1024];
-   int stringLength = 0;
-   int chunks = 0;
-   int pos = 0;
-   int x;
+   unsigned result = 0;
+   int ch;
 
-   /* Check if the given string is NULL.  */
-   if (string == (char *)NULL)
+   while ((ch = *string++) != 0)
    {
-      return (0);
+      if (ch == separator)
+	 result++;
    }
+   return result;
+}
 
-   /* Get the length of the string.  */
-   stringLength = (int)strlen (string);
-   if (stringLength == 0)
+/*
+ * Split a string into a list of strings.
+ */
+char **CDKsplitString(char *string, int separator)
+{
+   char **result = 0;
+   char *first;
+   char *temp;
+   unsigned item;
+   unsigned need;
+
+   if (string != 0)
    {
-      return (0);
-   }
-
-   /* Zero out the temp string. */
-   cleanChar (temp, 1024, '\0');
-
-   /* Start looking for the string. */
-   for (x=0; x < stringLength; x++)
-   {
-      if (string[x] == splitChar)
+      need = countChar(string, separator) + 2;
+      if ((result = (char **)malloc(need * sizeof(char *))) != 0)
       {
-         /* Copy the string into the array. */
-         items[chunks++] = strdup (temp);
+	 item = 0;
+	 first = string;
+	 for(;;)
+	 {
+	    while (*string != 0 && *string != separator)
+	       string++;
 
-         /* Zero out the temp string.  */
-         cleanChar (temp, 1024, '\0');
+	    need = string - first;
+	    if ((temp = malloc(need+1)) == 0)
+	       break;
 
-         /* Reset the position counter.  */
-         pos = 0;
-      }
-      else
-      {
-         temp[pos++] = string[x];
+	    memcpy(temp, first, need);
+	    temp[need] = 0;
+	    result[item++] = temp;
+
+	    if (*string++ == 0)
+	       break;
+	    first = string;
+	 }
+	 result[item] = 0;
       }
    }
+   return result;
+}
 
-   /* Don't forget the last one.  */
-   items[chunks++] = strdup (temp);
-   return chunks;
+/*
+ * Count the number of items in a list of strings.
+ */
+unsigned CDKcountStrings(char **list)
+{
+   unsigned result = 0;
+   if (list != 0)
+   {
+      while (*list++ != 0)
+	 result++;
+   }
+   return result;
+}
+
+/*
+ * Free a list of strings
+ */
+void CDKfreeStrings(char **list)
+{
+   if (list != 0)
+   {
+      void *base = (void *)list;
+      while (*list != 0)
+	 free(*list++);
+      free(base);
+   }
 }
 
 /*
  * This function takes a mode_t type and creates a string represntation
- * of the permission mode. 
+ * of the permission mode.
  */
 int mode2Char (char *string, mode_t mode)
 {
@@ -1208,7 +1086,7 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
    return counter;
 }
 
-/* 
+/*
  * This looks for a subset of a word in the given list.
  */
 int searchList (char **list, int listSize, char *pattern)
@@ -1237,7 +1115,7 @@ int searchList (char **list, int listSize, char *pattern)
       * point we will set the index to the current position.
       * If 'ret' is greater than 0, then the current word is
       * alphabettically greater than the given word. We should
-      * return with index, which might contain the last best 
+      * return with index, which might contain the last best
       * match. If they are equal, then we've found it.
       */
       if (ret < 0)
@@ -1386,7 +1264,7 @@ char *dirName (char *pathname)
 /*
  * If the dimension is a negative value, the dimension will
  * be the full height/width of the parent window - the value
- * of the dimension. Otherwise, the dimension will be the 
+ * of the dimension. Otherwise, the dimension will be the
  * given value.
  */
 int setWidgetDimension (int parentDim, int proposedDim, int adjustment)

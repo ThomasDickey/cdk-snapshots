@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.79 $
+ * $Date: 1999/06/05 17:28:52 $
+ * $Revision: 1.80 $
  */
 
 /*
@@ -30,7 +30,7 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    int horizontalAdjust = 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   char *temp[256];
+   char **temp		= 0;
    int x, len, junk, junk2;
 
    /* Set some basic values of the scale field. */
@@ -48,17 +48,17 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    boxWidth = fieldWidth + 2;
 
    /* Translate the label char *pointer to a chtype pointer. */
-   if (label != (char *)NULL)
+   if (label != 0)
    {
       scale->label	= char2Chtype (label, &scale->labelLen, &junk);
       boxWidth		= scale->labelLen + fieldWidth + 2;
    }
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      scale->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      scale->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < scale->titleLines; x++)
@@ -83,8 +83,8 @@ CDKSCALE *newCDKScale (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
       {
          scale->title[x]	= char2Chtype (temp[x], &scale->titleLen[x], &scale->titlePos[x]);
          scale->titlePos[x]	= justifyString (boxWidth, scale->titleLen[x], scale->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

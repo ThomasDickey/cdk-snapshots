@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:28:32 $
- * $Revision: 1.65 $
+ * $Date: 1999/06/05 17:30:14 $
+ * $Revision: 1.66 $
  */
 
 /*
@@ -27,7 +27,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    int boxHeight		= height;
    int xpos			= xplace;
    int ypos			= yplace;
-   char *temp[MAX_LINES];
+   char **temp			= 0;
    int x;
 
   /*
@@ -45,18 +45,18 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Translate the char * items to chtype * */
-   if (title != (char *)NULL)
+   if (title != 0)
    {
-      /* We need to split the title on \n. */
-      swindow->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      swindow->titleLines = CDKcountStrings (temp);
 
       /* For each line in the title, convert from char * to chtype * */
       for (x=0; x < swindow->titleLines; x++)
       {
          swindow->title[x]	= char2Chtype (temp[x], &swindow->titleLen[x], &swindow->titlePos[x]);
          swindow->titlePos[x]	= justifyString (boxWidth, swindow->titleLen[x], swindow->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {

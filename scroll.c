@@ -3,8 +3,8 @@
    
 /*
  * $Author: tom $
- * $Date: 1999/05/30 00:16:28 $
- * $Revision: 1.77 $
+ * $Date: 1999/06/05 17:29:05 $
+ * $Revision: 1.78 $
  */
 
 /*
@@ -32,7 +32,7 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen, int xplace, int yplace, int splac
    int xpos			= xplace;
    int ypos			= yplace;
    int scrollAdjust		= 0;
-   char *temp[MAX_LINES];
+   char **temp			= 0;
    int x, len, junk2;
 
   /*
@@ -52,8 +52,8 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen, int xplace, int yplace, int splac
    /* Translate the char * items to chtype * */
    if (title != (char *)NULL)
    {
-      /* We need to split the title on \n. */
-      scrollp->titleLines = splitString (title, temp, '\n');
+      temp = CDKsplitString (title, '\n');
+      scrollp->titleLines = CDKcountStrings (temp);
 
       /* We need to determine the widest title line. */
       for (x=0; x < scrollp->titleLines; x++)
@@ -69,8 +69,8 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen, int xplace, int yplace, int splac
       {
          scrollp->title[x]	= char2Chtype (temp[x], &scrollp->titleLen[x], &scrollp->titlePos[x]);
          scrollp->titlePos[x]	= justifyString (boxWidth, scrollp->titleLen[x], scrollp->titlePos[x]);
-         freeChar (temp[x]);
       }
+      CDKfreeStrings(temp);
    }
    else
    {
