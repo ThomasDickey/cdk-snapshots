@@ -1,7 +1,8 @@
 /*
- * $Id: entry.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ * $Id: entry.h,v 1.13 2002/04/30 21:46:25 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKENTRY_H
 #define CDKENTRY_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -278,3 +286,4 @@ void setCDKEntryPostProcess (
 #endif
 
 #endif /* CDKENTRY_H */
+#endif /* CDKINCLUDES */

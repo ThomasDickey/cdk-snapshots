@@ -1,9 +1,9 @@
 #include <cdk.h>
 
 /*
- * $Author: tom $
- * $Date: 2001/12/30 23:03:46 $
- * $Revision: 1.171 $
+ * $Author: Robert.Landon $
+ * $Date: 2002/04/30 22:53:44 $
+ * $Revision: 1.172 $
  */
 
 char *GPasteBuffer = 0;
@@ -382,6 +382,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       if (isdigit((int)string[from]))
 	       {
 		  adjust = (adjust * 10) + DigitOf(string[from]);
+		  x++;
 	       }
 	    }
 

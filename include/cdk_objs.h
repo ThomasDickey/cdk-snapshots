@@ -1,7 +1,8 @@
 /*
- * $Id: cdk_objs.h,v 1.11 2002/02/25 23:38:00 tom Exp $
+ * $Id: cdk_objs.h,v 1.12 2002/04/30 21:39:34 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDK_OBJS_H
 #define CDK_OBJS_H
 
@@ -9,7 +10,13 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#endif
 
 /*
  * Copyright 1999, Thomas Dickey
@@ -49,6 +56,8 @@ typedef struct CDKBINDING {
    void *	bindData;
    PROCESSFN	callbackfn;
 } CDKBINDING;
+
+struct CDKOBJS;
 
 /*
  * Methods common to all widgets.
@@ -102,3 +111,4 @@ void positionCDKObject (CDKOBJS *, WINDOW *);
 #endif
 
 #endif /* CDK_OBJS_H */
+#endif /* CDKINCLUDES */

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.11 2001/04/20 00:13:23 tom Exp $
+dnl $Id: aclocal.m4,v 1.12 2002/04/30 19:54:00 tom Exp $
 dnl macros used for CDK configure script
 dnl -- T.Dickey
 dnl ---------------------------------------------------------------------------
@@ -12,25 +12,39 @@ AC_PREREQ_CANON(AC_PREREQ_SPLIT(AC_ACVERSION)),
 AC_PREREQ_CANON(AC_PREREQ_SPLIT([$1])), [$1], [$2], [$3])])dnl
 dnl ---------------------------------------------------------------------------
 dnl Copy non-preprocessor flags to $CFLAGS, preprocessor flags to $CPPFLAGS
+dnl The second parameter if given makes this macro verbose.
 AC_DEFUN([CF_ADD_CFLAGS],
 [
+cf_new_cflags=
+cf_new_cppflags=
 for cf_add_cflags in $1
 do
 	case $cf_add_cflags in #(vi
 	-undef|-nostdinc*|-I*|-D*|-U*|-E|-P|-C) #(vi
 		case "$CPPFLAGS" in
-		*$cf_add_cflags)
+		*$cf_add_cflags) #(vi
 			;;
-		*)
-			CPPFLAGS="$CPPFLAGS $cf_add_cflags"
+		*) #(vi
+			cf_new_cppflags="$cf_new_cppflags $cf_add_cflags"
 			;;
 		esac
 		;;
 	*)
-		CFLAGS="$CFLAGS $cf_add_cflags"
+		cf_new_cflags="$cf_new_cflags $cf_add_cflags"
 		;;
 	esac
 done
+
+if test -n "$cf_new_cflags" ; then
+	ifelse($2,,,[CF_VERBOSE(add to \$CFLAGS $cf_new_cflags)])
+	CFLAGS="$CFLAGS $cf_new_cflags"
+fi
+
+if test -n "$cf_new_cppflags" ; then
+	ifelse($2,,,[CF_VERBOSE(add to \$CPPFLAGS $cf_new_cppflags)])
+	CPPFLAGS="$CPPFLAGS $cf_new_cppflags"
+fi
+
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Add an include-directory to $CPPFLAGS.  Don't add /usr/include, since it's
@@ -107,11 +121,31 @@ test -n "$system_name" && AC_DEFINE_UNQUOTED(SYSTEM_NAME,"$system_name")
 AC_CACHE_VAL(cf_cv_system_name,[cf_cv_system_name="$system_name"])
 
 test -z "$system_name" && system_name="$cf_cv_system_name"
-test -n "$cf_cv_system_name" && AC_MSG_RESULT("Configuring for $cf_cv_system_name")
+test -n "$cf_cv_system_name" && AC_MSG_RESULT(Configuring for $cf_cv_system_name)
 
 if test ".$system_name" != ".$cf_cv_system_name" ; then
 	AC_MSG_RESULT(Cached system name ($system_name) does not agree with actual ($cf_cv_system_name))
 	AC_ERROR("Please remove config.cache and try again.")
+fi
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl Conditionally add to $CFLAGS and $CPPFLAGS values which are derived from
+dnl a build-configuration such as imake.  These have the pitfall that they
+dnl often contain compiler-specific options which we cannot use, mixed with
+dnl preprocessor options that we usually can.
+AC_DEFUN([CF_CHECK_CFLAGS],
+[
+CF_VERBOSE(checking additions to CFLAGS)
+cf_check_cflags="$CFLAGS"
+cf_check_cppflags="$CPPFLAGS"
+CF_ADD_CFLAGS($1,yes)
+if test "$cf_check_cflags" != "$CFLAGS" ; then
+AC_TRY_LINK([#include <stdio.h>],[printf("Hello world");],,
+	[CF_VERBOSE(test-compile failed.  Undoing change to \$CFLAGS)
+	 if test "$cf_check_cppflags" != "$CPPFLAGS" ; then
+		 CF_VERBOSE(but keeping change to \$CPPFLAGS)
+	 fi
+	 CFLAGS="$cf_check_flags"])
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
@@ -156,18 +190,22 @@ esac
 test "$cf_cv_curses_incdir" != no && CPPFLAGS="$CPPFLAGS $cf_cv_curses_incdir"
 
 AC_CACHE_CHECK(if we have identified curses headers,cf_cv_ncurses_header,[
-cf_cv_ncurses_header=curses.h
+cf_cv_ncurses_header=none
 for cf_header in \
 	curses.h \
 	ncurses.h \
-	ncurses/ncurses.h \
-	ncurses/curses.h
+	ncurses/curses.h \
+	ncurses/ncurses.h
 do
 AC_TRY_COMPILE([#include <${cf_header}>],
 	[initscr(); tgoto("?", 0,0)],
 	[cf_cv_ncurses_header=$cf_header; break],[])
 done
 ])
+
+if test "$cf_cv_ncurses_header" = none ; then
+	AC_MSG_ERROR(No curses header-files found)
+fi
 
 # cheat, to get the right #define's for HAVE_NCURSES_H, etc.
 AC_CHECK_HEADERS($cf_cv_ncurses_header)
@@ -192,8 +230,12 @@ do
 char * XCursesProgramName = "test";
 #else
 #include <${cf_cv_ncurses_header-curses.h}>
+#if defined(NCURSES_VERSION) && defined(HAVE_NCURSES_TERM_H)
+#include <ncurses/term.h>
+#else
 #ifdef HAVE_TERM_H
 #include <term.h>
+#endif
 #endif
 #endif],
 			[
@@ -314,9 +356,7 @@ fi
 ])
 dnl ---------------------------------------------------------------------------
 dnl "dirname" is not portable, so we fake it with a shell script.
-AC_DEFUN([CF_DIRNAME],[
-$1=`echo $2 | sed -e 's:/[[^/]]*$::'`
-])dnl
+AC_DEFUN([CF_DIRNAME],[$1=`echo $2 | sed -e 's:/[[^/]]*$::'`])dnl
 dnl ---------------------------------------------------------------------------
 dnl You can always use "make -n" to see the actual options, but it's hard to
 dnl pick out/analyze warning messages when the compile-line is long.
@@ -572,6 +612,10 @@ dnl Construct a search-list for a nonstandard header-file
 AC_DEFUN([CF_HEADER_PATH],
 [$1=""
 
+test "$prefix" != /usr/local && \
+test -d /usr/local && \
+$1="[$]$1 /usr/local/include /usr/local/include/$2 /usr/local/$2/include"
+
 test "$includedir" != NONE && \
 test -d "$includedir" && \
 $1="[$]$1 $includedir $includedir/$2"
@@ -584,10 +628,6 @@ test "$prefix" != NONE && \
 test -d "$prefix" && \
 $1="[$]$1 $prefix/include $prefix/include/$2 $prefix/$2/include"
 
-test "$prefix" != /usr/local && \
-test -d /usr/local && \
-$1="[$]$1 /usr/local/include /usr/local/include/$2 /usr/local/$2/include"
-
 test "$prefix" != /usr && \
 $1="[$]$1 /usr/include /usr/include/$2 /usr/$2/include"
 
@@ -595,7 +635,7 @@ test "$prefix" != /opt && \
 test -d /opt && \
 $1="[$]$1 /opt/include /opt/include/$2 /opt/$2/include"
 
-$1="[$]$1 [$]HOME/lib [$]HOME/lib/$2 [$]HOME/$2/lib"
+$1="[$]$1 [$]HOME/include [$]HOME/include/$2 [$]HOME/$2/include"
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl Insert text into the help-message, for readability, from AC_ARG_WITH.
@@ -666,6 +706,10 @@ dnl Construct a search-list for a nonstandard library-file
 AC_DEFUN([CF_LIBRARY_PATH],
 [$1=""
 
+test "$prefix" != /usr/local && \
+test -d /usr/local && \
+$1="[$]$1 /usr/local/lib /usr/local/lib/$2 /usr/local/$2/lib"
+
 test "$libdir" != NONE && \
 test -d $libdir && \
 $1="[$]$1 $libdir $libdir/$2"
@@ -678,10 +722,6 @@ test "$prefix" != NONE && \
 test "$prefix" != "$exec_prefix" && \
 test -d $prefix && \
 $1="[$]$1 $prefix/lib $prefix/lib/$2 $prefix/$2/lib"
-
-test "$prefix" != /usr/local && \
-test -d /usr/local && \
-$1="[$]$1 /usr/local/lib /usr/local/lib/$2 /usr/local/$2/lib"
 
 test "$prefix" != /usr && \
 $1="[$]$1 /usr/lib /usr/lib/$2 /usr/$2/lib"
@@ -715,12 +755,12 @@ dnl (GNU 'make' does both, something POSIX 'make', which happens to make the
 dnl $(MAKEFLAGS) variable incompatible because it adds the assignments :-)
 AC_DEFUN([CF_MAKEFLAGS],
 [
-AC_MSG_CHECKING([for makeflags variable])
-AC_CACHE_VAL(cf_cv_makeflags,[
+AC_CACHE_CHECK(for makeflags variable, cf_cv_makeflags,[
 	cf_cv_makeflags=''
 	for cf_option in '-$(MAKEFLAGS)' '$(MFLAGS)'
 	do
 		cat >cf_makeflags.tmp <<CF_EOF
+SHELL = /bin/sh
 all :
 	@ echo '.$cf_option'
 CF_EOF
@@ -740,8 +780,9 @@ CF_EOF
 			;;
 		esac
 	done
-	rm -f cf_makeflags.tmp])
-AC_MSG_RESULT($cf_cv_makeflags)
+	rm -f cf_makeflags.tmp
+])
+
 AC_SUBST(cf_cv_makeflags)
 ])dnl
 dnl ---------------------------------------------------------------------------
@@ -754,25 +795,29 @@ dnl ---------------------------------------------------------------------------
 dnl Look for the SVr4 curses clone 'ncurses' in the standard places, adjusting
 dnl the CPPFLAGS variable so we can include its header.
 dnl
-dnl The header files may be installed as either curses.h, or ncurses.h
-dnl (obsolete).  If not installed for overwrite, the curses.h file would be
-dnl in an ncurses subdirectory (e.g., /usr/include/ncurses), but someone may
-dnl have installed overwriting the vendor's curses.  Only very old versions
-dnl (pre-1.9.2d, the first autoconf'd version) of ncurses don't define
-dnl either __NCURSES_H or NCURSES_VERSION in the header.
+dnl The header files may be installed as either curses.h, or ncurses.h (would
+dnl be obsolete, except that some packagers prefer this name to distinguish it
+dnl from a "native" curses implementation).  If not installed for overwrite,
+dnl the curses.h file would be in an ncurses subdirectory (e.g.,
+dnl /usr/include/ncurses), but someone may have installed overwriting the
+dnl vendor's curses.  Only very old versions (pre-1.9.2d, the first autoconf'd
+dnl version) of ncurses don't define either __NCURSES_H or NCURSES_VERSION in
+dnl the header.
 dnl
 dnl If the installer has set $CFLAGS or $CPPFLAGS so that the ncurses header
 dnl is already in the include-path, don't even bother with this, since we cannot
 dnl easily determine which file it is.  In this case, it has to be <curses.h>.
 dnl
+dnl The optional parameter gives the root name of the library, in case it is
+dnl not installed as the default curses library.  That is how the
+dnl wide-character version of ncurses is installed.
 AC_DEFUN([CF_NCURSES_CPPFLAGS],
 [
-AC_CACHE_CHECK(for ncurses header in include-path, cf_cv_ncurses_h,[
-	for cf_header in \
-		ncurses.h \
-		ncurses/ncurses.h \
-		ncurses/curses.h \
-		curses.h
+cf_ncuhdr_root=ifelse($1,,ncurses,$1)
+AC_CACHE_CHECK(for $cf_ncuhdr_root header in include-path, cf_cv_ncurses_h,[
+	cf_header_list="$cf_ncuhdr_root/curses.h $cf_ncuhdr_root/ncurses.h"
+	test "$cf_ncuhdr_root" = ncurses && cf_header_list="curses.h ncurses.h $cf_header_list"
+	for cf_header in $cf_header_list
 	do
 	AC_TRY_COMPILE([#include <$cf_header>],[
 #ifdef NCURSES_VERSION
@@ -793,8 +838,8 @@ make an error
 if test "$cf_cv_ncurses_h" != no ; then
 	cf_cv_ncurses_header=$cf_cv_ncurses_h
 else
-AC_CACHE_CHECK(for ncurses include-path, cf_cv_ncurses_h2,[
-	CF_HEADER_PATH(cf_search,ncurses)
+AC_CACHE_CHECK(for $cf_ncuhdr_root include-path, cf_cv_ncurses_h2,[
+	CF_HEADER_PATH(cf_search,$cf_ncuhdr_root)
 	test -n "$verbose" && echo
 	for cf_incdir in $cf_search
 	do
@@ -819,8 +864,8 @@ AC_CACHE_CHECK(for ncurses include-path, cf_cv_ncurses_h2,[
 	cf_cv_ncurses_header=`basename $cf_cv_ncurses_h2`
 	echo cf_1st_include=$cf_1st_incdir
 	echo cf_2nd_include=$cf_2nd_incdir
-	if test `basename $cf_1st_incdir` = ncurses ; then
-		cf_cv_ncurses_header=ncurses/$cf_cv_ncurses_header
+	if test `basename $cf_1st_incdir` = $cf_ncuhdr_root ; then
+		cf_cv_ncurses_header=$cf_ncuhdr_root/$cf_cv_ncurses_header
 		CF_ADD_INCDIR($cf_2nd_incdir)
 	fi
 	CF_ADD_INCDIR($cf_1st_incdir)
@@ -840,6 +885,9 @@ case $cf_cv_ncurses_header in # (vi
 ncurses/curses.h|ncurses/ncurses.h)
 	AC_DEFINE(HAVE_NCURSES_NCURSES_H)
 	;;
+ncursesw/curses.h|ncursesw/ncurses.h)
+	AC_DEFINE(HAVE_NCURSESW_NCURSES_H)
+	;;
 esac
 
 CF_NCURSES_VERSION
@@ -851,9 +899,14 @@ dnl Some distributions have gpm linked with (bsd) curses, which makes it
 dnl unusable with ncurses.  However, we don't want to link with gpm unless
 dnl ncurses has a dependency, since gpm is normally set up as a shared library,
 dnl and the linker will record a dependency.
+dnl
+dnl The optional parameter gives the root name of the library, in case it is
+dnl not installed as the default curses library.  That is how the
+dnl wide-character version of ncurses is installed.
 AC_DEFUN([CF_NCURSES_LIBS],
 [AC_REQUIRE([CF_NCURSES_CPPFLAGS])
 
+cf_nculib_root=ifelse($1,,ncurses,$1)
 	# This works, except for the special case where we find gpm, but
 	# ncurses is in a nonstandard location via $LIBS, and we really want
 	# to link gpm.
@@ -873,13 +926,13 @@ freebsd*)
 esac
 
 LIBS="$cf_ncurses_LIBS $LIBS"
-CF_FIND_LIBRARY(ncurses,ncurses,
+CF_FIND_LIBRARY($cf_nculib_root,$cf_nculib_root,
 	[#include <${cf_cv_ncurses_header-curses.h}>],
 	[initscr()],
 	initscr)
 
 if test -n "$cf_ncurses_LIBS" ; then
-	AC_MSG_CHECKING(if we can link ncurses without $cf_ncurses_LIBS)
+	AC_MSG_CHECKING(if we can link $cf_nculib_root without $cf_ncurses_LIBS)
 	cf_ncurses_SAVE="$LIBS"
 	for p in $cf_ncurses_LIBS ; do
 		q=`echo $LIBS | sed -e 's/'$p' //' -e 's/'$p'$//'`
@@ -903,8 +956,10 @@ AC_DEFUN([CF_NCURSES_VERSION],
 AC_CACHE_CHECK(for ncurses version, cf_cv_ncurses_version,[
 	cf_cv_ncurses_version=no
 	cf_tempfile=out$$
+	rm -f $cf_tempfile
 	AC_TRY_RUN([
 #include <${cf_cv_ncurses_header-curses.h}>
+#include <stdio.h>
 int main()
 {
 	FILE *fp = fopen("$cf_tempfile", "w");
@@ -923,8 +978,7 @@ int main()
 #endif
 	exit(0);
 }],[
-	cf_cv_ncurses_version=`cat $cf_tempfile`
-	rm -f $cf_tempfile],,[
+	cf_cv_ncurses_version=`cat $cf_tempfile`],,[
 
 	# This will not work if the preprocessor splits the line after the
 	# Autoconf token.  The 'unproto' program does that.
@@ -947,14 +1001,17 @@ EOF
 		test -n "$cf_out" && cf_cv_ncurses_version="$cf_out"
 		rm -f conftest.out
 	fi
-])])
+])
+	rm -f $cf_tempfile
+])
+test "$cf_cv_ncurses_version" = no || AC_DEFINE(NCURSES)
 ])
 dnl ---------------------------------------------------------------------------
 dnl Configure for PDCurses' X11 library
 AC_DEFUN([CF_PDCURSES_X11],[
 AC_REQUIRE([CF_X_ATHENA])
 LDFLAGS="$LDFLAGS $X_LIBS"
-CF_ADD_CFLAGS($X_CFLAGS)
+CF_CHECK_CFLAGS($X_CFLAGS)
 AC_CHECK_LIB(X11,XOpenDisplay,
 	[LIBS="-lX11 $LIBS"],,
 	[$X_PRE_LIBS $LIBS $X_EXTRA_LIBS])
@@ -995,6 +1052,7 @@ cygwin*)
     ;;
 esac
 AC_SUBST(PROG_EXT)
+test -n "$PROG_EXT" && AC_DEFINE_UNQUOTED(PROG_EXT,"$PROG_EXT")
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl	Shorthand macro for substituting things that the user may override
@@ -1203,7 +1261,7 @@ esac
 if test $cf_have_X_LIBS = no ; then
 	AC_PATH_XTRA
 	LDFLAGS="$LDFLAGS $X_LIBS"
-	CF_ADD_CFLAGS($X_CFLAGS)
+	CF_CHECK_CFLAGS($X_CFLAGS)
 	AC_CHECK_LIB(X11,XOpenDisplay,
 		[LIBS="-lX11 $LIBS"],,
 		[$X_PRE_LIBS $LIBS $X_EXTRA_LIBS])
@@ -1214,7 +1272,7 @@ if test $cf_have_X_LIBS = no ; then
 		[$X_PRE_LIBS $LIBS $X_EXTRA_LIBS])
 else
 	LDFLAGS="$LDFLAGS $X_LIBS"
-	CF_ADD_CFLAGS($X_CFLAGS)
+	CF_CHECK_CFLAGS($X_CFLAGS)
 fi
 
 if test $cf_have_X_LIBS = no ; then

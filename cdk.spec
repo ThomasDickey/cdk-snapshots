@@ -1,5 +1,6 @@
 # Note that this is NOT a relocatable package
 %define ver      4.9.10
+%define subver   20020430
 %define rel      1
 %define prefix   /usr
 
@@ -21,20 +22,17 @@ A Curses Development Library (ncurses-based widgets)
 %changelog
 
 %prep
-%setup
+%setup -n %{name}-%{ver}-%{subver}
 
 %build
 CFLAGS="${RPM_OPT_FLAGS}"
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%prefix
-make
+make DOCUMENT_DIR=/usr/share/doc/cdk
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-make prefix=$RPM_BUILD_ROOT%{prefix} install
-
-cd $RPM_BUILD_ROOT%{prefix}/
-chown -R 0.0 *
+make DESTDIR=$RPM_BUILD_ROOT DOCUMENT_DIR=$RPM_BUILD_ROOT/usr/share/doc/cdk install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -49,5 +47,4 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/include/cdk/*.h
 %{prefix}/lib/lib*.a
 %{prefix}/man/man3/*
-
 

@@ -1,7 +1,8 @@
 /*
- * $Id: dialog.h,v 1.13 2002/02/25 23:38:00 tom Exp $
+ * $Id: dialog.h,v 1.14 2002/04/30 22:02:21 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKDIALOG_H
 #define CDKDIALOG_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -255,3 +263,4 @@ void setCDKDialogPostProcess (
 #endif
 
 #endif /* CDKDIALOG_H */
+#endif /* CDKINCLUDES */

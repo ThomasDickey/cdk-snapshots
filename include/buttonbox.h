@@ -1,7 +1,8 @@
 /*
- * $Id: buttonbox.h,v 1.12 2002/02/25 23:38:00 tom Exp $
+ * $Id: buttonbox.h,v 1.13 2002/04/30 21:57:57 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKBUTTONBOX_H
 #define CDKBUTTONBOX_H	1
 
@@ -9,7 +10,14 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#include <binding.h>
+#include <cdkscreen.h>
+#include <cdk_objs.h>
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -257,3 +265,4 @@ void setCDKButtonboxPostProcess (
 #endif
 
 #endif /* CDKBUTTONBOX_H */
+#endif /* CDKINCLUDES */

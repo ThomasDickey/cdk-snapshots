@@ -1,7 +1,8 @@
 /*
- * $Id: binding.h,v 1.8 2002/02/25 23:38:29 tom Exp $
+ * $Id: binding.h,v 1.9 2002/04/30 21:43:10 tom Exp $
  */
 
+#ifndef CDKINCLUDES
 #ifndef CDKBINDING_H
 #define CDKBINDING_H	1
 
@@ -9,7 +10,11 @@
 extern "C" {
 #endif
 
+#ifndef CDK_H
+#define CDKINCLUDES
 #include <cdk.h>
+#undef CDKINCLUDES
+#endif
 
 /*
  * Copyright 1999, Mike Glover
@@ -107,3 +112,4 @@ void cleanCDKObjectBindings (
 #endif
 
 #endif /* CDKBINDING_H */
+#endif /* CDKINCLUDES */
