@@ -18,8 +18,6 @@ int main (void)
    int cols			= 5;
    int vrows			= 3;
    int vcols			= 5;
-   int rowSpace			= 1;
-   int colSpace			= 1;
    char *coltitle[10], *rowtitle[10], *mesg[100];
    int colwidth[10], colvalue[10];
 
@@ -50,7 +48,7 @@ int main (void)
 				rows, cols, vrows, vcols,
 				title, rowtitle, coltitle,
 				colwidth, colvalue,
-				rowSpace, colSpace, '.',
+				-1, -1, '.',
 				COL, TRUE, TRUE, TRUE);
 
    /* Check to see if the matrix is NULL. */

@@ -10,7 +10,7 @@ int main (void)
    CDKSCREEN	*cdkscreen;
    CDKLABEL	*demo;
    WINDOW 	*cursesWin;
-   char		*mesg[4];
+   char		*mesg[10];
 
    /* Set up CDK. */ 
    cursesWin = initscr();

@@ -17,7 +17,7 @@ int main (int argc GCC_UNUSED, char **argv)
    WINDOW *cursesWin	= (WINDOW *)NULL;
    char *title		= "<C>Enter a\n<C>directory name.";
    char *label		= "</U/5>Directory:<!U!5>";
-   char	*info, *mesg[3], temp[256];
+   char	*info, *mesg[10], temp[256];
 
    /* Set up CDK. */
    cursesWin = initscr();

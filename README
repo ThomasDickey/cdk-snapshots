@@ -64,7 +64,7 @@ The code has been cleaned using both Purify(TM) and Sun's Testcenter(TM),
 so it is as clean as a babies butt. :) Any leaks I have seen are in the curses
 libraries; there is nothing I can do about that, sorry. There should be no
 memory leaks within the code, it shouldn't core dump, and it shouldn't do 
-anything unexpected. Unfortunatly this probably is not the case. If you do 
+anything unexpected. Unfortunately this probably is not the case. If you do 
 see something like this tell me after you read the BUGS file.
 
 Distribution:
@@ -99,21 +99,17 @@ BUGS - What to do when you find a bug. It also lists all of the bugs found,
 
 NOTES - Misc babblings of myself somewhat related to this distribution.
 
-VERSION - Contains the current rev level, when it was released, and
-          what is different from the previous release. (I promise
-          to make sure I keep this up to date. :) )
-
 TODO - A list of things I plan to do in the future. (sleep)
 
 CHANGES - A list of changes from one release to another.
 
 If you want to get a hold of me mail me at one of the following:
         glover@credit.erin.utoronto.ca
-        vexus@home.com
+	mike@vexus.ca
 
 The CDK Web page has several homes. They are:
-        http://members.home.net/vexus/CDK.html (official)
-        http://www.datasoft.on.ca/~cdk (Sponsered by the nice folks at Datasoft)
+        http://www.vexus.ca/CDK.html (official)
+        http://www.datasoft.on.ca/~cdk (Sponsored by the nice folks at Datasoft)
 
 ttfn,
 	Mike

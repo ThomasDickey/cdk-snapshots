@@ -11,7 +11,7 @@ int main (void)
    CDKSELECTION	*selection	= (CDKSELECTION *)NULL;
    WINDOW *cursesWin		= (WINDOW *)NULL;
    char *title			= "<C></5>Pick one or more accounts.";
-   char *choices[]		= {"   ", "***"};
+   char *choices[]		= {"   ", "-->"};
    char *item[400], temp[256], *mesg[200];
    struct passwd *ent;
    int count, x, y;

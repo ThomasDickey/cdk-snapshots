@@ -85,7 +85,7 @@ int main (void)
    drawCDKLabel (pausep, TRUE);
 
    /* Pause until the user says so... */
-   waitCDKLabel (pausep, (char)NULL);
+   waitCDKLabel (pausep, 0);
 
    /* Clean up. */
    destroyCDKGraph (graph);

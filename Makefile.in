@@ -33,7 +33,7 @@
 SHELL		= /bin/sh
 
 CDKLIB		= libcdk.a
-VERSION		= 4.9.8
+VERSION		= 4.9.9
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
