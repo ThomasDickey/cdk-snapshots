@@ -1,3 +1,5 @@
+/* $Id: appointment.c,v 1.16 2005/04/24 21:27:09 tom Exp $ */
+
 #include <cdk.h>
 
 #ifdef HAVE_XCURSES
@@ -232,7 +234,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 	 appInfo->appointment[appointments].day		= atoi (temp[0]);
 	 appInfo->appointment[appointments].month	= atoi (temp[1]);
 	 appInfo->appointment[appointments].year	= atoi (temp[2]);
-	 appInfo->appointment[appointments].type	= (EAppointmentType) atoi (temp[3]);
+	 appInfo->appointment[appointments].type	= atoi (temp[3]);
 	 appInfo->appointment[appointments].description = copyChar (temp[4]);
 	 appointments++;
       }

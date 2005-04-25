@@ -1,3 +1,4 @@
+/* $Id: rolodex.h,v 1.8 2005/04/24 21:26:21 tom Exp $ */
 #include <cdk.h>
 #include <time.h>
 #include <fcntl.h>
@@ -13,7 +14,6 @@ static char *GCurrentGroup	= 0;
 static char *GRCFile		= 0;
 static char *GDBMDir		= 0;
 static int GGroupModified	= FALSE;
-static int GPhoneListModified	= FALSE;
 static char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third FAX", "First Data Line", "Second Data Line", "Third Data Line"};
 
 /*

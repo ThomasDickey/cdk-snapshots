@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.24 2004/08/30 00:00:57 tom Exp $
+ * $Id: radio.h,v 1.26 2005/04/15 21:28:50 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -66,7 +66,7 @@ struct SRadio {
    chtype **	item;
    int *	itemLen;
    int *	itemPos;
-   int		titleAdj;
+   int		titleAdj;	/* unused */
    chtype	choiceChar;
    chtype	leftBoxChar;
    chtype	rightBoxChar;
@@ -79,6 +79,7 @@ struct SRadio {
    int		currentHigh;
    int		scrollbarPlacement;
    boolean	scrollbar;
+
    int		toggleSize;
    int		togglePos;
    float	step;
@@ -88,6 +89,7 @@ struct SRadio {
    int		boxWidth;
    int		boxHeight;
    int		viewSize;
+
    int		defItem;
    EExitType	exitType;
    boolean	shadow;

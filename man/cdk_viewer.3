@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.19 2003/12/11 01:27:40 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.22 2005/04/24 22:17:14 tom Exp $
 .TH cdk_viewer 3
 .SH NAME
 activateCDKViewer,
@@ -239,28 +239,44 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B *newCDKViewer
 function creates a viewer widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameters \fBheight\fR and \fBwidth\fR state how tall and wide the viewer
-window is to be.
-The \fBbuttons\fR is an array of the button labels which are
-to be attached to the viewer on the bottom; \fBbuttonCount\fR tells the viewer
-how many buttons there are.
-The parameter \fBbuttonHighlight\fR is the highlight
-attribute of the currently selected button.
-The \fBbox\fR parameter states
-whether the widget will be drawn with a box around it.
-The \fBshadow\fR
-parameter accepts a boolean value to turn the shadow on or off around this widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBheight\fR and
+.TP 5
+\fBwidth\fR
+are the height and width of the viewer window.
+.TP 5
+\fBbuttons\fR
+is an array of the button labels which are
+to be attached to the viewer on the bottom.
+.TP 5
+\fBbuttonCount\fR
+is the number of buttons in \fBbuttons\fP.
+.TP 5
+\fBbuttonHighlight\fR
+is the highlight attribute of the currently selected button.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKViewer
@@ -345,7 +361,7 @@ The following table
 outlines the keys and their actions for this widget.
 .LP
 .TS
-center;
+center box;
 l l
 l l
 lw15 lw35 .
@@ -355,43 +371,55 @@ Left Arrow	Shifts the viewport one column left.
 Right Arrow	Shifts the viewport one column left
 Up Arrow	Scrolls the viewport one line up.
 Down Arrow	Scrolls the viewport one line down.
-Prev Page	Moves one page backwards.
-Ctrl-B	Moves one page backwards.
-B	Moves one page backwards.
-b	Moves one page backwards.
-Next Page	Moves one page forwards.
-Ctrl-F	Moves one page forwards.
-Space	Moves one page forwards.
-F	Moves one page forwards.
-f	Moves one page forwards.
-Home	Shifts the whole list to the far left.
-|	Shifts the whole list to the far left.
-End	Shifts the whole list to the far right
-$	Shifts the whole list to the far right.
+_
+Prev Page
+Ctrl-B
+B
+b	Scroll one page backward.
+_
+Next Page
+Ctrl-F
+Space
+F
+f	Scroll one page forward.
+_
+Home
+|	Shift the whole list to the far left.
+_
+End
+$	Shift the whole list to the far right.
+_
+1
+<
 g	Moves to the first line in the viewer.
-1	Moves to the first line in the viewer.
+_
+>
 G	Moves to the last line in the viewer.
+_
 L	T{
 Moves half the distance to the end of the viewer.
 T}
 l	T{
 Moves half the distance to the top of the viewer.
 T}
+_
 ?	Searches up for a pattern.
 /	Searches down for a pattern.
 n	Repeats last search.
 N	Repeats last search, reversed direction.
 :	Jumps to a given line.
+_
 i	Displays file statistics.
 s	Displays file statistics.
+_
 Tab	Switches buttons.
 Return	T{
-Exits the widget and returns the index of the selected button.
-This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return the index of the selected button.
+Set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Escape	T{
-Exits the widget and returns -1.
-This also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
+Exit the widget and return -1.
+Set the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-L	Refreshes the screen.
 .TE

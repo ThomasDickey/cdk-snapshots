@@ -2,8 +2,8 @@
  
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:39:57 $
- * $Revision: 1.81 $
+ * $Date: 2005/04/01 21:25:01 $
+ * $Revision: 1.82 $
  */
  
 /*
@@ -601,7 +601,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GC
 	 {
 	   /*
 	    * If the difference is greater than 10 jump to the new
-	    * index position. Otherwise provide the nice scrollp.
+	    * index position. Otherwise provide the nice scroll.
 	    */
 	    if (absoluteDifference <= 10)
 	    {

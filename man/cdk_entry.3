@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.17 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_entry.3,v 1.18 2005/04/15 23:37:56 tom Exp $
 .TH cdk_entry 3
 .SH NAME
 activateCDKEntry,
@@ -288,42 +288,61 @@ whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKEntry
 creates a pointer to an entry widget.
+Parameters:
+.RS
+.TP 5
 The \fBscreen\fR parameter
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter may be an integer or one of the pre-defined values
+It may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer or one of the pre-defined values 
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values 
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed at the top of
-the widget.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage
 return character at the line break.
-The \fBlabel\fR parameter is the string which
-will be displayed in the label of the entry field.
-The \fBfieldAttribute\fR is
-the attribute of the characters to be displayed when they are typed in.
-\fBfiller\fR is the character which is to be displayed in an empty space in
-the entry field.
-The parameter \fBdisplayType\fR tells how the entry field
-will behave when a character is entered into the field.
+.TP 5
+\fBlabel\fR
+is the string which will be displayed in the label of the entry field.
+.TP 5
+\fBfieldAttribute\fR
+is the attribute of the characters which are typed in.
+.TP 5
+\fBfiller\fR
+is the character which is to be displayed in an empty space in the entry field.
+.TP 5
+\fBdisplayType\fR
+tells how the entry field will behave when a character is entered into the field.
 See \fBcdk_display (3)\fR for valid values for this field.
-The \fBfieldWidth\fR parameter states how wide the field will be.
+.TP 5
+\fBfieldWidth\fR
+denotes the width of the field.
 If a value
 of zero is provided, the field will be made as wide as possible on the screen.
 If a negative value is given, then the field width will be the
 maximum width minus the value provided.
-The parameter \fBminimumLength\fR
-states how many characters have to be entered before the user can exit the
-entry field.
-The \fBmaximumLength\fR parameter sets the maximum number of
-characters that can be entered.
-The \fBbox\fR parameter states whether the
-widget will be drawn with a box around it.
-The \fBshadow\fR parameter is true to turn the shadow on around this widget.
+.TP 5
+\fBminimumLength\fR
+controls the number of characters
+which must be entered before the user can exit the entry field.
+.TP 5
+\fBmaximumLength\fR
+sets the maximum number of characters that can be entered.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKEntry

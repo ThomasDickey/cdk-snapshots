@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.15 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.16 2005/04/15 23:33:35 tom Exp $
 .TH cdk_dialog 3
 .SH NAME
 activateCDKDialog,
@@ -252,32 +252,48 @@ whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKDialog
 creates a dialog widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-accepts an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameter \fBmessage\fR is the message to be displayed in the message region
-of the dialog box.
-The \fBrows\fR parameter states how many elements there are
-in the \fBmessage\fR.
-The \fBbuttons\fR array contains a list of all the buttons
-to be displayed on the bottom of the dialog box; while \fBbuttonCount\fR is the
-number of elements in the \fBbutton\fR array.
-\fBhighlight\fR is the attribute
-of the currently highlighted button.
-The \fBbox\fR parameter states whether the
-widget will be drawn with a box around it.
-\fBseparator\fR states
-whether a separator line will be drawn between the message region and the buttons.
-The \fBshadow\fR parameter accepts a boolean value to turn the shadow
-on or off around this widget.
+It may be integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBmessage\fR
+is the text to be displayed in the message region of the dialog box.
+.TP 5
+\fBrows\fR
+is the number of elements in the \fBmessage\fR list.
+.TP 5
+\fBbuttons\fR
+is an array containing the button labels
+to be displayed on the bottom of the dialog box.
+.TP 5
+\fBbuttonCount\fR
+is the number of elements in the \fBbuttons\fR array.
+.TP 5
+\fBhighlight\fR
+is the attribute of the currently highlighted button.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBseparator\fR
+is true if a separator line should be drawn between the message region and the buttons.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR
 pointer is returned.
 .TP 5

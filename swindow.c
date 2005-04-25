@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2004/08/31 01:42:06 $
- * $Revision: 1.108 $
+ * $Author: Thorsten.Glaser $
+ * $Date: 2005/04/24 20:27:19 $
+ * $Revision: 1.109 $
  */
 
 /*
@@ -593,11 +593,11 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 swindow->leftChar = swindow->maxLeftChar + 1;
 		 break;
 
-	    case 'g' : case '1' :
+	    case 'g' : case '1' : case '<' :
 		 swindow->currentTop = 0;
 		 break;
 
-	    case 'G' :
+	    case 'G' : case '>' :
 		 swindow->currentTop = swindow->maxTopLine;
 		 break;
 

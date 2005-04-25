@@ -1,3 +1,4 @@
+/* $Id: rolodex.c,v 1.17 2005/04/24 21:26:15 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -815,7 +816,7 @@ int readPhoneDataFile (char *dataFile, SPhoneData *phoneData)
 	 if (chunks == 8)
 	 {
 	    phoneData->record[linesFound].name		= items[0];
-	    phoneData->record[linesFound].lineType	= (ELineType) atoi (items[1]);
+	    phoneData->record[linesFound].lineType	= atoi (items[1]);
 	    phoneData->record[linesFound].phoneNumber	= items[2];
 	    phoneData->record[linesFound].address	= items[3];
 	    phoneData->record[linesFound].city		= items[4];
@@ -1110,7 +1111,7 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData *phoneData)
 				"Type: ",
 				types, GLINETYPECOUNT, 0,
 				TRUE, FALSE);
-   phoneRecord->lineType = (ELineType) activateCDKItemlist (itemList, 0);
+   phoneRecord->lineType = activateCDKItemlist (itemList, 0);
    destroyCDKItemlist (itemList);
 
    /* Clean up. */

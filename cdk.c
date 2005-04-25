@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 00:00:35 $
- * $Revision: 1.197 $
+ * $Date: 2005/04/24 15:08:17 $
+ * $Revision: 1.198 $
  */
 
 #define L_MARKER '<'
@@ -1305,7 +1305,7 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
       {
 	/*
 	 * If they gave a negative value, then return the
-	 * dimension of the parent minus the value given.
+	 * dimension of the parent plus the value given.
 	 */
 	 dimension = parentDim + proposedDim;
 

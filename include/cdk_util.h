@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.24 2003/12/06 16:27:28 tom Exp $
+ * $Id: cdk_util.h,v 1.25 2005/04/24 17:26:33 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ * Changes 1999-2003,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -171,7 +171,7 @@ int CDKreadFile (
 		char ***	/* info */);
 
 /*
- * This strips which space from the front/back of the given
+ * This strips white space from the front/back of the given
  * string. The stripType is one of: vFRONT, vBACK, vBOTH.
  */
 void stripWhiteSpace (
@@ -183,7 +183,7 @@ void stripWhiteSpace (
  * a file which is read into memory.
  */
 char **CDKsplitString(
-   		char *		/* string */,
+		char *		/* string */,
 		int		/* separator */);
 
 unsigned CDKallocStrings(
@@ -193,10 +193,10 @@ unsigned CDKallocStrings(
 		unsigned	/* used */);
 
 unsigned CDKcountStrings(
-   		char **		/* list */);
+		char **		/* list */);
 
 void CDKfreeStrings(
-   		char **		/* list */);
+		char **		/* list */);
 
 /*
  * Free a list of chtype-strings, terminated by a null pointer.
@@ -307,14 +307,14 @@ chtype *char2Chtype (
 int cmpStrChstr(char *		/* str */,
 	        chtype *	/* chstr */);
 
-/* 
+/*
  * Copy from a chtype string to a char string
  */
 
 void chstrncpy(char *		/* dest */,
 		chtype *	/* src */,
 		int		/* maxcount */);
-  
+
 /*
  * This takes a character pointer and returns the equivalent
  * display type.

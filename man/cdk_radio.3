@@ -1,11 +1,5 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.17 2004/08/27 23:03:32 tom Exp $
-.de It
-.br
-.ie \\n(.$>=3 .ne \\$3
-.el .ne 3
-.IP "\\$1" \\$2
-..
+.\" $Id: cdk_radio.3,v 1.22 2005/04/24 22:19:20 tom Exp $
 .TH cdk_radio 3
 .SH NAME
 activateCDKRadio,
@@ -14,6 +8,7 @@ drawCDKRadio,
 eraseCDKRadio,
 getCDKRadioBox,
 getCDKRadioChoiceCharacter,
+getCDKRadioCurrentItem,
 getCDKRadioHighlight,
 getCDKRadioLeftBrace,
 getCDKRadioRightBrace,
@@ -27,6 +22,7 @@ setCDKRadioBackgroundColor,
 setCDKRadioBox,
 setCDKRadioBoxAttribute,
 setCDKRadioChoiceCharacter,
+setCDKRadioCurrentItem,
 setCDKRadioHighlight,
 setCDKRadioHorizontalChar,
 setCDKRadioLLChar,
@@ -66,6 +62,9 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .BI "CDKRADIO *" "radio");
 .TP 15
 .B "chtype getCDKRadioChoiceCharacter ("
+.BI "CDKRADIO *" "radio");
+.TP 15
+.B "int getCDKRadioCurrentItem ("
 .BI "CDKRADIO *" "radio");
 .TP 15
 .B "chtype getCDKRadioHighlight ("
@@ -132,6 +131,10 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .B "void setCDKRadioChoiceCharacter ("
 .BI "CDKRADIO *" "radio",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKRadioCurrentItem ("
+.BI "CDKRADIO *" "radio",
+.BI "int" "index");
 .TP 15
 .B "void setCDKRadioHighlight ("
 .BI "CDKRADIO *" "radio",
@@ -218,6 +221,9 @@ returns true if the widget will be drawn with a box around it.
 .B getCDKRadioChoiceCharacter
 returns the character being used to draw the selected element in the list.
 .TP 5
+.B getCDKRadioCurrentItem 
+returns the index of the current item.
+.TP 5
 .B getCDKRadioHighlight
 returns the attribute of the highlight bar.
 .TP 5
@@ -273,46 +279,74 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKRadio
 creates a radio widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameter \fBspos\fR is where the scroll bar is to be placed.
-This may be one of three values: \fILEFT\fR, which puts the scroll bar on the left
-of the scrolling list.
-\fIRIGHT\fR which puts the scroll bar on the right side
-of the list, and \fINONE\fR which does not add a scroll bar.
-The parameters \fBheight\fR and \fBwidth\fR control the height and width of the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBspos\fR
+tells where the scroll bar is to be placed.
+This may be one of three values:
+.RS
+.TP 5
+\fILEFT\fR
+puts the scroll bar on the left of the scrolling list.
+.TP 5
+\fIRIGHT\fR
+puts the scroll bar on the right side of the list, and
+.TP 5
+\fINONE\fR
+does not add a scroll bar.
+.RE
+.TP 5
+\fBheight\fR and
+\fBwidth\fR
+control the height and width of the widget.
 If you
 provide a value of zero for either of the height or the width, the widget will
 be created with the full width and height of the screen.
 If you provide a negative
 value, the widget will be created the full height or width minus the value provided.
-The \fBtitle\fR parameter is the string which will be displayed at the top of the widget.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The parameter \fBradioList\fR is the list of items
-to be displayed in the radio list; \fBradioListLength\fR is the number of elements
-in the given list.
-The \fBhighlight\fR parameter specifies the display attribute
-of the currently selected item.
-The \fBchoiceCharacter\fR parameter is the
-character to use to highlight the current selection.
-The \fBdefaultItem\fR
-value is an integer which corresponds to the default selection.
-The \fBbox\fR
-parameter states whether the widget will be drawn with a box around it.
-The \fBshadow\fR parameter accepts a boolean value to turn the shadow on or
-off around this widget.
-If the widget could not be created then a \fINULL\fR
-pointer is returned.
+.TP 5
+\fBradioList\fR
+is the list of items to display in the radio list.
+.TP 5
+\fBradioListLength\fR
+is the number of elements in the given list.
+.TP 5
+\fBhighlight\fR
+specifies the display attribute of the currently selected item.
+.TP 5
+\fBchoiceCharacter\fR
+is the character to use to highlight the current selection.
+.TP 5
+\fBdefaultItem\fR
+is the index in the list of the default selection.
+.TP 5
+\fBbox\fR
+is true if widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
+If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKRadio
 allows the user to move the widget around the screen via the
@@ -342,6 +376,9 @@ function sets the attribute of the box.
 .TP 5
 .B setCDKRadioChoiceCharacter
 sets the character to use to draw the selected element in the list.
+.TP 5
+.B setCDKRadioCurrentItem 
+sets the current item by its index in the list.
 .TP 5
 .B setCDKRadioHighlight
 sets the attribute of the highlight bar.
@@ -393,7 +430,7 @@ The following table
 outlines the keys and their actions for this widget.
 .LP
 .TS
-center tab(/);
+center tab(/) box;
 l l
 lw15 lw35 .
 \fBKey/Action\fR
@@ -402,30 +439,40 @@ Left Arrow/Shifts the whole list left one character.
 Right Arrow/Shifts the whole list right one character.
 Up Arrow/Selects the next item up in the list.
 Down Arrow/Selects the next item down in the list.
-Space/Selects or deselects the current choice.
-Prev Page/Moves one page backwards.
-Ctrl-B/Moves one page backwards.
-Next Page/Moves one page forwards.
-Ctrl-F/Moves one page forwards.
-g/Moves to the first element in the list.
-1/Moves to the first element in the list.
-G/Moves to the last element in the list.
+_
+Prev Page
+Ctrl-B/Scroll one page backward.
+_
+Next Page
+Ctrl-F/Scroll one page forward.
+_
+1
+<
+g
+Home/Move to the first element in the list.
+_
+>
+G
+End/Move to the last element in the list.
+_
 $/Shifts the whole list to the far right.
 |/Shifts the whole list to the far left.
+_
+Space/Selects or deselects the current choice.
 Return/T{
 Exits the widget and returns the index of the selected item.
 This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Tab/T{
-Exits the widget and returns the index of the selected item.
-This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return the index of the selected item.
+Set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Escape/T{
-Exits the widget and returns -1.
-This also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
+Exit the widget and return -1.
+Set the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-L/Refreshes the screen.
-=
+_
 .TE
 .SH SEE ALSO
 .BR cdk (3),

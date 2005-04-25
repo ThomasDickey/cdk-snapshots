@@ -1,4 +1,4 @@
-/* $Id: radio1_ex.c,v 1.8 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: radio1_ex.c,v 1.9 2005/04/15 21:46:06 tom Exp $ */
 
 #include "cdk.h"
 
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
+   CDKparseParams(argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr ();
@@ -38,7 +38,8 @@ int main(int argc, char **argv)
 			CDKparsePosition(CDKparamString2(&params, 's', "NONE")),
 			CDKparamValue(&params, 'H', 5),
 			CDKparamValue(&params, 'W', 20),
-			NULL, item, 3,
+		        CDKparamString(&params, 't'),
+			item, 3,
 			'#' | A_REVERSE, 1,
 			A_REVERSE,
 			CDKparamValue(&params, 'N', TRUE),

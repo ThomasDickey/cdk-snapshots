@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.18 2004/08/27 23:03:32 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.19 2005/04/15 23:30:32 tom Exp $"
 .TH cdk_calendar 3
 .SH NAME
 activateCDKCalendar,
@@ -286,29 +286,52 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKCalendar
 creates a calendar widget and returns a pointer to it.
-The \fBscreen\fR
-parameter is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR controls the placement of the object along the horizontal axis.
-This parameter can take integer or one of the pre-defined values
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
+is the screen you wish this widget to be placed in.
+.TP 5
+\fBxpos\fR
+controls the placement of the object along the horizontal axis.
+It may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls
-the placement of the object along the vertical axis.
-This parameter may be
-an integer or a pre-defined value of \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed
-at the top of the widget.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just
 provide a carriage return character at the line break.
-The parameters \fByear\fR,
-\fBmonth\fR, and \fBday\fR set the initial date of the calendar.
-The three
-parameters following \fByearAttrib\fR, \fBmonthAttrib\fR, and \fBdayAttrib\fR
-represent the attributes of the year, month, and day respectfully.
-The \fBhighlight\fR parameter sets the highlight of the currently selected day.
-The \fBbox\fR parameter states whether the widget will be drawn with a box
-around it.
-The \fBshadow\fR parameter accepts a boolean value to turn
-the shadow on or off around this widget.
+.TP 5
+\fByear\fR,
+.TP 5
+\fBmonth\fR and
+.TP 5
+\fBday\fR
+.br
+set the initial date of the calendar.
+.TP 5
+\fByearAttrib\fR,
+.TP 5
+\fBmonthAttrib\fR and
+.TP 5
+\fBdayAttrib\fR
+represent the attributes of the year, month, and day respectively.
+.TP 5
+\fBhighlight\fR
+sets the highlight of the currently selected day.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created
 then a \fINULL\fR pointer is returned.
 .TP 5

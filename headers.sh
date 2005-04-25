@@ -1,75 +1,117 @@
 #! /bin/sh
-# $Id: headers.sh,v 1.4 2004/08/28 00:12:47 tom Exp $
+# $Id: headers.sh,v 1.6 2005/03/25 23:30:29 tom Exp $
 #
 # Adjust includes for header files that reside in a subdirectory of
 # /usr/include, etc.
 #
-# Parameters (the first case creates the sed script):
-#	$1 is the target directory
-#	$2 is the source directory
-# or (the second case does the install, using the sed script):
-#	$1 is the script to use for installing
-#	$2 is the target directory
-#	$3 is the source directory
-#	$4 is the file to install, editing source/target/etc.
-
-PACKAGE=CDK
-CONFIGH=cdk_config.h
+# Options:
+#	-c CFG	specify an alternate name for config.h
+#	-d DIR	target directory
+#	-i    	create/update the headers.sed script
+#	-p PKG	specify the package name
+#	-s DIR	source directory
+#	-x PRG	install-program (plus options, the whole value in quotes)
+#
+# Other parameters are assumed to be provided only for the install scenario.
 
 TMPSED=headers.sed
 
-if test $# = 2 ; then
-	rm -f $TMPSED
-	DST=$1
-	REF=$2
-	LEAF=`basename $DST`
-	case $DST in
-	/*/include/$LEAF)
-		END=`basename $DST`
-		for i in $REF/*.h
-		do
-			NAME=`basename $i`
-			echo "s/<$NAME>/<$END\/$NAME>/g" >> $TMPSED
-		done
+OPT_C=config.h
+OPT_D=
+OPT_I=n
+OPT_P=
+OPT_S=
+OPT_X=install
+
+while test $# != 0
+do
+	case $1 in
+	-c)	# CFG	specify an alternate name for config.h
+		shift
+		OPT_C="$1"
+		;;
+	-d)	# DIR	target directory
+		shift
+		OPT_D="$1"
+		;;
+	-i)	# create the headers.sed script
+		if test "$OPT_I" = n
+		then
+			rm -f $TMPSED
+		fi
+		OPT_I=y
+
+		if ( test -n "$OPT_D" && test -d "$OPT_D" )
+		then
+			if ( test -n "$OPT_S" && test -d "$OPT_S" )
+			then
+				LEAF=`basename $OPT_D`
+				case $OPT_D in
+				/*/include/$LEAF)
+					END=`basename $OPT_D`
+					for i in $OPT_S/*.h
+					do
+						NAME=`basename $i`
+						echo "s%<$NAME>%<$END/$NAME>%g" >> $TMPSED
+					done
+					;;
+				*)
+					echo "" >> $TMPSED
+					;;
+				esac
+				OPT_S=
+			fi
+		fi
+
+		if test -n "$OPT_P"
+		then
+			for name in `
+			egrep "#define[ 	][ 	]*[A-Z]" $OPT_C \
+				| sed	-e 's/^#define[ 	][ 	]*//' \
+					-e 's/[ 	].*//' \
+				| fgrep -v GCC_ \
+				| sort -u \
+				| egrep -v "^${OPT_P}_"`
+			do
+				echo "s%\\<$name\\>%${OPT_P}_$name%g" >>$TMPSED
+			done
+			OPT_P=
+		fi
+		;;
+	-p)	# PKG	specify the package name
+		shift
+		OPT_P="$1"
+		;;
+	-s)	# DIR	source directory
+		shift
+		OPT_S="$1"
+		;;
+	-x)	# PRG	install-program (plus options, the whole value in quotes)
+		shift
+		OPT_X="$1"
 		;;
 	*)
-		echo "" >> $TMPSED
+		FILE=$1
+
+		SHOW=`basename $FILE`
+		TMPSRC=${TMPDIR-/tmp}/${SHOW}$$
+
+		echo "	... $SHOW"
+		test -f $OPT_S/$FILE && FILE="$OPT_S/$FILE"
+
+		if test -f "$FILE"
+		then
+			rm -f $TMPSRC
+			sed -f $TMPSED $FILE > $TMPSRC
+			NAME=`basename $FILE`
+
+			# Just in case someone gzip'd manpages, remove the conflicting copy.
+			test -f $OPT_D/$NAME.gz && rm -f $OPT_D/$NAME.gz
+
+			eval $OPT_X $TMPSRC $OPT_D/$NAME
+			rm -f $TMPSRC
+		fi
 		;;
 	esac
-	for name in `
-	egrep "#define[ 	][ 	]*[A-Z]" $REF/$CONFIGH \
-		| sed	-e 's/^#define[ 	][ 	]*//' \
-			-e 's/[ 	].*//' \
-		| fgrep -v GCC_ \
-		| sort -u \
-		| egrep -v "^${PACKAGE}_"`
-	do
-		echo "s/\\<$name\\>/${PACKAGE}_$name/g" >>$TMPSED
-	done
-else
-	PRG=""
-	while test $# != 3
-	do
-		PRG="$PRG $1"; shift
-	done
-
-	DST=$1
-	REF=$2
-	SRC=$3
-
-	SHOW=`basename $SRC`
-	TMPSRC=${TMPDIR-/tmp}/${SHOW}$$
-
-	echo "	... $SHOW"
-	test -f $REF/$SRC && SRC="$REF/$SRC"
-
-	rm -f $TMPSRC
-	sed -f $TMPSED $SRC > $TMPSRC
-	NAME=`basename $SRC`
-
-	# Just in case someone gzip'd manpages, remove the conflicting copy.
-	test -f $DST/$NAME.gz && rm -f $DST/$NAME.gz
-
-	eval $PRG $TMPSRC $DST/$NAME
-	rm -f $TMPSRC
-fi
+	shift
+done

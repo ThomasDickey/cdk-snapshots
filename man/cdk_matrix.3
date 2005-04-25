@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.19 2004/08/27 23:04:48 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.20 2005/04/16 00:01:22 tom Exp $
 .TH cdk_matrix 3
 .SH NAME
 activateCDKMatrix,
@@ -291,38 +291,62 @@ the move was successful.
 .TP 5
 .B newCDKMatrix
 creates a matrix widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameters \fBscreenRows\fR and \fBscreenCols\fR are the number of rows and
-columns to be displayed on the screen respectively; where \fBactualRows\fR and
-\fBactualCols\fR are the number of actual rows and columns the matrix has.
-The \fBtitle\fR parameter is the string which will be displayed at the top of
-the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBscreenRows\fR and
+.TP 5
+\fBscreenCols\fR
+are the number of rows and
+columns to be displayed on the screen respectively.
+.TP 5
+\fBactualRows\fR and
+.TP 5
+\fBactualCols\fR
+are the number of actual rows and columns the matrix has.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The two parameters \fBrowTitles\fR and \fBcolTitles\fR
+.TP 5
+\fBrowTitles\fR and
+.TP 5
+\fBcolTitles\fR
 are the titles along the row and columns respectively.
-The parameter \fBcolumnWidths\fR is an array of integers stating how wide the individual
-columns are to be.
-The parameter \fBcolumnTypes\fR is an array of \fIint\fR
+.TP 5
+\fBcolumnWidths\fR
+is an array of integers stating how wide the individual columns are to be.
+.TP 5
+\fBcolumnTypes\fR
+is an array of integers
 which correspond to the individual column display types.
-The values of the
-array should be assigned a value of type \fIEDisplayType\fR.
+The values of the array should be assigned a value of type \fIEDisplayType\fR.
 See \fBcdk_display (3)\fR for legal values of \fIEDisplayType\fR.
-The parameters \fBrowSpace\fR and \fBcolSpace\fR dictate how much white space
-is to be between rows and columns respectively.
-The \fBfiller\fR option is the
-character to use in empty space within a cell.
-The parameter \fBdominantAttribute\fR states which between the two, the rows or the columns,
+.TP 5
+\fBrowSpace\fR and
+.TP 5
+\fBcolSpace\fR
+dictate how much white space is to be between rows and columns respectively.
+.TP 5
+\fBfiller\fR
+is the character to use in empty space within a cell.
+.TP 5
+\fBdominantAttribute\fR
+states which (the rows or the columns)
 will have the dominant character attributes.
 This is stated when a cell has
 both a row attribute and a column attribute.
@@ -331,15 +355,18 @@ If the value of the parameter
 will be displayed.
 If it is set to \fBCOL\fR then the column's attributes
 will be displayed instead.
-The \fBboxMatrix\fR parameter states whether
-the widget will be drawn with a box around it.
-The \fBboxCell\fR
-parameter states whether the individual cells will have boxes drawn
-around them.
-The \fBshadow\fR parameter accepts a boolean value to turn
-the shadow on or off around this widget.
-If the widget could not be created
-then a \fINULL\fR pointer is returned.
+.TP 5
+\fBboxMatrix\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBboxCell\fR
+is true if the individual cells should have boxes drawn around them.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
+If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKMatrix
 allows the user to move the widget around the screen via the
