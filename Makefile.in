@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.65 2005/04/16 15:30:14 tom Exp $
+# $Id: Makefile.in,v 1.66 2005/04/24 23:06:20 tom Exp $
 #
 #  Copyright 2001-2004,2005 Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -216,6 +216,7 @@ CDKMAN		= \
 		cdk_button.3 \
 		cdk_buttonbox.3 \
 		cdk_calendar.3 \
+		cdk_compat.3 \
 		cdk_dialog.3 \
 		cdk_display.3 \
 		cdk_entry.3 \
@@ -230,6 +231,8 @@ CDKMAN		= \
 		cdk_mentry.3 \
 		cdk_menu.3 \
 		cdk_misc.3 \
+		cdk_objs.3 \
+		cdk_params.3 \
 		cdk_position.3 \
 		cdk_process.3 \
 		cdk_radio.3 \
@@ -240,6 +243,7 @@ CDKMAN		= \
 		cdk_swindow.3 \
 		cdk_template.3 \
 		cdk_traverse.3 \
+		cdk_util.3 \
 		cdk_viewer.3
 
 CDKREADME	= EXPANDING NOTES TODO COPYING INSTALL README
