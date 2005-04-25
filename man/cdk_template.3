@@ -1,4 +1,4 @@
-.\" $Id: cdk_template.3,v 1.20 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_template.3,v 1.22 2005/04/16 00:30:30 tom Exp $
 .TH cdk_template 3
 .SH NAME
 activateCDKTemplate,
@@ -244,7 +244,7 @@ returns a \fIchar*\fR pointer to the field value and the plate.
 .B moveCDKTemplate
 moves the given widget to the given position.
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
-The parameter \fBxpos\fR accepts an integer or one of the predefined values
+The parameter \fBxpos\fR is an integer or one of the predefined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
 The parameter \fBypos\fR
 may be an integer or one of the pre-defined values \fILEFT\fR,
@@ -262,31 +262,37 @@ The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will be repainted after the move.
 .TP 5
 .B newCDKTemplate
-.RS 3
 creates a template widget, returning a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-accepts an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed at the top of the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBtitle\fR
+is the string to display at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The \fBlabel\fR parameter is the
-string which will be displayed in the label of the template field.
-The \fBplate\fR parameter defines what character is allowed at what position
-in the template field.
+.TP 5
+\fBlabel\fR
+is the string to display in the label of the template field.
+.TP 5
+\fBplate\fR
+defines the character to allow at each position in the template field.
 This is done by creating a character plate by using
 special format character to tell the template widget what type of character
 is allowed where in the template widget.
-The following table lists all of
-the current format types.
+The following table lists the format types.
 .LP
 .TS
 center tab(/);
@@ -321,22 +327,22 @@ Ignored and assumed a non-editable position.
 T}
 =
 .TE
-.LP
-The \fBoverlay\fR parameter is the overlay of the template field.
+.TP 5
+\fBoverlay\fR
+is the overlay of the template field.
 If the field
-needed some sort of overlay, this parameter supplies this.
+needs some sort of overlay, this parameter supplies this.
 A date field could
 have YY/MM/DD, the overlay parameter would display YY/MM/DD on an empty template field.
-The \fBbox\fR parameter states whether the widget will be drawn with a
-box around it.
-The \fBshadow\fR parameter accepts a boolean value to
-turn the shadow on or off around this widget.
-The \fBbox\fR parameter states
-whether the widget will be drawn with a box around it.
-The \fBshadow\fR
-parameter accepts a boolean value to turn the shadow on or off around this widget.
-If the widget could not be created then a \fINULL\fR pointer is returned.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
 .RE
+.IP
+If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKTemplate
 allows the user to move the widget around the screen via the

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.14 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_menu.3,v 1.15 2005/04/16 00:08:49 tom Exp $
 .TH cdk_menu 3
 .SH NAME
 activateCDKMenu,
@@ -178,19 +178,35 @@ The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
 .TP 5
 .B newCDKMenu
 creates a menu widget and returns a pointer to it.
-The \fBscreen\fR parameter is the screen you wish this widget to be placed in.
-The parameter \fBmenuList\fR
-is a list of the menu list titles while \fBmenuListLength\fR states how
-many pull down menus there are.
-The parameter \fBsubmenuListLength\fR states
-how many menu items are under each menu list.
-The \fBmenuLocation\fR parameter states where each menu is to be located.
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
+is the screen you wish this widget to be placed in.
+.TP 5
+\fBmenuList\fR
+is a list of the menu list titles.
+.TP 5
+\fBmenuListLength\fR
+is the number of pull down menus.
+.TP 5
+\fBsubmenuListLength\fR
+is the number of menu items under each menu list.
+.TP 5
+\fBmenuLocation\fR
+tells where each menu is to be located.
 Valid values are \fILEFT\fR and \fIRIGHT\fR.
-The parameter \fBmenuPos\fR sets whether the menu is to be on
-the top of the screen or the bottom.
+.TP 5
+\fBmenuPos\fR
+tells whether the menu is to be on the top of the screen or the bottom.
 Valid values are \fITOP\fR and \fIBOTTOM\fR.
-The parameters \fBtitleAttribute\fR and \fBsubtitleAttribute\fR are the character
-attributes of the title and sub-titles respectively.
+.TP 5
+\fBtitleAttribute\fR and
+.TP 5
+\fBsubtitleAttribute\fR
+are the character attributes of the title and sub-titles respectively.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B setCDKMenu

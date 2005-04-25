@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.14 2004/08/27 23:03:32 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.18 2005/04/24 22:21:24 tom Exp $"
 .TH cdk_selection 3
 .SH NAME
 activateCDKSelection,
@@ -9,6 +9,7 @@ eraseCDKSelection,
 getCDKSelectionBox,
 getCDKSelectionChoice,
 getCDKSelectionChoices,
+getCDKSelectionCurrent,
 getCDKSelectionHighlight,
 getCDKSelectionMode,
 getCDKSelectionModes,
@@ -23,6 +24,7 @@ setCDKSelectionBox,
 setCDKSelectionBoxAttribute,
 setCDKSelectionChoice,
 setCDKSelectionChoices,
+setCDKSelectionCurrent,
 setCDKSelectionHighlight,
 setCDKSelectionHorizontalChar,
 setCDKSelectionLLChar,
@@ -66,6 +68,9 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .BI "int " "index");
 .TP 15
 .B "int *getCDKSelectionChoices ("
+.BI "CDKSELECTION *" "selection");
+.TP 15
+.B "int getCDKSelectionCurrent ("
 .BI "CDKSELECTION *" "selection");
 .TP 15
 .B "chtype getCDKSelectionHighlight ("
@@ -138,6 +143,10 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .B "void setCDKSelectionChoices ("
 .BI "CDKSELECTION *" "selection",
 .BI "int " "choices[]");
+.TP 15
+.B "void setCDKSelectionCurrent ("
+.BI "CDKSELECTION *" "selection",
+.BI "int" "index");
 .TP 15
 .B "void setCDKSelectionHighlight ("
 .BI "CDKSELECTION *" "selection",
@@ -226,6 +235,9 @@ returns the selection choice at the given index.
 .B getCDKSelectionChoices
 returns an array of the current selection choices for the widget.
 .TP 5
+.B getCDKSelectionCurrent 
+returns the current selection index.
+.TP 5
 .B getCDKSelectionHighlight
 returns the attribute of the highlight bar.
 .TP 5
@@ -281,43 +293,76 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKSelection
 creates a selection widget and returns a pointer to it.
-The \fBscreen\fR parameter is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR controls the placement of the object along the horizontal axis.
-This parameter may be an integer or one of the pre-defined values
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
+is the screen you wish this widget to be placed in.
+.TP 5
+\fBxpos\fR
+controls the placement of the object along the horizontal axis.
+It may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer or one of the pre-defined values
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameter \fBspos\fR is where the scroll bar is to be placed.
-This may be one of three values: \fILEFT\fR, which puts the scroll bar on the left
+.TP 5
+\fBspos\fR
+is where the scroll bar is to be placed.
+It may be one of three values:
+.RS
+.TP 5
+\fILEFT\fR
+puts the scroll bar on the left
 of the scrolling list.
-\fIRIGHT\fR which puts the scroll bar on the right side
-of the list, and \fINONE\fR which does not add a scroll bar.
-The parameters \fBheight\fR and \fBwidth\fR control the height and width of the widget.
+\fIRIGHT\fR
+puts the scroll bar on the right side of the list, and
+.TP 5
+\fINONE\fR
+does not add a scroll bar.
+.RE
+.TP 5
+\fBheight\fR and
+.TP 5
+\fBwidth\fR
+control the height and width of the widget.
 If you provide a value of zero for either of the height or the width, the widget
 will be created with the full width and height of the screen.
 If you provide a
 negative value, the widget will be created the full height or width minus the
 value provided.
-The \fBtitle\fR parameter is the string which will be
-displayed at the top of the widget.
+.TP 5
+\fBtitle\fR
+is the string which to display at the top of the widget.
 The title can be more than one line; just
 provide a carriage return character at the line break.
-The parameter \fBselectionList\fR is the list of items to be displayed in the
-selection list; \fBselectionListLength\fR is the number of elements in the
-given list.
-The \fBchoiceList\fR parameter is the list of choices that will
-be selected when the user presses the space bar; \fBchoiceListLength\fR is
-the length of this list.
-The \fBhighlight\fR parameter specifies the display
-attribute of the currently selected item.
-The \fBbox\fR parameter states
-whether the widget will be drawn with a box around it.
-The \fBshadow\fR parameter accepts a boolean value to turn the shadow on or off
-around this widget.
-If the widget could not be created then a \fINULL\fR
-pointer is returned.
+.TP 5
+\fBselectionList\fR
+is the list of items to display in the selection list
+.TP 5
+\fBselectionListLength\fR
+is the number of elements in the given list.
+.TP 5
+\fBchoiceList\fR
+is the list of choices that will
+be selected when the user presses the space bar.
+.TP 5
+\fBchoiceListLength\fR
+is the length of this list.
+.TP 5
+\fBhighlight\fR
+specifies the display attribute of the currently selected item.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
+If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKSelection
 allows the user to move the widget around the screen via the cursor/keypad keys.
@@ -349,6 +394,9 @@ sets the selection choice value at the given index.
 .TP 5
 .B setCDKSelectionChoices
 sets the selection choice values of the widget.
+.TP 5
+.B setCDKSelectionCurrent 
+sets the current selection index.
 .TP 5
 .B setCDKSelectionHighlight
 sets the attribute of the highlight bar.
@@ -394,53 +442,61 @@ sets the upper right hand corner of the widget's box to the given character.
 .B setCDKSelectionVerticalChar
 sets the vertical drawing character for the box to the given character.
 .SH KEY BINDINGS
-When the widget is activated there are several default key bindings which will
-help the user enter or manipulate the information quickly.
-The following table
-outlines the keys and their actions for this widget.
+When the widget is activated there are several default key bindings which
+help the user enter or manipulate the information quickly:
 .LP
 .TS
-center tab(/) allbox;
+center tab(/) box;
 l l
 l l
 lw15 lw35 .
 \fBKey/Action\fR
 =
 Left Arrow/T{
-Shifts the whole list left one character.
+Shift the whole list left one column.
 T}
 Right Arrow/T{
-Shifts the whole list right one character.
+Shift the whole list right one column.
 T}
 Up Arrow/T{
-Selects the next item up in the list.
+Select the previous item in the list.
 T}
 Down Arrow/T{
-Selects the next item down in the list.
+Select the next item in the list.
 T}
+_
+Prev Page
+Ctrl-B/Scroll one page backward.
+_
+Next Page
+Ctrl-F/Scroll one page forward.
+_
+1
+<
+g
+Home/Move to the first element in the list.
+_
+>
+G
+End/Move to the last element in the list.
+_
+$/Shift the whole list to the far right.
+|/Shift the whole list to the far left.
+_
 Space/T{
 Cycles to the next choice on the current item.
 T}
-Prev Page/Moves one page backwards.
-Ctrl-B/Moves one page backwards.
-Next Page/Moves one page forwards.
-Ctrl-F/Moves one page forwards.
-g/Moves to the first element in the list.
-1/Moves to the first element in the list.
-G/Moves to the last element in the list.
-$/Shifts the whole list to the far right.
-|/Shifts the whole list to the far left.
 Return/T{
-Exits the widget and returns 1.
-This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return 1.
+Also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Tab/T{
-Exits the widget and returns 1.
-This also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return 1.
+Also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Escape/T{
-Exits the widget and returns -1.
-This also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
+Exit the widget and return -1.
+Also set the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-L/Refreshes the screen.
 .TE

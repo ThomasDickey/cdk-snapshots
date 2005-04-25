@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.26 2005/03/08 19:40:50 tom Exp $
+ * $Id: scroll.h,v 1.29 2005/04/15 00:25:57 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -70,31 +70,33 @@ struct SScroll {
    WINDOW	*scrollbarWin;
    WINDOW       *listWin;
    WINDOW	*shadowWin;
-   int		titleAdj;
-   chtype **	item;
-   int *	itemPos;
-   int *	itemLen;
-   int		maxTopItem;
-   int		maxLeftChar;
-   int		leftChar;
-   int		lastItem;
-   int		currentTop;
-   int		currentItem;
-   int		currentHigh;
-   int		listSize;
-   int		boxWidth;
-   int		boxHeight;
-   int		viewSize;
-   int		scrollbarPlacement;
-   boolean	scrollbar;
-   int		toggleSize;
-   int		togglePos;
-   float	step;
-   EExitType	exitType;
-   boolean	shadow;
-   boolean	numbers;
-   chtype	titlehighlight;
-   chtype	highlight;
+   int		titleAdj;	/* unused */
+   chtype **	item;		/* */
+   int *	itemPos;	/* */
+   int *	itemLen;	/* */
+   int		maxTopItem;	/* */
+   int		maxLeftChar;	/* */
+   int		leftChar;	/* */
+   int		lastItem;	/* */
+   int		currentTop;	/* */
+   int		currentItem;	/* */
+   int		currentHigh;	/* */
+   int		listSize;	/* */
+   int		boxWidth;	/* */
+   int		boxHeight;	/* */
+   int		viewSize;	/* */
+
+   int		scrollbarPlacement; /* UNUSED */
+   boolean	scrollbar;	/* UNUSED */
+   int		toggleSize;	/* size of scrollbar thumb/toggle */
+   int		togglePos;	/* position of scrollbar thumb/toggle */
+   float	step;		/* increment for scrollbar */
+
+   EExitType	exitType;	/* */
+   boolean	shadow;		/* */
+   boolean	numbers;	/* */
+   chtype	titlehighlight;	/* */
+   chtype	highlight;	/* */
 };
 typedef struct SScroll CDKSCROLL;
 
@@ -206,9 +208,16 @@ boolean getCDKScrollBox (
 #define setCDKScrollBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*
- * This adds a single item into the scrolling list.
+ * This adds a single item to the end of scrolling list.
  */
 void addCDKScrollItem (
+		CDKSCROLL *	/* scroll */,
+		char *		/* item */);
+
+/*
+ * This adds a single item into the scrolling list.
+ */
+void insertCDKScrollItem (
 		CDKSCROLL *	/* scroll */,
 		char *		/* item */);
 

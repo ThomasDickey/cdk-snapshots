@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2004/10/04 22:53:31 $
- * $Revision: 1.150 $
+ * $Author: Thorsten.Glaser $
+ * $Date: 2005/04/24 20:27:19 $
+ * $Revision: 1.151 $
  */
 
 /*
@@ -662,12 +662,12 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 		 REFRESH = TRUE;
 		 break;
 
-	    case 'g' : case '1' :
+	    case 'g' : case '1' : case '<' :
 		 viewer->currentTop = 0;
 		 REFRESH = TRUE;
 		 break;
 
-	    case 'G' :
+	    case 'G' : case '>' :
 		 viewer->currentTop = viewer->maxTopLine;
 		 REFRESH = TRUE;
 		 break;

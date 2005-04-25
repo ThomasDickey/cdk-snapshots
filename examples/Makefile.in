@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.16 2004/08/28 01:07:06 tom Exp $
+# $Id: Makefile.in,v 1.17 2005/04/24 17:45:28 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -60,7 +60,8 @@ BINS	= \
 	swindow_ex$x \
 	template_ex$x \
 	traverse_ex$x \
-	viewer_ex$x
+	viewer_ex$x \
+	viewer_ex2$x
 
 LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
 
@@ -99,6 +100,7 @@ swindow_ex$x :		swindow_ex.c		; $(LINKIT)
 template_ex$x :		template_ex.c		; $(LINKIT)
 traverse_ex$x :		traverse_ex.c		; $(LINKIT)
 viewer_ex$x :		viewer_ex.c		; $(LINKIT)
+viewer_ex2$x :		viewer_ex2.c		; $(LINKIT)
 #
 # Standard clean directives.
 #

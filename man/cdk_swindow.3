@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.16 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.19 2005/04/24 22:17:50 tom Exp $
 .TH cdk_swindow 3
 .SH NAME
 activateCDKSwindow,
@@ -313,33 +313,47 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKSwindow
 creates a swindow widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The parameters \fBheight\fR and \fBwidth\fR control the height and width of the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBheight\fR and
+.TP 5
+\fBwidth\fR
+control the height and width of the widget.
 If you provide a value of zero for either of the height or the width, the
 widget will be created with the full width and height of the screen.
 If you provide
 a negative value, the widget will be created the full height or width minus the
 value provided.
-The \fBtitle\fR parameter is the string which will be displayed at
-the top of the widget.
+.TP 5
+\fBtitle\fR
+is the string to display at the top of the widget.
 The title can be more than one line; just provide a carriage
 return character at the line break.
-The parameter \fBsaveLines\fR is the number of
-lines to save before throwing information away.
-The \fBbox\fR parameter states
-whether the widget will be drawn with a box around it.
+.TP 5
+\fBsaveLines\fR
+is the number of lines to save before throwing information away.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
 The \fBshadow\fR
-parameter accepts a boolean value to turn the shadow on or off around this widget.
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKSwindow
@@ -423,7 +437,7 @@ The following table
 outlines the keys and their actions for this widget.
 .LP
 .TS
-center tab(/) ;
+center tab(/) box;
 l l
 lw(15) lw(45) .
 \fBKey/Action\fR
@@ -432,48 +446,46 @@ Left Arrow/Scrolls the window left one column.
 Right Arrow/Scrolls the window right one column.
 Up Arrow/Scrolls the window up one row.
 Down Arrow/Scrolls the window down one row.
-Prev Page/Scrolls the window backward one page.
-Ctrl-B/Scrolls the window backward one page.
-b/Scrolls the window backward one page.
-B/Scrolls the window backward one page.
-Next Page/Scrolls the window forward one page.
-Ctrl-F/Scrolls the window forward one page.
-Space/Scrolls the window forward one page.
-f/Scrolls the window forward one page.
-F/Scrolls the window forward one page.
-Home/Scrolls the list to the left margin.
-|/Scrolls the list to the left margin.
-End/Scrolls the list to the right margin.
-$/Scrolls the list to the right margin.
-g/T{
-Moves to the top of the scrolling window.
-T}
-1/T{
-Moves to the top of the scrolling window.
-T}
-G/T{
-Moves to the bottom of the scrolling window.
-T}
-l/T{
-Loads a file into the scrolling window.
-T}
-L/T{
-Loads a file into the scrolling window.
-T}
-s/T{
-Saves the contents of the scrolling window into a file.
-T}
+_
+Prev Page
+Ctrl-B
+b
+B/Scroll the window backward one page.
+_
+Next Page
+Ctrl-F
+Space
+f
+F/Scroll the window forward one page.
+_
+Home
+|/Scroll the list to the left margin.
+_
+End
+$/Scroll the list to the right margin.
+_
+1
+<
+g/Move to the top of the scrolling window.
+>
+G/Move to the bottom of the scrolling window.
+_
+l
+L/Load a file into the scrolling window.
+_
+s
 S/T{
-Saves the contents of the scrolling window into a file.
+Save the contents of the scrolling window into a file.
 T}
+_
 Return/T{
-Sets the widget's \fIexitType\fR to \fIvNORMAL\fR, exits the widget and returns 1.
+Set the widget's \fIexitType\fR to \fIvNORMAL\fR, exit the widget and return 1.
 T}
 Tab/T{
-Sets the widget's \fIexitType\fR to \fIvNORMAL\fR, exits the widget and returns 1.
+Set the widget's \fIexitType\fR to \fIvNORMAL\fR, exit the widget and return 1.
 T}
 Escape/T{
-Sets the widget's \fIexitType\fR to \fIvESCAPE_HIT\fR, exits the widget and returns -1.
+Set the widget's \fIexitType\fR to \fIvESCAPE_HIT\fR, exit the widget and return -1.
 T}
 Ctrl-L/Refreshes the screen.
 =

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_itemlist.3,v 1.13 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_itemlist.3,v 1.15 2005/04/24 21:56:57 tom Exp $
 .TH cdk_itemlist 3
 .SH NAME
 activateCDKItemlist,
@@ -257,31 +257,46 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKItemlist
 creates a pointer to an itemlist widget.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed at the top of the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The \fBlabel\fR parameter is the string which
-will be displayed in the label of the itemlist field.
-The \fBitemList\fR
-parameter is the list of the strings which will be displayed in the widget;
-\fBitemCount\fR is the number of elements in the list.
-The parameter \fBdefaultItem\fR is an integer which represents which string is to be
-displayed as the default item.
-The \fBbox\fR parameter states whether the
-widget will be drawn with a box around it.
-The \fBshadow\fR parameter
-accepts a boolean value to turn the shadow on or off around this widget.
+.TP 5
+\fBlabel\fR
+is the string to use as the label of the itemlist field.
+.TP 5
+\fBitemList\fR
+is the list of the strings which will be displayed in the widget.
+.TP 5
+\fBitemCount\fR
+is the number of elements in the list.
+.TP 5
+\fBdefaultItem\fR
+is the index of the default item for the list.
+.TP 5
+\fBbox\fR
+is true if widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKItemlist
@@ -358,36 +373,40 @@ The following table
 outlines the keys and their actions for this widget.
 .LP
 .TS
-center tab(/) allbox;
+center tab(/) box;
 l l
 l l
 lw15 lw35 .
 \fBKey/Action\fR
 =
-Left Arrow/Shifts the list one column to the left.
-Down Arrow/Shifts the list one column to the left.
--/Shifts the list one column to the left.
-p/Shifts the list one column to the left.
-Right Arrow/Shifts the list one column to the right.
-Up Arrow/Shifts the list one column to the right.
-Space/Shifts the list one column to the right.
-+/Shifts the list one column to the right.
-n/Shifts the list one column to the right.
-d/Displays the default item.
-D/Displays the default item.
-0/Displays the first item in the list.
-$/Displays the last item in the list.
+Left Arrow
+Down Arrow
+-
+p/Shift the list one column to the left.
+_
+Right Arrow
+Up Arrow
+Space
++
+n/Shift the list one column to the right.
+_
+d
+D/Display the default item.
+_
+0/Display the first item in the list.
+$/Display the last item in the list.
+_
 Return/T{
-Exits the widget and returns an integer representing the current selection.
-It also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return an integer representing the current selection.
+Also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Tab/T{
-Exits the widget and returns an integer representing the current selection.
-It also sets the widget data \fIexitType\fR to \fIvNORMAL\fR.
+Exit the widget and return an integer representing the current selection.
+Also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
 T}
 Escape/T{
-Exits the widget and returns -1.
-It also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
+Exit the widget and return -1.
+Also set the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-L/Refreshes the screen.
 .TE

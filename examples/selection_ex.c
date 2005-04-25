@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.11 2004/08/31 00:14:40 tom Exp $ */
+/* $Id: selection_ex.c,v 1.12 2005/04/15 21:43:23 tom Exp $ */
 
 #include <cdk.h>
 
@@ -20,7 +20,7 @@ int main (int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
+   CDKparseParams(argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -46,7 +46,8 @@ int main (int argc, char **argv)
 				CDKparsePosition(CDKparamString2(&params, 's', "RIGHT")),
 				CDKparamValue(&params, 'H', 10),
 				CDKparamValue(&params, 'W', 50),
-				title, item, count, choices, 2,
+				CDKparamString2(&params, 't', title),
+				item, count, choices, 2,
 				A_REVERSE,
 				CDKparamValue(&params, 'N', TRUE),
 				CDKparamValue(&params, 'S', FALSE));

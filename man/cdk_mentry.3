@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.19 2004/08/27 23:03:32 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.20 2005/04/16 00:06:39 tom Exp $
 .TH cdk_mentry 3
 .SH NAME
 activateCDKMentry,
@@ -266,28 +266,38 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDKMentry
 creates a mentry widget and returns a pointer to it.
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter
-may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer
-value or one of the pre-defined values \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed at the top of the widget.
+It may be an integer or one of the pre-defined values
+\fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
+\fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.TP 5
+\fBtitle\fR
+is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The \fBlabel\fR parameter is the string which
-will be displayed in the label of the mentry field.
-The \fBfieldAttribute\fR
+.TP 5
+\fBlabel\fR
+is the string which will be displayed in the label of the mentry field.
+.TP 5
+\fBfieldAttribute\fR
 is the attribute of the characters to be displayed when they are typed in.
-\fBfiller\fR is the character which is to be displayed in an empty space in
-the mentry field.
-The parameter \fBdisplayType\fR tells how the mentry field
-will behave when a character is entered into the field.
+.TP 5
+\fBfiller\fR
+is the character which is to display in an empty space in the mentry field.
+.TP 5
+\fBdisplayType\fR
+tells how the mentry field will behave when a character is entered into the field.
 The following table
 outlines valid values for this field and what they mean:
 .LP
@@ -365,24 +375,33 @@ T}
 vVIEWONLY/Uneditable field.
 =
 .TE
-.PP
-.RS 5
-The parameters \fBfieldRows\fR and \fBfieldWidth\fR control the height and width of
-the field of the widget.
+.TP 5
+\fBfieldRows\fR and
+.TP 5
+\fBfieldWidth\fR
+control the height and width of the field of the widget.
 If you provide a value of zero for either of the values,
 the field in the widget will be made as large as it can both in width and in height.
 If you provide a negative value, the field will be created the full height or width
 minus the value provided.
-While \fBlogicalRows\fR states how many rows the mentry
-field will have.
-The parameter \fBminimumLength\fR states how many characters have
-to be entered before the use can exit the mentry field.
-The \fBcallBackFunction\fR
-is where the use can swap out the key processing element of the widget.
-The \fBbox\fR
-parameter states whether the widget will be drawn with a box around it.
-The \fBshadow\fR parameter accepts a boolean value to turn the shadow on or off
-around this widget.
+.TP 5
+\fBlogicalRows\fR
+is the number of rows for the mentry field.
+.TP 5
+\fBminimumLength\fR
+is the number of characters which must
+be entered before the use can exit the mentry field.
+.TP 5
+\fBcallBackFunction\fR
+allows the user to override the key processing element of the widget.
+.TP 5
+\fBbox\fR
+is true if widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
 .RE
 .TP 5

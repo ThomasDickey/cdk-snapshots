@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2005/03/09 00:04:00 $
- * $Revision: 1.11 $
+ * $Date: 2005/04/15 22:08:58 $
+ * $Revision: 1.12 $
  */
 
 /*
@@ -159,7 +159,7 @@ void drawCdkTitle (WINDOW *win, CDKOBJS *obj)
       {
 	 writeChtype (win,
 		      obj->titlePos[x] + obj->borderSize,
-		      x + 1,
+		      x + obj->borderSize,
 		      obj->title[x],
 		      HORIZONTAL, 0,
 		      obj->titleLen[x]);

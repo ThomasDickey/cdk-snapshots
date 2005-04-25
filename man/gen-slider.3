@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: gen-slider.3,v 1.2 2004/08/29 21:42:17 tom Exp $"
+.\" $Id: gen-slider.3,v 1.3 2005/04/16 00:28:50 tom Exp $"
 .TH cdk_slider 3
 .SH NAME
 activateCDK<MIXED>,
@@ -276,39 +276,62 @@ states whether the widget will get refreshed after the move.
 .TP 5
 .B newCDK<MIXED>
 function creates a slider widget and returns a pointer to it..
-The \fBscreen\fR parameter
+Parameters:
+.RS
+.TP 5
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
-The parameter \fBxpos\fR
+.TP 5
+\fBxpos\fR
 controls the placement of the object along the horizontal axis.
-This parameter may be an integer or one of the pre-defined values
+It may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
-The parameter \fBypos\fR controls the placement
-of the object along the vertical axis.
-This parameter may be an integer or one of the pre-defined values
+.TP 5
+\fBypos\fR
+controls the placement of the object along the vertical axis.
+It may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-The \fBtitle\fR parameter is the string which will be displayed at the top of the widget.
+.TP 5
+\fBtitle\fR
+is the string to display at the top of the widget.
 The title can be more than one line; just provide a carriage return
 character at the line break.
-The \fBlabel\fR parameter is the string which will be
-displayed in the label of the slider field.
-The \fBfillerCharacter\fR is the
-character to be used to draw the slider bar in the field.
-The parameter \fBfieldWidth\fR controls the width of the widget.
+.TP 5
+\fBlabel\fR
+is the string to display in the label of the slider field.
+.TP 5
+\fBfillerCharacter\fR
+is the character to be used to draw the slider bar in the field.
+.TP 5
+\fBfieldWidth\fR
+controls the width of the widget.
 If you provide a value
 of zero the widget will be created with the full width of the screen.
 If you provide a negative value, the widget will be created the full width
 minus the value provided.
-The parameter \fBcurrentValue\fR
+.TP 5
+\fBcurrentValue\fR
 is the value of the slider field when the widget is activated.
-The parameters \fBlowValue\fR and \fBhighValue\fR are the low and high values of the widget respectively.
-The parameter \fBincrement\fR is the regular increment value
-while \fBfastIncrement\fR is the accelerated increment value.
-The \fBbox\fR
-parameter states whether the widget will be drawn with a box around it.
-The \fBshadow\fR parameter accepts a boolean value to turn the shadow on or
-off around this widget.
-If the widget could not be created then a \fINULL\fR
-pointer is returned.
+.TP 5
+\fBlowValue\fR and
+.TP 5
+\fBhighValue\fR
+are the low and high values of the widget respectively.
+.TP 5
+\fBincrement\fR
+is the regular increment value
+.TP 5
+\fBfastIncrement\fR
+is the accelerated increment value.
+.TP 5
+\fBbox\fR
+is true if the widget should be drawn with a box around it.
+.TP 5
+\fBshadow\fR
+turns the shadow on or off around this widget.
+.RE
+.IP
+If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDK<MIXED>
 allows the user to move the widget around the screen via the cursor/keypad keys.
