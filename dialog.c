@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/30 00:13:40 $
- * $Revision: 1.92 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.94 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -109,9 +109,6 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
       dialog->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
-   /* Empty the key bindings. */
-   cleanCDKObjectBindings (vDIALOG, dialog);
-
    /* Register this baby. */
    registerCDKObject (cdkscreen, vDIALOG, dialog);
 
@@ -125,6 +122,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen, int xplace, int yplace, char **me
 int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 {
    chtype input = 0;
+   boolean functionKey;
    int ret;
 
    /* Draw the dialog box. */
@@ -140,13 +138,11 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 			0, dialog->buttonLen[dialog->currentButton]);
    wrefresh (dialog->win);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(dialog));
+	 input = getchCDKObject (ObjOf(dialog), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKDialog (dialog, input);
@@ -376,6 +372,9 @@ static void _destroyCDKDialog (CDKOBJS *object)
       /* Clean up the windows. */
       deleteCursesWindow (dialog->win);
       deleteCursesWindow (dialog->shadowWin);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vDIALOG, dialog);
 
       /* Unregister this object. */
       unregisterCDKObject (vDIALOG, dialog);

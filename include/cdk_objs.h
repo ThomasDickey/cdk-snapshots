@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_objs.h,v 1.35 2004/09/01 00:15:15 tom Exp $
+ * $Id: cdk_objs.h,v 1.37 2005/12/29 23:58:35 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2003,2004, Thomas E. Dickey
+ * Copyright 1999-2004,2005 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -133,6 +133,7 @@ typedef struct CDKFUNCS {
 
 #define AcceptsFocusObj(p)      (ObjPtr(p)->acceptsFocus)
 #define HasFocusObj(p)          (ObjPtr(p)->hasFocus)
+#define IsVisibleObj(p)         (ObjPtr(p)->isVisible)
 #define InputWindowOf(p)        (ObjPtr(p)->inputWindow)
 
 /*
@@ -148,6 +149,7 @@ typedef struct CDKOBJS {
    int          borderSize;
    boolean      acceptsFocus;
    boolean      hasFocus;
+   boolean      isVisible;
    WINDOW *     inputWindow;
    void *       dataPtr;
    CDKDataUnion resultData;
@@ -311,9 +313,18 @@ static void _refreshDataCDK ## mixed (CDKOBJS * object GCC_UNUSED) \
 
 /*
  * Read keycode from object, optionally translating bindings.
+ * Depcrecated: use getchCDKObject().
  */
 extern int getcCDKObject (
 		CDKOBJS *	/* object */);
+
+/*
+ * Read keycode from object, optionally translating bindings.  Set a flag to
+ * tell if the keycode is a function key.
+ */
+extern int getchCDKObject (
+		CDKOBJS *	/* object */,
+		boolean *	/* functionKey */);
 
 /*
  * Interactively reposition an object within a window.

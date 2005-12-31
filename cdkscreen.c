@@ -6,8 +6,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/29 21:45:42 $
- * $Revision: 1.83 $
+ * $Date: 2005/12/29 20:51:17 $
+ * $Revision: 1.87 $
  */
 
 typedef struct _all_screens
@@ -107,7 +107,7 @@ bool validCDKObject (CDKOBJS *obj)
 }
 
 /*
- * Create a new object begining with a CDKOBJS struct.  The whole object is
+ * Create a new object beginning with a CDKOBJS struct.  The whole object is
  * initialized to zeroes except for special cases which have known values.
  */
 void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
@@ -120,6 +120,7 @@ void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
       {
 	 result->fn = funcs;
 	 result->hasFocus = TRUE;
+	 result->isVisible = TRUE;
 
 	 item->link = all_objects;
 	 item->object = result;
@@ -223,6 +224,7 @@ void registerCDKObject (CDKSCREEN *screen, EObjectType cdktype, void *object)
 
    if (screen->objectCount + 1 >= screen->objectLimit)
    {
+      screen->objectLimit += 2;
       screen->objectLimit *= 2;
       screen->object = typeReallocN (CDKOBJS *, screen->object, screen->objectLimit);
    }
@@ -257,20 +259,30 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
 	    setScreenIndex (screen, x, screen->object[x + 1]);
 	 }
 
-	 /* Reduce the list by one object. */
-	 screen->object[screen->objectCount--] = 0;
-
-	 /*
-	  * Update the object-focus
-	  */
-	 if (screen->objectFocus == Index)
+	 if (screen->objectCount <= 1)
 	 {
-	    screen->objectFocus--;
-	    (void)setCDKFocusNext (screen);
+	    /* if no more objects, remove the array */
+	    freeAndNull (screen->object);
+	    screen->objectCount = 0;
+	    screen->objectLimit = 0;
 	 }
-	 else if (screen->objectFocus > Index)
+	 else
 	 {
-	    screen->objectFocus--;
+	    /* Reduce the list by one object. */
+	    screen->object[screen->objectCount--] = 0;
+
+	    /*
+	     * Update the object-focus
+	     */
+	    if (screen->objectFocus == Index)
+	    {
+	       screen->objectFocus--;
+	       (void)setCDKFocusNext (screen);
+	    }
+	    else if (screen->objectFocus > Index)
+	    {
+	       screen->objectFocus--;
+	    }
 	 }
       }
    }
@@ -348,16 +360,54 @@ void refreshCDKScreen (CDKSCREEN *cdkscreen)
 {
    int objectCount = cdkscreen->objectCount;
    int x;
+   int focused = -1;
+   int visible = -1;
 
    refreshCDKWindow (cdkscreen->window);
 
-   /* We just call the drawObject function. */
+   /* We erase all the invisible objects, then only
+    * draw it all back, so that the objects
+    * can overlap, and the visible ones will always
+    * be drawn after all the invisible ones are erased */
    for (x = 0; x < objectCount; x++)
    {
       CDKOBJS *obj = cdkscreen->object[x];
 
       if (validObjType (obj, ObjTypeOf (obj)))
-	 obj->fn->drawObj (obj, obj->box);
+      {
+	 if (obj->isVisible)
+	 {
+	    if (visible < 0)
+	       visible = x;
+	    if (obj->hasFocus && focused < 0)
+	       focused = x;
+	 }
+	 else
+	 {
+	    obj->fn->eraseObj (obj);
+	 }
+      }
+   }
+
+   /*
+    * Exactly one widget should have focus, and it should be visible.
+    */
+   if (focused < 0)
+      focused = visible;
+
+   for (x = 0; x < objectCount; x++)
+   {
+      CDKOBJS *obj = cdkscreen->object[x];
+
+      if (validObjType (obj, ObjTypeOf (obj)))
+      {
+	 obj->hasFocus = (x == focused);
+
+	 if (obj->isVisible)
+	 {
+	    obj->fn->drawObj (obj, obj->box);
+	 }
+      }
    }
 }
 

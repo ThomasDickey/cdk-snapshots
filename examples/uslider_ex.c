@@ -1,34 +1,36 @@
-/* $Id: slider_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: uslider_ex.c,v 1.2 2005/12/27 19:47:43 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName = "slider_ex";
+char *XCursesProgramName = "uslider_ex";
 #endif
 
 /*
- * This program demonstrates the Cdk slider widget.
+ * This program demonstrates the Cdk unsigned-slider widget.
  */
 int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
-   CDKSLIDER *widget	= 0;
+   CDKUSLIDER *widget	= 0;
    WINDOW *cursesWin	= 0;
-   char *title		= "<C></U>Enter a value:";
+   char title[256];
    char *label		= "</B>Current Value:";
    char temp[256], *mesg[5];
-   int selection;
+   unsigned selection;
 
    CDK_PARAMS params;
-   int high;
-   int inc;
-   int low;
+   unsigned high;
+   unsigned inc;
+   unsigned low;
 
    CDKparseParams(argc, argv, &params, "h:i:l:w:" CDK_MIN_PARAMS);
    high   = CDKparamNumber2(&params, 'h', 100);
    inc    = CDKparamNumber2(&params, 'i', 1);
    low    = CDKparamNumber2(&params, 'l', 1);
+
+   sprintf(title, "<C></U>Enter a value:\nLow  %#x\nHigh %#x", low, high);
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -38,7 +40,7 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the widget. */
-   widget = newCDKSlider (cdkscreen,
+   widget = newCDKUSlider (cdkscreen,
 			  CDKparamValue(&params, 'X', CENTER),
 			  CDKparamValue(&params, 'Y', CENTER),
 			  title, label,
@@ -62,7 +64,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the widget. */
-   selection = activateCDKSlider (widget, 0);
+   selection = activateCDKUSlider (widget, 0);
 
    /* Check the exit value of the widget. */
    if (widget->exitType == vESCAPE_HIT)
@@ -74,7 +76,7 @@ int main (int argc, char **argv)
    }
    else if (widget->exitType == vNORMAL)
    {
-      sprintf (temp, "<C>You selected %d", selection);
+      sprintf (temp, "<C>You selected %u", selection);
       mesg[0] = copyChar (temp);
       mesg[1] = "",
       mesg[2] = "<C>Press any key to continue.";
@@ -83,7 +85,7 @@ int main (int argc, char **argv)
    }
 
    /* Clean up.*/
-   destroyCDKSlider (widget);
+   destroyCDKUSlider (widget);
    destroyCDKScreen (cdkscreen);
    endCDK();
    ExitProgram (EXIT_SUCCESS);

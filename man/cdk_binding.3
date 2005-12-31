@@ -1,12 +1,16 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.19 2005/03/08 23:45:44 tom Exp $
+.\" $Id: cdk_binding.3,v 1.22 2005/12/30 00:01:59 tom Exp $
+.de XX
+..
 .TH cdk_binding 3
 .SH NAME
-bindCDKObject,
-checkCDKObjectBind,
-cleanCDKObjectBindings,
-unbindCDKObject,
-getcCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
+.XX bindCDKObject
+.XX checkCDKObjectBind
+.XX cleanCDKObjectBindings
+.XX unbindCDKObject
+.XX getcCDKObject
+.XX getchCDKObject
+cdk_binding - \fBCurses Development Kit\fR Character Binding Capabilities.
 .LP
 .SH SYNOPSIS
 .LP
@@ -46,6 +50,10 @@ getcCDKObject - \fBCurses Development Kit\fR Character Binding Capabilities.
 .TP 15
 .B "int getcCDKObject ("
 .BI "CDKOBJS *" "object");
+.TP 15
+.B "int getchCDKObject ("
+.BI "CDKOBJS *" "object",
+.BI "boolean *" "functionKey");
 .fi
 .SH DESCRIPTION
 Cdk has the ability to create user definable key bindings.
@@ -128,14 +136,18 @@ If no binding exists, return FALSE.
 .B unbindCDKObject
 removes a specific binding to an object.
 The parameter are
-the same as for \fIbindCDKObject\fR.
+the same as for \fBbindCDKObject\fR.
 .TP 5
 .B getcCDKObject
 reads a keycode from the given widget.
+This is depcrecated: use \fBgetchCDKObject\fP.
+.TP 5
+.B getchCDKObject
+reads a keycode from the given widget.
+It sets a flag to indicate if the result is a function key.
 If the keycode has been bound to the special function \fBgetcCDKBind\fP,
 then it will be translated to the value which was given for the binding data.
 Otherwise, a few special cases are performed:
-
 .TS
 center tab(/) allbox;
 l l
@@ -154,8 +166,8 @@ backspace/KEY_BACKSPACE
 carriage return/KEY_ENTER
 newline/KEY_ENTER
 .TE
-
-All of the widgets use \fBgetcCDKObject\fP internally for consistency.
+.PP
+All of the widgets use \fBgetchCDKObject\fP internally for consistency.
 .SH EXAMPLE
 To help demonstrate how to use the key bindings I will demonstrate a simple
 dialog box widget with help for each button.

@@ -1,40 +1,42 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.19 2005/04/24 22:17:50 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.22 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_swindow 3
 .SH NAME
-activateCDKSwindow,
-addCDKSwindow,
-cleanCDKSwindow,
-destroyCDKSwindow,
-drawCDKSwindow,
-dumpCDKSwindow,
-dumpCDKSwindowInformation,
-eraseCDKSwindow,
-execCDKSwindow,
-getCDKSwindowBox,
-getCDKSwindowContents,
-injectCDKSwindow,
-jumpToLineCDKSwindow,
-loadCDKSwindowInformation,
-moveCDKSwindow,
-newCDKSwindow,
-positionCDKSwindow,
-saveCDKSwindowInformation,
-setCDKSwindow,
-setCDKSwindowBackgroundAttrib,
-setCDKSwindowBackgroundColor,
-setCDKSwindowBox,
-setCDKSwindowBoxAttribute,
-setCDKSwindowContents,
-setCDKSwindowHorizontalChar,
-setCDKSwindowLLChar,
-setCDKSwindowLRChar,
-setCDKSwindowPostProcess,
-setCDKSwindowPreProcess,
-setCDKSwindowULChar,
-setCDKSwindowURChar,
-setCDKSwindowVerticalChar,
-trimCDKSwindow \- a curses scrolling window widget.
+.XX activateCDKSwindow
+.XX addCDKSwindow
+.XX cleanCDKSwindow
+.XX destroyCDKSwindow
+.XX drawCDKSwindow
+.XX dumpCDKSwindow
+.XX eraseCDKSwindow
+.XX execCDKSwindow
+.XX getCDKSwindowBox
+.XX getCDKSwindowContents
+.XX injectCDKSwindow
+.XX jumpToLineCDKSwindow
+.XX loadCDKSwindowInformation
+.XX moveCDKSwindow
+.XX newCDKSwindow
+.XX positionCDKSwindow
+.XX saveCDKSwindowInformation
+.XX setCDKSwindow
+.XX setCDKSwindowBackgroundAttrib
+.XX setCDKSwindowBackgroundColor
+.XX setCDKSwindowBox
+.XX setCDKSwindowBoxAttribute
+.XX setCDKSwindowContents
+.XX setCDKSwindowHorizontalChar
+.XX setCDKSwindowLLChar
+.XX setCDKSwindowLRChar
+.XX setCDKSwindowPostProcess
+.XX setCDKSwindowPreProcess
+.XX setCDKSwindowULChar
+.XX setCDKSwindowURChar
+.XX setCDKSwindowVerticalChar
+.XX trimCDKSwindow
+cdk_swindow \- a curses scrolling window widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -72,10 +74,6 @@ trimCDKSwindow \- a curses scrolling window widget.
 .B "void dumpCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
 .BI "char *" "filename");
-.TP 15
-.B "int dumpCDKSwindowInformation ("
-.BI "CDKSWINDOW *" "swindow\fR,"
-.BI "char *" "filename);"
 .TP 15
 .B "void eraseCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow");
@@ -231,9 +229,6 @@ draws the swindow widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
 .B dumpCDKSwindow
-writes the contents of the swindow widget to a file.
-.TP 5
-.B dumpCDKSwindowInformation
 saves the contents of the scrolling window into the file
 specified by the \fBfilename\fR parameter.
 It returns -1 on failure,
@@ -371,7 +366,7 @@ swindow widget.
 The parameter \fBinfo\fR is a \fIchar **\fR of the information
 to set in the scrolling window; \fBlines\fR is the number of lines being added.
 The other parameter names correspond to the same parameter names listed in the
-\fInewCDKSwindow\fR function.
+\fBnewCDKSwindow\fR function.
 .TP 5
 .B setCDKSwindowBackgroundAttrib
 sets the background attribute of the widget.

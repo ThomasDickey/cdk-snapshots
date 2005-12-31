@@ -1,10 +1,13 @@
 '\" t
-.\" $Id: cdk_compat.3,v 1.2 2005/04/24 20:08:46 tom Exp $
+.\" $Id: cdk_compat.3,v 1.4 2005/12/28 21:52:07 tom Exp $
+.de XX
+..
 .TH cdk_compat 3
 .SH NAME
-getDirectoryContents,
-readFile,
-splitString \- Cdk4 compatibility functions
+.XX getDirectoryContents
+.XX readFile
+.XX splitString
+cdk_compat \- Cdk4 compatibility functions
 .SH SYNOPSIS
 .SH SYNOPSIS
 .LP
@@ -28,7 +31,7 @@ splitString \- Cdk4 compatibility functions
 .TP 15
 .B "int splitString ("
 .BI "char *" "string",
-.BI "char *" "items"[],
+.BI "char **" "items",
 .BI "char " "splitChar");
 .fi
 .SH DESCRIPTION

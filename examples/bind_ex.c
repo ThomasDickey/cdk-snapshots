@@ -1,6 +1,6 @@
-/* $Id: bind_ex.c,v 1.15 2004/08/28 01:03:01 tom Exp $ */
+/* $Id: bind_ex.c,v 1.16 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "bind_ex";
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the dialog box. ");
       printf ("Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Create the key binding. */
@@ -165,5 +165,5 @@ int main(int argc, char **argv)
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
    endCDK ();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

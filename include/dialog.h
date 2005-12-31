@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.h,v 1.23 2004/08/30 00:00:57 tom Exp $
+ * $Id: dialog.h,v 1.24 2005/12/28 13:39:16 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -174,16 +174,6 @@ boolean getCDKDialogBox (
  * This sets the background attribute of the widget.
  */ 
 #define setCDKDialogBackgroundAttrib(w,c) setBKAttrOf(w,c)
-
-/*
- * This draws a dialog box button.
- */
-void drawCDKDialogButton (
-		CDKDIALOG *	/* dialog */,
-		int		/* button */,
-		boolean		/* Box */,
-		chtype		/* active */,
-		chtype		/* highlight */);
 
 /*
  * This draws the dialog box widget.

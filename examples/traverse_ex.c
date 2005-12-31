@@ -1,6 +1,6 @@
-/* $Id: traverse_ex.c,v 1.17 2004/09/01 00:20:38 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.21 2005/12/29 22:50:10 tom Exp $ */
 
-#include "cdk.h"
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "entry_ex";
@@ -8,7 +8,9 @@ char *XCursesProgramName = "entry_ex";
 
 #define NumElements(a) ((sizeof a)/(sizeof a[0]))
 
-static CDKOBJS *all_objects[3];
+#define MY_MAX 3
+
+static CDKOBJS *all_objects[MY_MAX];
 
 static char *yes_no[] =
 {
@@ -32,6 +34,7 @@ static char *choices[] =
  * focus for traversal.  The names with leading "*" have some limitation
  * that makes them not useful in traversal.
  */
+/* *INDENT-OFF* */
 static const struct
 {
    char *name;
@@ -39,7 +42,6 @@ static const struct
 }
 menu_table[] =
 {
-   /* *INDENT-OFF* */
    { "(CDKGRAPH)",	vGRAPH },	/* no traversal (not active) */
    { "(CDKHISTOGRAM)",	vHISTOGRAM },	/* no traversal (not active) */
    { "(CDKLABEL)",	vLABEL },	/* no traversal (not active) */
@@ -67,11 +69,8 @@ menu_table[] =
    { "CDKTEMPLATE",	vTEMPLATE },
    { "CDKUSCALE",	vUSCALE },
    { "CDKUSLIDER",	vUSLIDER },
-   /* *INDENT-ON* */
-
-
-
 };
+/* *INDENT-ON* */
 
 static CDKOBJS *make_alphalist (CDKSCREEN *cdkscreen, int x, int y)
 {
@@ -623,7 +622,7 @@ static void make_any (CDKSCREEN *cdkscreen, int menu, EObjectType type)
    if ((prior = all_objects[menu]) != 0)
    {
       EraseObj (prior);
-      DestroyObj (prior);
+      _destroyCDKObject (prior);
       all_objects[menu] = 0;
    }
 
@@ -659,9 +658,9 @@ static int preHandler (EObjectType cdktype GCC_UNUSED, void *object,
    switch (input)
    {
    case KEY_ENTER:
-      getCDKMenuCurrentItem ((CDKMENU *) object, &mp, &sp);
+      getCDKMenuCurrentItem ((CDKMENU *)object, &mp, &sp);
 
-      screen = ScreenOf ((CDKMENU *) object);
+      screen = ScreenOf ((CDKMENU *)object);
       window = screen->window;
       mvwprintw (window, getmaxy (window) - 1, 0, "selection %d/%d", mp, sp);
       clrtoeol ();
@@ -700,7 +699,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    static int menuloc[] =
    {LEFT, LEFT, RIGHT};
 
-   for (j = 0; j < 3; ++j)
+   for (j = 0; j < MY_MAX; ++j)
    {
       for (k = 0; k < NumElements (menu_table); ++k)
       {
@@ -716,13 +715,15 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    initCDKColor ();
 
 
-   menu = newCDKMenu (cdkscreen, menulist, 3, submenusize, menuloc,
+   menu = newCDKMenu (cdkscreen, menulist, MY_MAX, submenusize, menuloc,
 		      TOP, A_UNDERLINE, A_REVERSE);
    if (menu == 0)
    {
+      destroyCDKScreen (cdkscreen);
       endCDK ();
+
       printf ("? Cannot create menus\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
    rebind_esc (ObjOf (menu));
 
@@ -730,8 +731,12 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
 
    /* setup the initial display */
    make_any (cdkscreen, 0, vENTRY);
+#if MY_MAX > 1
    make_any (cdkscreen, 1, vITEMLIST);
+#if MY_MAX > 2
    make_any (cdkscreen, 2, vSELECTION);
+#endif
+#endif
 
    /* Draw the screen. */
    refreshCDKScreen (cdkscreen);
@@ -745,12 +750,14 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    popupLabel (cdkscreen, mesg, 3);
 
    /* Clean up and exit. */
-   for (j = 0; j < 3; ++j)
+   for (j = 0; j < MY_MAX; ++j)
    {
       if (all_objects[j] != 0)
-	 DestroyObj (all_objects[j]);
+	 _destroyCDKObject (all_objects[j]);
    }
+   destroyCDKMenu (menu);
    destroyCDKScreen (cdkscreen);
    endCDK ();
-   exit (EXIT_SUCCESS);
+
+   ExitProgram (EXIT_SUCCESS);
 }

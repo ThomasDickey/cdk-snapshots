@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: label.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,11 +10,12 @@
 #
 # Create some global variables.
 #
-CDK_LABEL="../cdklabel"
-dfTmp="/tmp/label.$$"
-tmp="/tmp/tmp.$$"
-top="/tmp/dfTop.$$"
-bottom="/tmp/dfBottom.$$"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+dfTmp="${TMPDIR=/tmp}/label.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
+top="${TMPDIR=/tmp}/dfTop.$$"
+bottom="${TMPDIR=/tmp}/dfBottom.$$"
 
 #
 # Get the filesystem information.

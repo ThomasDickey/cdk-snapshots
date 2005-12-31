@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: dialog.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,11 @@
 #
 # Create some global variables.
 #
-CDK_DIALOG="../cdkdialog"
-CDK_LABEL="../cdklabel"
-output="/tmp/dialog_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_DIALOG="${CDK_BINDIR=..}/cdkdialog"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/dialog_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the message for the scrolling list.

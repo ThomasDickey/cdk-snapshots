@@ -1,5 +1,5 @@
-dnl
-dnl Process this file with autoconf to produce a configure script.
+dnl $Id: configure.in,v 1.44 2005/12/28 22:41:13 tom Exp $
+dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
 AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
@@ -30,6 +30,19 @@ CF_XOPEN_SOURCE
 CF_DISABLE_ECHO
 CF_PROG_EXT
 CF_LIB_PREFIX
+
+AC_ARG_WITH(man-section,
+	[  --with-man-section=XXX  change manpage section (default 3)],
+	[MANSECT=$with_man_section],
+	[MANSECT=3])
+case .$MANSECT in
+.yes|.no)
+	MANSECT=3
+	;;
+esac
+MAN_DIR=`echo $MANSECT | sed -e 's/^\(.\).*/\1/'`
+AC_SUBST(MAN_DIR)
+AC_SUBST(MANSECT)
 
 CF_WITH_CURSES_DIR
 CF_WITH_WARNINGS
@@ -123,6 +136,7 @@ CF_CURSES_FUNCS(\
 	\
 )
 
+CF_WITH_NC_ALLOC_H
 CF_CURSES_SETBEGYX
 
 dnl

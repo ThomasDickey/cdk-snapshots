@@ -1,6 +1,6 @@
-/* $Id: buttonbox_ex.c,v 1.16 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: buttonbox_ex.c,v 1.18 2005/12/30 09:50:48 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "buttonbox_ex";
@@ -33,6 +33,15 @@ int main (void)
    entry = newCDKEntry (cdkscreen, CENTER, CENTER,
 			"<C>Enter a name", "Name ", A_NORMAL, '.', vMIXED,
 			40, 0, 256, TRUE, FALSE);
+   if (entry == 0)
+   {
+      destroyCDKScreen (cdkscreen);
+      endCDK();
+
+      fprintf(stderr, "Cannot create entry-widget\n");
+      ExitProgram (EXIT_FAILURE);
+   }
+
 
    /* Create the button box widget. */
    buttonWidget = newCDKButtonbox (cdkscreen,
@@ -42,6 +51,14 @@ int main (void)
 				   0, 1, 2,
 				   buttons, 2, A_REVERSE,
 				   TRUE, FALSE);
+   if (buttonWidget == 0)
+   {
+      destroyCDKScreen (cdkscreen);
+      endCDK();
+
+      fprintf(stderr, "Cannot create buttonbox-widget\n");
+      ExitProgram (EXIT_FAILURE);
+   }
 
    /* Set the lower left and right characters of the box. */
    setCDKEntryLLChar (entry, ACS_LTEE);
@@ -72,7 +89,7 @@ int main (void)
 	   buttons[selection]);
 
    freeChar (info);
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 static int entryCB (EObjectType cdktype GCC_UNUSED,

@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: clock.c,v 1.8 2005/12/27 18:08:22 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="label_ex";
@@ -17,14 +19,8 @@ int main (int argc, char **argv)
    int ret;
 
    /* Parse up the command line. */
-   while (1)
+   while ((ret = getopt (argc, argv, "b")) != -1)
    {
-      ret = getopt (argc, argv, "b");
-      if (ret == -1)
-      {
-	 break;
-      }
-
       switch (ret)
       {
 	 case 'b' :
@@ -56,11 +52,14 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the label. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
-   /* Do this for-ever... */
-   for (;;)
+   curs_set(0);
+   wtimeout (WindowOf(demo), 50);
+
+   /* Do this for-a-while... */
+   do
    {
       /* Get the current time. */
       time(&clck);
@@ -78,12 +77,14 @@ int main (int argc, char **argv)
 
       /* Draw the label, and sleep. */
       drawCDKLabel (demo, ObjOf(demo)->box);
-      sleep (1);
+      napms (500);
    }
+   while (wgetch(WindowOf(demo)) == ERR);
 
    /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,26 +1,29 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.15 2005/04/16 00:08:49 tom Exp $
+.\" $Id: cdk_menu.3,v 1.18 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_menu 3
 .SH NAME
-activateCDKMenu,
-destroyCDKMenu,
-drawCDKMenu,
-eraseCDKMenu,
-getCDKMenuCurrentItem,
-getCDKMenuCurrentItem,
-getCDKMenuSubTitleHighlight,
-getCDKMenuTitleHighlight,
-getCDKMenuTitleHighlight,
-injectCDKMenu,
-newCDKMenu,
-setCDKMenu,
-setCDKMenuBackgroundAttrib,
-setCDKMenuBackgroundColor,
-setCDKMenuCurrentItem,
-setCDKMenuPostProcess,
-setCDKMenuPreProcess,
-setCDKMenuSubTitleHighlight,
-setCDKMenuTitleHighlight \- curses menu widget
+.XX activateCDKMenu
+.XX destroyCDKMenu
+.XX drawCDKMenu
+.XX drawCDKMenuSubwin
+.XX eraseCDKMenu
+.XX eraseCDKMenuSubwin
+.XX getCDKMenuCurrentItem
+.XX getCDKMenuSubTitleHighlight
+.XX getCDKMenuTitleHighlight
+.XX injectCDKMenu
+.XX newCDKMenu
+.XX setCDKMenu
+.XX setCDKMenuBackgroundAttrib
+.XX setCDKMenuBackgroundColor
+.XX setCDKMenuCurrentItem
+.XX setCDKMenuPostProcess
+.XX setCDKMenuPreProcess
+.XX setCDKMenuSubTitleHighlight
+.XX setCDKMenuTitleHighlight
+cdk_menu \- curses menu widget
 .SH SYNOPSIS
 .LP
 .B cc
@@ -42,7 +45,13 @@ setCDKMenuTitleHighlight \- curses menu widget
 .BI "CDKMENU *" "menu",
 .BI "boolean " "box");
 .TP 15
+.BI "void drawCDKMenuSubwin ("
+.BI "CDKMENU *" "menu");
+.TP 15
 .B "void eraseCDKMenu ("
+.BI "CDKMENU *" "menu");
+.TP 15
+.BI "void eraseCDKMenuSubwin ("
 .BI "CDKMENU *" "menu");
 .TP 15
 .B "void getCDKMenuCurrentItem ("
@@ -136,9 +145,15 @@ removes the widget from the screen and frees memory the object used.
 draws the menu widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
+.B drawCDKMenuSubwin
+draws the menu item subwindow.
+.TP 5
 .B eraseCDKMenu
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
+.TP 5
+.B eraseCDKMenuSubwin
+erases the menu item subwindow.
 .TP 5
 .B getCDKMenuCurrentItem
 returns the values \fBmenuItem\fR and \fBsubmenuItem\fR to the current
@@ -214,7 +229,7 @@ lets the programmer modify certain elements of an existing menu widget.
 The parameters \fBmenuItem\fR and \fBsubmenuItem\fR set which
 menu list and sub-menu item are going to be highlighted when the widget is activated.
 The other parameter names correspond to the same parameter names
-listed in the \fInewCDKMenu\fR function.
+listed in the \fBnewCDKMenu\fR function.
 .TP 5
 .B setCDKMenuBackgroundAttrib
 sets the background attribute of the widget.

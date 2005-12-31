@@ -1,6 +1,6 @@
-/* $Id: appointment.c,v 1.16 2005/04/24 21:27:09 tom Exp $ */
+/* $Id: appointment.c,v 1.19 2005/12/30 20:19:06 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="appointmentBook";
@@ -158,7 +158,7 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the calendar. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Create a key binding to mark days on the calendar. */
@@ -191,11 +191,14 @@ int main (int argc, char **argv)
    /* Save the appointment information. */
    saveAppointmentFile (filename, &appointmentInfo);
 
+   free (filename);
+
    /* Clean up and exit. */
    destroyCDKCalendar (calendar);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+
+   ExitProgram (EXIT_SUCCESS);
 }
 
 /*
@@ -234,7 +237,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 	 appInfo->appointment[appointments].day		= atoi (temp[0]);
 	 appInfo->appointment[appointments].month	= atoi (temp[1]);
 	 appInfo->appointment[appointments].year	= atoi (temp[2]);
-	 appInfo->appointment[appointments].type	= atoi (temp[3]);
+	 appInfo->appointment[appointments].type	= (EAppointmentType) atoi (temp[3]);
 	 appInfo->appointment[appointments].description = copyChar (temp[4]);
 	 appointments++;
       }

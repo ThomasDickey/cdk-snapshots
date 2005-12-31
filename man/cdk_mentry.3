@@ -1,37 +1,43 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.20 2005/04/16 00:06:39 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.23 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_mentry 3
 .SH NAME
-activateCDKMentry,
-cleanCDKMentry,
-destroyCDKMentry,
-drawCDKMentry,
-eraseCDKMentry,
-getCDKMentryBox,
-getCDKMentryFillerChar,
-getCDKMentryMin,
-getCDKMentryValue,
-injectCDKMentry,
-moveCDKMentry,
-newCDKMentry,
-positionCDKMentry,
-setCDKMentry,
-setCDKMentryBackgroundAttrib,
-setCDKMentryBackgroundColor,
-setCDKMentryBox,
-setCDKMentryBoxAttribute,
-setCDKMentryCB,
-setCDKMentryFillerChar,
-setCDKMentryHorizontalChar,
-setCDKMentryLLChar,
-setCDKMentryLRChar,
-setCDKMentryMin,
-setCDKMentryPostProcess,
-setCDKMentryPreProcess,
-setCDKMentryULChar,
-setCDKMentryURChar,
-setCDKMentryValue,
-setCDKMentryVerticalChar \- curses multiple line entry widget.
+.XX activateCDKMentry
+.XX cleanCDKMentry
+.XX destroyCDKMentry
+.XX drawCDKMentry
+.XX drawCDKMentryField
+.XX eraseCDKMentry
+.XX getCDKMentryBox
+.XX getCDKMentryFillerChar
+.XX getCDKMentryHiddenChar
+.XX getCDKMentryMin
+.XX getCDKMentryValue
+.XX injectCDKMentry
+.XX moveCDKMentry
+.XX newCDKMentry
+.XX positionCDKMentry
+.XX setCDKMentry
+.XX setCDKMentryBackgroundAttrib
+.XX setCDKMentryBackgroundColor
+.XX setCDKMentryBox
+.XX setCDKMentryBoxAttribute
+.XX setCDKMentryCB
+.XX setCDKMentryFillerChar
+.XX setCDKMentryHiddenChar
+.XX setCDKMentryHorizontalChar
+.XX setCDKMentryLLChar
+.XX setCDKMentryLRChar
+.XX setCDKMentryMin
+.XX setCDKMentryPostProcess
+.XX setCDKMentryPreProcess
+.XX setCDKMentryULChar
+.XX setCDKMentryURChar
+.XX setCDKMentryValue
+.XX setCDKMentryVerticalChar
+cdk_mentry \- curses multiple line entry widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -56,6 +62,9 @@ setCDKMentryVerticalChar \- curses multiple line entry widget.
 .BI "CDKMENTRY *" "mentry",
 .BI "boolean " "box");
 .TP 15
+.B "void drawCDKMentryField ("
+.BI "CDKMENTRY *" "mentry");
+.TP 15
 .B "void eraseCDKMentry ("
 .BI "CDKMENTRY *" "mentry");
 .TP 15
@@ -63,6 +72,9 @@ setCDKMentryVerticalChar \- curses multiple line entry widget.
 .BI "CDKMENTRY *" "mentry");
 .TP 15
 .B "chtype getCDKMentryFillerChar ("
+.BI "CDKMENTRY *" "mentry");
+.TP 15
+.B "chtype getCDKMentryHiddenChar ("
 .BI "CDKMENTRY *" "mentry");
 .TP 15
 .B "int getCDKMentryMin ("
@@ -130,6 +142,10 @@ setCDKMentryVerticalChar \- curses multiple line entry widget.
 .B "void setCDKMentryFillerChar ("
 .BI "CDKMENTRY *" "mentry",
 .BI "chtype " "filler");
+.TP 15
+.B "void setCDKMentryHiddenChar ("
+.BI "CDKMENTRY *" "mentry",
+.BI "chtype " "character");
 .TP 15
 .B "void setCDKMentryHorizontalChar ("
 .BI "CDKMENTRY *" "mentry",
@@ -205,6 +221,9 @@ removes the widget from the screen and frees memory the object used.
 draws the widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
+.B drawCDKMentryField
+redraws the multiple line entry field.
+.TP 5
 .B eraseCDKMentry
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
@@ -214,6 +233,9 @@ returns true if the widget will be drawn with a box around it.
 .TP 5
 .B getCDKMentryFillerChar
 returns the character being used to draw unused space in the widget.
+.TP 5
+.B getCDKMentryHiddenChar
+returns the character being used to draw hidden characters in the widget (obsolete).
 .TP 5
 .B getCDKMentryMin
 returns the minimum length of a string the widget will allow.
@@ -414,7 +436,7 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing
 entry widget.
 The parameter names correspond to the same parameter names listed
-in the \fInewCDKMentry\fR function.
+in the \fBnewCDKMentry\fR function.
 .TP 5
 .B setCDKMentryBackgroundAttrib
 sets the background attribute of the widget.
@@ -439,6 +461,9 @@ The default function is \fICDKMentryCallBack\fR.
 .TP 5
 .B setCDKMentryFillerChar
 sets the character to use when drawing unused space in the field.
+.TP 5
+.B setCDKMentryHiddenChar
+sets the character to use when a hidden character type is used (obsolete).
 .TP 5
 .B setCDKMentryHorizontalChar
 function sets the horizontal drawing character for the box to

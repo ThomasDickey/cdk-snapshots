@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: viewer.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,12 @@
 #
 # Create some global variables.
 #
-CDK_FSELECT="../cdkfselect"
-CDK_VIEWER="../cdkviewer"
-tmp="/tmp/tmp.$$"
-file="/tmp/fs.$$"
+CDK_FSELECT="${CDK_BINDIR=..}/cdkfselect"
+CDK_VIEWER="${CDK_BINDIR=..}/cdkviewer"
+
+tmp="${TMPDIR=/tmp}/tmp.$$"
+file="${TMPDIR=/tmp}/fs.$$"
+
 directory="."
 xpos=CENTER
 ypos=CENTER
@@ -47,9 +50,8 @@ done
 #
 ${CDK_FSELECT} -T "<C>Select a file" -d "${directory}" 2> ${file}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${file}`
 
 #

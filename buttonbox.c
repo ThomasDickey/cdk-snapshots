@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/30 00:12:09 $
- * $Revision: 1.59 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.61 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -138,9 +138,6 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
       buttonbox->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
-   /* Empty the key bindings. */
-   cleanCDKObjectBindings (vBUTTONBOX, buttonbox);
-
    /* Register this baby. */
    registerCDKObject (cdkscreen, vBUTTONBOX, buttonbox);
 
@@ -154,18 +151,17 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen, int xPos, int yPos, int hei
 int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
 {
    chtype input = 0;
+   boolean functionKey;
    int ret;
 
    /* Draw the buttonbox box. */
    drawCDKButtonbox (buttonbox, ObjOf(buttonbox)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(buttonbox));
+	 input = getchCDKObject (ObjOf(buttonbox), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKButtonbox (buttonbox, input);
@@ -505,6 +501,9 @@ static void _destroyCDKButtonbox (CDKOBJS *object)
       /* Delete the windows. */
       deleteCursesWindow (buttonbox->shadowWin);
       deleteCursesWindow (buttonbox->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vBUTTONBOX, buttonbox);
 
       /* Unregister this object. */
       unregisterCDKObject (vBUTTONBOX, buttonbox);

@@ -1,9 +1,10 @@
 #!/bin/sh
+# $Id: selection.sh,v 1.4 2005/12/27 17:56:58 tom Exp $
 
 #
 # Description:
-#		This demonstrates the CDK command line
-# interface to the selection widget.
+#	This demonstrates the CDK command line
+#	interface to the selection widget.
 #
 
 #
@@ -15,7 +16,7 @@ getPasswordFile()
    file=$2
 
    #
-   # Depeding on the system, get the password file
+   # Depending on the system, get the password file
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then
@@ -70,18 +71,19 @@ Shell  : </U>${shell}
 #
 # Define where the CDK widgets are.
 #
-CDK_SELECTION="../cdkselection"
-CDK_LABEL="../cdklabel"
+CDK_SELECTION="${CDK_BINDIR=..}/cdkselection"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
 TYPE="Other"
 
 #
 # Define the output files.
 #
-accountList="/tmp/accList.$$"
-userAccounts="/tmp/userAccList.$$"
-output="/tmp/selection_output.$$"
-tmpPass="/tmp/ps.$$"
-tmp="/tmp/tmp.$$"
+accountList="${TMPDIR=/tmp}/accList.$$"
+userAccounts="${TMPDIR=/tmp}/userAccList.$$"
+output="${TMPDIR=/tmp}/selection_output.$$"
+tmpPass="${TMPDIR=/tmp}/ps.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Chop up the command line.
@@ -131,9 +133,8 @@ buttons=" OK
 # Create the selection list.
 #
 ${CDK_SELECTION} -T "${title}" -f "${accountList}" -c "${choices}" -B "${buttons}"  2> $output
-if [ $? -lt 0 ]; then
-   exit;
-fi
+selected=$?
+test $selected = 255 && exit 1
 
 #
 # Initialize the variables.
@@ -187,4 +188,4 @@ done
 #
 # Clean up.
 #
-#rm -f ${accountList} ${userAccounts} ${output} ${tmpPass} ${tmp}
+rm -f ${accountList} ${userAccounts} ${output} ${tmpPass} ${tmp}

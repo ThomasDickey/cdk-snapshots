@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: calendar.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,12 @@
 #
 # Create some global variables.
 #
-CDK_CALENDAR="../cdkcalendar"
-CDK_LABEL="../cdklabel"
-date="/tmp/cal.$$"
-tmp="/tmp/tmp.$$"
+CDK_CALENDAR="${CDK_BINDIR=..}/cdkcalendar"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+date="${TMPDIR=/tmp}/cal.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
+
 xpos=CENTER
 ypos=CENTER
 
@@ -58,9 +61,8 @@ Cancel "
 #
 ${CDK_CALENDAR} -B "${buttons}" -d ${day} -m ${month} -y ${year} -T "${title}" -X ${xpos} -Y ${ypos} -O ${date} -S
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${date}`
 
 #

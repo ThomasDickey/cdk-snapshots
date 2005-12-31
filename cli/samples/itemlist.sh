@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: itemlist.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -68,11 +69,13 @@ Shell  : </U>${shell}
 #
 # Create some global variables.
 #
-CDK_ITEMLIST="../cdkitemlist"
-CDK_LABEL="../cdklabel"
-tmpPass="/tmp/sl.$$"
-output="/tmp/output.$$"
-userAccounts="/tmp/ua.$$"
+CDK_ITEMLIST="${CDK_BINDIR=..}/cdkitemlist"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+tmpPass="${TMPDIR=/tmp}/sl.$$"
+output="${TMPDIR=/tmp}/output.$$"
+userAccounts="${TMPDIR=/tmp}/ua.$$"
+
 TYPE="Other";
 
 #
@@ -117,9 +120,8 @@ awk 'BEGIN {FS=":"} {printf "</R>%s\n", $1}' $tmpPass | sort > ${userAccounts}
 #
 ${CDK_ITEMLIST} -d 3 -L "${label}" -T "${title}" -B "${buttons}" -f "${userAccounts}" 2> ${output}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

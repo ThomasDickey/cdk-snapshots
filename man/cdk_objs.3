@@ -1,16 +1,18 @@
-.\" $Id: cdk_objs.3,v 1.1 2005/04/24 20:05:28 tom Exp $
+.\" $Id: cdk_objs.3,v 1.2 2005/12/28 20:54:41 tom Exp $
+.de XX
+..
 .TH cdk_objs 3
 .SH NAME
-cleanCdkTitle,
-drawCdkTitle,
-getcCDKObject,
-positionCDKObject,
-setCDKObjectBackgroundColor,
-setCDKObjectPostProcess,
-setCDKObjectPreProcess,
-setCdkExitType,
-setCdkTitle,
-validCDKObject \- Cdk object-support functions
+.XX cleanCdkTitle
+.XX drawCdkTitle
+.XX positionCDKObject
+.XX setCDKObjectBackgroundColor
+.XX setCDKObjectPostProcess
+.XX setCDKObjectPreProcess
+.XX setCdkExitType
+.XX setCdkTitle
+.XX validCDKObject
+cdk_objs \- Cdk object-support functions
 .SH SYNOPSIS
 .LP
 .B cc
@@ -25,9 +27,6 @@ validCDKObject \- Cdk object-support functions
 .TP 15
 .B "void drawCdkTitle ("
 .BI "WINDOW *" "window",
-.BI "CDKOBJS *" "object");
-.TP 15
-.B "int getcCDKObject ("
 .BI "CDKOBJS *" "object");
 .TP 15
 .B "void positionCDKObject ("
@@ -89,9 +88,6 @@ Remove storage for the widget's title.
 .B drawCdkTitle,
 Draw the widget's title.
 .TP 5
-.B getcCDKObject
-Read from the input window, filtering keycodes as needed.
-.TP 5
 .B positionCDKObject
 This allows the user to use the cursor keys to adjust the
 position of the widget.
@@ -117,4 +113,5 @@ Set the widget's title.
 Returns true if a "new" was done on the object but no "destroy".
 .
 .SH SEE ALSO
+cdk_binding (3)
 cdk_process (3)

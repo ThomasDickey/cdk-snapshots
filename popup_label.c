@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/27 22:16:35 $
- * $Revision: 1.1 $
+ * $Date: 2005/12/30 00:17:57 $
+ * $Revision: 1.2 $
  */
 
 /*
@@ -11,9 +11,9 @@
  */
 void popupLabel (CDKSCREEN *screen, char **mesg, int count)
 {
-   /* Declare local variables. */
    CDKLABEL *popup = 0;
    int oldCursState;
+   boolean functionKey;
 
    /* Create the label. */
    popup = newCDKLabel (screen, CENTER, CENTER, mesg, count, TRUE, FALSE);
@@ -24,7 +24,7 @@ void popupLabel (CDKSCREEN *screen, char **mesg, int count)
 
    /* Wait for some input. */
    keypad (popup->win, TRUE);
-   getcCDKObject (ObjOf(popup));
+   getchCDKObject (ObjOf(popup), &functionKey);
 
    /* Kill it. */
    destroyCDKLabel (popup);
@@ -40,9 +40,9 @@ void popupLabel (CDKSCREEN *screen, char **mesg, int count)
  */
 void popupLabelAttrib (CDKSCREEN *screen, char **mesg, int count, chtype attrib)
 {
-   /* Declare local variables. */
    CDKLABEL *popup = 0;
    int oldCursState;
+   boolean functionKey;
 
    /* Create the label. */
    popup = newCDKLabel (screen, CENTER, CENTER, mesg, count, TRUE, FALSE);
@@ -54,7 +54,7 @@ void popupLabelAttrib (CDKSCREEN *screen, char **mesg, int count, chtype attrib)
 
    /* Wait for some input. */
    keypad (popup->win, TRUE);
-   getcCDKObject (ObjOf(popup));
+   getchCDKObject (ObjOf(popup), &functionKey);
 
    /* Kill it. */
    destroyCDKLabel (popup);

@@ -1,5 +1,5 @@
 /*
- * $Id: selection.h,v 1.25 2005/04/14 22:19:25 tom Exp $
+ * $Id: selection.h,v 1.26 2005/12/28 21:45:16 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2003,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -164,7 +164,7 @@ int activateCDKSelection (
 void setCDKSelection (
 		CDKSELECTION *	/* selection */,
 		chtype		/* highlight */,
-		int		/* defChoices */ [],
+		int *		/* defChoices */,
 		boolean		/* Box */);
 
 /*
@@ -177,7 +177,7 @@ void setCDKSelectionItems (
 
 int getCDKSelectionItems (
 		CDKSELECTION *	/* selection */,
-		char *		/* list */ []);
+		char **		/* list */);
 
 /*
  *
@@ -214,7 +214,7 @@ int getCDKSelectionCurrent (
  */
 void setCDKSelectionChoices (
 		CDKSELECTION *	/* selection */,
-		int		/* choices */ []);
+		int *		/* choices */);
 
 int *getCDKSelectionChoices (
 		CDKSELECTION *	/* selection */);
@@ -234,7 +234,7 @@ int getCDKSelectionChoice (
  */
 void setCDKSelectionModes (
 		CDKSELECTION *	/* selection */,
-		int		/* modes */ []);
+		int *		/* modes */);
 
 int *getCDKSelectionModes (
 		CDKSELECTION *	/* selection */);
@@ -276,7 +276,7 @@ boolean getCDKSelectionBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKSelectionBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

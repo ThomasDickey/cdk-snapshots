@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/22 21:28:55 $
- * $Revision: 1.10 $
+ * $Date: 2005/12/30 00:27:48 $
+ * $Revision: 1.11 $
  */
 
 #undef	ObjOf
@@ -19,14 +19,16 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
    WINDOW *parent = screen->window;
    int origX	= getbegx(win);
    int origY	= getbegy(win);
-   chtype key	= 0;
    int begX	= getbegx(parent);
    int begY	= getbegy(parent);
    int endX	= begX + getmaxx(WindowOf(obj));
    int endY	= begY + getmaxy(WindowOf(obj));
 
+   chtype key;
+   boolean functionKey;
+
    /* Let them move the widget around until they hit return. */
-   while ((key = getcCDKObject(obj)) != KEY_ENTER)
+   while ((key = getchCDKObject(obj, &functionKey)) != KEY_ENTER)
    {
       switch (key)
       {

@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.17 2005/04/24 21:26:15 tom Exp $ */
+/* $Id: rolodex.c,v 1.20 2005/12/31 00:36:00 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -190,7 +190,7 @@ int main(void)
 	 endCDK();
 
 	 /* Exit cleanly. */
-	 exit (EXIT_SUCCESS);
+	 ExitProgram (EXIT_SUCCESS);
       }
       else if (selection == 100)
       {

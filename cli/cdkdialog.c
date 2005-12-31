@@ -1,6 +1,6 @@
-/* $Id: cdkdialog.c,v 1.7 2005/03/08 19:51:24 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.9 2005/12/27 16:15:34 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkdialog";
@@ -30,7 +30,7 @@ int main (int argc, char **argv)
    FILE *fp			= stderr;
    char **messageList		= 0;
    char **buttonList		= 0;
-   int x, j1, j2;
+   int j1, j2;
 
    CDK_PARAMS params;
    boolean boxWidget;
@@ -60,7 +60,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -77,14 +77,14 @@ int main (int argc, char **argv)
 	 if (messageLines == -1)
 	 {
 	    fprintf (stderr, "Error: Could not open the file %s\n", filename);
-	    exit (-1);
+	    ExitProgram (CLI_ERROR);
 	 }
       }
       else
       {
 	 /* No message, no file, it's an error. */
 	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -140,25 +140,15 @@ int main (int argc, char **argv)
    /* Check to make sure we created the dialog box. */
    if (widget == 0)
    {
-      /* Clean up used memory. */
-      for (x=0; x < messageLines; x++)
-      {
-	 freeChar (messageList[x]);
-      }
-      for (x=0; x < buttonCount; x++)
-      {
-	 freeChar (buttonList[x]);
-      }
+      CDKfreeStrings (messageList);
+      CDKfreeStrings (buttonList);
 
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the dialog box. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Check if the user wants to set the background of the widget. */
@@ -180,16 +170,9 @@ int main (int argc, char **argv)
       freeChar (button);
    }
 
-   /* Clean up. */
-   for (x=0; x < messageLines; x++)
-   {
-      freeChar (messageList[x]);
-   }
-   for (x=0; x < buttonCount; x++)
-   {
-      freeChar (buttonList[x]);
-   }
+   CDKfreeStrings (messageList);
+   CDKfreeStrings (buttonList);
 
    /* Exit with the button number picked. */
-   exit (answer);
+   ExitProgram (answer);
 }

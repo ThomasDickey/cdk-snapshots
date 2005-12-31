@@ -1,4 +1,4 @@
-/* $Id: slider_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: fslider_ex.c,v 1.1 2005/12/27 19:16:29 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,22 +13,32 @@ int main (int argc, char **argv)
 {
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
-   CDKSLIDER *widget	= 0;
+   CDKFSLIDER *widget	= 0;
    WINDOW *cursesWin	= 0;
    char *title		= "<C></U>Enter a value:";
    char *label		= "</B>Current Value:";
    char temp[256], *mesg[5];
-   int selection;
+   float selection;
 
    CDK_PARAMS params;
-   int high;
-   int inc;
-   int low;
+   float high;
+   float inc;
+   float low;
 
-   CDKparseParams(argc, argv, &params, "h:i:l:w:" CDK_MIN_PARAMS);
-   high   = CDKparamNumber2(&params, 'h', 100);
-   inc    = CDKparamNumber2(&params, 'i', 1);
-   low    = CDKparamNumber2(&params, 'l', 1);
+   float scale;
+   int n, digits;
+
+   CDKparseParams(argc, argv, &params, "h:i:l:w:p:" CDK_MIN_PARAMS);
+   digits = CDKparamNumber2(&params, 'p', 0);
+
+   scale = 1.0;
+   for (n = 0; n < digits; ++n) {
+      scale = scale * 10.0;
+   }
+
+   high   = CDKparamNumber2(&params, 'h', 100) / scale;
+   inc    = CDKparamNumber2(&params, 'i', 1) / scale;
+   low    = CDKparamNumber2(&params, 'l', 1) / scale;
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -38,7 +48,7 @@ int main (int argc, char **argv)
    initCDKColor();
 
    /* Create the widget. */
-   widget = newCDKSlider (cdkscreen,
+   widget = newCDKFSlider (cdkscreen,
 			  CDKparamValue(&params, 'X', CENTER),
 			  CDKparamValue(&params, 'Y', CENTER),
 			  title, label,
@@ -46,6 +56,7 @@ int main (int argc, char **argv)
 			  CDKparamNumber2(&params, 'w', 50),
 			  low, low, high,
 			  inc, (inc*2),
+			  digits,
 			  CDKparamValue(&params, 'N', TRUE),
 			  CDKparamValue(&params, 'S', FALSE));
 
@@ -62,7 +73,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the widget. */
-   selection = activateCDKSlider (widget, 0);
+   selection = activateCDKFSlider (widget, 0);
 
    /* Check the exit value of the widget. */
    if (widget->exitType == vESCAPE_HIT)
@@ -74,7 +85,7 @@ int main (int argc, char **argv)
    }
    else if (widget->exitType == vNORMAL)
    {
-      sprintf (temp, "<C>You selected %d", selection);
+      sprintf (temp, "<C>You selected %.*f", digits, selection);
       mesg[0] = copyChar (temp);
       mesg[1] = "",
       mesg[2] = "<C>Press any key to continue.";
@@ -83,7 +94,7 @@ int main (int argc, char **argv)
    }
 
    /* Clean up.*/
-   destroyCDKSlider (widget);
+   destroyCDKFSlider (widget);
    destroyCDKScreen (cdkscreen);
    endCDK();
    ExitProgram (EXIT_SUCCESS);

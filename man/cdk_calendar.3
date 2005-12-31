@@ -1,37 +1,47 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.19 2005/04/15 23:30:32 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.22 2005/12/28 18:35:31 tom Exp $"
+.de XX
+..
 .TH cdk_calendar 3
 .SH NAME
-activateCDKCalendar,
-destroyCDKCalendar,
-drawCDKCalendar,
-eraseCDKCalendar,
-getCDKCalendarBox,
-getCDKCalendarDate,
-getCDKCalendarDayAttribute,
-getCDKCalendarHighlight,
-getCDKCalendarMarker,
-getCDKCalendarMonthAttribute,
-getCDKCalendarYearAttribute,
-injectCDKCalendar,
-moveCDKCalendar,
-newCDKCalendar,
-positionCDKCalendar,
-removeCDKCalendarMarker,
-setCDKCalendar,
-setCDKCalendarBackgroundAttrib,
-setCDKCalendarBackgroundColor,
-setCDKCalendarBox,
-setCDKCalendarDate,
-setCDKCalendarDayAttribute,
-setCDKCalendarDaysNames,
-setCDKCalendarHighlight,
-setCDKCalendarMarker,
-setCDKCalendarMonthAttribute,
-setCDKCalendarMonthsNames,
-setCDKCalendarPostProcess,
-setCDKCalendarPreProcess,
-setCDKCalendarYearAttribute \- curses calendar widget.
+.XX activateCDKCalendar
+.XX destroyCDKCalendar
+.XX drawCDKCalendar
+.XX eraseCDKCalendar
+.XX getCDKCalendarBox
+.XX getCDKCalendarDate
+.XX getCDKCalendarDayAttribute
+.XX getCDKCalendarHighlight
+.XX getCDKCalendarMarker
+.XX getCDKCalendarMonthAttribute
+.XX getCDKCalendarYearAttribute
+.XX injectCDKCalendar
+.XX moveCDKCalendar
+.XX newCDKCalendar
+.XX positionCDKCalendar
+.XX removeCDKCalendarMarker
+.XX setCDKCalendar
+.XX setCDKCalendarBackgroundAttrib
+.XX setCDKCalendarBackgroundColor
+.XX setCDKCalendarBox
+.XX setCDKCalendarBoxAttribute
+.XX setCDKCalendarDate
+.XX setCDKCalendarDayAttribute
+.XX setCDKCalendarDaysNames
+.XX setCDKCalendarHighlight
+.XX setCDKCalendarHorizontalChar
+.XX setCDKCalendarLLChar
+.XX setCDKCalendarLRChar
+.XX setCDKCalendarMarker
+.XX setCDKCalendarMonthAttribute
+.XX setCDKCalendarMonthsNames
+.XX setCDKCalendarPostProcess
+.XX setCDKCalendarPreProcess
+.XX setCDKCalendarULChar
+.XX setCDKCalendarURChar
+.XX setCDKCalendarVerticalChar
+.XX setCDKCalendarYearAttribute
+cdk_calendar \- curses calendar widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -137,6 +147,10 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .BI "CDKCALENDAR *" "calendar",
 .BI "boolean " "box");
 .TP 15
+.B setCDKCalendarBoxAttribute ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
+.TP 15
 .B "void setCDKCalendarDate ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "int " "day",
@@ -154,6 +168,18 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .B "void setCDKCalendarHighlight ("
 .BI "CDKCALENDAR *" "calendar",
 .BI "chtype " "attribute");
+.TP 15
+.B "void setCDKCalendarHorizontalChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
+.TP 15
+.B "void setCDKCalendarLLChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
+.TP 15
+.B "void setCDKCalendarLRChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
 .TP 15
 .B "void setCDKCalendarMarker ("
 .BI "CDKCALENDAR *" "calendar",
@@ -179,6 +205,18 @@ setCDKCalendarYearAttribute \- curses calendar widget.
 .BI "CDKCALENDAR *" "calendar",
 .BI "PROCESSFN " "callback",
 .BI "void * " "data");
+.TP 15
+.B setCDKCalendarULChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
+.TP 15
+.B setCDKCalendarURChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
+.TP 15
+.B setCDKCalendarVerticalChar ("
+.BI "CDKCALENDAR *" "calendar",
+.BI "chtype " "ch");
 .TP 15
 .B "void setCDKCalendarYearAttribute ("
 .BI "CDKCALENDAR *" "calendar",
@@ -347,7 +385,7 @@ lets the programmer modify certain elements of an existing
 calendar widget.
 The \fBcalendar\fR parameter represents an existing calendar pointer.
 The other parameter names correspond to the same parameter names listed
-in the \fInewCDKCalendar\fR function.
+in the \fBnewCDKCalendar\fR function.
 .TP 5
 .B setCDKCalendarBackgroundAttrib
 sets the background attribute of the widget.
@@ -361,6 +399,9 @@ See \fBcdk_display (3)\fR.
 .TP 5
 .B setCDKCalendarBox
 sets whether the widget will be drawn with a box around it.
+.TP 5
+.B setCDKCalendarBoxAttribute
+sets the attribute of the box.
 .TP 5
 .B setCDKCalendarDate
 sets the calendar to the given date.
@@ -383,6 +424,18 @@ The default value is
 .B setCDKCalendarHighlight
 sets the attribute of the highlight bar of the scrolling
 list portion of the widget.
+.TP 5
+.B setCDKCalendarHorizontalChar
+sets the horizontal drawing character for the box to
+the given character.
+.TP 5
+.B setCDKCalendarLLChar
+sets the lower left hand corner of the widget's box to
+the given character.
+.TP 5
+.B setCDKCalendarLRChar
+sets the lower right hand corner of the widget's box to
+the given character.
 .TP 5
 .B setCDKCalendarMarker
 allows the user to set a marker which will be displayed when the month is drawn.
@@ -411,6 +464,18 @@ is hit and before the key is applied to the widget.
 The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 To learn more about pre-processing see \fIcdk_process (3)\fR.
+.TP 5
+.B setCDKCalendarULChar
+sets the upper left hand corner of the widget's box to
+the given character.
+.TP 5
+.B setCDKCalendarURChar
+sets the upper right hand corner of the widget's box to
+the given character.
+.TP 5
+.B setCDKCalendarVerticalChar
+sets the vertical drawing character for the box to
+the given character.
 .TP 5
 .B setCDKCalendarYearAttribute
 sets the attribute of the year in the calendar.

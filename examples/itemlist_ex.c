@@ -1,14 +1,18 @@
-/*
- * $Id: itemlist_ex.c,v 1.11 2004/08/28 01:02:30 tom Exp $
- */
-#include <cdk.h>
+/* $Id: itemlist_ex.c,v 1.13 2005/12/28 00:31:12 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "itemlist_ex";
 #endif
 
+#define MONTHS 12
+
 /*
  * This program demonstrates the Cdk itemlist widget.
+ *
+ * Options (in addition to minimal CLI parameters):
+ *	-c	create the data after the widget
  */
 int main(int argc, char **argv)
 {
@@ -18,14 +22,14 @@ int main(int argc, char **argv)
    WINDOW *cursesWin		= 0;
    char *title			= "<C>Pick A Month";
    char *label			= "</U/5>Month:";
-   char *info[MAX_ITEMS], temp[256], *mesg[10];
+   char *info[MONTHS], temp[256], *mesg[10];
    int choice, startMonth;
    struct tm *dateInfo;
    time_t clck;
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
+   CDKparseParams(argc, argv, &params, "c" CDK_MIN_PARAMS);
 
    /*
     * Get the current date and set the default month to the
@@ -60,7 +64,10 @@ int main(int argc, char **argv)
    monthlist	= newCDKItemlist (cdkscreen,
 				  CDKparamValue(&params, 'X', CENTER),
 				  CDKparamValue(&params, 'Y', CENTER),
-				  title, label, info, 12,
+				  title,
+				  label,
+				  CDKparamNumber(&params, 'c') ? 0 : info,
+				  CDKparamNumber(&params, 'c') ? 0 : MONTHS,
 				  startMonth,
 				  CDKparamValue(&params, 'N', TRUE),
 				  CDKparamValue(&params, 'S', FALSE));
@@ -74,7 +81,12 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the itemlist box. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
+   }
+
+   if (CDKparamNumber(&params, 'c'))
+   {
+      setCDKItemlistValues (monthlist, info, MONTHS, 0);
    }
 
    /* Activate the widget. */
@@ -103,5 +115,5 @@ int main(int argc, char **argv)
    destroyCDKItemlist (monthlist);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

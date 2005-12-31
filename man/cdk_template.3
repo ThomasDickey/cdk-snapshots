@@ -1,34 +1,37 @@
-.\" $Id: cdk_template.3,v 1.22 2005/04/16 00:30:30 tom Exp $
+.\" $Id: cdk_template.3,v 1.24 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_template 3
 .SH NAME
-activateCDKTemplate,
-cleanCDKTemplate,
-destroyCDKTemplate,
-drawCDKTemplate,
-eraseCDKTemplate,
-getCDKTemplateBox,
-getCDKTemplateMin,
-getCDKTemplateValue,
-injectCDKTemplate,
-mixCDKTemplate,
-newCDKTemplate,
-setCDKTemplate,
-setCDKTemplateBackgroundAttrib,
-setCDKTemplateBackgroundColor,
-setCDKTemplateBox,
-setCDKTemplateBoxAttribute,
-setCDKTemplateCB,
-setCDKTemplateHorizontalChar,
-setCDKTemplateLLChar,
-setCDKTemplateLRChar,
-setCDKTemplateMin,
-setCDKTemplatePostProcess,
-setCDKTemplatePreProcess,
-setCDKTemplateULChar,
-setCDKTemplateURChar,
-setCDKTemplateValue,
-setCDKTemplateVerticalChar,
-unmixCDKTemplate \- a curses template widget.
+.XX activateCDKTemplate
+.XX cleanCDKTemplate
+.XX destroyCDKTemplate
+.XX drawCDKTemplate
+.XX eraseCDKTemplate
+.XX getCDKTemplateBox
+.XX getCDKTemplateMin
+.XX getCDKTemplateValue
+.XX injectCDKTemplate
+.XX mixCDKTemplate
+.XX newCDKTemplate
+.XX setCDKTemplate
+.XX setCDKTemplateBackgroundAttrib
+.XX setCDKTemplateBackgroundColor
+.XX setCDKTemplateBox
+.XX setCDKTemplateBoxAttribute
+.XX setCDKTemplateCB
+.XX setCDKTemplateHorizontalChar
+.XX setCDKTemplateLLChar
+.XX setCDKTemplateLRChar
+.XX setCDKTemplateMin
+.XX setCDKTemplatePostProcess
+.XX setCDKTemplatePreProcess
+.XX setCDKTemplateULChar
+.XX setCDKTemplateURChar
+.XX setCDKTemplateValue
+.XX setCDKTemplateVerticalChar
+.XX unmixCDKTemplate
+cdk_template \- a curses template widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -353,7 +356,7 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing
 template widget.
 The parameter names correspond to the same parameter names
-listed in the \fInewCDKTemplate\fR function.
+listed in the \fBnewCDKTemplate\fR function.
 .TP 5
 .B setCDKTemplateBackgroundAttrib
 sets the background attribute of the widget.

@@ -1,6 +1,6 @@
-/* $Id: cdkviewer.c,v 1.8 2005/03/08 19:53:13 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.10 2005/12/27 17:54:31 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkviewer";
@@ -37,7 +37,7 @@ int main (int argc, char **argv)
    char **messageList		= 0;
    char **buttonList		= 0;
    char tempTitle[256];
-   int x, j1, j2;
+   int j1, j2;
 
    CDK_PARAMS params;
    boolean boxWidget;
@@ -70,7 +70,7 @@ int main (int argc, char **argv)
    if (filename == 0)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Read the file in. */
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
    if (messageLines == -1)
    {
       fprintf (stderr, "Error: Could not open the file %s\n", filename);
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Set up the buttons of the viewer. */
@@ -134,25 +134,16 @@ int main (int argc, char **argv)
    /* Check to make sure we created the file viewer. */
    if (widget == 0)
    {
-      /* Clean up used memory. */
-      for (x=0; x < messageLines; x++)
-      {
-	 freeChar (messageList[x]);
-      }
-      for (x=0; x < buttonCount; x++)
-      {
-	 freeChar (buttonList[x]);
-      }
+      CDKfreeStrings (messageList);
+      CDKfreeStrings (buttonList);
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the file viewer. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Check if the user wants to set the background of the widget. */
@@ -168,21 +159,15 @@ int main (int argc, char **argv)
    /* Activate the viewer. */
    answer = activateCDKViewer (widget, 0);
 
-   /* Clean up. */
-   for (x=0; x < messageLines; x++)
-   {
-      freeChar (messageList[x]);
-   }
-   for (x=0; x < buttonCount; x++)
-   {
-      freeChar (buttonList[x]);
-   }
+   CDKfreeStrings (messageList);
+   CDKfreeStrings (buttonList);
+
    destroyCDKViewer (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
 
    /* Exit with the button number picked. */
-   exit (answer);
+   ExitProgram (answer);
 }
 
 /*
@@ -218,7 +203,6 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[3] = "<C>Press any key to continue.";
       popupLabel (ScreenOf(widget), mesg, 4);
 
-      /* Clean up and exit. */
       destroyCDKEntry (entry);
       return;
    }
@@ -241,7 +225,6 @@ static void saveInformation (CDKVIEWER *widget)
    }
    else
    {
-      /* Yep, let them know how many lines were saved. */
       mesg[0] = "<C></B/5>Save Successful";
       sprintf (temp, "<C>There were %d lines saved to the file", linesSaved);
       mesg[1] = copyChar (temp);
@@ -253,7 +236,6 @@ static void saveInformation (CDKVIEWER *widget)
       freeChar (mesg[1]); freeChar (mesg[2]);
    }
 
-   /* Clean up and exit. */
    destroyCDKEntry (entry);
    eraseCDKScreen (ScreenOf(widget));
    drawCDKScreen (ScreenOf(widget));

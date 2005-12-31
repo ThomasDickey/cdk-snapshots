@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Thorsten.Glaser $
- * $Date: 2005/04/24 20:27:19 $
- * $Revision: 1.138 $
+ * $Author: tom $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.143 $
  */
 
 /*
@@ -12,6 +12,7 @@
 static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box);
 static int createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers,
 				    char **list, int listSize);
+static void fixCursorPosition (CDKSCROLL *widget);
 static void setViewSize(CDKSCROLL *scrollp, int listSize);
 static int maxViewSize(CDKSCROLL *scrollp);
 
@@ -26,6 +27,8 @@ static int maxViewSize(CDKSCROLL *scrollp);
 			      ? 0 \
 			      : (widest - AvailableWidth(w)))
 #define WidestItem(w)      ((w)->maxLeftChar + AvailableWidth(w))
+
+#define SCREENPOS(w,n) (w)->itemPos[n] - (w)->leftChar /* + scrollbarAdj + BorderOf(w) */
 
 DeclareCDKObjects(SCROLL, Scroll, setCdk, Int);
 
@@ -66,8 +69,7 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
 		{ '>',		KEY_END },
    };
 
-   if (listSize <= 0
-    || (scrollp = newCDKObject(CDKSCROLL, &my_funcs)) == 0)
+   if ((scrollp = newCDKObject(CDKSCROLL, &my_funcs)) == 0)
    {
       destroyCDKObject(scrollp);
       return (0);
@@ -202,6 +204,19 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
 }
 
 /*
+ * Put the cursor on the currently-selected item's row.
+ */
+static void fixCursorPosition (CDKSCROLL *widget)
+{
+   int scrollbarAdj = (widget->scrollbarPlacement == LEFT) ?  1 :  0;
+   int ypos = SCREEN_YPOS(widget, widget->currentItem - widget->currentTop);
+   int xpos = SCREEN_XPOS(widget, 0) + scrollbarAdj;
+
+   wmove(InputWindowOf(widget), ypos, xpos);
+   wrefresh(InputWindowOf(widget));
+}
+
+/*
  * This actually does all the 'real' work of managing the scrolling list.
  */
 int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
@@ -209,16 +224,16 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
    /* Draw the scrolling list */
    drawCDKScroll (scrollp, ObjOf(scrollp)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       chtype input;
+      boolean functionKey;
       int ret;
 
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(scrollp));
+	 fixCursorPosition (scrollp);
+	 input = getchCDKObject (ObjOf(scrollp), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKScroll (scrollp, input);
@@ -357,6 +372,7 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
       setExitType(scrollp, 0);
    }
 
+   fixCursorPosition (scrollp);
    ResultOf(scrollp).valueInt = ret;
    return (ret != unknownInt);
 }
@@ -471,7 +487,6 @@ static void setViewSize(CDKSCROLL *scrollp, int listSize)
    scroller_SetViewSize(scrollp, listSize);
 }
 
-#define SCREENPOS(w,n) (w)->itemPos[n] - (w)->leftChar /* + scrollbarAdj + BorderOf(w) */
 #undef  SCREEN_YPOS		/* because listWin is separate */
 #define SCREEN_YPOS(w,n) (n)
 
@@ -573,6 +588,9 @@ static void _destroyCDKScroll (CDKOBJS *object)
       deleteCursesWindow (scrollp->shadowWin);
       deleteCursesWindow (scrollp->listWin);
       deleteCursesWindow (scrollp->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vSCROLL, scrollp);
 
       /* Unregister this object. */
       unregisterCDKObject (vSCROLL, scrollp);
@@ -722,6 +740,11 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers, char **
 	 }
       }
    }
+   else
+   {
+      status = 1;		/* null list is ok - for a while */
+   }
+
    return status;
 }
 
@@ -756,13 +779,16 @@ void setCDKScrollItems (CDKSCROLL *scrollp, char **list, int listSize, boolean n
    setCDKScrollPosition(scrollp, 0);
    scrollp->leftChar	= 0;
 }
-int getCDKScrollItems (CDKSCROLL *scrollp, char *list[])
+int getCDKScrollItems (CDKSCROLL *scrollp, char **list)
 {
    int x;
 
-   for (x=0; x < scrollp->listSize; x++)
+   if (list != 0)
    {
-      list[x] = chtype2Char (scrollp->item[x]);
+      for (x=0; x < scrollp->listSize; x++)
+      {
+	 list[x] = chtype2Char (scrollp->item[x]);
+      }
    }
    return scrollp->listSize;
 }

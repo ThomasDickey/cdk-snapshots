@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: command.c,v 1.16 2005/12/27 18:11:54 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="command";
@@ -128,11 +130,18 @@ int main(int argc, char **argv)
 		commandEntry->exitType == vESCAPE_HIT)
       {
 	 /* All done. */
+	 freeChar (upper);
+
+	 while (history.count-- > 0)
+	    free (history.command[history.count]);
+
 	 destroyCDKEntry (commandEntry);
 	 destroyCDKSwindow (commandOutput);
-	 freeChar (upper);
+	 destroyCDKScreen (cdkscreen);
+
 	 endCDK();
-	 exit (EXIT_SUCCESS);
+
+	 ExitProgram (EXIT_SUCCESS);
       }
       else if (strcmp (command, "clear") == 0)
       {

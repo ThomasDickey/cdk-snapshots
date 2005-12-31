@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: stopSign.c,v 1.9 2005/12/30 00:17:57 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="sillyness_ex";
@@ -14,6 +16,7 @@ int main(void)
    int currentLight	= 0;
    char *mesg[5], *sign[4];
    chtype key;
+   boolean functionKey;
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -42,7 +45,7 @@ int main(void)
       drawCDKLabel (title, FALSE);
       drawCDKLabel (stopSign, TRUE);
 
-      key = getcCDKObject (ObjOf(stopSign));
+      key = getchCDKObject (ObjOf(stopSign), &functionKey);
       if (key == KEY_ESC || key == 'q' || key == 'Q')
       {
 	 break;
@@ -78,5 +81,5 @@ int main(void)
    destroyCDKLabel (stopSign);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

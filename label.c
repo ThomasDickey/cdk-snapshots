@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/30 00:21:35 $
- * $Revision: 1.81 $
+ * $Date: 2005/12/30 00:17:57 $
+ * $Revision: 1.83 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -275,6 +275,9 @@ static void _destroyCDKLabel (CDKOBJS *object)
       deleteCursesWindow (label->shadowWin);
       deleteCursesWindow (label->win);
 
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vLABEL, label);
+
       /* Unregister the object. */
       unregisterCDKObject (vLABEL, label);
    }
@@ -285,10 +288,12 @@ static void _destroyCDKLabel (CDKOBJS *object)
  */
 char waitCDKLabel (CDKLABEL *label, char key)
 {
+   boolean functionKey;
+
    /* If the key is null, we'll accept anything. */
    if ( key == 0 )
    {
-      return (getcCDKObject (ObjOf(label)));
+      return (getchCDKObject (ObjOf(label), &functionKey));
    }
    else
    {
@@ -296,7 +301,7 @@ char waitCDKLabel (CDKLABEL *label, char key)
       int code;
       for (;;)
       {
-	 code = getcCDKObject(ObjOf(label));
+	 code = getchCDKObject(ObjOf(label), &functionKey);
 	 if (code == key)
 	 {
 	    return ( code );

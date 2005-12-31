@@ -1,5 +1,5 @@
 /*
- * $Id: radio.h,v 1.26 2005/04/15 21:28:50 tom Exp $
+ * $Id: radio.h,v 1.28 2005/12/28 21:44:56 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2005 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -147,7 +147,7 @@ void setCDKRadioItems (
 
 int getCDKRadioItems (
 		CDKRADIO *	/* radio */,
-		char *		/* list */ []);
+		char **		/* list */);
 
 /*
  * This sets the highlight bar attribute.
@@ -198,7 +198,7 @@ boolean getCDKRadioBox (
 		CDKRADIO *	/* radio */);
 
 /*
- * This sets the current selected item of the widget
+ * This sets the current high lighted item of the widget
  */
 void setCDKRadioCurrentItem (
 		CDKRADIO *	/* radio */,
@@ -206,6 +206,17 @@ void setCDKRadioCurrentItem (
 
 int getCDKRadioCurrentItem (
 		CDKRADIO *	/* radio */);
+
+/*
+ * This sets the current selected item of the widget
+ */
+void setCDKRadioSelectedItem (
+		CDKRADIO *	/* radio */,
+ 		int 		/* current item */);
+
+int getCDKRadioSelectedItem (
+		CDKRADIO *	/* radio */);
+
 
 /*
  * These set the drawing characters of the widget.

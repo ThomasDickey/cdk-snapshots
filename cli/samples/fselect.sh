@@ -1,27 +1,33 @@
 #!/bin/sh
+# $Id: fselect.sh,v 1.4 2005/12/27 17:56:05 tom Exp $
 
 #
 # Description:
-#		This demonstrates the CDK command line
-# interface to the file selection widget.
+#	This demonstrates the CDK command line
+#	interface to the file selection widget.
 #
 
 #
 # Create some global variables.
 #
-CDK_FSELECT="../cdkfselect"
-CDK_LABEL="../cdklabel"
+CDK_FSELECT="${CDK_BINDIR=..}/cdkfselect"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
 directory="."
 label="File: "
 title="<C>Select a file"
+
 buttons=" OK 
  Cancel "
+
 xpos="CENTER"
 ypos="CENTER"
+
 width=0
 height=-5
-tmp="/tmp/tmp.$$"
-file="/tmp/fs.$$"
+
+tmp="${TMPDIR=/tmp}/tmp.$$"
+file="${TMPDIR=/tmp}/fs.$$"
 
 #
 # Chop up the command line.
@@ -51,9 +57,8 @@ done
 #
 ${CDK_FSELECT} -d "${directory}" -T "${title}" -L "${label}" -X ${xpos} -Y ${ypos} -W ${width} -H ${height} -B "${buttons}" 2> ${file}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${file}`
 
 #

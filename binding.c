@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/03/08 23:25:41 $
- * $Revision: 1.50 $
+ * $Date: 2005/12/30 20:15:26 $
+ * $Revision: 1.53 $
  *
  * Notes:
  *
@@ -25,19 +25,19 @@ static CDKOBJS *bindableObject (EObjectType * cdktype, void *object)
       if (*cdktype == vFSELECT)
       {
 	 *cdktype = vENTRY;
-	 object = ((CDKFSELECT *) object)->entryField;
+	 object = ((CDKFSELECT *)object)->entryField;
       }
       else if (*cdktype == vALPHALIST)
       {
 	 *cdktype = vENTRY;
-	 object = ((CDKALPHALIST *) object)->entryField;
+	 object = ((CDKALPHALIST *)object)->entryField;
       }
    }
    else
    {
       object = 0;
    }
-   return object;
+   return (CDKOBJS *)object;
 }
 
 /*
@@ -96,7 +96,7 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 {
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (obj != 0)
+   if (obj != 0 && obj->bindingList != 0)
    {
       unsigned x;
 
@@ -105,6 +105,7 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 	 (obj)->bindingList[x].bindFunction = 0;
 	 (obj)->bindingList[x].bindData = 0;
       }
+      freeAndNull ((obj)->bindingList);
    }
 }
 
@@ -213,4 +214,15 @@ int getcCDKObject (CDKOBJS *obj)
       }
    }
    return result;
+}
+
+/*
+ * Use this function rather than getcCDKObject(), since we can extend it to
+ * handle wide-characters.
+ */
+int getchCDKObject (CDKOBJS *obj, boolean *functionKey)
+{
+   int key = getcCDKObject (obj);
+   *functionKey = (key >= KEY_MIN && key <= KEY_MAX);
+   return key;
 }

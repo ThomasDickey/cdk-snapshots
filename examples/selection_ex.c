@@ -1,11 +1,20 @@
-/* $Id: selection_ex.c,v 1.12 2005/04/15 21:43:23 tom Exp $ */
+/* $Id: selection_ex.c,v 1.15 2005/12/28 01:46:34 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "selection_ex";
 #endif
 
+/*
+ * This program demonstrates the Cdk selection widget.
+ *
+ * Options (in addition to normal CLI parameters):
+ *	-c	create the data after the widget
+ *	-s SPOS	location for the scrollbar
+ *	-t TEXT	title for the widget
+ *
+ */
 int main (int argc, char **argv)
 {
    /* Declare variables. */
@@ -14,13 +23,25 @@ int main (int argc, char **argv)
    WINDOW *cursesWin		= 0;
    char *title			= "<C></5>Pick one or more accounts.";
    char *choices[]		= {"   ", "-->"};
-   char *item[400], temp[256], *mesg[200];
+   char **item = 0;
+   char temp[256], *mesg[200];
    struct passwd *ent;
-   int count, x, y;
+   unsigned x, y;
+   unsigned used = 0;
+   unsigned count = 0;
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
+   CDKparseParams(argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
+
+   /* Use the account names to create a list. */
+   count = 0;
+   while ((ent = getpwent ()) != 0)
+   {
+      used = CDKallocStrings(&item, ent->pw_name, count++, used);
+   }
+   endpwent();
+   count--;
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -28,16 +49,6 @@ int main (int argc, char **argv)
 
    /* Set up CDK Colors. */
    initCDKColor();
-
-   /* Use the account names to create a list. */
-   count = 0;
-   while ((ent = getpwent ()) != 0)
-   {
-      if (count >= (int)(sizeof(item)/sizeof(item[0])))
-	 break;
-      item[count++] = copyChar (ent->pw_name);
-   }
-   count--;
 
    /* Create the selection list. */
    selection = newCDKSelection (cdkscreen,
@@ -47,7 +58,9 @@ int main (int argc, char **argv)
 				CDKparamValue(&params, 'H', 10),
 				CDKparamValue(&params, 'W', 50),
 				CDKparamString2(&params, 't', title),
-				item, count, choices, 2,
+				CDKparamNumber(&params, 'c') ? 0 : item,
+				CDKparamNumber(&params, 'c') ? 0 : count,
+				choices, 2,
 				A_REVERSE,
 				CDKparamValue(&params, 'N', TRUE),
 				CDKparamValue(&params, 'S', FALSE));
@@ -61,7 +74,12 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can;t seem to create the selection list. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
+   }
+
+   if (CDKparamNumber(&params, 'c'))
+   {
+      setCDKSelectionItems (selection, item, count);
    }
 
    /* Activate the selection list. */
@@ -97,8 +115,9 @@ int main (int argc, char **argv)
    }
 
    /* Clean up. */
+   CDKfreeStrings (item);
    destroyCDKSelection (selection);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

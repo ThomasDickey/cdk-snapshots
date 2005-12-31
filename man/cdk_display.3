@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_display.3,v 1.8 2003/12/01 23:14:16 tom Exp $
+.\" $Id: cdk_display.3,v 1.10 2005/12/29 01:31:04 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -29,7 +29,7 @@ page outlines and demonstrates how they work.
 .SS How To Use Colors
 Cdk has the capability to display colors in almost every string type displayed
 in a Cdk widget.
-To turn on colors, the function \fIinitCDKColor\fR has to be called.
+To turn on colors, the function \fBinitCDKColor\fR has to be called.
 When this function is called 64 color pairs are created.
 Normally the
 color pairs are accessed via the COLOR_PAIR macro.
@@ -428,6 +428,6 @@ vVIEWONLY/Uneditable field.
 T}
 .TE
 .SH SEE ALSO
-.BR cdk (3X),
-.BR cdk_binding (3X),
-.BR cdk_screen (3X)
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_screen (3)

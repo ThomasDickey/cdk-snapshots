@@ -1,6 +1,6 @@
-# $Id: manlinks.sed,v 1.2 2002/08/09 22:12:35 tom Exp $
+# $Id: manlinks.sed,v 1.6 2005/12/31 01:34:26 tom Exp $
 ##############################################################################
-# Copyright (c) 2000 Free Software Foundation, Inc.                          #
+# Copyright 2000-2002,2005 Thomas E. Dickey                                  #
 #                                                                            #
 # Permission is hereby granted, free of charge, to any person obtaining a    #
 # copy of this software and associated documentation files (the "Software"), #
@@ -34,6 +34,7 @@
 /^\.br/d
 /^\.sp/d
 /^\.It/d
+s/^\.XX[ 	]\+\([^ 	]\+\).*$/\1,/
 s/\\f.//g
 s/[:,]/ /g
 s/^[ 	][ 	]*//
@@ -53,6 +54,7 @@ s/\\-.*/ -/
 }
 s/ /\
 /g
+s/^\.XX//
 }
 /^\.SH_(SYNOPSIS/,/^\.SH_(DESCRIPTION/{
 	/^\.TS/,/^\.TE/{
@@ -70,3 +72,4 @@ s/ /\
 	d
 }
 /^\./d
+/^$/d

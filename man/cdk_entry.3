@@ -1,41 +1,45 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.18 2005/04/15 23:37:56 tom Exp $
+.\" $Id: cdk_entry.3,v 1.22 2005/12/29 01:31:04 tom Exp $
+.de XX
+..
 .TH cdk_entry 3
 .SH NAME
-activateCDKEntry,
-cleanCDKEntry,
-destroyCDKEntry,
-drawCDKEntry,
-eraseCDKEntry,
-getCDKEntryBox,
-getCDKEntryFillerChar,
-getCDKEntryHiddenChar,
-getCDKEntryMax,
-getCDKEntryMin,
-getCDKEntryValue,
-injectCDKEntry,
-moveCDKEntry,
-newCDKEntry,
-positionCDKEntry,
-setCDKEntry,
-setCDKEntryBackgroundAttrib,
-setCDKEntryBackgroundColor,
-setCDKEntryBox,
-setCDKEntryBoxAttribute,
-setCDKEntryCB,
-setCDKEntryFillerChar,
-setCDKEntryHiddenChar,
-setCDKEntryHorizontalChar,
-setCDKEntryLLChar,
-setCDKEntryLRChar,
-setCDKEntryMax,
-setCDKEntryMin,
-setCDKEntryPostProcess,
-setCDKEntryPreProcess,
-setCDKEntryULChar,
-setCDKEntryURChar,
-setCDKEntryValue,
-setCDKEntryVerticalChar \- curses text-entry widget.
+.XX activateCDKEntry
+.XX cleanCDKEntry
+.XX destroyCDKEntry
+.XX drawCDKEntry
+.XX eraseCDKEntry
+.XX getCDKEntryBox
+.XX getCDKEntryFillerChar
+.XX getCDKEntryHiddenChar
+.XX getCDKEntryMax
+.XX getCDKEntryMin
+.XX getCDKEntryValue
+.XX injectCDKEntry
+.XX moveCDKEntry
+.XX newCDKEntry
+.XX positionCDKEntry
+.XX setCDKEntry
+.XX setCDKEntryBackgroundAttrib
+.XX setCDKEntryBackgroundColor
+.XX setCDKEntryBox
+.XX setCDKEntryBoxAttribute
+.XX setCDKEntryCB
+.XX setCDKEntryFillerChar
+.XX setCDKEntryHiddenChar
+.XX setCDKEntryHighlight
+.XX setCDKEntryHorizontalChar
+.XX setCDKEntryLLChar
+.XX setCDKEntryLRChar
+.XX setCDKEntryMax
+.XX setCDKEntryMin
+.XX setCDKEntryPostProcess
+.XX setCDKEntryPreProcess
+.XX setCDKEntryULChar
+.XX setCDKEntryURChar
+.XX setCDKEntryValue
+.XX setCDKEntryVerticalChar
+cdk_entry \- curses text-entry widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -144,6 +148,11 @@ setCDKEntryVerticalChar \- curses text-entry widget.
 .B "void setCDKEntryHiddenChar ("
 .BI "CDKENTRY *" "entry",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKEntryHighlight ("
+.BI "CDKENTRY *" "entry",
+.BI "chtype " "highlight",
+.BI "boolean " "cursor");
 .TP 15
 .B "void setCDKEntryHorizontalChar ("
 .BI "CDKENTRY *" "entry",
@@ -301,7 +310,7 @@ It may be an integer or one of the pre-defined values
 .TP 5
 \fBypos\fR
 controls the placement of the object along the vertical axis.
-It may be an integer or one of the pre-defined values 
+It may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
 .TP 5
 \fBtitle\fR
@@ -358,7 +367,7 @@ entry widget.
 The \fBvalue\fR parameter sets the value of the contents of the
 entry field.
 The other parameter names correspond to the same parameter names
-listed in the \fInewCDKEntry\fR function.
+listed in the \fBnewCDKEntry\fR function.
 .TP 5
 .B setCDKEntryBackgroundAttrib
 sets the background attribute of the widget.
@@ -386,6 +395,9 @@ sets the character to use when drawing unused space in the field.
 .TP 5
 .B setCDKEntryHiddenChar
 sets the character to use when using a hidden character type.
+.TP 5
+.B setCDKEntryHighlight
+sets the attribute of the entry field.
 .TP 5
 .B setCDKEntryHorizontalChar
 sets the horizontal drawing character for the box to
@@ -483,9 +495,9 @@ Ctrl-L/Refreshes the screen.
 =
 .TE
 .SH SEE ALSO
-.BR cdk (3X),
-.BR cdk_binding (3X),
-.BR cdk_display (3X),
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3),
 .BR cdk_position (3),
-.BR cdk_process (3X),
-.BR cdk_screen (3X)
+.BR cdk_process (3),
+.BR cdk_screen (3)

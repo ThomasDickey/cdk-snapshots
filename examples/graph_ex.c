@@ -1,6 +1,6 @@
-/* $Id: graph_ex.c,v 1.11 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: graph_ex.c,v 1.12 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "graph_ex";
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make the graph widget. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Create the label widget. */
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make the label widget. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Set the graph values. */
@@ -102,5 +102,5 @@ int main(int argc, char **argv)
    destroyCDKLabel (pausep);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

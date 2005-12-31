@@ -1,3 +1,5 @@
+/* $Id: serial.c,v 1.6 2005/12/27 12:36:06 tom Exp $ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,7 +10,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="serial";
@@ -66,7 +68,7 @@ int main (int argc, char **argv)
 
 	 case 'h' :
 	       printf ("Usage: %s [-p Port] [-i Poll Interval] [-c Poll Count] [-v] [-h]\n", argv[0]);
-	       exit (EXIT_SUCCESS);
+	       ExitProgram (EXIT_SUCCESS);
 	       break;
       }
    }
@@ -107,7 +109,7 @@ int main (int argc, char **argv)
    {
       /* Create a pop-up dialog box... */
       printf ("Error: Open of <%s> failed.\n", port);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    termInfo.c_cflag = CRTSCTS | CLOCAL;
@@ -116,7 +118,7 @@ int main (int argc, char **argv)
       /* Really should create a pop-up dialog box... */
       printf ("Error: Could not get port attributes. Closing the port.\n");
       close (LFD);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    for (;;)

@@ -1,6 +1,6 @@
-/* $Id: fscale_ex.c,v 1.5 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: fscale_ex.c,v 1.6 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "fscale_ex";
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 
       /* Print out a message. */
       printf ("Oops. Can't make the scale widget. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Activate the scale. */
@@ -95,5 +95,5 @@ int main (int argc, char **argv)
    destroyCDKFScale (scale);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,35 +1,38 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.22 2005/04/24 22:17:14 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.25 2005/12/29 01:31:04 tom Exp $
+.de XX
+..
 .TH cdk_viewer 3
 .SH NAME
-activateCDKViewer,
-cleanCDKViewer,
-destroyCDKViewer,
-drawCDKViewer,
-eraseCDKViewer,
-getCDKViewerBox,
-getCDKViewerHighlight,
-getCDKViewerInfo,
-getCDKViewerInfoLine,
-getCDKViewerTitle,
-moveCDKViewer,
-newCDKViewer,
-positionCDKViewer,
-setCDKViewer,
-setCDKViewerBackgroundAttrib,
-setCDKViewerBackgroundColor,
-setCDKViewerBox,
-setCDKViewerBoxAttribute,
-setCDKViewerHighlight,
-setCDKViewerHorizontalChar,
-setCDKViewerInfo,
-setCDKViewerInfoLine,
-setCDKViewerLLChar,
-setCDKViewerLRChar,
-setCDKViewerTitle,
-setCDKViewerULChar,
-setCDKViewerURChar,
-setCDKViewerVerticalChar \- curses viewer list widget.
+.XX activateCDKViewer
+.XX cleanCDKViewer
+.XX destroyCDKViewer
+.XX drawCDKViewer
+.XX eraseCDKViewer
+.XX getCDKViewerBox
+.XX getCDKViewerHighlight
+.XX getCDKViewerInfo
+.XX getCDKViewerInfoLine
+.XX getCDKViewerTitle
+.XX moveCDKViewer
+.XX newCDKViewer
+.XX positionCDKViewer
+.XX setCDKViewer
+.XX setCDKViewerBackgroundAttrib
+.XX setCDKViewerBackgroundColor
+.XX setCDKViewerBox
+.XX setCDKViewerBoxAttribute
+.XX setCDKViewerHighlight
+.XX setCDKViewerHorizontalChar
+.XX setCDKViewerInfo
+.XX setCDKViewerInfoLine
+.XX setCDKViewerLLChar
+.XX setCDKViewerLRChar
+.XX setCDKViewerTitle
+.XX setCDKViewerULChar
+.XX setCDKViewerURChar
+.XX setCDKViewerVerticalChar
+cdk_viewer \- curses viewer list widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -301,7 +304,7 @@ interpret the contents of \fBlist\fR for Cdk display command.
 The \fBshowLineInfo\fR boolean flag tells the viewer to show to show the
 line number and percentage in the top left corner of the viewer window.
 The parameters \fBbox\fR and \fBshadow\fR are the same as in the function
-description of \fInewCDKViewer\fR.
+description of \fBnewCDKViewer\fR.
 .TP 5
 .B setCDKViewerBackgroundAttrib
 sets the background attribute of the widget.
@@ -424,8 +427,8 @@ T}
 Ctrl-L	Refreshes the screen.
 .TE
 .SH SEE ALSO
-.BR cdk (3X),
-.BR cdk_binding (3X),
-.BR cdk_display (3X),
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3),
 .BR cdk_position (3),
-.BR cdk_screen (3X)
+.BR cdk_screen (3)

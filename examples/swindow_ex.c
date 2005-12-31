@@ -1,9 +1,9 @@
-/* $Id: swindow_ex.c,v 1.10 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: swindow_ex.c,v 1.11 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="swindow_ex";
+char *XCursesProgramName = "swindow_ex";
 #endif
 
 /*
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not seem to create the scrolling window. Is the window too small??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Draw the scrolling window. */
@@ -110,5 +110,5 @@ int main (int argc, char **argv)
    destroyCDKSwindow (swindow);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: fileview.c,v 1.10 2005/12/27 18:13:14 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="codeViewer";
@@ -86,7 +88,7 @@ int main (int argc, char **argv)
 	 destroyCDKScreen (cdkscreen);
 	 endCDK();
 
-	 exit (EXIT_SUCCESS);
+	 ExitProgram (EXIT_SUCCESS);
       }
    }
 
@@ -106,7 +108,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-      exit (EXIT_SUCCESS);
+      ExitProgram (EXIT_SUCCESS);
    }
 
    /* Open the file and read the contents. */
@@ -114,7 +116,7 @@ int main (int argc, char **argv)
    if (lines == -1)
    {
       printf ("Could not open %s\n", filename);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Set up the viewer title, and the contents to the widget. */
@@ -139,6 +141,7 @@ int main (int argc, char **argv)
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 3);
+      free (mesg[0]);
    }
 
    /* Clean up. */
@@ -146,6 +149,8 @@ int main (int argc, char **argv)
    destroyCDKScreen (cdkscreen);
    CDKfreeStrings (info);
    freeChar (filename);
+
    endCDK();
-   exit (EXIT_SUCCESS);
+
+   ExitProgram (EXIT_SUCCESS);
 }

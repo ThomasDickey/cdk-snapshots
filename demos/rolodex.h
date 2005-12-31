@@ -1,5 +1,6 @@
-/* $Id: rolodex.h,v 1.8 2005/04/24 21:26:21 tom Exp $ */
-#include <cdk.h>
+/* $Id: rolodex.h,v 1.9 2005/12/27 12:34:20 tom Exp $ */
+
+#include <cdk_test.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>

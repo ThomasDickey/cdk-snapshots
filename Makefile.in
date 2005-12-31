@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.66 2005/04/24 23:06:20 tom Exp $
+# $Id: Makefile.in,v 1.71 2005/12/29 01:50:48 tom Exp $
 #
 #  Copyright 2001-2004,2005 Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -64,7 +64,8 @@ mandir		= $(DESTDIR)@mandir@
 DOCUMENT_DIR	= @prefix@/doc/cdk
 INCLUDE_DIR	= $(includedir)/cdk
 LIB_DIR		= $(libdir)
-MAN_DIR		= $(mandir)/man3
+MAN_DIR		= $(mandir)/man@MAN_DIR@
+MANSECT		= @MANSECT@
 
 CC		= @CC@
 CPP		= @CPP@
@@ -219,6 +220,7 @@ CDKMAN		= \
 		cdk_compat.3 \
 		cdk_dialog.3 \
 		cdk_display.3 \
+		cdk_draw.3 \
 		cdk_entry.3 \
 		cdk_fscale.3 \
 		cdk_fselect.3 \
@@ -320,27 +322,35 @@ uninstallCDKReadme ::
 # This installs the CDK man pages.
 #
 install \
-installCDKManPages :: headers.sed $(AUTO_MAN) $(MAN_DIR)
+installCDKManPages :: headers.sed manpage.sed $(AUTO_MAN) $(MAN_DIR)
 	@echo "Installing the CDK man pages in $(MAN_DIR) ..."
 	@for i in $(AUTO_MAN); do \
-	   $(SHELL) $(srcdir)/headers.sh -x "$(INSTALL_DATA)" -d $(MAN_DIR) -s . $$i; \
-	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $$i;  \
+	   $(SHELL) $(srcdir)/headers.sh \
+			-x "$(INSTALL_DATA)" \
+			-d $(MAN_DIR) \
+			-s . \
+			-t $(MANSECT) \
+			-e manpage.sed $$i; \
+	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $(MANSECT) $$i;  \
 	done
 	@for i in $(CDKMAN); do \
-	   $(SHELL) $(srcdir)/headers.sh -x "$(INSTALL_DATA)" -d $(MAN_DIR) -s . $(srcdir)/man/$$i; \
-	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $(srcdir)/man/$$i;  \
+	   $(SHELL) $(srcdir)/headers.sh \
+	   		-x "$(INSTALL_DATA)" \
+			-d $(MAN_DIR) \
+			-s . \
+			-t $(MANSECT) \
+			-e manpage.sed $(srcdir)/man/$$i; \
+	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN_DIR) $(MANSECT) $(srcdir)/man/$$i;  \
 	done
 
 uninstall \
 uninstallCDKManPages ::
 	@echo "Uninstalling the CDK man pages from $(MAN_DIR) ..."
 	@- for i in $(AUTO_MAN); do \
-	   $(RM) $(MAN_DIR)/`basename $$i`; \
-	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(srcdir)/$$i; \
+	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(MANSECT) $(srcdir)/$$i; \
 	done
 	@- for i in $(CDKMAN); do \
-	   $(RM) $(MAN_DIR)/$$i; \
-	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(srcdir)/man/$$i; \
+	   $(SHELL) $(srcdir)/manlinks.sh removing $(srcdir) $(MAN_DIR) $(MANSECT) $(srcdir)/man/$$i; \
 	done
 
 #
@@ -396,6 +406,11 @@ uninstallCDKSHLibrary ::
 headers.sed : $(srcdir)/headers.sh
 	$(SHELL) $(srcdir)/headers.sh -p CDK -c include/cdk_config.h -d $(INCLUDE_DIR) -s $(srcdir)/include -i -s include -i
 
+manpage.sed :
+	@echo "creating $@"
+	@echo "s/(3)/($(MANSECT))/g" >$@
+	@echo "/^\.TH/s/\<3\>/$(MANSECT)/" >>$@
+
 @MAKE_LOWER_TAGS@tags :
 @MAKE_LOWER_TAGS@	ctags *.[ch] */*.[ch]
 
@@ -409,7 +424,7 @@ clean ::
 	@- $(RM) -r autom4te.cache
 	- $(LIBTOOL_CLEAN) $(RM) $(LIB_OBJECT) $(CDKLIB)
 	- $(RM) *.i *.os $(CDKSHLIB)
-	- $(RM) headers.sed core tags *~
+	- $(RM) headers.sed manpage.sed core tags *~
 	$(RM) $(AUTO_HDR)
 	$(RM) $(AUTO_SRC)
 	$(RM) $(AUTO_MAN)
@@ -467,11 +482,14 @@ SCALE_H		= $(srcdir)/include/gen-scale.h
 SCALE_C		= $(srcdir)/gen-scale.c
 SCALE_M		= $(srcdir)/man/gen-scale.3
 
+MKDIR_MAN	= test -d man || mkdir man
+
 include/dscale.h :	$(SCALE_H)
 	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_H) >$@
 dscale.c :		$(SCALE_C) $(AUTO_HDR)
 	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_C) >$@
 man/cdk_dscale.3 :	$(SCALE_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_M) >$@
 
 include/fscale.h :	$(SCALE_H)
@@ -479,6 +497,7 @@ include/fscale.h :	$(SCALE_H)
 fscale.c :		$(SCALE_C) $(AUTO_HDR)
 	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_C) >$@
 man/cdk_fscale.3 :	$(SCALE_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_M) >$@
 
 include/scale.h :	$(SCALE_H)
@@ -486,6 +505,7 @@ include/scale.h :	$(SCALE_H)
 scale.c :		$(SCALE_C) $(AUTO_HDR)
 	$(GEN_SCALE) SCALE Scale Int int $(SCALE_C) >$@
 man/cdk_scale.3 :	$(SCALE_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) SCALE Scale Int int $(SCALE_M) >$@
 
 include/uscale.h :	$(SCALE_H)
@@ -493,6 +513,7 @@ include/uscale.h :	$(SCALE_H)
 uscale.c :		$(SCALE_C) $(AUTO_HDR)
 	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_C) >$@
 man/cdk_uscale.3 :	$(SCALE_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_M) >$@
 
 SLIDER_H	= $(srcdir)/include/gen-slider.h
@@ -504,6 +525,7 @@ include/fslider.h :	$(SLIDER_H)
 fslider.c :		$(SLIDER_C) $(AUTO_HDR)
 	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_C) >$@
 man/cdk_fslider.3 :	$(SLIDER_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_M) >$@
 
 include/slider.h :	$(SLIDER_H)
@@ -511,6 +533,7 @@ include/slider.h :	$(SLIDER_H)
 slider.c :		$(SLIDER_C) $(AUTO_HDR)
 	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_C) >$@
 man/cdk_slider.3 :	$(SLIDER_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_M) >$@
 
 include/uslider.h :	$(SLIDER_H)
@@ -518,4 +541,5 @@ include/uslider.h :	$(SLIDER_H)
 uslider.c :		$(SLIDER_C) $(AUTO_HDR)
 	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_C) >$@
 man/cdk_uslider.3 :	$(SLIDER_M) man
+	-$(MKDIR_MAN)
 	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_M) >$@

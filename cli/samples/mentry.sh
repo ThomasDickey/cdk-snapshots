@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: mentry.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,11 @@
 #
 # Create some global variables.
 #
-CDK_MENTRY="../cdkmentry"
-CDK_LABEL="../cdklabel"
-output="/tmp/mentry_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_MENTRY="${CDK_BINDIR=..}/cdkmentry"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/mentry_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the title.
@@ -26,9 +28,8 @@ buttons=" OK
 #
 ${CDK_MENTRY} -s 5 -v 10 -f 20 -T "${title}" -B "${buttons}" -F '_' -O ${output}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

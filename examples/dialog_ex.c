@@ -1,9 +1,9 @@
-/* $Id: dialog_ex.c,v 1.11 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: dialog_ex.c,v 1.12 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="dialog_ex";
+char *XCursesProgramName = "dialog_ex";
 #endif
 
 /*
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the dialog box. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Activate the dialog box. */
@@ -85,5 +85,5 @@ int main(int argc, char **argv)
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

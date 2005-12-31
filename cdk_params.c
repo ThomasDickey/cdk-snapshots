@@ -4,8 +4,8 @@
  * Useful functions for command-line parsing.
  *
  * $Author: tom $
- * $Date: 2003/11/29 16:03:15 $
- * $Revision: 1.5 $
+ * $Date: 2005/12/27 19:52:30 $
+ * $Revision: 1.6 $
  */
 
 #define OPTION_ON	((char *)1)
@@ -55,7 +55,7 @@ static int CDKparseSize (char *string, int fullSize)
    }
    else
    {
-      result = (int)atoi (string);
+      result = strtol (string, (char **)0, 0);
    }
    return result;
 }
@@ -94,7 +94,7 @@ int CDKparsePosition (char *string)
    }
    else
    {
-      result = (int)atoi (string);
+      result = strtol (string, (char **)0, 0);
    }
    return result;
 }
@@ -240,7 +240,7 @@ int CDKparamValue (CDK_PARAMS * params, int option, int missing)
    }
    else
    {
-      result = atoi (value);
+      result = strtol (value, (char **)0, 0);
    }
 
    return result;

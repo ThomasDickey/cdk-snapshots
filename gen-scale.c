@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 22:18:03 $
- * $Revision: 1.14 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.17 $
  */
 
 /*
@@ -192,14 +192,14 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    /* Draw the widget. */
    drawCDK<MIXED> (widget, ObjOf(widget)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       chtype input = 0;
+      boolean functionKey;
+
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(widget));
+	 input = getchCDKObject (ObjOf(widget), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDK<MIXED> (widget, input);
@@ -381,6 +381,9 @@ static bool performEdit(CDK<UPPER> *widget, chtype input)
    return result;
 }
 
+#define Decrement(value,by) if (value - by < value) value -= by
+#define Increment(value,by) if (value + by > value) value += by
+
 /*
  * This function injects a single character into the widget.
  */
@@ -426,19 +429,19 @@ static int _injectCDK<MIXED> (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_DOWN :
-		 widget->current -= widget->inc;
+		 Decrement(widget->current, widget->inc);
 		 break;
 
 	    case KEY_UP :
-		 widget->current += widget->inc;
+		 Increment(widget->current, widget->inc);
 		 break;
 
 	    case KEY_PPAGE :
-		 widget->current += widget->fastinc;
+		 Increment(widget->current, widget->fastinc);
 		 break;
 
 	    case KEY_NPAGE :
-		 widget->current -= widget->fastinc;
+		 Decrement(widget->current, widget->fastinc);
 		 break;
 
 	    case KEY_HOME :
@@ -665,6 +668,9 @@ static void _destroyCDK<MIXED> (CDKOBJS *object)
       deleteCursesWindow (widget->labelWin);
       deleteCursesWindow (widget->shadowWin);
       deleteCursesWindow (widget->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (v<UPPER>, widget);
 
       /* Unregister this object. */
       unregisterCDKObject (v<UPPER>, widget);

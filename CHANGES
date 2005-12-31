@@ -5,6 +5,79 @@ Modifications copyright Thomas E. Dickey 1999-2004, 2005
 
 This file outlines all of the changes/additions from one release to another.
 
+2005/12/30
+	+ add some redundant pointer checks, e.g., to entry.c, to avoid core
+	  dump if one tries building Cdk with NetBSD curses (see lib/32417).
+	+ split up traverseCDKScreen() to allow customized flavors of that to
+	  be written in a calling application using the pieces: 
+	  traverseCDKOnce(), setCDKFocusFirst() (request by Jorgen Lundman).
+	+ restore assignment of selectedItem in setCDKRadioCurrentItem() which
+	  was dropped in 2005/04/24 (report by Fu Steve X).
+	+ modify refreshCDKScreen() to ensure that only one widget will have
+	  focus, i.e., the first which currently has focus, or if none, then
+	  the first visible one (report by Fu Steve X).
+	+ use cleanCDKTemplate() consistently in the template widget, ensuring
+	  that the editing position is updated, and that the proper length is
+	  used when clearing memory (report by Fu Steve X).
+	+ modify calendar, radio, scroll, selection widgets so the cursor is
+	  shown at the beginning of the selected item's row for better
+	  accessibility (report by Fu Steve X).
+	+ add null-pointer check in setCDKViewerInfo() in case caller gives
+	  too-large value for list size (report by Jorgen Lundman).
+	+ improve traverseCDKScreen() by updating curobj from the
+	  getCDKFocusCurrent() function (patch by Jorgen Lundman).
+	+ add setCDKFocusCurrent() (patch by Jorgen Lundman).
+	+ add configure script option allowing manpage section to be changed
+	  from "3" to other values such as "3CDK", e.g., for Debian.
+	+ modify getCDKRadioItems(), getCDKScrollItems() and
+	  getCDKSelectionItems() to return just the list-size if the list
+	  pointer is null.
+	+ correct highlighting of selected line in CDKSelection window when
+	  the window is scrolled left/right (patch by Jorgen Lundman).
+	+ various manpage fixes (report by Jorgen Lundman).
+	+ change manpages to use ".XX" macro to indicate aliases, to make
+	  the manpage more readable.
+	+ eliminate duplication between cdk_util.3 and cdk_misc.3 manpages
+	  (dialogs belong in the former, for instance).
+	+ modify alphalist, itemlist, radio, selection and swindow to allow
+	  creating a widget with an empty list (request by Harry Brueckner).
+	+ modify mentry.c case for KEY_RIGHT so one can move the cursor past
+	  the end of the string to add new text (report by Harry Brueckner).
+	+ modify cdk_params.c to use strtol() rather than atoi() to allow
+	  command-line parameters such as -h 0xffff for the slider examples.
+	+ modify gen-slider.c to use sprintf/strlen to obtain length of
+	  formatted integer types since intlen() does not give correct result
+	  for maximum value of unsigned type.  Modify increment/decrement logic
+	  to take into account unsigned types (report by Keith J Outwater).
+	+ modify cli examples to exit with 255 when reporting an error rather
+	  than a -1 which is generally not portable.
+	+ fix several memory leaks exposed by valgrind in the example programs.
+	+ add configure --disable-leaks option to look for ncurses' debug
+	  function _nc_free_and_exit(), using that to help with memory leak
+	  checking.  This uses a new header <cdk_test.h> which will not be
+	  installed, since it is used only for testing in the build tree.
+	> patches by Phuah Yee Keat:
+	  + add an IsVisibleObj attribute to all CDK objects so the caller can
+	    set some object to be invisible, and calling refreshCDKScreen
+	    after that won't display it again, it enables one to dynamically
+	    show or hide a particular widget based on user actions.
+	    Note: this changes alignments in many of the structs from 5.0,
+	    requiring an ABI bump.
+	  + improve string length-computation in entry.c, allowing a 1-char
+	    field, and also allowing movement past end of text with KEY_END.
+	  + add setCDKRadioSelectedItem() and getCDKRadioSelectedItem().
+	  + fix some memory leaks by adding cleanCDKObjBindings() into all of
+	    the _destroyXXX() functions, modify cleanCDKObjBindings() to free
+	    and null (obj)->bindingList.
+	+ fix makefile for installing manpages when building outside of the
+	  source directory (patch by Mike Castle).
+	+ remove obsolete lsm file
+	+ review/correct some functions listed in manpages but not implemented,
+	  and the reverse (report by Rajat Das).
+	+ add setCDKMatrixCB() (report by 'zam).
+	+ update configure script (mostly fixes related to CF_XOPEN_SOURCE).
+	+ update config.guess, config.sub
+
 2005/04/24 - T.E.Dickey <dickey@his.com>
 	+ bump major version to 5 (overdue).
 	+ add built-in bindings for '<' and '>' to KEY_HOME and KEY_END

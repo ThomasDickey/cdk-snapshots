@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 23:25:19 $
- * $Revision: 1.203 $
+ * $Date: 2005/12/30 23:48:10 $
+ * $Revision: 1.208 $
  */
 
 /*
@@ -12,16 +12,28 @@
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character);
 static void drawCDKEntryField (CDKENTRY *entry);
 
-DeclareCDKObjects(ENTRY, Entry, setCdk, String);
+DeclareCDKObjects (ENTRY, Entry, setCdk, String);
 
 /*
  * This creates a pointer to an entry widget.
  */
-CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int min, int max, boolean Box, boolean shadow)
+CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
+		       int xplace,
+		       int yplace,
+		       char *title,
+		       char *label,
+		       chtype fieldAttr,
+		       chtype filler,
+		       EDisplayType dispType,
+		       int fWidth,
+		       int min,
+		       int max,
+		       boolean Box,
+		       boolean shadow)
 {
    CDKENTRY *entry	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window);
-   int parentHeight	= getmaxy(cdkscreen->window);
+   int parentWidth	= getmaxx (cdkscreen->window);
+   int parentHeight	= getmaxy (cdkscreen->window);
    int fieldWidth	= fWidth;
    int boxWidth		= 0;
    int boxHeight;
@@ -30,11 +42,11 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    int junk		= 0;
    int horizontalAdjust, oldWidth;
 
-   if ((entry = newCDKObject(CDKENTRY, &my_funcs)) == 0)
+   if ((entry = newCDKObject (CDKENTRY, &my_funcs)) == 0)
       return (0);
 
    setCDKEntryBox (entry, Box);
-   boxHeight		= (BorderOf(entry) * 2) + 1;
+   boxHeight		= (BorderOf (entry) * 2) + 1;
 
   /*
    * If the fieldWidth is a negative value, the fieldWidth will
@@ -42,7 +54,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    * given width.
    */
    fieldWidth = setWidgetDimension (parentWidth, fieldWidth, 0);
-   boxWidth = fieldWidth + 2 * BorderOf(entry);
+   boxWidth = fieldWidth + 2 * BorderOf (entry);
 
    /* Set some basic values of the entry field. */
    entry->label		= 0;
@@ -57,25 +69,23 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    }
 
    oldWidth = boxWidth;
-   boxWidth = setCdkTitle(ObjOf(entry), title, boxWidth);
+   boxWidth = setCdkTitle (ObjOf (entry), title, boxWidth);
    horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-   boxHeight += TitleLinesOf(entry);
+   boxHeight += TitleLinesOf (entry);
 
   /*
    * Make sure we didn't extend beyond the dimensions of the window.
    */
-   boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
-   boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = MINIMUM(fieldWidth, boxWidth - entry->labelLen - 2 * BorderOf(entry));
+   boxWidth = MINIMUM (boxWidth, parentWidth);
+   boxHeight = MINIMUM (boxHeight, parentHeight);
+   fieldWidth = MINIMUM (fieldWidth, boxWidth - entry->labelLen - 2 * BorderOf (entry));
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the label window. */
    entry->win = subwin (cdkscreen->window, boxHeight, boxWidth, ypos, xpos);
-
-   /* Is the window null? */
    if (entry->win == 0)
    {
       destroyCDKObject (entry);
@@ -85,34 +95,39 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
 
    /* Make the field window. */
    entry->fieldWin = subwin (entry->win, 1, fieldWidth,
-				ypos + TitleLinesOf(entry) + BorderOf(entry),
-				xpos + entry->labelLen + horizontalAdjust + BorderOf(entry));
+			     ypos + TitleLinesOf (entry) + BorderOf (entry),
+			     xpos + entry->labelLen + horizontalAdjust + BorderOf (entry));
+   if (entry->fieldWin == 0)
+   {
+      destroyCDKObject (entry);
+      return (0);
+   }
    keypad (entry->fieldWin, TRUE);
 
    /* Make the label win, if we need to. */
    if (label != 0)
    {
       entry->labelWin = subwin (entry->win, 1, entry->labelLen,
-					ypos + TitleLinesOf(entry) + BorderOf(entry),
-					xpos + horizontalAdjust + BorderOf(entry));
+				ypos + TitleLinesOf (entry) + BorderOf (entry),
+				xpos + horizontalAdjust + BorderOf (entry));
    }
 
    /* Make room for the info char * pointer. */
-   entry->info		= typeMallocN(char, max + 3);
+   entry->info		= typeMallocN (char, max + 3);
    cleanChar (entry->info, max + 3, '\0');
    entry->infoWidth	= max + 3;
 
    /* Set up the rest of the structure. */
-   ScreenOf(entry)		= cdkscreen;
+   ScreenOf (entry)		= cdkscreen;
    entry->parent		= cdkscreen->window;
    entry->shadowWin		= 0;
    entry->fieldAttr		= fieldAttr;
    entry->fieldWidth		= fieldWidth;
    entry->filler		= filler;
    entry->hidden		= filler;
-   ObjOf(entry)->inputWindow    = entry->fieldWin;
-   ObjOf(entry)->acceptsFocus   = TRUE;
-   ReturnOf(entry)              = NULL;
+   ObjOf (entry)->inputWindow	= entry->fieldWin;
+   ObjOf (entry)->acceptsFocus	= TRUE;
+   ReturnOf (entry)		= NULL;
    entry->shadow		= shadow;
    entry->screenCol		= 0;
    entry->leftChar		= 0;
@@ -120,23 +135,22 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
    entry->max			= max;
    entry->boxWidth		= boxWidth;
    entry->boxHeight		= boxHeight;
-   initExitType(entry);
+   initExitType (entry);
    entry->dispType		= dispType;
    entry->callbackfn		= CDKEntryCallBack;
 
    /* Do we want a shadow? */
    if (shadow)
    {
-      entry->shadowWin = subwin (cdkscreen->window, boxHeight, boxWidth, ypos+1, xpos+1);
+      entry->shadowWin = subwin (cdkscreen->window,
+				 boxHeight,
+				 boxWidth,
+				 ypos + 1,
+				 xpos + 1);
    }
 
-   /* Clean the key bindings. */
-   cleanCDKObjectBindings (vENTRY, entry);
-
-   /* Register this baby. */
    registerCDKObject (cdkscreen, vENTRY, entry);
 
-   /* Return the pointer to the structure. */
    return (entry);
 }
 
@@ -148,18 +162,17 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title
 char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 {
    chtype input = 0;
+   boolean functionKey;
    char *ret	= 0;
 
    /* Draw the widget. */
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
 
-   /* Check if 'actions' is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(entry));
+	 input = getchCDKObject (ObjOf (entry), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKEntry (entry, input);
@@ -172,10 +185,10 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
    else
    {
       int length = chlen (actions);
-      int x =0;
+      int x;
 
       /* Inject each character one at a time. */
-      for (x=0; x < length; x++)
+      for (x = 0; x < length; x++)
       {
 	 ret = injectCDKEntry (entry, actions[x]);
 	 if (entry->exitType != vEARLY_EXIT)
@@ -196,6 +209,33 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
    }
 }
 
+static void setPositionToEnd (CDKENTRY *entry)
+{
+   int stringLen;
+   int charCount;
+
+   stringLen = (int)strlen (entry->info);
+   if (stringLen >= entry->fieldWidth)
+   {
+      if (stringLen < entry->max)
+      {
+	 charCount = entry->fieldWidth - 1;
+	 entry->leftChar = stringLen - charCount;
+	 entry->screenCol = charCount;
+      }
+      else
+      {
+	 entry->leftChar = stringLen - entry->fieldWidth;
+	 entry->screenCol = stringLen - 1;
+      }
+   }
+   else
+   {
+      entry->leftChar = 0;
+      entry->screenCol = stringLen;
+   }
+}
+
 /*
  * This injects a single character into the widget.
  */
@@ -203,22 +243,22 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    int ppReturn = 1;
-   int temp, x, charCount, stringLen;
+   int temp, x, stringLen;
    char holder;
    char *ret = unknownString;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(entry, 0);
+   setExitType (entry, 0);
 
    /* Refresh the entry field. */
    drawCDKEntryField (entry);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(entry) != 0)
+   if (PreProcessFuncOf (entry) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(entry) (vENTRY, entry, PreProcessDataOf(entry), input);
+      ppReturn = PreProcessFuncOf (entry) (vENTRY, entry, PreProcessDataOf (entry), input);
    }
 
    /* Should we continue? */
@@ -227,261 +267,252 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
       /* Check a predefined binding... */
       if (checkCDKObjectBind (vENTRY, entry, input) != 0)
       {
-	 checkEarlyExit(entry);
+	 checkEarlyExit (entry);
 	 complete = TRUE;
       }
       else
       {
 	 switch (input)
 	 {
-	    case KEY_UP : case KEY_DOWN :
-		 Beep();
-		 break;
+	 case KEY_UP:
+	 case KEY_DOWN:
+	    Beep ();
+	    break;
 
-	    case KEY_HOME :
-		 entry->leftChar = 0;
-		 entry->screenCol = 0;
-		 drawCDKEntryField (entry);
-		 break;
+	 case KEY_HOME:
+	    entry->leftChar = 0;
+	    entry->screenCol = 0;
+	    drawCDKEntryField (entry);
+	    break;
 
-	    case CDK_TRANSPOSE :
-		 stringLen = (int)strlen (entry->info);
-		 temp = entry->leftChar + entry->screenCol;
-		 if (temp >= stringLen-1)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    holder = entry->info[temp];
-		    entry->info[temp] = entry->info[temp + 1];
-		    entry->info[temp + 1] = holder;
-		    drawCDKEntryField (entry);
-		 }
-		 break;
+	 case CDK_TRANSPOSE:
+	    stringLen = (int)strlen (entry->info);
+	    temp = entry->leftChar + entry->screenCol;
+	    if (temp >= stringLen - 1)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       holder = entry->info[temp];
+	       entry->info[temp] = entry->info[temp + 1];
+	       entry->info[temp + 1] = holder;
+	       drawCDKEntryField (entry);
+	    }
+	    break;
 
-	    case KEY_END :
-		 stringLen = (int)strlen (entry->info);
-		 if (stringLen >= entry->fieldWidth)
-		 {
-		    charCount = (int)(entry->fieldWidth * .8);
-		    entry->leftChar = stringLen - charCount;
-		    entry->screenCol = charCount;
-		 }
-		 else
-		 {
-		    entry->leftChar = 0;
-		    entry->screenCol = stringLen;
-		 }
-		 drawCDKEntryField (entry);
-		 break;
+	 case KEY_END:
+	    setPositionToEnd (entry);
+	    drawCDKEntryField (entry);
+	    break;
 
-	    case KEY_LEFT :
-		 if (entry->screenCol == 0)
-		 {
-		    if (entry->leftChar == 0)
-		    {
-		       Beep();
-		    }
-		    else
-		    {
-		       /* Scroll left.	*/
-		       entry->leftChar--;
-		       drawCDKEntryField (entry);
-		    }
-		 }
-		 else
-		 {
-		    wmove (entry->fieldWin, 0, --entry->screenCol);
-		    wrefresh (entry->fieldWin);
-		 }
-		 break;
+	 case KEY_LEFT:
+	    if (entry->screenCol == 0)
+	    {
+	       if (entry->leftChar == 0)
+	       {
+		  Beep ();
+	       }
+	       else
+	       {
+		  /* Scroll left.  */
+		  entry->leftChar--;
+		  drawCDKEntryField (entry);
+	       }
+	    }
+	    else
+	    {
+	       wmove (entry->fieldWin, 0, --entry->screenCol);
+	       wrefresh (entry->fieldWin);
+	    }
+	    break;
 
-	    case KEY_RIGHT :
-		 if (entry->screenCol == entry->fieldWidth-1)
-		 {
-		    temp = (int)strlen (entry->info);
-		    if ((entry->leftChar + entry->screenCol + 1) == temp)
-		    {
-		       Beep();
-		    }
-		    else
-		    {
-		       /* Scroll to the right. */
-		       entry->leftChar++;
-		       drawCDKEntryField (entry);
-		    }
-		 }
-		 else
-		 {
-		    /* Move right. */
-		    temp = (int)strlen (entry->info);
-		    if ((entry->leftChar + entry->screenCol) == temp)
-		    {
-		       Beep();
-		    }
-		    else
-		    {
-		       wmove (entry->fieldWin, 0, ++entry->screenCol);
-		    }
-		    wrefresh (entry->fieldWin);
-		 }
-		 break;
+	 case KEY_RIGHT:
+	    if (entry->screenCol == entry->fieldWidth - 1)
+	    {
+	       temp = (int)strlen (entry->info);
+	       if ((entry->leftChar + entry->screenCol + 1) == temp)
+	       {
+		  Beep ();
+	       }
+	       else
+	       {
+		  /* Scroll to the right. */
+		  entry->leftChar++;
+		  drawCDKEntryField (entry);
+	       }
+	    }
+	    else
+	    {
+	       /* Move right. */
+	       temp = (int)strlen (entry->info);
+	       if ((entry->leftChar + entry->screenCol) == temp)
+	       {
+		  Beep ();
+	       }
+	       else
+	       {
+		  wmove (entry->fieldWin, 0, ++entry->screenCol);
+	       }
+	       wrefresh (entry->fieldWin);
+	    }
+	    break;
 
-	    case KEY_BACKSPACE : case KEY_DC :
-		 if (entry->dispType == vVIEWONLY)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    /* Get the length of the widget information. */
-		    int infoLength = (int)strlen (entry->info);
-		    if ((entry->leftChar + entry->screenCol) < infoLength)
-		    {
-		       /* We are deleting from inside the string. */
-		       int currPos = entry->screenCol + entry->leftChar;
-		       for (x=currPos; x < infoLength; x++)
-		       {
-			  entry->info[x] = entry->info[x + 1];
-		       }
-		       entry->info[infoLength] = '\0';
+	 case KEY_BACKSPACE:
+	 case KEY_DC:
+	    if (entry->dispType == vVIEWONLY)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       /* Get the length of the widget information. */
+	       int infoLength = (int)strlen (entry->info);
+	       if ((entry->leftChar + entry->screenCol) < infoLength)
+	       {
+		  /* We are deleting from inside the string. */
+		  int currPos = entry->screenCol + entry->leftChar;
+		  for (x = currPos; x < infoLength; x++)
+		  {
+		     entry->info[x] = entry->info[x + 1];
+		  }
+		  entry->info[infoLength] = '\0';
 
-		       /* Update the widget. */
-		       drawCDKEntryField (entry);
-		    }
-		    else
-		    {
-		       /* We are deleting from the end of the string. */
-		       if (infoLength > 0)
-		       {
-			  /* Update the character pointer. */
-			  entry->info[infoLength-1] = '\0';
-			  infoLength--;
+		  /* Update the widget. */
+		  drawCDKEntryField (entry);
+	       }
+	       else
+	       {
+		  /* We are deleting from the end of the string. */
+		  if (infoLength > 0)
+		  {
+		     /* Update the character pointer. */
+		     entry->info[infoLength - 1] = '\0';
+		     infoLength--;
 
-			  /* Adjust the cursor. */
-			  if (entry->screenCol > 0)
-			  {
-			     entry->screenCol--;
-			  }
+		     /* Adjust the cursor. */
+		     if (entry->screenCol > 0)
+		     {
+			entry->screenCol--;
+		     }
 
-			  /*
-			   * If we deleted the last character on the
-			   * screen and the information has scrolled,
-			   * adjust the entry field to show the info.
-			   */
-			   if (entry->leftChar > 0 && entry->screenCol == 1)
-			   {
-			      if (infoLength < entry->fieldWidth-1)
-			      {
-				 entry->leftChar = 0;
-				 entry->screenCol = infoLength;
-			      }
-			      else
-			      {
-				 entry->leftChar -= (entry->fieldWidth-3);
-				 entry->screenCol = entry->fieldWidth-2;
-			      }
-			   }
+		     /*
+		      * If we deleted the last character on the
+		      * screen and the information has scrolled,
+		      * adjust the entry field to show the info.
+		      */
+		     if (entry->leftChar > 0 && entry->screenCol == 1)
+		     {
+			if (infoLength < entry->fieldWidth - 1)
+			{
+			   entry->leftChar = 0;
+			   entry->screenCol = infoLength;
+			}
+			else
+			{
+			   entry->leftChar -= (entry->fieldWidth - 3);
+			   entry->screenCol = entry->fieldWidth - 2;
+			}
+		     }
 
-			  /* Update the widget. */
-			  drawCDKEntryField (entry);
-		       }
-		       else
-		       {
-			  Beep();
-		       }
-		    }
-		 }
-		 break;
+		     /* Update the widget. */
+		     drawCDKEntryField (entry);
+		  }
+		  else
+		  {
+		     Beep ();
+		  }
+	       }
+	    }
+	    break;
 
-	    case KEY_ESC :
-		 setExitType(entry, input);
-		 complete = TRUE;
-		 break;
+	 case KEY_ESC:
+	    setExitType (entry, input);
+	    complete = TRUE;
+	    break;
 
-	    case CDK_ERASE :
-		 if ((int)strlen(entry->info) != 0)
-		 {
-		    cleanCDKEntry (entry);
-		    drawCDKEntryField (entry);
-		 }
-		 break;
+	 case CDK_ERASE:
+	    if (strlen (entry->info) != 0)
+	    {
+	       cleanCDKEntry (entry);
+	       drawCDKEntryField (entry);
+	    }
+	    break;
 
-	    case CDK_CUT:
-		 if ((int)strlen(entry->info) != 0)
-		 {
-		    freeChar (GPasteBuffer);
-		    GPasteBuffer = copyChar (entry->info);
-		    cleanCDKEntry (entry);
-		    drawCDKEntryField (entry);
-		 }
-		 else
-		 {
-		    Beep();
-		 }
-		 break;
+	 case CDK_CUT:
+	    if (strlen (entry->info) != 0)
+	    {
+	       freeChar (GPasteBuffer);
+	       GPasteBuffer = copyChar (entry->info);
+	       cleanCDKEntry (entry);
+	       drawCDKEntryField (entry);
+	    }
+	    else
+	    {
+	       Beep ();
+	    }
+	    break;
 
-	    case CDK_COPY:
-		 if ((int)strlen(entry->info) != 0)
-		 {
-		    freeChar (GPasteBuffer);
-		    GPasteBuffer = copyChar (entry->info);
-		 }
-		 else
-		 {
-		    Beep();
-		 }
-		 break;
+	 case CDK_COPY:
+	    if (strlen (entry->info) != 0)
+	    {
+	       freeChar (GPasteBuffer);
+	       GPasteBuffer = copyChar (entry->info);
+	    }
+	    else
+	    {
+	       Beep ();
+	    }
+	    break;
 
-	    case CDK_PASTE:
-		 if (GPasteBuffer != 0)
-		 {
-		    setCDKEntryValue (entry, GPasteBuffer);
-		    drawCDKEntryField (entry);
-		 }
-		 else
-		 {
-		    Beep();
-		 }
-		 break;
+	 case CDK_PASTE:
+	    if (GPasteBuffer != 0)
+	    {
+	       setCDKEntryValue (entry, GPasteBuffer);
+	       drawCDKEntryField (entry);
+	    }
+	    else
+	    {
+	       Beep ();
+	    }
+	    break;
 
-	    case KEY_TAB : case KEY_ENTER :
-		 if ((int)strlen (entry->info) >= entry->min)
-		 {
-		    setExitType(entry, input);
-		    ret = (entry->info);
-		    complete = TRUE;
-		 }
-		 else
-		 {
-		    Beep();
-		 }
-		 break;
+	 case KEY_TAB:
+	 case KEY_ENTER:
+	    if ((int)strlen (entry->info) >= entry->min)
+	    {
+	       setExitType (entry, input);
+	       ret = (entry->info);
+	       complete = TRUE;
+	    }
+	    else
+	    {
+	       Beep ();
+	    }
+	    break;
 
-	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(entry));
-		 refreshCDKScreen (ScreenOf(entry));
-		 break;
+	 case CDK_REFRESH:
+	    eraseCDKScreen (ScreenOf (entry));
+	    refreshCDKScreen (ScreenOf (entry));
+	    break;
 
-	    default :
-		 (entry->callbackfn)(entry, input);
-		 break;
+	 default:
+	    (entry->callbackfn) (entry, input);
+	    break;
 	 }
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf(entry) != 0))
+      if (!complete && (PostProcessFuncOf (entry) != 0))
       {
-	 PostProcessFuncOf(entry) (vENTRY, entry, PostProcessDataOf(entry), input);
+	 PostProcessFuncOf (entry) (vENTRY, entry, PostProcessDataOf (entry), input);
       }
    }
 
-   if (!complete) {
-      setExitType(entry, 0);
-   }
+   if (!complete)
+      setExitType (entry, 0);
 
-   ResultOf(entry).valueString = ret;
+   ResultOf (entry).valueString = ret;
    return (ret != unknownString);
 }
 
@@ -491,8 +522,8 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   int currentX = getbegx(entry->win);
-   int currentY = getbegy(entry->win);
+   int currentX = getbegx (entry->win);
+   int currentY = getbegy (entry->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -504,25 +535,25 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
     */
    if (relative)
    {
-      xpos = getbegx(entry->win) + xplace;
-      ypos = getbegy(entry->win) + yplace;
+      xpos = getbegx (entry->win) + xplace;
+      ypos = getbegy (entry->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(entry), &xpos, &ypos, entry->boxWidth, entry->boxHeight);
+   alignxy (WindowOf (entry), &xpos, &ypos, entry->boxWidth, entry->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   moveCursesWindow(entry->win, -xdiff, -ydiff);
-   moveCursesWindow(entry->fieldWin, -xdiff, -ydiff);
-   moveCursesWindow(entry->labelWin, -xdiff, -ydiff);
-   moveCursesWindow(entry->shadowWin, -xdiff, -ydiff);
+   moveCursesWindow (entry->win, -xdiff, -ydiff);
+   moveCursesWindow (entry->fieldWin, -xdiff, -ydiff);
+   moveCursesWindow (entry->labelWin, -xdiff, -ydiff);
+   moveCursesWindow (entry->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   refreshCDKWindow (WindowOf(entry));
+   refreshCDKWindow (WindowOf (entry));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
@@ -530,7 +561,7 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
       touchwin (entry->win);
       touchwin (entry->labelWin);
       touchwin (entry->fieldWin);
-      drawCDKEntry (entry, ObjOf(entry)->box);
+      drawCDKEntry (entry, ObjOf (entry)->box);
    }
 }
 
@@ -541,65 +572,67 @@ static void _moveCDKEntry (CDKOBJS *object, int xplace, int yplace, boolean rela
  */
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
-   int plainchar = CharOf(character);
-   unsigned temp, x;
+   int plainchar = CharOf (character);
+   unsigned temp;
 
    /* Start checking the input. */
-   if (!isChar(character))
+   if (!isChar (character))
    {
-      Beep();
+      Beep ();
    }
    else if ((entry->dispType == vINT ||
-	entry->dispType ==vHINT) &&
-	!isdigit(CharOf(plainchar)))
+	     entry->dispType ==vHINT) &&
+	    !isdigit (CharOf (plainchar)))
    {
-      Beep();
+      Beep ();
    }
    else if ((entry->dispType == vCHAR ||
-		entry->dispType == vUCHAR ||
-		entry->dispType == vLCHAR ||
-		entry->dispType == vUHCHAR ||
-		entry->dispType == vLHCHAR) &&
-		isdigit(CharOf(plainchar)))
+	     entry->dispType == vUCHAR ||
+	     entry->dispType == vLCHAR ||
+	     entry->dispType == vUHCHAR ||
+	     entry->dispType == vLHCHAR) &&
+	    isdigit (CharOf (plainchar)))
    {
-      Beep();
+      Beep ();
    }
    else if (entry->dispType == vVIEWONLY)
    {
-      Beep();
+      Beep ();
    }
    else if ((int)strlen (entry->info) == entry->max)
    {
-      Beep();
+      Beep ();
    }
    else
    {
       /* We will make any adjustments to the case of the character. */
       if ((entry->dispType == vUCHAR ||
-	     entry->dispType == vUHCHAR ||
-	     entry->dispType == vUMIXED ||
-	     entry->dispType == vUHMIXED)
-	     && !isdigit(CharOf(plainchar)))
+	   entry->dispType == vUHCHAR ||
+	   entry->dispType == vUMIXED ||
+	   entry->dispType == vUHMIXED)
+	  && !isdigit (CharOf (plainchar)))
       {
 	 plainchar = toupper (plainchar);
       }
       else if ((entry->dispType == vLCHAR ||
-		     entry->dispType == vLHCHAR ||
-		     entry->dispType == vLMIXED ||
-		     entry->dispType == vLHMIXED) &&
-		     !isdigit(CharOf(plainchar)))
+		entry->dispType == vLHCHAR ||
+		entry->dispType == vLMIXED ||
+		entry->dispType == vLHMIXED) &&
+	       !isdigit (CharOf (plainchar)))
       {
 	 plainchar = tolower (plainchar);
       }
 
       /* Update the screen and pointer. */
-      if (entry->screenCol != entry->fieldWidth-1)
+      if (entry->screenCol != entry->fieldWidth - 1)
       {
-	 /* Update the character pointer. */
-	 temp = strlen (entry->info);
-	 for (x=temp; (int) x > entry->screenCol + entry->leftChar; x--)
+	 int x;
+
+	 for (x = (int)strlen (entry->info);
+	      x > (entry->screenCol + entry->leftChar);
+	      x--)
 	 {
-	    entry->info[x] = entry->info[x-1];
+	    entry->info[x] = entry->info[x - 1];
 	 }
 	 entry->info[entry->screenCol + entry->leftChar] = plainchar;
 	 entry->screenCol++;
@@ -632,7 +665,7 @@ void cleanCDKEntry (CDKENTRY *entry)
    cleanChar (entry->info, entry->infoWidth, '\0');
 
    /* Clean the entry screen field. */
-   mvwhline(entry->fieldWin, 0, 0, entry->filler, width);
+   mvwhline (entry->fieldWin, 0, 0, entry->filler, width);
 
    /* Reset some variables. */
    entry->screenCol	= 0;
@@ -658,7 +691,7 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      drawObjBox (entry->win, ObjOf(entry));
+      drawObjBox (entry->win, ObjOf (entry));
    }
 
    drawCdkTitle (entry->win, object);
@@ -685,8 +718,8 @@ static void drawCDKEntryField (CDKENTRY *entry)
    int infoLength	= 0;
    int x		= 0;
 
-   /* Draw in the filler characters.*/
-   mvwhline(entry->fieldWin, 0, x, entry->filler, entry->fieldWidth);
+   /* Draw in the filler characters. */
+   mvwhline (entry->fieldWin, 0, x, entry->filler, entry->fieldWidth);
 
    /* If there is information in the field. Then draw it in. */
    if (entry->info != 0)
@@ -695,23 +728,23 @@ static void drawCDKEntryField (CDKENTRY *entry)
 
       /* Redraw the field. */
       if (entry->dispType == vHINT ||
-		entry->dispType == vHCHAR ||
-		entry->dispType == vHMIXED ||
-		entry->dispType == vUHCHAR ||
-		entry->dispType == vLHCHAR ||
-		entry->dispType == vUHMIXED ||
-		entry->dispType == vLHMIXED)
+	  entry->dispType == vHCHAR ||
+	  entry->dispType == vHMIXED ||
+	  entry->dispType == vUHCHAR ||
+	  entry->dispType == vLHCHAR ||
+	  entry->dispType == vUHMIXED ||
+	  entry->dispType == vLHMIXED)
       {
-	 for (x=entry->leftChar; x < infoLength; x++)
+	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
 	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden);
 	 }
       }
       else
       {
-	 for (x=entry->leftChar; x < infoLength; x++)
+	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, CharOf(entry->info[x]) | entry->fieldAttr);
+	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, CharOf (entry->info[x]) | entry->fieldAttr);
 	 }
       }
       wmove (entry->fieldWin, 0, entry->screenCol);
@@ -756,6 +789,9 @@ static void _destroyCDKEntry (CDKOBJS *object)
       deleteCursesWindow (entry->shadowWin);
       deleteCursesWindow (entry->win);
 
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vENTRY, entry);
+
       /* Unregister this object. */
       unregisterCDKObject (vENTRY, entry);
    }
@@ -778,8 +814,6 @@ void setCDKEntry (CDKENTRY *entry, char *value, int min, int max, boolean Box GC
 void setCDKEntryValue (CDKENTRY *entry, char *newValue)
 {
    int copychars	= 0;
-   int stringLen	= 0;
-   int charCount	= 0;
 
    /* If the pointer sent in is the same pointer as before, do nothing. */
    if (entry->info == newValue)
@@ -800,25 +834,13 @@ void setCDKEntryValue (CDKENTRY *entry, char *newValue)
    }
 
    /* Determine how many characters we need to copy. */
-   copychars = MINIMUM ((int)strlen(newValue), entry->max);
+   copychars = MINIMUM ((int)strlen (newValue), entry->max);
 
    /* OK, erase the old value, and copy in the new value. */
    cleanChar (entry->info, entry->max, '\0');
-   strncpy (entry->info, newValue, (unsigned) copychars);
-   stringLen = (int)strlen (entry->info);
+   strncpy (entry->info, newValue, (unsigned)copychars);
 
-   /* Now determine the values of leftChar and screenCol. */
-   if (stringLen >= entry->fieldWidth)
-   {
-      charCount		= (int)(entry->fieldWidth * .8);
-      entry->leftChar	= stringLen - charCount;
-      entry->screenCol	= charCount;
-   }
-   else
-   {
-      entry->leftChar = 0;
-      entry->screenCol = stringLen;
-   }
+   setPositionToEnd (entry);
 }
 char *getCDKEntryValue (CDKENTRY *entry)
 {
@@ -879,12 +901,12 @@ chtype getCDKEntryHiddenChar (CDKENTRY *entry)
  */
 void setCDKEntryBox (CDKENTRY *entry, boolean Box)
 {
-   ObjOf(entry)->box = Box;
-   ObjOf(entry)->borderSize = Box ? 1 : 0;
+   ObjOf (entry)->box = Box;
+   ObjOf (entry)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKEntryBox (CDKENTRY *entry)
 {
-   return ObjOf(entry)->box;
+   return ObjOf (entry)->box;
 }
 
 /*
@@ -926,7 +948,7 @@ void setCDKEntryCB (CDKENTRY *entry, ENTRYCB callback)
    entry->callbackfn = callback;
 }
 
-static void _focusCDKEntry(CDKOBJS *object)
+static void _focusCDKEntry (CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 
@@ -934,67 +956,67 @@ static void _focusCDKEntry(CDKOBJS *object)
    wrefresh (entry->fieldWin);
 }
 
-static void _unfocusCDKEntry(CDKOBJS *object)
+static void _unfocusCDKEntry (CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
    wrefresh (entry->fieldWin);
 }
 
 #if 0
-static void _refreshDataCDKEntry(CDKOBJS *object)
+static void _refreshDataCDKEntry (CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 
-   if (ReturnOf(entry))
+   if (ReturnOf (entry))
    {
-      switch (DataTypeOf(entry))
+      switch (DataTypeOf (entry))
       {
       default:
       case DataTypeString:
-	 strcpy(entry->info, (char *)ReturnOf(entry));
+	 strcpy (entry->info, (char *)ReturnOf (entry));
 	 break;
       case DataTypeInt:
-	 sprintf(entry->info, "%d", *((int*)ReturnOf(entry)));
+	 sprintf (entry->info, "%d", *((int *)ReturnOf (entry)));
 	 break;
       case DataTypeFloat:
-	 sprintf(entry->info, "%g", *((float*)ReturnOf(entry)));
+	 sprintf (entry->info, "%g", *((float *)ReturnOf (entry)));
 	 break;
       case DataTypeDouble:
-	 sprintf(entry->info, "%g", *((double*)ReturnOf(entry)));
+	 sprintf (entry->info, "%g", *((double *)ReturnOf (entry)));
 	 break;
       }
-      entry->screenCol = strlen(entry->info);
-      drawCDKEntryField(entry);
+      entry->screenCol = strlen (entry->info);
+      drawCDKEntryField (entry);
    }
 }
 
-static void _saveDataCDKEntry(CDKOBJS *object)
+static void _saveDataCDKEntry (CDKOBJS *object)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
 
-   if (ReturnOf(entry))
+   if (ReturnOf (entry))
    {
-      switch (DataTypeOf(entry))
+      switch (DataTypeOf (entry))
       {
       default:
       case DataTypeString:
-	 strcpy((char *)ReturnOf(entry), entry->info);
+	 strcpy ((char *)ReturnOf (entry), entry->info);
 	 break;
       case DataTypeInt:
-	 *((int*)ReturnOf(entry)) = atoi(entry->info);
+	 *((int *)ReturnOf (entry)) = atoi (entry->info);
 	 break;
       case DataTypeFloat:
-	 *((float*)ReturnOf(entry)) = atof(entry->info);
+	 *((float *)ReturnOf (entry)) = atof (entry->info);
 	 break;
       case DataTypeDouble:
-	 *((double*)ReturnOf(entry)) = atof(entry->info);
+	 *((double *)ReturnOf (entry)) = atof (entry->info);
 	 break;
       }
    }
 }
 #else
-dummyRefreshData(Entry)
-dummySaveData(Entry)
+dummyRefreshData (Entry)
+dummySaveData (Entry)
 #endif

@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.20 2004/08/30 00:00:57 tom Exp $
+ * $Id: alphalist.h,v 1.21 2005/12/28 21:45:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -93,7 +93,7 @@ CDKALPHALIST *newCDKAlphalist (
 		int		/* width */,
 		char *		/* title */,
 		char *		/* label */,
-		char *		/* list */ [],
+		char **		/* list */,
 		int		/* listSize */,
 		chtype		/* fillerChar */,
 		chtype		/* highlight */,
@@ -117,7 +117,7 @@ char *activateCDKAlphalist (
  */
 void setCDKAlphalist (
 		CDKALPHALIST *	/* alphalist */,
-		char *		/* list */ [],
+		char **		/* list */,
 		int		/* listSize */,
 		chtype		/* fillerChar */,
 		chtype		/* highlight */,
@@ -128,7 +128,7 @@ void setCDKAlphalist (
  */
 void setCDKAlphalistContents (
 		CDKALPHALIST *	/* alphalist */,
-		char *		/* list */ [],
+		char **		/* list */,
 		int		/* listSize */);
 
 char **getCDKAlphalistContents (
@@ -183,7 +183,7 @@ boolean getCDKAlphalistBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKAlphalistBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

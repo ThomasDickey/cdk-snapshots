@@ -1,9 +1,9 @@
-/* $Id: preprocess_ex.c,v 1.16 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: preprocess_ex.c,v 1.17 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="preprocess_ex";
+char *XCursesProgramName = "preprocess_ex";
 #endif
 
 static BINDFN_PROTO(entryPreProcessCB);
@@ -41,7 +41,7 @@ int main (void)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    setCDKEntryPreProcess (widget, entryPreProcessCB, 0);
@@ -72,7 +72,7 @@ int main (void)
    destroyCDKEntry (widget);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype input)

@@ -1,6 +1,6 @@
-/* $Id: scale_ex.c,v 1.8 2004/08/29 19:43:49 tom Exp $ */
+/* $Id: scale_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "scale_ex";
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 
       /* Print out a message. */
       printf ("Oops. Can't make the widget. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Activate the widget. */
@@ -86,5 +86,5 @@ int main (int argc, char **argv)
    destroyCDKScale (widget);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

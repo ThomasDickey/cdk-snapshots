@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk.3,v 1.10 2004/08/29 23:27:24 tom Exp $
+.\" $Id: cdk.3,v 1.12 2005/12/30 21:57:49 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -75,6 +75,9 @@ cdk_display (3)/T{
 Shows how to add special display attributes,
 colors, and justification into a widget.
 T}
+cdk_draw (3)/T{
+Outlines functions used for drawing text and lines.
+T}
 cdk_screen (3)/T{
 Demonstrates the use of screens within Cdk.
 T}
@@ -99,7 +102,7 @@ capabilities, see \fIcdk_display (3)\fR.
 .It "\(bu Key Bindings." 5
 Individual keys can be overridden with a callback.
 The callback is set up using
-the \fIbindCDKObject\fR function.
+the \fBbindCDKObject\fR function.
 To learn more about this see \fIcdk_binding (3)\fR.
 .PP
 .It "\(bu Pre and Post Processing." 5
@@ -164,9 +167,11 @@ T}
 .BR cdk (3),
 .BR cdk_binding (3),
 .BR cdk_display (3),
+.BR cdk_draw (3),
 .BR cdk_misc (3),
 .BR cdk_process (3),
 .BR cdk_screen (3)
+.
 .SH NOTES
 .PP
 The header file \fI<cdk.h>\fR automatically includes the header files

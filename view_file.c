@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/04/24 18:02:27 $
- * $Revision: 1.2 $
+ * $Date: 2005/12/27 01:05:44 $
+ * $Revision: 1.3 $
  */
 
 /*
@@ -11,6 +11,7 @@
  */
 int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, int buttonCount)
 {
+   int result;
    int lines		= 0;
    char **info		= 0;
 
@@ -20,8 +21,13 @@ int viewFile (CDKSCREEN *screen, char *title, char *filename, char **buttons, in
    /* If we couldn't read the file, return an error. */
    if (lines == -1)
    {
-      return (lines);
+      result = lines;
    }
+   else
+   {
 
-   return viewInfo(screen, title, info, lines, buttons, buttonCount, TRUE);
+      result = viewInfo(screen, title, info, lines, buttons, buttonCount, TRUE);
+      CDKfreeStrings (info);
+   }
+   return result;
 }

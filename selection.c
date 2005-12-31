@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Thorsten.Glaser $
- * $Date: 2005/04/24 20:39:53 $
- * $Revision: 1.133 $
+ * $Author: tom $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.143 $
  */
 
 /*
@@ -22,6 +22,8 @@ static int maxViewSize(CDKSELECTION *scrollp);
 			      ? 0 \
 			      : (widest - AvailableWidth(w)))
 #define WidestItem(w)      ((w)->maxLeftChar + AvailableWidth(w))
+
+#define SCREENPOS(w,n) (w)->itemPos[n] - (w)->leftChar + scrollbarAdj /* + BorderOf(w) */
 
 DeclareCDKObjects(SELECTION, Selection, setCdk, Int);
 
@@ -127,14 +129,14 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    if (splace == RIGHT)
    {
       selection->scrollbarWin = subwin (selection->win,
-				        maxViewSize(selection), 1,
+					maxViewSize(selection), 1,
 					SCREEN_YPOS(selection, ypos),
-				        xpos + selection->boxWidth - BorderOf(selection) - 1);
+					xpos + selection->boxWidth - BorderOf(selection) - 1);
    }
    else if (splace == LEFT)
    {
       selection->scrollbarWin = subwin (selection->win,
-				        maxViewSize(selection), 1,
+					maxViewSize(selection), 1,
 					SCREEN_YPOS(selection, ypos),
 					SCREEN_XPOS(selection, xpos));
    }
@@ -167,13 +169,15 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 
    /* Each item in the needs to be converted to chtype * */
    widestItem = createList(selection, list, listSize);
-   if (widestItem <= 0)
+   if (widestItem > 0)
+   {
+      updateViewWidth(selection, widestItem);
+   }
+   else if (listSize)
    {
       destroyCDKObject(selection);
       return (0);
    }
-
-   updateViewWidth(selection, widestItem);
 
    /* Do we need to create a shadow. */
    if (shadow)
@@ -193,6 +197,19 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 }
 
 /*
+ * Put the cursor on the currently-selected item.
+ */
+static void fixCursorPosition (CDKSELECTION *selection)
+{
+   int scrollbarAdj = (selection->scrollbarPlacement == LEFT) ?  1 :  0;
+   int ypos = SCREEN_YPOS(selection, selection->currentItem - selection->currentTop);
+   int xpos = SCREEN_XPOS(selection, 0) + scrollbarAdj;
+
+   wmove(InputWindowOf(selection), ypos, xpos);
+   wrefresh(InputWindowOf(selection));
+}
+
+/*
  * This actually manages the selection widget...
  */
 int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
@@ -200,16 +217,16 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    /* Draw the selection list */
    drawCDKSelection (selection, ObjOf(selection)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       chtype input;
+      boolean functionKey;
       int ret;
 
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(selection));
+	 fixCursorPosition (selection);
+	 input = getchCDKObject (ObjOf(selection), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKSelection (selection, input);
@@ -369,6 +386,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
    }
 
    ResultOf(selection).valueInt = ret;
+   fixCursorPosition (selection);
    return (ret != unknownInt);
 }
 
@@ -449,8 +467,6 @@ static void setViewSize(CDKSELECTION *widget, int listSize)
    scroller_SetViewSize(widget, listSize);
 }
 
-#define SCREENPOS(w,n) (w)->itemPos[n] - (w)->leftChar + scrollbarAdj /* + BorderOf(w) */
-
 /*
  * This function draws the selection list window.
  */
@@ -460,6 +476,11 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    int screenPos	= 0;
    int xpos, ypos;
    int j;
+   int selItem      = -1;
+
+   /* If there is to be a highlight, assign it now */
+   if (ObjOf(selection)->hasFocus)
+      selItem = selection->currentItem;
 
    /* draw the list... */
    for (j = 0; j < selection->viewSize; j++)
@@ -476,10 +497,13 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
 		   getmaxx(selection->win));
 
       /* Draw the selection item. */
-      writeChtype (selection->win,
+      writeChtypeAttrib (selection->win,
 		   (screenPos >= 0) ? screenPos : 1,
 		   ypos,
 		   selection->item[j + selection->currentTop],
+		   ((j + selection->currentTop == selItem)
+		     ? selection->highlight
+		     : A_NORMAL),
 		   HORIZONTAL,
 		   (screenPos >= 0) ? 0 : (1 - screenPos),
 		   selection->itemLen[j + selection->currentTop]);
@@ -492,22 +516,6 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
 		   HORIZONTAL,
 		   0,
 		   selection->choicelen[selection->selections[j + selection->currentTop]]);
-   }
-
-   /* Draw in the current highlight. */
-   if (ObjOf(selection)->hasFocus)
-   {
-      screenPos = SCREENPOS(selection, selection->currentItem);
-      ypos = SCREEN_YPOS(selection, selection->currentHigh);
-
-      writeChtypeAttrib (selection->win,
-		        (screenPos >= 0) ? screenPos : 1,
-			ypos,
-			selection->item[selection->currentItem],
-			selection->highlight,
-			HORIZONTAL,
-			selection->leftChar,
-			selection->itemLen[selection->currentItem]);
    }
 
    /* Determine where the toggle is supposed to be. */
@@ -526,8 +534,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       drawObjBox (selection->win, ObjOf(selection));
    }
 
-   /* Refresh the window. */
-   refreshCDKWindow (selection->win);
+   fixCursorPosition (selection);
 }
 
 /*
@@ -547,6 +554,17 @@ static void _setBKattrSelection (CDKOBJS *object, chtype attrib)
    }
 }
 
+static void destroyInfo (CDKSELECTION *widget)
+{
+   CDKfreeChtypes (widget->item);
+   widget->item = 0;
+
+   freeAndNull (widget->itemPos);
+   freeAndNull (widget->itemLen);
+   freeAndNull (widget->selections);
+   freeAndNull (widget->mode);
+}
+
 /*
  * This function destroys the selection list.
  */
@@ -559,16 +577,15 @@ static void _destroyCDKSelection (CDKOBJS *object)
       cleanCdkTitle (object);
       CDKfreeChtypes (selection->choice);
       freeChecked (selection->choicelen);
-      CDKfreeChtypes (selection->item);
-      freeChecked (selection->itemPos);
-      freeChecked (selection->itemLen);
-      freeChecked (selection->selections);
-      freeChecked (selection->mode);
+      destroyInfo (selection);
 
       /* Clean up the windows. */
       deleteCursesWindow (selection->scrollbarWin);
       deleteCursesWindow (selection->shadowWin);
       deleteCursesWindow (selection->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vSELECTION, selection);
 
       /* Unregister this object. */
       unregisterCDKObject (vSELECTION, selection);
@@ -592,7 +609,7 @@ static void _eraseCDKSelection (CDKOBJS *object)
 /*
  * This function sets a couple of the selection list attributes.
  */
-void setCDKSelection (CDKSELECTION *selection, chtype highlight, int choices[], boolean Box)
+void setCDKSelection (CDKSELECTION *selection, chtype highlight, int * choices, boolean Box)
 {
    setCDKSelectionChoices (selection, choices);
    setCDKSelectionHighlight(selection, highlight);
@@ -625,13 +642,16 @@ void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
 
    updateViewWidth(selection, widestItem);
 }
-int getCDKSelectionItems (CDKSELECTION *selection, char *list[])
+int getCDKSelectionItems (CDKSELECTION *selection, char **list)
 {
    int j;
 
-   for (j = 0; j < selection->listSize; j++)
+   if (list != 0)
    {
-      list[j] = chtype2Char (selection->item[j]);
+      for (j = 0; j < selection->listSize; j++)
+      {
+	 list[j] = chtype2Char (selection->item[j]);
+      }
    }
    return selection->listSize;
 }
@@ -653,8 +673,7 @@ void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
 }
 char *getCDKSelectionTitle (CDKSELECTION *selection GCC_UNUSED)
 {
-   /* FIXME: this is not implemented */
-   return ("HELLO");
+   return chtype2Char(*TitleOf(selection));
 }
 
 /*
@@ -672,7 +691,7 @@ chtype getCDKSelectionHighlight (CDKSELECTION *selection)
 /*
  * This sets the default choices for the selection list.
  */
-void setCDKSelectionChoices (CDKSELECTION *selection, int choices[])
+void setCDKSelectionChoices (CDKSELECTION *selection, int * choices)
 {
    int j;
 
@@ -750,7 +769,7 @@ int getCDKSelectionChoice (CDKSELECTION *selection, int Index)
  * This sets the modes of the items in the selection list. Currently
  * there are only two: editable=0 and read-only=1
  */
-void setCDKSelectionModes (CDKSELECTION *selection, int modes[])
+void setCDKSelectionModes (CDKSELECTION *selection, int * modes)
 {
    int j;
 
@@ -856,10 +875,6 @@ static void _unfocusCDKSelection(CDKOBJS *object)
    drawCDKSelectionList (selection, ObjOf(selection)->box);
 }
 
-dummyRefreshData(Selection)
-
-dummySaveData(Selection)
-
 static int createList(CDKSELECTION *selection, char **list, int listSize)
 {
    int status = 0;
@@ -898,11 +913,7 @@ static int createList(CDKSELECTION *selection, char **list, int listSize)
 
 	 if (status)
 	 {
-	    CDKfreeChtypes (selection->item);
-	    freeChecked (selection->itemPos);
-	    freeChecked (selection->itemLen);
-	    freeChecked (selection->selections);
-	    freeChecked (selection->mode);
+	    destroyInfo (selection);
 
 	    selection->item	  = newList;
 	    selection->itemPos	  = newPos;
@@ -920,6 +931,14 @@ static int createList(CDKSELECTION *selection, char **list, int listSize)
 	 }
       }
    }
+   else
+   {
+      destroyInfo (selection);
+   }
 
    return status ? widestItem : 0;
 }
+
+dummyRefreshData(Selection)
+
+dummySaveData(Selection)
