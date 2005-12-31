@@ -1,9 +1,9 @@
-/* $Id: marquee_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: marquee_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="marquee_ex";
+char *XCursesProgramName = "marquee_ex";
 #endif
 
 static char		startAttr[100];
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 
       /* Print out a message. */
       printf ("Oops. Can't seem to create the marquee window. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Draw the CDK screen. */
@@ -154,5 +154,5 @@ int main (int argc, char **argv)
    destroyCDKMarquee (scrollMessage);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

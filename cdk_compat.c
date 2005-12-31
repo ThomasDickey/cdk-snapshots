@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_compat.c,v 1.4 2004/08/31 19:44:14 tom Exp $
+ * $Id: cdk_compat.c,v 1.5 2005/12/28 21:43:35 tom Exp $
  * These are functions that are obsolete, but provided as a porting aid.
  * The obsolete functions use fixed limits, and inconsistent data handling.
  */
@@ -52,7 +52,7 @@ int readFile (char *filename, char **array, int maxlines)
 /*
  * This splits a string into X parts given the split character.
  */
-int splitString (char *string, char *items[], char splitChar)
+int splitString (char *string, char **items, char splitChar)
 {
    char **temp = CDKsplitString (string, splitChar);
    int chunks = 0;

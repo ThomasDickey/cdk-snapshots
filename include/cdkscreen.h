@@ -1,5 +1,5 @@
 /*
- * $Id: cdkscreen.h,v 1.14 2004/08/20 22:16:54 tom Exp $
+ * $Id: cdkscreen.h,v 1.16 2005/12/30 01:53:30 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003,2004 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -82,32 +82,6 @@ typedef struct SScreen CDKSCREEN;
  */
 CDKSCREEN *initCDKScreen (
 		WINDOW *	/* window */);
-
-/*
- * This registers a CDKSCREEN. You would do this if you had more
- * than one screen created and you wanted them managed.
- */
-int registerCDKScreen (
-		CDKSCREEN **	/* screens */);
-
-/*
- * This removes the given CDKSCREEN pointer from the array
- * of managed screens.
- */
-int unregisterCDKScreen (
-		CDKSCREEN **	/* screens */);
-
-/*
- * This raises a screen in a list of managed screens.
- */
-void raiseCDKScreen (
-		CDKSCREEN **	/* screens */);
-
-/*
- * This lowers a screen in a list of managed screens.
- */
-void lowerCDKScreen (
-		CDKSCREEN **	/* screens */);
 
 /*
  * This sets which CDKSCREEN pointer will be the default screen

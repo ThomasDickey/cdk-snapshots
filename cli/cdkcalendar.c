@@ -1,6 +1,6 @@
-/* $Id: cdkcalendar.c,v 1.9 2005/03/08 19:54:04 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.11 2005/12/27 16:11:09 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkcalendar";
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -108,15 +108,12 @@ int main (int argc, char **argv)
    /* Check to make sure we created the dialog box. */
    if (widget == 0)
    {
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the calendar. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Split the buttons if they supplied some. */
@@ -159,15 +156,14 @@ int main (int argc, char **argv)
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -210,17 +206,18 @@ int main (int argc, char **argv)
       destroyCDKButtonbox (buttonWidget);
    }
 
-   /* End CDK. */
+   CDKfreeStrings(buttonList);
+
    destroyCDKCalendar (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
 
    /* Print out the date selected. D/M/Y format. */
    dateInfo = localtime (&selected);
-
-   /* Print out the date selected. */
    fprintf (fp, "%02d/%02d/%d\n", dateInfo->tm_mday, (dateInfo->tm_mon+1), (dateInfo->tm_year+1900));
-   exit (selection);
+   fclose (fp);
+
+   ExitProgram (selection);
 }
 
 /*

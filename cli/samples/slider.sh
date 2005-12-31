@@ -1,18 +1,20 @@
 #!/bin/sh
+# $Id: slider.sh,v 1.4 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
-#		This demonstrates the CDK command line
-# interface to the slider widget.
+#	This demonstrates the CDK command line
+#	interface to the slider widget.
 #
 
 #
 # Create some global variables.
 #
-CDK_SLIDER="../cdkslider"
-CDK_LABEL="../cdklabel"
-output="/tmp/slider_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_SLIDER="${CDK_BINDIR=..}/cdkslider"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/slider_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the title.
@@ -27,9 +29,8 @@ buttons=" OK
 #
 ${CDK_SLIDER} -f 20 -l 0 -h 100 -i 5 -L "${label}" -T "${title}" -F "</R>*" -B "${buttons}" -O ${output}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

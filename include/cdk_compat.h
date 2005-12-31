@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_compat.h,v 1.1 2004/08/31 20:13:53 tom Exp $
+ * $Id: cdk_compat.h,v 1.2 2005/12/28 21:45:45 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2004, Thomas E. Dickey
+ * Copyright 2004,2005 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ extern "C" {
 
 extern int getDirectoryContents (char *directory, char **list, int maxListSize);
 extern int readFile (char *filename, char **info, int maxlines);
-extern int splitString (char *string, char *items[], char splitChar);
+extern int splitString (char *string, char **items, char splitChar);
 
 #else
 

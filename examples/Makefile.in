@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.17 2005/04/24 17:45:28 tom Exp $
+# $Id: Makefile.in,v 1.18 2005/12/28 00:03:39 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -37,6 +37,7 @@ BINS	= \
 	entry_ex$x \
 	fscale_ex$x \
 	fselect_ex$x \
+	fslider_ex$x \
 	graph_ex$x \
 	hello_ex$x \
 	histogram_ex$x \
@@ -49,8 +50,8 @@ BINS	= \
 	menu_ex$x \
 	position_ex$x \
 	preprocess_ex$x \
-	radio_ex$x \
 	radio1_ex$x \
+	radio_ex$x \
 	raiseCDKObject_ex$x \
 	scale_ex$x \
 	scroll_ex$x \
@@ -60,6 +61,7 @@ BINS	= \
 	swindow_ex$x \
 	template_ex$x \
 	traverse_ex$x \
+	uslider_ex$x \
 	viewer_ex$x \
 	viewer_ex2$x
 
@@ -76,6 +78,7 @@ dialog_ex$x :		dialog_ex.c		; $(LINKIT)
 entry_ex$x :		entry_ex.c		; $(LINKIT)
 fscale_ex$x :		fscale_ex.c		; $(LINKIT)
 fselect_ex$x :		fselect_ex.c		; $(LINKIT)
+fslider_ex$x :		fslider_ex.c		; $(LINKIT)
 graph_ex$x :		graph_ex.c		; $(LINKIT)
 hello_ex$x :		hello_ex.c		; $(LINKIT)
 histogram_ex$x :	histogram_ex.c		; $(LINKIT)
@@ -88,8 +91,8 @@ mentry_ex$x :		mentry_ex.c		; $(LINKIT)
 menu_ex$x :		menu_ex.c		; $(LINKIT)
 position_ex$x :		position_ex.c		; $(LINKIT)
 preprocess_ex$x :	preprocess_ex.c		; $(LINKIT)
-radio_ex$x :		radio_ex.c		; $(LINKIT)
 radio1_ex$x :		radio1_ex.c		; $(LINKIT)
+radio_ex$x :		radio_ex.c		; $(LINKIT)
 raiseCDKObject_ex$x :	raiseCDKObject_ex.c	; $(LINKIT)
 scale_ex$x :		scale_ex.c		; $(LINKIT)
 scroll_ex$x :		scroll_ex.c		; $(LINKIT)
@@ -99,6 +102,7 @@ subwindow_ex$x :	subwindow_ex.c		; $(LINKIT)
 swindow_ex$x :		swindow_ex.c		; $(LINKIT)
 template_ex$x :		template_ex.c		; $(LINKIT)
 traverse_ex$x :		traverse_ex.c		; $(LINKIT)
+uslider_ex$x :		uslider_ex.c		; $(LINKIT)
 viewer_ex$x :		viewer_ex.c		; $(LINKIT)
 viewer_ex2$x :		viewer_ex2.c		; $(LINKIT)
 #

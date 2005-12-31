@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:41:29 $
- * $Revision: 1.56 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.59 $
  */
 
 /*
@@ -43,7 +43,12 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
    chtype *chtypeString;
    int x;
 
-   static const struct { int from; int to; } bindings[] = {
+   static const struct
+   {
+      int from;
+      int to;
+   } bindings[] =
+   {
 		{ CDK_BACKCHAR,	KEY_PPAGE },
 		{ CDK_FORCHAR,	KEY_NPAGE },
    };
@@ -155,7 +160,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen, int xplace, int yplace, int hei
 					getbegx(fselect->win),
 					getbegy(fselect->win) + tempHeight,
 					RIGHT,
-				        boxHeight - tempHeight,
+					boxHeight - tempHeight,
 					tempWidth,
 					0,
 					fselect->dirContents,
@@ -274,18 +279,17 @@ static void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
 char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
 {
    chtype input = 0;
+   boolean functionKey;
    char *ret	= 0;
 
    /* Draw the widget. */
    drawCDKFselect (fselect, ObjOf(fselect)->box);
 
-   /* Check if 'actions' is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(fselect->entryField));
+	 input = getchCDKObject (ObjOf(fselect->entryField), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKFselect (fselect, input);
@@ -367,9 +371,8 @@ static int _injectCDKFselect (CDKOBJS *object, chtype input)
       drawCDKScroll (fselect->scrollField, ObjOf(fselect->scrollField)->box);
    }
 
-   if (!complete) {
+   if (!complete)
       setExitType(fselect, 0);
-   }
 
    ResultOf(fselect).valueString = ret;
    return (ret != unknownString);
@@ -492,6 +495,7 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
 {
    struct stat fileStat;
    char **dirList = 0;
+   char *oldItem;
    int fileCount;
    int x = 0;
 
@@ -500,6 +504,7 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
    if (fileCount <= 0)
    {
       /* We couldn't read the directory. Return. */
+      CDKfreeStrings(dirList);
       return 0;
    }
 
@@ -526,7 +531,8 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
 	 }
       }
 
-      switch (mode2Filetype(fileStat.st_mode)) {
+      switch (mode2Filetype(fileStat.st_mode))
+      {
       case 'l':
 	 attr = fselect->linkAttribute;
 	 mode = "@";
@@ -545,7 +551,9 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
       default:
 	 break;
       }
+      oldItem = dirList[x];
       fselect->dirContents[x] = format3String("%s%s%s", attr, dirList[x], mode);
+      free (oldItem);
    }
    return 1;
 }
@@ -820,6 +828,8 @@ static void _destroyCDKFselect (CDKOBJS *object)
    {
       CDKFSELECT *fselect = (CDKFSELECT *)object;
 
+      cleanCDKObjectBindings (vFSELECT, fselect);
+
       /* Free up the character pointers. */
       freeChar (fselect->pwd);
       freeChar (fselect->pathname);
@@ -837,6 +847,7 @@ static void _destroyCDKFselect (CDKOBJS *object)
       deleteCursesWindow (fselect->shadowWin);
       deleteCursesWindow (fselect->win);
 
+      /* Clean the key bindings. */
       /* Unregister the object. */
       unregisterCDKObject (vFSELECT, fselect);
    }
@@ -865,6 +876,7 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, v
    char			*mesg[10];
    char			stringMode[15];
    int			intMode;
+   boolean		functionKey;
 
    /* Get the file name. */
    filename	= fselect->entryField->info;
@@ -873,7 +885,8 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, v
    lstat (filename, &fileStat);
 
    /* Determine the file type. */
-   switch (mode2Filetype(fileStat.st_mode)) {
+   switch (mode2Filetype(fileStat.st_mode))
+   {
    case 'l':
       filetype = "Symbolic Link";
       break;
@@ -924,7 +937,7 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object, v
 			    mesg, 9,
 			    TRUE, FALSE);
    drawCDKLabel (infoLabel, TRUE);
-   getcCDKObject (ObjOf(infoLabel));
+   getchCDKObject (ObjOf(infoLabel), &functionKey);
 
    /* Clean up some memory. */
    destroyCDKLabel (infoLabel);

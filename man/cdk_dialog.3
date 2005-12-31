@@ -1,35 +1,39 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.16 2005/04/15 23:33:35 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.18 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_dialog 3
 .SH NAME
-activateCDKDialog,
-destroyCDKDialog,
-drawCDKDialog,
-eraseCDKDialog,
-getCDKDialog,
-getCDKDialogBox,
-getCDKDialogHighlight,
-getCDKDialogSeparator,
-injectCDKDialog,
-moveCDKDialog,
-newCDKDialog,
-positionCDKDialog,
-setCDKDialogBox,
-setCDKDialog,
-setCDKDialogBackgroundAttrib,
-setCDKDialogBackgroundColor,
-setCDKDialogBox,
-setCDKDialogBoxAttribute,
-setCDKDialogHighlight,
-setCDKDialogHorizontalChar,
-setCDKDialogLLChar,
-setCDKDialogLRChar,
-setCDKDialogPostProcess,
-setCDKDialogPreProcess,
-setCDKDialogSeparator,
-setCDKDialogULChar,
-setCDKDialogURChar,
-setCDKDialogVerticalChar \- curses dialog widget
+.XX activateCDKDialog
+.XX destroyCDKDialog
+.XX drawCDKDialog
+.XX drawCDKDialogButtons
+.XX eraseCDKDialog
+.XX getCDKDialog
+.XX getCDKDialogBox
+.XX getCDKDialogHighlight
+.XX getCDKDialogSeparator
+.XX injectCDKDialog
+.XX moveCDKDialog
+.XX newCDKDialog
+.XX positionCDKDialog
+.XX setCDKDialog
+.XX setCDKDialogBackgroundAttrib
+.XX setCDKDialogBackgroundColor
+.XX setCDKDialogBox
+.XX setCDKDialogBox
+.XX setCDKDialogBoxAttribute
+.XX setCDKDialogHighlight
+.XX setCDKDialogHorizontalChar
+.XX setCDKDialogLLChar
+.XX setCDKDialogLRChar
+.XX setCDKDialogPostProcess
+.XX setCDKDialogPreProcess
+.XX setCDKDialogSeparator
+.XX setCDKDialogULChar
+.XX setCDKDialogURChar
+.XX setCDKDialogVerticalChar
+cdk_dialog \- curses dialog widget
 .SH SYNOPSIS
 .LP
 .B cc
@@ -50,6 +54,9 @@ setCDKDialogVerticalChar \- curses dialog widget
 .B "void drawCDKDialog ("
 .BI "CDKDIALOG *" "dialog",
 .BI "boolean " "box");
+.TP 15
+.B "void drawCDKDialogButtons ("
+.BI "CDKDIALOG *" "dialog");
 .TP 15
 .B "void eraseCDKDialog ("
 .BI "CDKDIALOG *" "dialog");
@@ -189,6 +196,9 @@ removes the widget from the screen and frees memory the object used.
 .B drawCDKDialog
 draws the dialog widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
+.TP 5
+.B drawCDKDialogButtons
+draws the dialog buttons and the separation line.
 .TP 5
 .B eraseCDKDialog
 removes the widget from the screen.

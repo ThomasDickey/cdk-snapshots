@@ -1,9 +1,9 @@
-/* $Id: subwindow_ex.c,v 1.8 2004/08/28 00:57:12 tom Exp $ */
+/* $Id: subwindow_ex.c,v 1.10 2005/12/27 00:55:46 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="subwindow_ex";
+char *XCursesProgramName = "subwindow_ex";
 #endif
 
 /*
@@ -67,9 +67,10 @@ int main (int argc, char **argv)
    destroyCDKScroll (dowList);
    destroyCDKLabel (title);
    eraseCursesWindow (subWindow);
+   destroyCDKScreen (cdkscreen);
    endCDK();
 
    /* Tell them what they picked. */
    printf ("You picked %s\n", dow[pick]);
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,27 +1,31 @@
-.\" $Id: cdk_label.3,v 1.11 2005/04/15 23:54:11 tom Exp $
+.\" $Id: cdk_label.3,v 1.14 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_label 3
 .SH NAME
-destroyCDKLabel,
-drawCDKLabel,
-eraseCDKLabel,
-getCDKLabelBox,
-getCDKLabelMessage,
-moveCDKLabel,
-newCDKLabel,
-positionCDKLabel,
-setCDKLabel,
-setCDKLabelBackgroundAttrib,
-setCDKLabelBackgroundColor,
-setCDKLabelBox,
-setCDKLabelBoxAttribute,
-setCDKLabelHorizontalChar,
-setCDKLabelLLChar,
-setCDKLabelLRChar,
-setCDKLabelMessage,
-setCDKLabelULChar,
-setCDKLabelURChar,
-setCDKLabelVerticalChar,
-waitCDKLabel \- Creates a managed curses label widget.
+.XX activateCDKLabel
+.XX destroyCDKLabel
+.XX drawCDKLabel
+.XX eraseCDKLabel
+.XX getCDKLabelBox
+.XX getCDKLabelMessage
+.XX moveCDKLabel
+.XX newCDKLabel
+.XX positionCDKLabel
+.XX setCDKLabel
+.XX setCDKLabelBackgroundAttrib
+.XX setCDKLabelBackgroundColor
+.XX setCDKLabelBox
+.XX setCDKLabelBoxAttribute
+.XX setCDKLabelHorizontalChar
+.XX setCDKLabelLLChar
+.XX setCDKLabelLRChar
+.XX setCDKLabelMessage
+.XX setCDKLabelULChar
+.XX setCDKLabelURChar
+.XX setCDKLabelVerticalChar
+.XX waitCDKLabel
+cdk_label \- Creates a managed curses label widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -31,6 +35,10 @@ waitCDKLabel \- Creates a managed curses label widget.
 .LP
 #include <cdk.h>
 .nf
+.TP 15
+.B "void activateCDKLabel ("
+.BI "CDKLABEL *" "label",
+.BI "chtype " "unused");
 .TP 15
 .B "void destroyCDKLabel ("
 .BI "CDKLABEL *" "label");
@@ -128,6 +136,9 @@ The Cdk label widget creates a pop-up label window.
 The following functions create or manipulate the Cdk label widget.
 .SH AVAILABLE FUNCTIONS
 .TP 5
+.B activateCDKLabel
+obsolete entrypoint which calls \fBdrawCDKLabel\fP.
+.TP 5
 .B destroyCDKLabel
 removes the widget from the screen and frees memory the object used.
 .TP 5
@@ -207,7 +218,7 @@ See \fBcdk_position (3)\fR for key bindings.
 .TP 5
 .B setCDKLabel
 allows the user to change the contents of the label widget.
-The parameters are the same as the \fInewCDKLabel\fR.
+The parameters are the same as the \fBnewCDKLabel\fR.
 .TP 5
 .B setCDKLabelBackgroundAttrib
 sets the background attribute of the widget.

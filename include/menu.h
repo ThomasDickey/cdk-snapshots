@@ -1,5 +1,5 @@
 /*
- * $Id: menu.h,v 1.19 2004/08/30 00:00:57 tom Exp $
+ * $Id: menu.h,v 1.21 2005/12/26 17:35:19 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2002,2003 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -158,9 +158,6 @@ chtype getCDKMenuSubTitleHighlight (
  * This draws the menu on the screen.
  */
 #define drawCDKMenu(obj,box) drawCDKObject(obj,box)
-
-void drawCDKMenuTitles (
-		CDKMENU *	/* menu */);
 
 void drawCDKMenuSubwin (
 		CDKMENU *	/* menu */);

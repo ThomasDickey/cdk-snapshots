@@ -1,6 +1,6 @@
-/* $Id: histogram_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: histogram_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "histogram_ex";
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make volume histogram. Is the window big enough??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    bass = newCDKHistogram (cdkscreen,
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make bass histogram. Is the window big enough??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    treble = newCDKHistogram (cdkscreen,
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can not make treble histogram. Is the window big enough??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
 #define BAR(a,b,c) A_BOLD, a, b, c, ' '|A_REVERSE|COLOR_PAIR(3), Box
@@ -142,5 +142,5 @@ int main(int argc, char **argv)
    destroyCDKHistogram (treble);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

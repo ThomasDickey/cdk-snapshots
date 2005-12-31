@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: template.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,11 @@
 #
 # Create some global variables.
 #
-CDK_TEMPLATE="../cdktemplate"
-CDK_LABEL="../cdklabel"
-output="/tmp/template_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_TEMPLATE="${CDK_BINDIR=..}/cdktemplate"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/template_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the title.
@@ -27,9 +29,8 @@ buttons=" OK
 #
 ${CDK_TEMPLATE} -p "###.###.###.###" -o "___.___.___.___" -T "${title}" -P -B "${buttons}" 2> ${output}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

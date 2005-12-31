@@ -1,6 +1,6 @@
-/* $Id: cdkscale.c,v 1.7 2005/03/08 19:52:22 tom Exp $ */
+/* $Id: cdkscale.c,v 1.9 2005/12/27 17:27:01 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkscale";
@@ -77,14 +77,14 @@ int main (int argc, char **argv)
    if (fieldWidth <= 0)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Make sure the user supplied the low/high values. */
    if ((lowValue == INT_MAX) || (highValue == INT_MIN))
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* If the user asked for an output file, try to open it. */
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -159,11 +159,9 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the numeric scale field. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Split the buttons if they supplied some. */
@@ -181,20 +179,22 @@ int main (int argc, char **argv)
 					0, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings (buttonList);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the widget.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the widget.
+       */
       setCDKScaleLLChar (widget, ACS_LTEE);
       setCDKScaleLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the widget to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the widget to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vSCALE, widget, KEY_TAB, widgetCB, buttonWidget);
       bindCDKObject (vSCALE, widget, CDK_NEXT, widgetCB, buttonWidget);
       bindCDKObject (vSCALE, widget, CDK_PREV, widgetCB, buttonWidget);
@@ -206,15 +206,14 @@ int main (int argc, char **argv)
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -233,11 +232,11 @@ int main (int argc, char **argv)
       {
 	 widget->shadow = TRUE;
 
-	/*
-	 * We force the widget and buttonWidget to be drawn so the
-	 * buttonbox widget will be drawn when the widget is activated.
-	 * Otherwise the shadow window will draw over the button widget.
-	 */
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
 	 drawCDKScale (widget, ObjOf(widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
 	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
@@ -264,9 +263,10 @@ int main (int argc, char **argv)
 
    /* Print the value from the widget. */
    fprintf (fp, "%d\n", answer);
+   fclose (fp);
 
    /* Exit with the answer. */
-   exit (selection);
+   ExitProgram (selection);
 }
 
 static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

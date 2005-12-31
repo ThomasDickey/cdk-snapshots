@@ -1,6 +1,6 @@
-/* $Id: cdkradio.c,v 1.7 2005/03/08 19:52:15 tom Exp $ */
+/* $Id: cdkradio.c,v 1.9 2005/12/27 17:06:03 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkradio";
@@ -40,7 +40,7 @@ int main (int argc, char **argv)
    FILE *fp			= stderr;
    char **buttonList		= 0;
    char **scrollList		= 0;
-   int x, j1, j2;
+   int j1, j2;
 
    CDK_PARAMS params;
    boolean boxWidget;
@@ -85,7 +85,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -102,14 +102,14 @@ int main (int argc, char **argv)
 	 if (scrollLines == -1)
 	 {
 	    fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
-	    exit (-1);
+	    ExitProgram (CLI_ERROR);
 	 }
       }
       else
       {
 	 /* They didn't provide anything. */
 	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -153,25 +153,19 @@ int main (int argc, char **argv)
 				choiceChar[0], defaultItem,
 				A_REVERSE,
 				boxWidget, shadowWidget);
+   free (choiceChar);
 
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      /* Clean up some memory. */
-      for (x=0; x < scrollLines; x++)
-      {
-	 freeChar (scrollList[x]);
-      }
+      CDKfreeStrings (scrollList);
 
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the radio list. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Split the buttons if they supplied some. */
@@ -189,20 +183,22 @@ int main (int argc, char **argv)
 					NULL, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings (buttonList);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the widget.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the widget.
+       */
       setCDKRadioLLChar (widget, ACS_LTEE);
       setCDKRadioLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the widget to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the widget to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vRADIO, widget, KEY_TAB, widgetCB, buttonWidget);
       bindCDKObject (vRADIO, widget, CDK_NEXT, widgetCB, buttonWidget);
       bindCDKObject (vRADIO, widget, CDK_PREV, widgetCB, buttonWidget);
@@ -214,15 +210,14 @@ int main (int argc, char **argv)
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -236,16 +231,15 @@ int main (int argc, char **argv)
 					getbegy (widget->win) + 1,
 					getbegx (widget->win) + 1);
 
-      /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
       {
 	 widget->shadow = TRUE;
 
-	/*
-	 * We force the widget and buttonWidget to be drawn so the
-	 * buttonbox widget will be drawn when the widget is activated.
-	 * Otherwise the shadow window will draw over the button widget.
-	 */
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
 	 drawCDKRadio (widget, ObjOf(widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
 	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
@@ -282,9 +276,12 @@ int main (int argc, char **argv)
 	 fprintf (fp, "%s\n", scrollList[answer]);
       }
    }
+   fclose (fp);
+
+   CDKfreeStrings(scrollList);
 
    /* Exit with the button selected. */
-   exit (selection);
+   ExitProgram (selection);
 }
 
 static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: matrix.sh,v 1.4 2005/12/27 17:07:00 tom Exp $
 
 #
 # Description:
@@ -9,12 +10,13 @@
 #
 # Create some global variables.
 #
-CDK_MATRIX="../cdkmatrix"
-CDK_LABEL="../cdklabel"
-fileSystemList="/tmp/fsList.$$"
-info="/tmp/fsInfo.$$"
-diskInfo="/tmp/diskInfo.$$"
-tmp="/tmp/tmp.$$"
+CDK_MATRIX="${CDK_BINDIR=..}/cdkmatrix"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+fileSystemList="${TMPDIR=/tmp}/fsList.$$"
+info="${TMPDIR=/tmp}/fsInfo.$$"
+diskInfo="${TMPDIR=/tmp}/diskInfo.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Get the filesystem information.
@@ -99,13 +101,14 @@ buttons=" OK
 #
 # Start the matrix.
 #
-${CDK_MATRIX} -r "${rowTitles}" -c "${colTitles}" -v 3 -w "${colWidths}" -d "${info}" -t "${types}" -T "${title}" -B "${buttons}"
+${CDK_MATRIX} -r "${rowTitles}" -c "${colTitles}" -v 3 -w "${colWidths}" -d "${info}" -t "${types}" -T "${title}" -B "${buttons}" -O"$tmp"
 selected=$?
+test $selected = 255 && exit 1
 
 #
 # Create the message for the label widget.
 #
-echo "<C>You chose button #${selected}" >> ${tmp}
+echo "<C>You chose button #${selected}" > ${tmp}
 echo " " >> ${tmp}
 echo "<C>Hit </R>space<!R> to continue." >> ${tmp}
  

@@ -2,76 +2,80 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/30 00:22:24 $
- * $Revision: 1.73 $
+ * $Date: 2005/12/31 00:30:01 $
+ * $Revision: 1.75 $
  */
 
-DeclareCDKObjects(MARQUEE, Marquee, setCdk, Unknown);
+DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
 
 /*
  * This creates a marquee widget.
  */
-CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen, int xplace, int yplace, int width, boolean Box, boolean shadow)
+CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
+			   int xplace,
+			   int yplace,
+			   int width,
+			   boolean Box,
+			   boolean shadow)
 {
-   CDKMARQUEE *marquee	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window);
+   CDKMARQUEE *widget	= 0;
+   int parentWidth	= getmaxx (cdkscreen->window);
    int xpos		= xplace;
    int ypos		= yplace;
    int boxHeight	= 3;
    int boxWidth		= width;
 
-   if ((marquee = newCDKObject(CDKMARQUEE, &my_funcs)) == 0)
+   if ((widget = newCDKObject (CDKMARQUEE, &my_funcs)) == 0)
       return (0);
 
-   setCDKMarqueeBox (marquee, Box);
+   setCDKMarqueeBox (widget, Box);
 
-  /*
-   * If the width is a negative value, the width will
-   * be COLS-width, otherwise, the width will be the
-   * given width.
-   */
    boxWidth = setWidgetDimension (parentWidth, width, 0);
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
-   /* Create the marquee pointer. */
-   ScreenOf(marquee)	= cdkscreen;
-   marquee->parent	= cdkscreen->window;
-   marquee->win		= newwin (boxHeight, boxWidth, ypos, xpos);
-   marquee->boxHeight	= boxHeight;
-   marquee->boxWidth	= boxWidth;
-   marquee->shadowWin	= 0;
-   marquee->active	= TRUE;
-   marquee->width	= width;
-   marquee->shadow	= shadow;
+   /* Create the widget pointer. */
+   ScreenOf (widget)	= cdkscreen;
+   widget->parent	= cdkscreen->window;
+   widget->win		= newwin (boxHeight, boxWidth, ypos, xpos);
+   widget->boxHeight	= boxHeight;
+   widget->boxWidth	= boxWidth;
+   widget->shadowWin	= 0;
+   widget->active	= TRUE;
+   widget->width	= width;
+   widget->shadow	= shadow;
 
    /* Is the window null??? */
-   if (marquee->win == 0)
+   if (widget->win == 0)
    {
-      destroyCDKObject(marquee);
+      destroyCDKObject (widget);
       return (0);
    }
 
    /* Do we want a shadow? */
    if (shadow)
    {
-      marquee->shadowWin = subwin (cdkscreen->window, boxHeight, boxWidth, ypos+1, xpos+1);
+      widget->shadowWin = subwin (cdkscreen->window,
+				  boxHeight, boxWidth,
+				  ypos + 1, xpos + 1);
    }
 
-   keypad (marquee->win, TRUE);
+   keypad (widget->win, TRUE);
 
-   /* Register this baby. */
-   registerCDKObject (cdkscreen, vMARQUEE, marquee);
+   registerCDKObject (cdkscreen, vMARQUEE, widget);
 
-   /* Return the marquee pointer. */
-   return(marquee);
+   return (widget);
 }
 
 /*
- * This activates the marquee.
+ * This activates the widget.
  */
-int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, boolean Box)
+int activateCDKMarquee (CDKMARQUEE *widget,
+			char *mesg,
+			int delay,
+			int repeat,
+			boolean Box)
 {
    chtype *message;
    int mesgLength	= 0;
@@ -91,83 +95,83 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
       return (-1);
    }
 
-   /* Keep the box info, setting BorderOf() */
-   setCDKMarqueeBox(marquee, Box);
+   /* Keep the box info, setting BorderOf () */
+   setCDKMarqueeBox (widget, Box);
 
-   padding = (mesg[strlen(mesg) - 1] == ' ') ? 0 : 1;
+   padding = (mesg[strlen (mesg) - 1] == ' ') ? 0 : 1;
 
    /* Translate the char * to a chtype * */
    message = char2Chtype (mesg, &mesgLength, &junk);
 
-   /* Draw in the marquee. */
-   drawCDKMarquee (marquee, ObjOf(marquee)->box);
-   viewLimit = marquee->width - (2 * BorderOf(marquee));
+   /* Draw in the widget. */
+   drawCDKMarquee (widget, ObjOf (widget)->box);
+   viewLimit = widget->width - (2 * BorderOf (widget));
 
    /* Start doing the marquee thing... */
-   oldcurs = curs_set(0);
-   while (marquee->active)
+   oldcurs = curs_set (0);
+   while (widget->active)
    {
       if (firstTime)
       {
 	 firstChar = 0;
 	 lastChar = 1;
 	 viewSize = lastChar - firstChar;
-	 startPos = marquee->width - viewSize - BorderOf(marquee);
+	 startPos = widget->width - viewSize - BorderOf (widget);
 
 	 firstTime = FALSE;
       }
 
       /* Draw in the characters. */
       y = firstChar;
-      for (x=startPos ; x < (startPos + viewSize) ; x++)
+      for (x = startPos; x < (startPos + viewSize); x++)
       {
 	 chtype ch = (y < mesgLength) ? message[y] : ' ';
-	 mvwaddch (marquee->win, BorderOf(marquee), x, ch);
+	 mvwaddch (widget->win, BorderOf (widget), x, ch);
 	 y++;
       }
-      wrefresh (marquee->win);
+      wrefresh (widget->win);
 
       /* Set my variables. */
       if (mesgLength < viewLimit)
       {
 	 if (lastChar < (mesgLength + padding))
 	 {
-	    lastChar ++;
-	    viewSize ++;
-	    startPos = marquee->width - viewSize - BorderOf(marquee);
+	    lastChar++;
+	    viewSize++;
+	    startPos = widget->width - viewSize - BorderOf (widget);
 	 }
-	 else if (startPos > BorderOf(marquee))
+	 else if (startPos > BorderOf (widget))
 	 {
 	    /* This means the whole string is visible. */
-	    startPos --;
+	    startPos--;
 	    viewSize = mesgLength + padding;
 	 }
 	 else
 	 {
-	   /* We have to start chopping the viewSize */
-	   startPos = BorderOf(marquee);
-	   firstChar++;
-	   viewSize--;
+	    /* We have to start chopping the viewSize */
+	    startPos = BorderOf (widget);
+	    firstChar++;
+	    viewSize--;
 	 }
       }
       else
       {
-	 if (startPos > BorderOf(marquee))
+	 if (startPos > BorderOf (widget))
 	 {
-	    lastChar ++;
-	    viewSize ++;
-	    startPos --;
+	    lastChar++;
+	    viewSize++;
+	    startPos--;
 	 }
 	 else if (lastChar < (mesgLength + padding))
 	 {
-	    firstChar ++;
-	    lastChar  ++;
-	    startPos = BorderOf(marquee);
+	    firstChar++;
+	    lastChar++;
+	    startPos = BorderOf (widget);
 	    viewSize = viewLimit;
 	 }
 	 else
 	 {
-	    startPos = BorderOf(marquee);
+	    startPos = BorderOf (widget);
 	    firstChar++;
 	    viewSize--;
 	 }
@@ -183,8 +187,8 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
 	 }
 
 	 /* Time to start over.  */
-	 mvwaddch (marquee->win, BorderOf(marquee), BorderOf(marquee), ' ');
-	 wrefresh (marquee->win);
+	 mvwaddch (widget->win, BorderOf (widget), BorderOf (widget), ' ');
+	 wrefresh (widget->win);
 	 firstTime = TRUE;
       }
 
@@ -193,7 +197,7 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
    }
    if (oldcurs < 0)
       oldcurs = 1;
-   curs_set(oldcurs);
+   curs_set (oldcurs);
    freeChtype (message);
    return (0);
 }
@@ -201,19 +205,23 @@ int activateCDKMarquee (CDKMARQUEE *marquee, char *mesg, int delay, int repeat, 
 /*
  * This de-activates a marquee widget.
  */
-void deactivateCDKMarquee (CDKMARQUEE *marquee)
+void deactivateCDKMarquee (CDKMARQUEE *widget)
 {
-   marquee->active = FALSE;
+   widget->active = FALSE;
 }
 
 /*
  * This moves the marquee field to the given location.
  */
-static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKMarquee (CDKOBJS *object,
+			     int xplace,
+			     int yplace,
+			     boolean relative,
+			     boolean refresh_flag)
 {
-   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
-   int currentX = getbegx(marquee->win);
-   int currentY = getbegy(marquee->win);
+   CDKMARQUEE *widget = (CDKMARQUEE *)object;
+   int currentX = getbegx (widget->win);
+   int currentY = getbegy (widget->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -225,28 +233,28 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
     */
    if (relative)
    {
-      xpos = getbegx(marquee->win) + xplace;
-      ypos = getbegy(marquee->win) + yplace;
+      xpos = getbegx (widget->win) + xplace;
+      ypos = getbegy (widget->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(marquee), &xpos, &ypos, marquee->boxWidth, marquee->boxHeight);
+   alignxy (WindowOf (widget), &xpos, &ypos, widget->boxWidth, widget->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   moveCursesWindow(marquee->win, -xdiff, -ydiff);
-   moveCursesWindow(marquee->shadowWin, -xdiff, -ydiff);
+   moveCursesWindow (widget->win, -xdiff, -ydiff);
+   moveCursesWindow (widget->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   refreshCDKWindow (WindowOf(marquee));
+   refreshCDKWindow (WindowOf (widget));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
    {
-      drawCDKMarquee (marquee, ObjOf(marquee)->box);
+      drawCDKMarquee (widget, ObjOf (widget)->box);
    }
 }
 
@@ -255,70 +263,73 @@ static void _moveCDKMarquee (CDKOBJS *object, int xplace, int yplace, boolean re
  */
 static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
 {
-   CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+   CDKMARQUEE *widget = (CDKMARQUEE *)object;
 
    /* Keep the box information. */
-   ObjOf(marquee)->box	= Box;
+   ObjOf (widget)->box = Box;
 
    /* Do we need to draw a shadow??? */
-   if (marquee->shadowWin != 0)
+   if (widget->shadowWin != 0)
    {
-      drawShadow (marquee->shadowWin);
+      drawShadow (widget->shadowWin);
    }
 
    /* Box it if needed. */
    if (Box)
    {
-      drawObjBox (marquee->win, ObjOf(marquee));
+      drawObjBox (widget->win, ObjOf (widget));
    }
 
    /* Refresh the window. */
-   refreshCDKWindow (marquee->win);
+   refreshCDKWindow (widget->win);
 }
 
 /*
- * This destroys the marquee.
+ * This destroys the widget.
  */
 static void _destroyCDKMarquee (CDKOBJS *object)
 {
    if (object != 0)
    {
-      CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+      CDKMARQUEE *widget = (CDKMARQUEE *)object;
 
       /* Clean up the windows. */
-      deleteCursesWindow (marquee->shadowWin);
-      deleteCursesWindow (marquee->win);
+      deleteCursesWindow (widget->shadowWin);
+      deleteCursesWindow (widget->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vMARQUEE, widget);
 
       /* Unregister this object. */
-      unregisterCDKObject (vMARQUEE, marquee);
+      unregisterCDKObject (vMARQUEE, widget);
    }
 }
 
 /*
- * This erases the marquee.
+ * This erases the widget.
  */
 static void _eraseCDKMarquee (CDKOBJS *object)
 {
    if (validCDKObject (object))
    {
-      CDKMARQUEE *marquee = (CDKMARQUEE *)object;
+      CDKMARQUEE *widget = (CDKMARQUEE *)object;
 
-      eraseCursesWindow (marquee->win);
-      eraseCursesWindow (marquee->shadowWin);
+      eraseCursesWindow (widget->win);
+      eraseCursesWindow (widget->shadowWin);
    }
 }
 
 /*
  * This sets the widgets box attribute.
  */
-void setCDKMarqueeBox (CDKMARQUEE *marquee, boolean Box)
+void setCDKMarqueeBox (CDKMARQUEE *widget, boolean Box)
 {
-   ObjOf(marquee)->box = Box;
-   ObjOf(marquee)->borderSize = Box ? 1 : 0;
+   ObjOf (widget)->box = Box;
+   ObjOf (widget)->borderSize = Box ? 1 : 0;
 }
-boolean getCDKMarqueeBox (CDKMARQUEE *marquee)
+boolean getCDKMarqueeBox (CDKMARQUEE *widget)
 {
-   return ObjOf(marquee)->box;
+   return ObjOf (widget)->box;
 }
 
 /*
@@ -328,18 +339,18 @@ static void _setBKattrMarquee (CDKOBJS *object, chtype attrib)
 {
    if (object != 0)
    {
-      CDKMARQUEE *marquee = (CDKMARQUEE *) object;
+      CDKMARQUEE *widget = (CDKMARQUEE *)object;
 
-      wbkgd (marquee->win, attrib);
+      wbkgd (widget->win, attrib);
    }
 }
 
-dummyInject(Marquee)
+dummyInject (Marquee)
 
-dummyFocus(Marquee)
+dummyFocus (Marquee)
 
-dummyUnfocus(Marquee)
+dummyUnfocus (Marquee)
 
-dummyRefreshData(Marquee)
+dummyRefreshData (Marquee)
 
-dummySaveData(Marquee)
+dummySaveData (Marquee)

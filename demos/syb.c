@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: syb.c,v 1.12 2005/12/27 12:36:06 tom Exp $ */
+
+#include <cdk_test.h>
 #include <sybfront.h>
 #include <sybdb.h>
 
@@ -125,7 +127,7 @@ int main (int argc, char **argv)
 
 	 case 'h':
 	      printf ("Usage: %s %s\n", argv[0], GPUsage);
-	      exit (EXIT_SUCCESS);
+	      ExitProgram (EXIT_SUCCESS);
 	      break;
       }
    }
@@ -165,7 +167,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C></U>Fatal Error";
       mesg[1] = "<C>Could not connect to the Sybase database.";
       popupLabel (GPCdkScreen, mesg, 2);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Load the history. */
@@ -202,7 +204,7 @@ int main (int argc, char **argv)
    {
       destroyCDKScreen (GPCdkScreen);
       endCDK ();
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Do this forever. */
@@ -236,7 +238,7 @@ int main (int argc, char **argv)
 	 destroyCDKSwindow (commandOutput);
 	 freeChar (upper);
 	 endCDK();
-	 exit (EXIT_SUCCESS);
+	 ExitProgram (EXIT_SUCCESS);
       }
       else if (strcmp (command, "login") == 0)
       {
@@ -574,7 +576,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
       mesg[1] = "<C>Could not connect to the Sybase database.";
       popupLabel (screen, mesg, 2);
       refreshCDKScreen (screen);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
   /*

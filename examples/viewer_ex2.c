@@ -1,9 +1,9 @@
-/* $Id: viewer_ex2.c,v 1.2 2005/04/24 17:57:04 tom Exp $ */
+/* $Id: viewer_ex2.c,v 1.5 2005/12/30 09:49:08 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="viewer_ex";
+char *XCursesProgramName = "viewer_ex";
 #endif
 
 /*
@@ -56,6 +56,14 @@ int main (int argc, char **argv)
 			       "</5>", "</48>", "</N>", "</N>",
 			       CDKparamValue(&params, 'N', TRUE),
 			       CDKparamValue(&params, 'S', FALSE));
+      if (fSelect == 0)
+      {
+	 destroyCDKScreen (cdkscreen);
+	 endCDK();
+
+	 fprintf(stderr, "Cannot create fselect-widget\n");
+	 ExitProgram (EXIT_FAILURE);
+      }
 
       /*
        * Set the starting directory. This is not necessary because when
@@ -80,7 +88,8 @@ int main (int argc, char **argv)
 	 destroyCDKFselect (fSelect);
 	 destroyCDKScreen (cdkscreen);
 	 endCDK();
-	 exit (EXIT_SUCCESS);
+
+	 ExitProgram (EXIT_SUCCESS);
       }
    }
 
@@ -94,7 +103,7 @@ int main (int argc, char **argv)
 
    /* Check how the person exited from the widget.*/
    sprintf (temp, "<C>You selected button %d", selected);
-   mesg[0] = copyChar (temp);
+   mesg[0] = temp;
    mesg[1] = "";
    mesg[2] = "<C>Press any key to continue.";
    popupLabel (cdkscreen, mesg, 3);
@@ -102,5 +111,5 @@ int main (int argc, char **argv)
    /* Clean up. */
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

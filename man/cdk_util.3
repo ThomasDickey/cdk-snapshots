@@ -1,55 +1,32 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.4 2005/04/24 18:10:50 tom Exp $
+.\" $Id: cdk_util.3,v 1.6 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_util 3
 .SH NAME
-Beep,
-CDKallocStrings,
-CDKcountStrings,
-CDKfreeChtypes,
-CDKfreeStrings,
-CDKgetDirectoryContents,
-CDKreadFile,
-CDKsplitString,
-alignxy,
-baseName,
-ceilCDK,
-char2Chtype,
-char2DisplayType,
-checkForLink,
-chlen,
-chstrncpy,
-chtype2Char,
-chtype2String,
-cleanChar,
-cleanChtype,
-cmpStrChstr,
-copyChar,
-copyChtype,
-deleteCursesWindow,
-dirName,
-eraseCursesWindow,
-floorCDK,
-freeChar,
-freeCharList,
-freeChtype,
-freeChtypeList,
-getListIndex,
-getString,
-intlen,
-justifyString,
-mode2Char,
-mode2Filetype,
-moveCursesWindow,
-popupDialog,
-popupLabel,
-popupLabelAttrib,
-searchList,
-selectFile,
-setWidgetDimension,
-sortList,
-stripWhiteSpace,
-viewFile,
-viewInfo \- Cdk utility functions
+.XX CDKgetDirectoryContents
+.XX CDKreadFile
+.XX alignxy
+.XX char2Chtype
+.XX char2DisplayType
+.XX checkForLink
+.XX chtype2String
+.XX deleteCursesWindow
+.XX eraseCursesWindow
+.XX getListIndex
+.XX getString
+.XX justifyString
+.XX mode2Filetype
+.XX moveCursesWindow
+.XX popupDialog
+.XX popupLabel
+.XX popupLabelAttrib
+.XX selectFile
+.XX setWidgetDimension
+.XX stripWhiteSpace
+.XX viewFile
+.XX viewInfo
+cdk_util \- Cdk utility functions
 .SH SYNOPSIS
 .LP
 .B cc
@@ -60,23 +37,6 @@ viewInfo \- Cdk utility functions
 #include <cdk.h>
 .nf
 .TP 15
-.B "void Beep(void);"
-.TP 15
-.B "unsigned CDKallocStrings("
-.BI "char ***" "list"/,
-.BI "char *" "item"/,
-.BI "unsigned " "length"/,
-.BI "unsigned " "used"/);
-.TP 15
-.B "unsigned CDKcountStrings("
-.BI "char **" list");
-.TP 15
-.B "void CDKfreeChtypes("
-.BI "chtype **" "list");
-.TP 15
-.B "void CDKfreeStrings("
-.BI "char **" "list");
-.TP 15
 .B "int CDKgetDirectoryContents ("
 .BI "char *" "directory",
 .BI "char ***" "list");
@@ -85,22 +45,12 @@ viewInfo \- Cdk utility functions
 .BI "char *" "filename",
 .BI "char ***" "info");
 .TP 15
-.B "char **CDKsplitString("
-.BI "char *" "string",
-.BI "int " "separator");
-.TP 15
 .B "void alignxy ("
 .BI "WINDOW *" "window",
 .BI "int *" "xpos",
 .BI "int *" "ypos",
 .BI "int " "boxWidth",
 .BI "int " "boxHeight");
-.TP 15
-.B "char *baseName ("
-.BI "char *" "filename");
-.TP 15
-.B "int ceilCDK("
-.BI "double" "value");
 .TP 15
 .B "chtype *char2Chtype ("
 .BI "char *" "string",
@@ -114,65 +64,14 @@ viewInfo \- Cdk utility functions
 .BI "char *" "line",
 .BI "char *" "filename");
 .TP 15
-.B "int chlen ("
-.BI "chtype *" "string");
-.TP 15
-.B "void chstrncpy(
-.BI "char *" "dest",
-.BI "chtype *" "src",
-.BI "int " "maxcount");
-.TP 15
-.B "char *chtype2Char ("
-.BI "chtype *" "string");
-.TP 15
 .B "char *chtype2String (
-.BI "chtype *" "string");
-.TP 15
-.B "void cleanChar ("
-.BI "char *" "string",
-.BI "int " "length",
-.BI "char " "character");
-.TP 15
-.B "void cleanChtype ("
-.BI "chtype *" "string",
-.BI "int " "length",
-.BI "chtype" "character");
-.TP 15
-.B "int cmpStrChstr("
-.BI "char *" "str",
-.BI "chtype *" "chstr");
-.TP 15
-.B "char *copyChar ("
-.BI "char *" "string");
-.TP 15
-.B "chtype *copyChtype ("
 .BI "chtype *" "string");
 .TP 15
 .B "void deleteCursesWindow ("
 .BI "WINDOW *" "window");
 .TP 15
-.B "char *dirName ("
-.BI "char *" "filename");
-.TP 15
 .B "void eraseCursesWindow ("
 .BI "WINDOW *" "window");
-.TP 15
-.B "int floorCDK("
-.BI "double " "value");
-.TP 15
-.B "void freeChar ("
-.BI "char *" "string");
-.TP 15
-.B "void freeCharList ("
-.BI "char **" "list",
-.BI "unsigned " "size");
-.TP 15
-.B "void freeChtype (
-.BI "chtype *" "string");
-.TP 15
-.B void freeChtypeList ("
-.BI "chtype **" "list",
-.BI "unsigned " "size");
 .TP 15
 .B "int getListIndex ("
 .BI "CDKSCREEN *" "screen",
@@ -187,17 +86,10 @@ viewInfo \- Cdk utility functions
 .BI "char *" "label",
 .BI "char *" "init");
 .TP 15
-.B "int intlen ("
-.BI "int " "value");
-.TP 15
 .B "int justifyString ("
 .BI "int " "fieldWidth",
 .BI "int " "mesglen",
 .BI "int " "justify");
-.TP 15
-.B "int mode2Char ("
-.BI "char *" "string",
-.BI "mode_t " "fileMode");
 .TP 15
 .B "int mode2Filetype ("
 .BI "mode_t " "fileMode");
@@ -225,11 +117,6 @@ viewInfo \- Cdk utility functions
 .BI "int " "count",
 .BI "chtype " "attribute");
 .TP 15
-.B "int searchList ("
-.BI "char **" "list",
-.BI "int " "listSize",
-.BI "char *" "pattern");
-.TP 15
 .B "char *selectFile ("
 .BI "CDKSCREEN *" "screen",
 .BI "char *" "title");
@@ -238,10 +125,6 @@ viewInfo \- Cdk utility functions
 .BI "int " "parentDim",
 .BI "int " "proposedDim",
 .BI "int " "adjustment");
-.TP 15
-.B "void sortList ("
-.BI "char *" "list" [],
-.BI "int " "length");
 .TP 15
 .B "void stripWhiteSpace ("
 .BI "EStripType " "stripType",
@@ -264,46 +147,22 @@ viewInfo \- Cdk utility functions
 .BI "boolean " "interpret");
 .fi
 .SH DESCRIPTION
+These are utility functions that one may use to initialize,
+build or customize widgets.
 .
 .SH AVAILABLE FUNCTIONS
 .TP 5
-.B Beep
-This beeps at the user.
-The standard curses beep() does not
-flush the stream, so it will only beep until a force is made.
-This forces a flush after issuing the beep command.
-.TP 5
-.B CDKallocStrings
-Add a new string \fIitem\fP to a \fIlist\fP.
-Keep a null pointer on the end so one may use
-\fBCDKfreeStrings()\fP to deallocate the whole list.
-The caller is responsible for updating the \fIlength\fP of the list.
-The return value is the updated number of chars \fIused\fP.
-.TP 5
-.B CDKcountStrings
-Count the number of items in a null-terminated \fIlist\fP of character strings.
-Return the count.
-.TP 5
-.B CDKfreeChtypes
-Free a \fIlist\fP of chtype-strings which is terminated by a null pointer.
-.TP 5
-.B CDKfreeStrings
-Free a \fIlist\fP of character strings which is terminated by a null pointer.
-.TP 5
 .B CDKgetDirectoryContents
-Open the given \fIdirectory\fP and reads in the contents.
-Store result in \fIlist\fP and return the number of elements found.
+opens and reads the contents of the given directory, filling
+the array \fBlist\fR with the sorted contents of the directory.
+If the directory cannot be opened then it returns a value of -1.
 .TP 5
 .B CDKreadFile
 Read the file \fIfilename\fP,
 load the contents into a dynamically allocated array,
-storing its address via \fIinfo\fP
-and return the number of lines read.
-.TP 5
-.B CDKsplitString
-Split the \fIstring\fP at each occurrence of \fIseparator\fP,
-returning a pointer to a dynamically allocated array of the pieces.
-The original \fIstring\fP is unmodified.
+storing its address via \fIinfo\fP.
+It returns the number of lines
+read if the file could be opened, -1 otherwise.
 .TP 5
 .B alignxy
 Aligns a box on the given \fIwindow\fP with the height and width given.
@@ -314,18 +173,14 @@ See cdk_position (3) for the interpretation of the
 \fIboxHeight\fP,
 parameters.
 .TP 5
-.B baseName
-Return the basename of the given \fIfilename\fP.
-The result should be freed by the caller.
-.TP 5
-.B ceilCDK
-Return an integer like the math library \fBceil()\fP, which returns a double.
-.TP 5
 .B char2Chtype
 Translate a character \fIstring\fP with embedded format markers
+(e.g., "</X/Y>Blah Blah")
 to a null-terminated array of chtype's.
 The length of the array is stored via the \fIlength\fP parameter.
-The alignment (LEFT, CENTER, RIGHT) is stored via the \fIalign\fP parameter.
+The \fBalign\fR parameter contains justification information
+(LEFT, CENTER, RIGHT).
+The caller is responsible for freeing the result.
 .TP 5
 .B char2DisplayType
 Lookup the given name in \fIstring\fP and return the equivalent display type.
@@ -341,70 +196,18 @@ If so, extract the filename from the line, storing it in the \fIfilename\fP
 buffer (which must hold at least CDK_PATHMAX characters).
 Return nonzero if a filename is extracted.
 .TP 5
-.B chlen
-Returns the length of the (null-terminated) \fIstring\fP of chtype's.
-.TP 5
-.B chstrncpy
-Extract the characters from a null-terminated array of chtype's \fIsrc\fP.
-The size of the destination \fIdest\fP is given in \fImaxcount\fP.
-.TP 5
-.B chtype2Char
-Extract the characters from a null-terminated array of chtype's \fIstring\fP.
-A dynamically allocated string is returned.
-.TP 5
 .B chtype2String
 Extract the characters and formatting information
 from a null-terminated array of chtype's \fIstring\fP.
 A dynamically allocated string is returned.
 .TP 5
-.B cleanChar
-Set the characters in \fIstring\fP to the given \fIcharacter\fP.
-The length of \fIstring\fP is given by \fIlength\fP.
-.TP 5
-.B cleanChtype
-Set the chtype's in \fIstring\fP to the given \fIcharacter\fP.
-The length of \fIstring\fP is given by \fIlength\fP.
-.TP 5
-.B cmpStrChstr
-Compare a char string \fIstr\fP to a chtype string \fIchstr\fP.
-Return -1, 0 or 1 according to whether \fIstr\fP is less than, equal to
-to greater than \fIchstr\fP.
-.TP 5
-.B copyChar
-Copy the given character string (like strdup).
-.TP 5
-.B copyChtype,
-Copy the given chtype string (analogous to strdup).
-.TP 5
 .B deleteCursesWindow
 Safely delete a given window,
 i.e., first check if the \fIwindow\fP parameter is nonnull.
 .TP 5
-.B dirName
-Returns the directory for the given \fIfilename\fP,
-i.e., the part before the * last slash.
-The return value should be freed by the caller.
-.TP 5
 .B eraseCursesWindow
 Safely erase a given window,
 i.e., first check if the \fIwindow\fP parameter is nonnull.
-.TP 5
-.B floorCDK
-Return an integer like the math function floor(), which returns a double.
-.TP 5
-.B freeChar
-Free the memory used by the given \fIstring\fP.
-.TP 5
-.B freeCharList
-Free the memory used by the given \fIlist\fP of strings.
-The number of strings to free is given by \fIsize\fP.
-.TP 5
-.B freeChtype
-Free frees the memory used by the given chtype \fIstring\fP.
-.TP 5
-.B freeChtypeList
-Free the memory used by the given \fIlist\fP of chtype strings.
-The number of strings to free is given by \fIsize\fP.
 .TP 5
 .B getListIndex
 Display a scrollable list of strings in a dialog,
@@ -415,25 +218,17 @@ there are \fIlistSize\fP strings in the list.
 If \fInumbers\fP is true, the displayed list items will be numbered.
 .TP 5
 .B getString
-Display a simple dialog containing a prompt \fIlabel\fP and
-initial value \fIinit\fP for the user's response.
-Return the response string.
-.TP 5
-.B intlen
-Return the number of characters which are required to represent the given
-integer \fIvalue\fP.
+pops up an entry widget with a title supplied by the value
+of the \fBtitle\fR parameter, a label supplied by the \fBlabel\fR parameter,
+and an initial value supplied by the \fBinitialValue\fR parameter.
+It returns
+a pointer to the value typed in or NULL if the widget was exited early.
 .TP 5
 .B justifyString
 Given a string length \fImesglen\fP,
 the available field width \fIfieldWidth\fP
 and a justification type \fIjustify\fP,
 return the number of characters by which to shift the string.
-.TP 5
-.B mode2Char
-Given a file protection mode \fIfileMode\fP,
-store a printable version of the permissions in \fIstring\fP.
-Return the corresponding permissions data,
-i.e., ignoring the file-type bits.
 .TP 5
 .B mode2Filetype
 Given a file protection mode \fIfileMode\fP,
@@ -444,23 +239,24 @@ i.e., ignoring the corresponding permissions data.
 Move a given \fIwindow\fP by the amounts in \fIxdiff\fP and \fIydiff\fP.
 .TP 5
 .B popupDialog
-Display a simple dialog with
-a list of \fImesgCount\fP message strings \fImesg\fP.
-At the bottom of the dialog, display \fIbuttonCount\fP buttons.
+creates a quick pop-up dialog box.
+Pass in the message in the
+\fBmesg\fR parameter, the size of the message in the \fBmesgCount\fR parameter,
+the button labels in the \fBbuttons\fR parameter and the number of buttons in
+the \fBbuttonCount\fR parameter.
+The dialog box will be centered on the screen.
 .TP 5
 .B popupLabel
-Display a simple dialog with
-a list of \fIcount\fP message strings \fImesg\fP.
+creates a quick pop-up label widget.
+The message and the size of
+the message are passed in via the \fBmesg\fR and \fBcount\fR parameters respectively.
+The label widget waits until the user hits a character and is centered
+on the screen.
 .TP 5
 .B popupLabelAttrib
 Display a simple dialog with
 a list of \fIcount\fP message strings \fImesg\fP.
 Use the given \fIattribute\fP for the background of the dialog.
-.TP 5
-.B searchList
-Search the given \fIlist\fP of \fIlistSize\fP strings
-for a subset of a word \fIpattern\fP in the given list.
-Return the index in the list if it is found, or -1 if not found.
 .TP 5
 .B selectFile
 Display a file-selection dialog.
@@ -494,11 +290,6 @@ the return value will be \fIparentDim\fP plus \fIproposedDim\fP.
 Otherwise, the return value will be \fIproposedDim\fP.
 .RE
 .TP 5
-.B sortList
-This is a wrapper for qsort,
-used to sort the \fIlist\fP of strings.
-The number of strings in \fIlist\fP is given by \fIlength\fP.
-.TP 5
 .B stripWhiteSpace
 Strip whitespace from the front and/or back of the given \fIstring\fP.
 The \fIstripType\fP parameter controls the type of stripping done:
@@ -508,6 +299,36 @@ vFRONT, vBACK or vBOTH.
 Read the file specified by \fIfilename\fP and display it in a CDKVIEWER window.
 The \fItitle\fP, \fIbuttons\fP and \fIbuttonCount\fP are applied to the
 CDKVIEWER window.
+The viewer shows
+the contents of the file supplied by the \fBfilename\fR value.
+The buttons on
+the file viewer are supplied by the \fBbuttons\fR parameter.
+It returns the index of the button selected,
+or -1 if the file does not exist or if the widget was exited early.
+.LP
+.TS
+center tab(/) allbox;
+l l
+l l
+lw15 lw35 .
+\fBStrip_Type/Result\fR
+=
+vFRONT/T{
+This tells the function to remove
+all of the white space from the
+front of the given string.
+T}
+vBACK/T{
+This tells the function to remove
+all of the white space from the
+back of the given string.
+T}
+vBOTH/T{
+This tells the function to remove
+all of the white space from both
+the front and the back of the given string.
+T}
+.TE
 .TP 5
 .B viewInfo
 Display the list of strings in \fIinfo\fP in a CDKVIEWER window.
@@ -518,4 +339,5 @@ CDKVIEWER window.
 .SH SEE ALSO
 cdk_dialog (3),
 cdk_display (3),
-cdk_position (3).
+cdk_position (3),
+cdk_misc (3).

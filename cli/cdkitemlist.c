@@ -1,6 +1,6 @@
-/* $Id: cdkitemlist.c,v 1.7 2005/03/08 19:51:49 tom Exp $ */
+/* $Id: cdkitemlist.c,v 1.9 2005/12/27 16:36:18 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkitemlist";
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -90,14 +90,14 @@ int main (int argc, char **argv)
 	 if (itemlistLines == -1)
 	 {
 	    fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
-	    exit (-1);
+	    ExitProgram (CLI_ERROR);
 	 }
       }
       else
       {
 	 /* They didn't provide anything. */
 	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -141,24 +141,19 @@ int main (int argc, char **argv)
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      /* Clean up some memory. */
       CDKfreeStrings(itemlistList);
 
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the item list. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Split the buttons if they supplied some. */
    if (buttons != 0)
    {
-      /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
 
@@ -170,20 +165,22 @@ int main (int argc, char **argv)
 					0, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings (buttonList);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the widget.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the widget.
+       */
       setCDKItemlistLLChar (widget, ACS_LTEE);
       setCDKItemlistLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the widget to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the widget to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vITEMLIST, widget, KEY_TAB, widgetCB, buttonWidget);
       bindCDKObject (vITEMLIST, widget, CDK_NEXT, widgetCB, buttonWidget);
       bindCDKObject (vITEMLIST, widget, CDK_PREV, widgetCB, buttonWidget);
@@ -195,15 +192,14 @@ int main (int argc, char **argv)
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -222,11 +218,11 @@ int main (int argc, char **argv)
       {
 	 widget->shadow = TRUE;
 
-	/*
-	 * We force the widget and buttonWidget to be drawn so the
-	 * buttonbox widget will be drawn when the widget is activated.
-	 * Otherwise the shadow window will draw over the button widget.
-	 */
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
 	 drawCDKItemlist (widget, ObjOf(widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
 	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
@@ -246,7 +242,6 @@ int main (int argc, char **argv)
       destroyCDKButtonbox (buttonWidget);
    }
 
-   /* Shut down curses. */
    destroyCDKItemlist (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
@@ -260,9 +255,11 @@ int main (int argc, char **argv)
       freeChar (answer);
       freeChtype (holder);
    }
+   CDKfreeStrings(itemlistList);
+   fclose (fp);
 
    /* Exit with the answer. */
-   exit (selection);
+   ExitProgram (selection);
 }
 
 static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

@@ -1,9 +1,9 @@
-/* $Id: entry_ex.c,v 1.14 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: entry_ex.c,v 1.15 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="entry_ex";
+char *XCursesProgramName = "entry_ex";
 #endif
 
 static BINDFN_PROTO(XXXCB);
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Draw the screen. */
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
    /* Clean up and exit. */
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 static int  XXXCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)

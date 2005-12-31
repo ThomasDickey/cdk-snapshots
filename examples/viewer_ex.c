@@ -1,9 +1,9 @@
-/* $Id: viewer_ex.c,v 1.16 2005/04/24 17:53:03 tom Exp $ */
+/* $Id: viewer_ex.c,v 1.19 2005/12/30 09:48:32 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="viewer_ex";
+char *XCursesProgramName = "viewer_ex";
 #endif
 
 /*
@@ -60,6 +60,14 @@ int main (int argc, char **argv)
 			       "</5>", "</48>", "</N>", "</N>",
 			       CDKparamValue(&params, 'N', TRUE),
 			       CDKparamValue(&params, 'S', FALSE));
+      if (fSelect == 0)
+      {
+	 destroyCDKScreen (cdkscreen);
+	 endCDK();
+
+	 fprintf(stderr, "Cannot create fselect-widget\n");
+	 ExitProgram (EXIT_FAILURE);
+      }
 
       /*
        * Set the starting directory. This is not necessary because when
@@ -84,7 +92,7 @@ int main (int argc, char **argv)
 	 destroyCDKFselect (fSelect);
 	 destroyCDKScreen (cdkscreen);
 	 endCDK();
-	 exit (EXIT_SUCCESS);
+	 ExitProgram (EXIT_SUCCESS);
       }
    }
 
@@ -108,7 +116,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
-      exit (EXIT_SUCCESS);
+      ExitProgram (EXIT_SUCCESS);
    }
 
    if (link_it)
@@ -128,13 +136,15 @@ int main (int argc, char **argv)
       {
 	 endCDK();
 	 printf ("Could not open \"%s\"\n", filename);
-	 exit (EXIT_FAILURE);
+	 ExitProgram (EXIT_FAILURE);
       }
    }
 
    /* Set up the viewer title, and the contents to the widget. */
    sprintf (vTitle, "<C></B/21>Filename:<!21></22>%20s<!22!B>", filename);
    setCDKViewer (example, vTitle, info, lines, A_REVERSE, interp_it, TRUE, TRUE);
+
+   CDKfreeStrings (info);
 
    /* Destroy the file selector widget. */
    destroyCDKFselect (fSelect);
@@ -153,7 +163,7 @@ int main (int argc, char **argv)
    else if (example->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected button %d", selected);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 3);
@@ -163,5 +173,5 @@ int main (int argc, char **argv)
    destroyCDKViewer (example);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

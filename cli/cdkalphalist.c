@@ -1,6 +1,6 @@
-/* $Id: cdkalphalist.c,v 1.9 2005/03/08 19:51:01 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.12 2005/12/27 17:26:08 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkalphalist";
@@ -77,8 +77,8 @@ int main (int argc, char **argv)
    {
       if ((fp = fopen (outputFile, "w")) == 0)
       {
-         fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-         exit (-1);
+	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -88,21 +88,21 @@ int main (int argc, char **argv)
       /* Maybe they gave a filename to use to read. */
       if (filename != 0)
       {
-         /* Read the file in. */
-         scrollLines = CDKreadFile (filename, &scrollList);
+	 /* Read the file in. */
+	 scrollLines = CDKreadFile (filename, &scrollList);
 
-         /* Check if there was an error. */
-         if (scrollLines == -1)
-         {
-            fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
-            exit (-1);
-         }
+	 /* Check if there was an error. */
+	 if (scrollLines == -1)
+	 {
+	    fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
+	    ExitProgram (CLI_ERROR);
+	 }
       }
       else
       {
-         /* They didn't provide anything. */
-         fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-         exit (-1);
+	 /* They didn't provide anything. */
+	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -155,28 +155,21 @@ int main (int argc, char **argv)
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      /* Clean up some memory. */
       CDKfreeStrings(scrollList);
-
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the alphalist. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Split the buttons if they supplied some. */
    if (buttons != 0)
    {
-      /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = CDKcountStrings (buttonList);
 
-      /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
 					getbegx (widget->win) + 1,
 					getbegy (widget->win) + widget->boxHeight - 1,
@@ -184,41 +177,40 @@ int main (int argc, char **argv)
 					0, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings(buttonList);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the entry field.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the entry field.
+       */
       setCDKAlphalistLLChar (widget, ACS_LTEE);
       setCDKAlphalistLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the entry field to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the entry field to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vENTRY, widget->entryField, KEY_RIGHT, widgetCB, buttonWidget);
       bindCDKObject (vENTRY, widget->entryField, KEY_LEFT, widgetCB, buttonWidget);
       bindCDKObject (vENTRY, widget->entryField, CDK_NEXT, widgetCB, buttonWidget);
       bindCDKObject (vENTRY, widget->entryField, CDK_PREV, widgetCB, buttonWidget);
 
-      /* Check if the user wants to set the background of the widget. */
       setCDKButtonboxBackgroundColor (buttonWidget, CDK_WIDGET_COLOR);
 
-      /* Draw the button widget. */
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -235,16 +227,16 @@ int main (int argc, char **argv)
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
       {
-         widget->shadow = TRUE;
+	 widget->shadow = TRUE;
 
-        /*
-         * We force the widget and buttonWidget to be drawn so the
-         * buttonbox widget will be drawn when the widget is activated.
-         * Otherwise the shadow window will draw over the button widget.
-         */
-         drawCDKAlphalist (widget, ObjOf(widget)->box);
-         eraseCDKButtonbox (buttonWidget);
-         drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
+	 drawCDKAlphalist (widget, ObjOf(widget)->box);
+	 eraseCDKButtonbox (buttonWidget);
+	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
       }
    }
 
@@ -261,7 +253,8 @@ int main (int argc, char **argv)
       destroyCDKButtonbox (buttonWidget);
    }
 
-   /* Shut down curses. */
+   CDKfreeStrings(scrollList);
+
    destroyCDKAlphalist (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
@@ -270,10 +263,11 @@ int main (int argc, char **argv)
    if (answer != 0)
    {
       fprintf (fp, "%s\n", answer);
+      freeChar (answer);
    }
 
    /* Exit with the selected button. */
-   exit (0);
+   ExitProgram (0);
 }
 
 int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

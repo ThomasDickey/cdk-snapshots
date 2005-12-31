@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 01:41:54 $
- * $Revision: 1.170 $
+ * $Date: 2005/12/30 00:17:57 $
+ * $Revision: 1.174 $
  */
 
 /*
@@ -288,11 +288,13 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
    if (actions == 0)
    {
       chtype input = 0;
+      boolean functionKey;
+
       for (;;)
       {
 	 ObjOf(matrix)->inputWindow = MATRIX_CELL(matrix, matrix->crow, matrix->ccol);
 	 keypad(ObjOf(matrix)->inputWindow, TRUE);
-	 input = getcCDKObject (ObjOf(matrix));
+	 input = getchCDKObject (ObjOf(matrix), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMatrix (matrix, input);
@@ -1312,6 +1314,9 @@ static void _destroyCDKMatrix (CDKOBJS *object)
       deleteCursesWindow (matrix->shadowWin);
       deleteCursesWindow (matrix->win);
 
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vMATRIX, matrix);
+
       /* Unregister this object. */
       unregisterCDKObject (vMATRIX, matrix);
    }
@@ -1348,6 +1353,14 @@ static void _eraseCDKMatrix (CDKOBJS *object)
       eraseCursesWindow (matrix->shadowWin);
       eraseCursesWindow (matrix->win);
    }
+}
+
+/*
+ * Set the callback-function.
+ */
+void setCDKMatrixCB (CDKMATRIX *widget, MATRIXCB callback)
+{
+   widget->callbackfn = callback;
 }
 
 /*

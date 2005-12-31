@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: scroll.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -68,11 +69,13 @@ Shell  : </U>${shell}
 #
 # Create some global variables.
 #
-CDK_SCROLL="../cdkscroll"
-CDK_LABEL="../cdklabel"
-tmpPass="/tmp/sl.$$"
-output="/tmp/output.$$"
-userAccounts="/tmp/ua.$$"
+CDK_SCROLL="${CDK_BINDIR=..}/cdkscroll"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+tmpPass="${TMPDIR=/tmp}/sl.$$"
+output="${TMPDIR=/tmp}/output.$$"
+userAccounts="${TMPDIR=/tmp}/ua.$$"
+
 TYPE="Other"
 
 #
@@ -117,9 +120,9 @@ awk 'BEGIN {FS=":"} {printf "%s\n", $1}' $tmpPass | sort > ${userAccounts}
 # Create the scrolling list.
 #
 ${CDK_SCROLL} -T "${title}" -f ${userAccounts} -n -B "${buttons}" 2> ${output}
-if [ $? -lt 0 ]; then
-   exit;
-fi
+selected=$?
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

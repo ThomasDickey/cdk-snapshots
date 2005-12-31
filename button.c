@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/30 00:11:34 $
- * $Revision: 1.29 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.31 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -91,17 +91,16 @@ CDKBUTTON *newCDKButton (CDKSCREEN * cdkscreen, int xplace, int yplace, char
 int activateCDKButton (CDKBUTTON * button, chtype * actions)
 {
    chtype input = 0;
+   boolean functionKey;
    int ret;
 
    drawCDKButton (button, ObjOf (button)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(button));
+	 input = getchCDKObject (ObjOf(button), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKButton(button, input);
@@ -315,12 +314,13 @@ void positionCDKButton (CDKBUTTON * button)
    /* Declare some variables. */
    int origX = getbegx (button->win);
    int origY = getbegy (button->win);
-   chtype key = (chtype) NULL;
+   chtype key = (chtype) 0;
+   boolean functionKey;
 
    /* Let them move the widget around until they hit return. */
    while (key != KEY_ENTER)
    {
-      key = getcCDKObject (ObjOf(button));
+      key = getchCDKObject (ObjOf(button), &functionKey);
       if (key == KEY_UP || key == '8')
       {
 	 if (getbegy (button->win) > 0)
@@ -476,6 +476,9 @@ static void _destroyCDKButton (CDKOBJS * object)
       /* Free up the window pointers. */
       deleteCursesWindow (button->shadowWin);
       deleteCursesWindow (button->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vBUTTON, button);
 
       /* Unregister the object. */
       unregisterCDKObject (vBUTTON, button);

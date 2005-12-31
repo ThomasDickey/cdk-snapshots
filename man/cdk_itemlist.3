@@ -1,35 +1,39 @@
 '\" t
-.\" $Id: cdk_itemlist.3,v 1.15 2005/04/24 21:56:57 tom Exp $
+.\" $Id: cdk_itemlist.3,v 1.18 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_itemlist 3
 .SH NAME
-activateCDKItemlist,
-destroyCDKItemlist,
-drawCDKItemlist,
-eraseCDKItemlist,
-getCDKItemlistBox,
-getCDKItemlistCurrentItem,
-getCDKItemlistDefaultItem,
-getCDKItemlistValues,
-injectCDKItemlist,
-moveCDKItemlist,
-newCDKItemlist,
-positionCDKItemlist,
-setCDKItemlist,
-setCDKItemlistBackgroundAttrib,
-setCDKItemlistBackgroundColor,
-setCDKItemlistBox,
-setCDKItemlistBoxAttribute,
-setCDKItemlistCurrentItem,
-setCDKItemlistDefaultItem,
-setCDKItemlistHorizontalChar,
-setCDKItemlistLLChar,
-setCDKItemlistLRChar,
-setCDKItemlistPostProcess,
-setCDKItemlistPreProcess,
-setCDKItemlistULChar,
-setCDKItemlistURChar,
-setCDKItemlistValues,
-setCDKItemlistVerticalChar \- curses itemlist widget.
+.XX activateCDKItemlist
+.XX destroyCDKItemlist
+.XX drawCDKItemlist
+.XX drawCDKItemlistField
+.XX eraseCDKItemlist
+.XX getCDKItemlistBox
+.XX getCDKItemlistCurrentItem
+.XX getCDKItemlistDefaultItem
+.XX getCDKItemlistValues
+.XX injectCDKItemlist
+.XX moveCDKItemlist
+.XX newCDKItemlist
+.XX positionCDKItemlist
+.XX setCDKItemlist
+.XX setCDKItemlistBackgroundAttrib
+.XX setCDKItemlistBackgroundColor
+.XX setCDKItemlistBox
+.XX setCDKItemlistBoxAttribute
+.XX setCDKItemlistCurrentItem
+.XX setCDKItemlistDefaultItem
+.XX setCDKItemlistHorizontalChar
+.XX setCDKItemlistLLChar
+.XX setCDKItemlistLRChar
+.XX setCDKItemlistPostProcess
+.XX setCDKItemlistPreProcess
+.XX setCDKItemlistULChar
+.XX setCDKItemlistURChar
+.XX setCDKItemlistValues
+.XX setCDKItemlistVerticalChar
+cdk_itemlist \- curses itemlist widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -50,6 +54,10 @@ setCDKItemlistVerticalChar \- curses itemlist widget.
 .B "void drawCDKItemlist ("
 .BI "CDKITEMLIST *" "itemlist",
 .BI "boolean " "box");
+.TP 15
+.B "void drawCDKItemlistField ("
+.BI "CDKITEMLIST *" "itemlist",
+.BI "boolean " "highlight");
 .TP 15
 .B "void eraseCDKItemlist ("
 .BI "CDKITEMLIST *" "itemlist");
@@ -193,6 +201,9 @@ removes the widget from the screen and frees memory the object used.
 draws the itemlist widget on the screen.
 The \fBbox\fR option is true if the widget is drawn with a box.
 .TP 5
+.B drawCDKItemlistField
+draws the contents of the field.
+.TP 5
 .B eraseCDKItemlist
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
@@ -306,7 +317,7 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKItemlist
 lets the programmer modify certain elements of an existing itemlist widget.
 The parameter names correspond to the same parameter names
-listed in the \fInewCDKItemlist\fR function.
+listed in the \fBnewCDKItemlist\fR function.
 .TP 5
 .B setCDKItemlistBackgroundAttrib
 the background color attribute the widget.

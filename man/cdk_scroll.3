@@ -1,39 +1,42 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.23 2005/04/24 22:18:38 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.25 2005/12/28 18:35:31 tom Exp $"
+.de XX
+..
 .TH cdk_scroll 3
 .SH NAME
-activateCDKScroll,
-addCDKScrollItem,
-deleteCDKScrollItem,
-destroyCDKScroll,
-drawCDKScroll,
-eraseCDKScroll,
-getCDKScrollBox,
-getCDKScrollCurrent,
-getCDKScrollHighlight,
-getCDKScrollItems,
-injectCDKScroll,
-insertCDKScrollItem,
-moveCDKScroll,
-newCDKScroll,
-positionCDKScroll,
-setCDKScroll,
-setCDKScrollBackgroundAttrib,
-setCDKScrollBackgroundColor,
-setCDKScrollBox,
-setCDKScrollBoxAttribute,
-setCDKScrollCurrent,
-setCDKScrollHighlight,
-setCDKScrollHorizontalChar,
-setCDKScrollItems,
-setCDKScrollLLChar,
-setCDKScrollLRChar,
-setCDKScrollPosition,
-setCDKScrollPostProcess,
-setCDKScrollPreProcess,
-setCDKScrollULChar,
-setCDKScrollURChar,
-setCDKScrollVerticalChar \- curses scrolling list widget.
+.XX activateCDKScroll
+.XX addCDKScrollItem
+.XX deleteCDKScrollItem
+.XX destroyCDKScroll
+.XX drawCDKScroll
+.XX eraseCDKScroll
+.XX getCDKScrollBox
+.XX getCDKScrollCurrent
+.XX getCDKScrollHighlight
+.XX getCDKScrollItems
+.XX injectCDKScroll
+.XX insertCDKScrollItem
+.XX moveCDKScroll
+.XX newCDKScroll
+.XX positionCDKScroll
+.XX setCDKScroll
+.XX setCDKScrollBackgroundAttrib
+.XX setCDKScrollBackgroundColor
+.XX setCDKScrollBox
+.XX setCDKScrollBoxAttribute
+.XX setCDKScrollCurrent
+.XX setCDKScrollHighlight
+.XX setCDKScrollHorizontalChar
+.XX setCDKScrollItems
+.XX setCDKScrollLLChar
+.XX setCDKScrollLRChar
+.XX setCDKScrollPosition
+.XX setCDKScrollPostProcess
+.XX setCDKScrollPreProcess
+.XX setCDKScrollULChar
+.XX setCDKScrollURChar
+.XX setCDKScrollVerticalChar
+cdk_scroll \- curses scrolling list widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -381,7 +384,7 @@ See \fBcdk_position (3)\fR for key bindings.
 lets the programmer modify certain elements of an existing
 scroll widget.
 The parameter names correspond to the same parameter names listed
-in the \fInewCDKScroll\fR function.
+in the \fBnewCDKScroll\fR function.
 .TP 5
 .B setCDKScrollBackgroundAttrib
 sets the background attribute of the widget.

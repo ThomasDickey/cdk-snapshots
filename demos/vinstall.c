@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: vinstall.c,v 1.13 2005/12/27 12:36:06 tom Exp $ */
+
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName="vinstall";
@@ -86,7 +88,7 @@ int main (int argc, char **argv)
    if (filename == 0)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Open the file list file and read it in. */
@@ -94,7 +96,7 @@ int main (int argc, char **argv)
    if (count == 0)
    {
       fprintf (stderr, "%s: Input filename <%s> is empty.\n", argv[0], filename);
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
   /*
@@ -187,7 +189,7 @@ int main (int argc, char **argv)
       destroyCDKLabel (titleWin);
       destroyCDKScreen (cdkScreen);
       endCDK();
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
   /*
@@ -201,7 +203,7 @@ int main (int argc, char **argv)
       destroyCDKLabel (titleWin);
       destroyCDKScreen (cdkScreen);
       endCDK();
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Create the histogram. */
@@ -359,7 +361,7 @@ int main (int argc, char **argv)
    destroyCDKSwindow (installOutput);
    destroyCDKScreen (cdkScreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 /*

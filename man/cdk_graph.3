@@ -1,34 +1,38 @@
-.\" $Id: cdk_graph.3,v 1.12 2005/04/15 23:42:36 tom Exp $
+.\" $Id: cdk_graph.3,v 1.14 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_graph 3
 .SH NAME
-destroyCDKGraph,
-drawCDKGraph,
-eraseCDKGraph,
-getCDKGraphBox,
-getCDKGraphCharacter,
-getCDKGraphCharacters,
-getCDKGraphDisplayType,
-getCDKGraphValue,
-getCDKGraphValues,
-moveCDKGraph,
-newCDKGraph,
-positionCDKGraph,
-setCDKGraph,
-setCDKGraphBackgroundAttrib,
-setCDKGraphBackgroundColor,
-setCDKGraphBox,
-setCDKGraphBoxAttribute,
-setCDKGraphCharacter,
-setCDKGraphCharacters,
-setCDKGraphDisplayType,
-setCDKGraphHorizontalChar,
-setCDKGraphLLChar,
-setCDKGraphLRChar,
-setCDKGraphULChar,
-setCDKGraphURChar,
-setCDKGraphValue,
-setCDKGraphValues,
-setCDKGraphVerticalChar \- curses graph widget
+.XX activateCDKGraph
+.XX destroyCDKGraph
+.XX drawCDKGraph
+.XX eraseCDKGraph
+.XX getCDKGraphBox
+.XX getCDKGraphCharacter
+.XX getCDKGraphCharacters
+.XX getCDKGraphDisplayType
+.XX getCDKGraphValue
+.XX getCDKGraphValues
+.XX moveCDKGraph
+.XX newCDKGraph
+.XX positionCDKGraph
+.XX setCDKGraph
+.XX setCDKGraphBackgroundAttrib
+.XX setCDKGraphBackgroundColor
+.XX setCDKGraphBox
+.XX setCDKGraphBoxAttribute
+.XX setCDKGraphCharacter
+.XX setCDKGraphCharacters
+.XX setCDKGraphDisplayType
+.XX setCDKGraphHorizontalChar
+.XX setCDKGraphLLChar
+.XX setCDKGraphLRChar
+.XX setCDKGraphULChar
+.XX setCDKGraphURChar
+.XX setCDKGraphValue
+.XX setCDKGraphValues
+.XX setCDKGraphVerticalChar
+cdk_graph \- curses graph widget
 .SH SYNOPSIS
 .LP
 .B cc
@@ -38,6 +42,10 @@ setCDKGraphVerticalChar \- curses graph widget
 .LP
 #include <cdk.h>
 .nf
+.TP 15
+.B "void activateCDKGraph ("
+.BI "CDKGRAPH *" "graph",
+.BI "chtype *" "unused");
 .TP 15
 .B "void destroyCDKGraph ("
 .BI "CDKGRAPH *" "graph");
@@ -167,6 +175,9 @@ setCDKGraphVerticalChar \- curses graph widget
 The Cdk graph widget creates a graph in either X/Y plot or line mode.
 The following functions create or manipulate the Cdk graph box widget.
 .SH AVAILABLE FUNCTIONS
+.TP 5 
+.B activateCDKGraph
+this is an obsolete function that calls \fBdrawCDKGraph\fP.
 .TP 5
 .B destroyCDKGraph
 removes the widget from the screen and frees memory the object used.

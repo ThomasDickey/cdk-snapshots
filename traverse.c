@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/03/08 21:48:30 $
- * $Revision: 1.17 $
+ * $Date: 2005/12/30 01:32:53 $
+ * $Revision: 1.21 $
  */
 
 #define limitFocusIndex(screen, value) \
@@ -53,6 +53,15 @@ static CDKOBJS *switchFocus (CDKOBJS *newobj, CDKOBJS *oldobj)
    return newobj;
 }
 
+static boolean checkMenuKey (int keyCode, int functionKey)
+{
+   int result = FALSE;
+
+   result = (keyCode == KEY_ESC && !functionKey);
+
+   return result;
+}
+
 static CDKOBJS *handleMenu (CDKSCREEN *screen, CDKOBJS *menu, CDKOBJS *oldobj)
 {
    bool done = FALSE;
@@ -61,30 +70,27 @@ static CDKOBJS *handleMenu (CDKSCREEN *screen, CDKOBJS *menu, CDKOBJS *oldobj)
    switchFocus (menu, oldobj);
    while (!done)
    {
-      int key = getcCDKObject (menu);
+      boolean functionKey;
+      int key = getchCDKObject (menu, &functionKey);
 
       switch (key)
       {
       case KEY_TAB:
-	 {
-	    done = TRUE;
-	    break;
-	 }
+	 done = TRUE;
+	 break;
+
       case KEY_ESC:
-	 {
-	    /* cleanup the menu */
-	    injectCDKMenu ((CDKMENU *) menu, key);
-	    done = TRUE;
-	    break;
-	 }
+	 /* cleanup the menu */
+	 injectCDKMenu ((CDKMENU *)menu, key);
+	 done = TRUE;
+	 break;
+
       default:
-	 {
-	    int m = injectCDKMenu ((CDKMENU *) menu, key);
-	    done = (m >= 0);
-	    break;
-	 }
+	 done = (injectCDKMenu ((CDKMENU *)menu, key) >= 0);
+	 break;
       }
    }
+
    if ((newobj = getCDKFocusCurrent (screen)) == 0)
       newobj = setCDKFocusNext (screen);
 
@@ -226,89 +232,144 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
 }
 
 /*
- * Traverse the widgets on a screen
+ * Set focus to a specific object, returning it.
+ * If the object cannot be found, return null.
  */
-int traverseCDKScreen (CDKSCREEN *screen)
+CDKOBJS *setCDKFocusCurrent (CDKSCREEN *screen, CDKOBJS *newobj)
 {
+   CDKOBJS *result = 0;
    CDKOBJS *curobj;
+   int n = getFocusIndex (screen);
+   int first = n;
 
-   setFocusIndex (screen, screen->objectCount - 1);
-   curobj = switchFocus (setCDKFocusNext (screen), 0);
-   if (curobj == 0)
-      return 0;
-
-   refreshDataCDKScreen (screen);
-
-   screen->exitStatus = CDKSCREEN_NOEXIT;
-
-   while ((curobj != 0) && (screen->exitStatus == CDKSCREEN_NOEXIT))
+   for (;;)
    {
-      int key;
-      key = getcCDKObject (curobj);
+      if (++n >= screen->objectCount)
+	 n = 0;
 
-      switch (key)
+      curobj = screen->object[n];
+      if (curobj == newobj)
       {
-      case KEY_BTAB:
-	 {
-	    curobj = switchFocus (setCDKFocusPrevious (screen), curobj);
-	    break;
-	 }
-      case KEY_TAB:
-	 {
-	    curobj = switchFocus (setCDKFocusNext (screen), curobj);
-	    break;
-	 }
-      case KEY_F(10):
-	 {
-	    /* save data and exit */
-	    exitOKCDKScreen (screen);
-	    break;
-	 }
-      case CTRL('X'):
-	 {
-	    exitCancelCDKScreen (screen);
-	    break;
-	 }
-      case CTRL('R'):
-	 {
-	    /* reset data to defaults */
-	    resetCDKScreen (screen);
-	    setFocus (curobj);
-	    break;
-	 }
-      case CDK_REFRESH:
-	 {
-	    /* redraw screen */
-	    refreshCDKScreen (screen);
-	    setFocus (curobj);
-	    break;
-	 }
-      case KEY_ESC:
-	 {
-	    /* find and enable drop down menu */
-	    int j;
-
-	    for (j = 0; j < screen->objectCount; ++j)
-	       if (ObjTypeOf (screen->object[j]) == vMENU)
-	       {
-		  curobj = handleMenu (screen, screen->object[j], curobj);
-		  break;
-	       }
-	    break;
-	 }
-      default:
-	 {
-	    InjectObj (curobj, key);
-	    break;
-	 }
+	 result = curobj;
+	 break;
+      }
+      else if (n == first)
+      {
+	 break;
       }
    }
 
-   if (screen->exitStatus == CDKSCREEN_EXITOK)
+   setFocusIndex (screen, (result != 0) ? n : -1);
+   return result;
+}
+
+/*
+ * Set focus to the first object in the screen.
+ */
+CDKOBJS *setCDKFocusFirst (CDKSCREEN *screen)
+{
+   setFocusIndex (screen, screen->objectCount - 1);
+   return switchFocus (setCDKFocusNext (screen), 0);
+}
+
+/*
+ * Set focus to the last object in the screen.
+ */
+CDKOBJS *setCDKFocusLast (CDKSCREEN *screen)
+{
+   setFocusIndex (screen, 0);
+   return switchFocus (setCDKFocusPrevious (screen), 0);
+}
+
+void traverseCDKOnce (CDKSCREEN *screen,
+		      CDKOBJS *curobj,
+		      int keyCode,
+		      boolean functionKey,
+		      CHECK_KEYCODE funcMenuKey)
+{
+   switch (keyCode)
    {
-      saveDataCDKScreen (screen);
-      return 1;
+   case KEY_BTAB:
+      switchFocus (setCDKFocusPrevious (screen), curobj);
+      break;
+
+   case KEY_TAB:
+      switchFocus (setCDKFocusNext (screen), curobj);
+      break;
+
+   case KEY_F (10):
+      /* save data and exit */
+      exitOKCDKScreen (screen);
+      break;
+
+   case CTRL ('X'):
+      exitCancelCDKScreen (screen);
+      break;
+
+   case CTRL ('R'):
+      /* reset data to defaults */
+      resetCDKScreen (screen);
+      setFocus (curobj);
+      break;
+
+   case CDK_REFRESH:
+      /* redraw screen */
+      refreshCDKScreen (screen);
+      setFocus (curobj);
+      break;
+
+   default:
+      /* not everyone wants menus, so we make them optional here */
+      if (funcMenuKey != 0 && funcMenuKey (keyCode, functionKey))
+      {
+	 /* find and enable drop down menu */
+	 int j;
+
+	 for (j = 0; j < screen->objectCount; ++j)
+	    if (ObjTypeOf (screen->object[j]) == vMENU)
+	    {
+	       handleMenu (screen, screen->object[j], curobj);
+	       break;
+	    }
+      }
+      else
+      {
+	 InjectObj (curobj, keyCode);
+      }
+      break;
    }
-   else
-      return 0;
+}
+
+/*
+ * Traverse the widgets on a screen.
+ */
+int traverseCDKScreen (CDKSCREEN *screen)
+{
+   int result = 0;
+   CDKOBJS *curobj = setCDKFocusFirst (screen);
+
+   if (curobj != 0)
+   {
+      refreshDataCDKScreen (screen);
+
+      screen->exitStatus = CDKSCREEN_NOEXIT;
+
+      while (((curobj = getCDKFocusCurrent (screen)) != 0)
+	     && (screen->exitStatus == CDKSCREEN_NOEXIT))
+      {
+	 int key;
+	 boolean function;
+
+	 key = getchCDKObject (curobj, &function);
+
+	 traverseCDKOnce (screen, curobj, key, function, checkMenuKey);
+      }
+
+      if (screen->exitStatus == CDKSCREEN_EXITOK)
+      {
+	 saveDataCDKScreen (screen);
+	 result = 1;
+      }
+   }
+   return result;
 }

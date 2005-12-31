@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: alphalist.sh,v 1.7 2005/12/27 16:04:57 tom Exp $
 
 #
 # Description:
@@ -62,17 +63,18 @@ Shell  : </U>${shell}
    #
    # Create the popup label.
    #
-   ${CDK_LABEL} -m "${accountMessage}" -p " " -B
+   ${CDK_LABEL} -m "${accountMessage}" -p " "
 }
 
 #
 # Create some global variables.
 #
-CDK_ALPHALIST="../cdkalphalist"
-CDK_LABEL="../cdklabel"
-tmpPass="/tmp/sl.$$"
-output="/tmp/alphalist.$$"
-userAccounts="/tmp/ua.$$"
+CDK_ALPHALIST="${CDK_BINDIR=..}/cdkalphalist"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+tmpPass="${TMPDIR=/tmp}/sl.$$"
+output="${TMPDIR=/tmp}/alphalist.$$"
+userAccounts="${TMPDIR=/tmp}/ua.$$"
 
 #
 # Create the message for the scrolling list.
@@ -96,9 +98,9 @@ awk 'BEGIN {FS=":"} {printf "%s\n", $1}' $tmpPass | sort > ${userAccounts}
 # Create the scrolling list.
 #
 ${CDK_ALPHALIST} -T "${title}" -f ${userAccounts} -H -10 -W -20 2> ${output}
-if [ $? -lt 0 ]; then
-   exit;
-fi
+selected=$?
+test $selected = 255 && exit 1
+
 answer=`sed -e 's/^[ ]*//' -e 's/[ ]*$//' ${output}`
 
 #

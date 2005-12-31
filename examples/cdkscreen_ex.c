@@ -1,4 +1,6 @@
-#include <cdk.h>
+/* $Id: cdkscreen_ex.c,v 1.6 2005/12/26 22:04:35 tom Exp $ */
+
+#include <cdk_test.h>
 
 /*
  * This demonstrates how to create four different Cdk
@@ -6,7 +8,7 @@
  */
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="cdkscreen_ex";
+char *XCursesProgramName = "cdkscreen_ex";
 #endif
 
 int main (void)
@@ -115,7 +117,7 @@ int main (void)
 	 destroyCDKScreen (cdkScreen4);
 	 destroyCDKScreen (cdkScreen5);
 	 endCDK();
-	 exit (EXIT_SUCCESS);
+	 ExitProgram (EXIT_SUCCESS);
       }
    }
 }

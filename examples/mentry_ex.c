@@ -1,6 +1,6 @@
-/* $Id: mentry_ex.c,v 1.8 2004/08/28 00:53:46 tom Exp $ */
+/* $Id: mentry_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "mentry_ex";
@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 
       /* Print out a message. */
       printf ("Oops. Can not create CDK object. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Draw the CDK screen. */
@@ -70,5 +70,5 @@ int main (int argc, char **argv)
    printf ("\n\n\n");
    printf ("Your message was : <%s>\n", info);
    free (info);
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

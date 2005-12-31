@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.25 2005/04/24 17:26:33 tom Exp $
+ * $Id: cdk_util.h,v 1.26 2005/12/28 21:44:56 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -159,7 +159,7 @@ int viewInfo (
  * This is a wrapper for qsort.
  */
 void sortList (
-		char *		/* list */ [],
+		char **		/* list */,
 		int		/* length */);
 
 /*

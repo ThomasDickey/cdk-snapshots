@@ -1,6 +1,6 @@
-/* $Id: cdkselection.c,v 1.7 2005/03/08 19:52:36 tom Exp $ */
+/* $Id: cdkselection.c,v 1.9 2005/12/27 17:45:21 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdkselection";
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
    char **items			= 0;
    int choiceValues[MAX_ITEMS];
    int editModes[MAX_ITEMS];
-   int x, y, fields, j1, j2;
+   int x, fields, j1, j2;
 
    CDK_PARAMS params;
    boolean boxWidget;
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
       if ((fp = fopen (outputFile, "w")) == 0)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
 
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
 	 if (scrollLines == -1)
 	 {
 	    fprintf (stderr, "Error: Could not open the file '%s'.\n", filename);
-	    exit (-1);
+	    ExitProgram (CLI_ERROR);
 	 }
 
 	/*
@@ -140,18 +140,14 @@ int main (int argc, char **argv)
 	       editModes[x] = (int)atoi (items[2]);
 	    }
 
-	    /* Clean up. */
-	    for (y=0; y < fields; y++)
-	    {
-	       freeChar (items[y]);
-	    }
+	    CDKfreeStrings (items);
 	 }
       }
       else
       {
 	 /* They didn't provide anything. */
 	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -206,25 +202,19 @@ int main (int argc, char **argv)
 				choiceList, choiceSize,
 				A_REVERSE,
 				boxWidget, shadowWidget);
+   CDKfreeStrings (choiceList);
 
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      /* Clean up some memory. */
-      for (x=0; x < scrollLines; x++)
-      {
-	 freeChar (scrollList[x]);
-      }
+      CDKfreeStrings (scrollList);
 
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the selection list. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Set up the default selection choices. */
@@ -245,20 +235,22 @@ int main (int argc, char **argv)
 					0, 1, buttonCount,
 					buttonList, buttonCount,
 					A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings (buttonList);
+
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the widget.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the widget.
+       */
       setCDKSelectionLLChar (widget, ACS_LTEE);
       setCDKSelectionLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the widget to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the widget to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vSELECTION, widget, KEY_TAB, widgetCB, buttonWidget);
       bindCDKObject (vSELECTION, widget, CDK_NEXT, widgetCB, buttonWidget);
       bindCDKObject (vSELECTION, widget, CDK_PREV, widgetCB, buttonWidget);
@@ -270,15 +262,14 @@ int main (int argc, char **argv)
       drawCDKButtonbox (buttonWidget, boxWidget);
    }
 
-  /*
-   * If the user asked for a shadow, we need to create one.
-   * I do this instead of using the shadow parameter because
-   * the button widget sin't part of the main widget and if
-   * the user asks for both buttons and a shadow, we need to
-   * create a shadow big enough for both widgets. We'll create
-   * the shadow window using the widgets shadowWin element, so
-   * screen refreshes will draw them as well.
-   */
+   /*
+    * If the user asked for a shadow, we need to create one.  Do this instead
+    * of using the shadow parameter because the button widget is not part of
+    * the main widget and if the user asks for both buttons and a shadow, we
+    * need to create a shadow big enough for both widgets.  Create the shadow
+    * window using the widgets shadowWin element, so screen refreshes will draw
+    * them as well.
+    */
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
@@ -297,11 +288,11 @@ int main (int argc, char **argv)
       {
 	 widget->shadow = TRUE;
 
-	/*
-	 * We force the widget and buttonWidget to be drawn so the
-	 * buttonbox widget will be drawn when the widget is activated.
-	 * Otherwise the shadow window will draw over the button widget.
-	 */
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
 	 drawCDKSelection (widget, ObjOf(widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
 	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
@@ -334,11 +325,13 @@ int main (int argc, char **argv)
       freeChar (item);
    }
 
+   CDKfreeStrings (scrollList);
+
    /* Shut down curses. */
    destroyCDKSelection (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
-   exit (selection);
+   ExitProgram (selection);
 }
 
 static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)

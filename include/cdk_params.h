@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_params.h,v 1.5 2003/12/06 14:15:56 tom Exp $
+ * $Id: cdk_params.h,v 1.6 2005/12/27 14:08:18 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2003, Thomas E. Dickey
+ * Copyright 2003,2005 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,14 @@ extern "C" {
  */
 #define CDK_MIN_PARAMS	"NSX:Y:"
 #define CDK_CLI_PARAMS	"NSX:Y:H:W:"
+
+/*
+ * Use this exit code rather than -1 for cli programs which have reported an
+ * error.  Actually EXIT_FAILURE would be better, but the shell script samples
+ * all are written to assume that the exit code can be used to indicate a
+ * button number, etc.
+ */
+#define CLI_ERROR	255
 
 /*
  * This records the values that CDKparseParams() decodes using getopt():

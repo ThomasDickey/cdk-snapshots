@@ -1,6 +1,6 @@
-/* $Id: radio1_ex.c,v 1.9 2005/04/15 21:46:06 tom Exp $ */
+/* $Id: radio1_ex.c,v 1.10 2005/12/26 22:04:35 tom Exp $ */
 
-#include "cdk.h"
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "radio_ex";
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create the radio widget. ");
       printf ("Is the window too small??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Activate the radio list. */
@@ -83,5 +83,5 @@ int main(int argc, char **argv)
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
    endCDK ();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: scale.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,11 @@
 #
 # Create some global variables.
 #
-CDK_SCALE="../cdkscale"
-CDK_LABEL="../cdklabel"
-output="/tmp/scale_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_SCALE="${CDK_BINDIR=..}/cdkscale"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/scale_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the title.
@@ -27,9 +29,8 @@ buttons=" OK
 #
 ${CDK_SCALE} -f 20 -l 0 -h 100 -i 5 -L "${label}" -T "${title}" -B "${buttons}" -O ${output}
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

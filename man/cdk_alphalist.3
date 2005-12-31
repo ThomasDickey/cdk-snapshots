@@ -1,35 +1,38 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.20 2005/04/15 23:19:26 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.22 2005/12/28 18:35:31 tom Exp $"
+.de XX
+..
 .TH cdk_alphalist 3
 .SH NAME
-activateCDKAlphalist,
-destroyCDKAlphalist,
-drawCDKAlphalist,
-eraseCDKAlphalist,
-getCDKAlphalistBox,
-getCDKAlphalistContents,
-getCDKAlphalistFillerChar,
-getCDKAlphalistHighlight,
-injectCDKAlphalist,
-moveCDKAlphalist,
-newCDKAlphalist,
-positionCDKAlphalist,
-setCDKAlphalist,
-setCDKAlphalistBackgroundAttrib,
-setCDKAlphalistBackgroundColor,
-setCDKAlphalistBox,
-setCDKAlphalistBoxAttribute,
-setCDKAlphalistContents,
-setCDKAlphalistFillerChar,
-setCDKAlphalistHighlight,
-setCDKAlphalistHorizontalChar,
-setCDKAlphalistLLChar,
-setCDKAlphalistLRChar,
-setCDKAlphalistPostProcess,
-setCDKAlphalistPreProcess,
-setCDKAlphalistULChar,
-setCDKAlphalistURChar,
-setCDKAlphalistVerticalChar \- curses sorted list widget.
+.XX activateCDKAlphalist
+.XX destroyCDKAlphalist
+.XX drawCDKAlphalist
+.XX eraseCDKAlphalist
+.XX getCDKAlphalistBox
+.XX getCDKAlphalistContents
+.XX getCDKAlphalistFillerChar
+.XX getCDKAlphalistHighlight
+.XX injectCDKAlphalist
+.XX moveCDKAlphalist
+.XX newCDKAlphalist
+.XX positionCDKAlphalist
+.XX setCDKAlphalist
+.XX setCDKAlphalistBackgroundAttrib
+.XX setCDKAlphalistBackgroundColor
+.XX setCDKAlphalistBox
+.XX setCDKAlphalistBoxAttribute
+.XX setCDKAlphalistContents
+.XX setCDKAlphalistFillerChar
+.XX setCDKAlphalistHighlight
+.XX setCDKAlphalistHorizontalChar
+.XX setCDKAlphalistLLChar
+.XX setCDKAlphalistLRChar
+.XX setCDKAlphalistPostProcess
+.XX setCDKAlphalistPreProcess
+.XX setCDKAlphalistULChar
+.XX setCDKAlphalistURChar
+.XX setCDKAlphalistVerticalChar
+cdk_alphalist \- curses sorted list widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -335,7 +338,7 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKAlphalist
 lets the programmer modify certain elements of an existing alphalist widget.
 The parameter names correspond to the same parameter
-names listed in the \fInewCDKAlphalist\fR function.
+names listed in the \fBnewCDKAlphalist\fR function.
 .TP 5
 .B setCDKAlphalistBackgroundAttrib
 sets the background attribute of the widget.

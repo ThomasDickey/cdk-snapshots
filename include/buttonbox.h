@@ -1,5 +1,5 @@
 /*
- * $Id: buttonbox.h,v 1.24 2004/08/30 00:00:57 tom Exp $
+ * $Id: buttonbox.h,v 1.26 2005/12/28 12:59:18 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2004,2005 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -162,10 +162,6 @@ boolean getCDKButtonboxBox (
 #define setCDKButtonboxHorizontalChar(w,c) setHZCharOf(w,c)
 #define setCDKButtonboxBoxAttribute(w,c)   setBXAttrOf(w,c)
 
-void setCDKButtonboxButtonAttrib (
-		CDKBUTTONBOX *	/* buttonbox */,
-		chtype		/* character */);
-
 /*
  * This sets the background color of the widget.
  */
@@ -175,15 +171,6 @@ void setCDKButtonboxButtonAttrib (
  * This sets the background attribute of the widget.
  */ 
 #define setCDKButtonboxBackgroundAttrib(w,c) setBKAttrOf(w,c)
-
-/*
- * This draws a button in the buttonbox widget.
- */
-void drawCDKButtonboxButton (
-		CDKBUTTONBOX *	/* buttonbox */,
-		int		/* button */,
-		chtype		/* active */,
-		chtype		/* highlight */);
 
 /*
  * This draws the buttonbox box widget.

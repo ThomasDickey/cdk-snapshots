@@ -1,6 +1,6 @@
-/* $Id: template_ex.c,v 1.9 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: template_ex.c,v 1.11 2005/12/27 00:58:27 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "template_ex";
@@ -50,7 +50,7 @@ int main (int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can;'t seem to create template. Is the window too small?");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Activate the template. */
@@ -77,12 +77,15 @@ int main (int argc, char **argv)
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
       popupLabel (cdkscreen, mesg, 4);
+
+      freeChar (mesg[0]);
       freeChar (mesg[1]);
+      freeChar (mixed);
    }
 
    /* Clean up. */
    destroyCDKTemplate (phoneNumber);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

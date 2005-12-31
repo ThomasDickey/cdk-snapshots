@@ -1,31 +1,38 @@
 '\" t
-.\" $Id: cdk_buttonbox.3,v 1.18 2005/04/15 23:25:29 tom Exp $
+.\" $Id: cdk_buttonbox.3,v 1.20 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_buttonbox 3
 .SH NAME
-activateCDKButtonbox,
-destroyCDKButtonbox,
-drawCDKButtonbox,
-eraseCDKButtonbox,
-getCDKButtonboxBox,
-getCDKButtonboxHighlight,
-injectCDKButtonbox,
-moveCDKButtonbox,
-newCDKButtonbox,
-positionCDKButtonbox,
-setCDKButtonbox,
-setCDKButtonboxBackgroundAttrib,
-setCDKButtonboxBackgroundColor,
-setCDKButtonboxBox,
-setCDKButtonboxBoxAttribute,
-setCDKButtonboxHighlight,
-setCDKButtonboxHorizontalChar,
-setCDKButtonboxLLChar,
-setCDKButtonboxLRChar,
-setCDKButtonboxPostProcess,
-setCDKButtonboxPreProcess,
-setCDKButtonboxULChar,
-setCDKButtonboxURChar,
-setCDKButtonboxVerticalChar \- Creates a managed curses buttonbox widget.
+.XX activateCDKButtonbox
+.XX destroyCDKButtonbox
+.XX drawCDKButtonbox
+.XX drawCDKButtonboxButtons
+.XX eraseCDKButtonbox
+.XX getCDKButtonboxBox
+.XX getCDKButtonboxButtonCount
+.XX getCDKButtonboxCurrentButton
+.XX getCDKButtonboxHighlight
+.XX injectCDKButtonbox
+.XX moveCDKButtonbox
+.XX newCDKButtonbox
+.XX positionCDKButtonbox
+.XX setCDKButtonbox
+.XX setCDKButtonboxBackgroundAttrib
+.XX setCDKButtonboxBackgroundColor
+.XX setCDKButtonboxBox
+.XX setCDKButtonboxBoxAttribute
+.XX setCDKButtonboxCurrentButton
+.XX setCDKButtonboxHighlight
+.XX setCDKButtonboxHorizontalChar
+.XX setCDKButtonboxLLChar
+.XX setCDKButtonboxLRChar
+.XX setCDKButtonboxPostProcess
+.XX setCDKButtonboxPreProcess
+.XX setCDKButtonboxULChar
+.XX setCDKButtonboxURChar
+.XX setCDKButtonboxVerticalChar
+cdk_buttonbox \- Creates a managed curses buttonbox widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -47,10 +54,19 @@ setCDKButtonboxVerticalChar \- Creates a managed curses buttonbox widget.
 .BI "CDKBUTTONBOX *" "buttonbox",
 .BI "boolean " "box");
 .TP 15
+.B "void drawCDKButtonboxButtons ("
+.BI "CDKBUTTONBOX *" "buttonbox");
+.TP 15
 .B "void eraseCDKButtonbox ("
 .BI "CDKBUTTONBOX *" "buttonbox");
 .TP 15
 .B "boolean getCDKButtonboxBox ("
+.BI "CDKBUTTONBOX *" "buttonbox");
+.TP 15
+.B "int getCDKButtonboxButtonCount ("
+.BI "CDKBUTTONBOX *" "buttonbox");
+.TP 15
+.B "int getCDKButtonboxCurrentButton ("
 .BI "CDKBUTTONBOX *" "buttonbox");
 .TP 15
 .B "chtype getCDKButtonboxHighlight ("
@@ -105,6 +121,10 @@ setCDKButtonboxVerticalChar \- Creates a managed curses buttonbox widget.
 .B "void setCDKButtonboxBoxAttribute ("
 .BI "CDKBUTTONBOX *" "buttonbox",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKButtonboxCurrentButton ("
+.BI "CDKBUTTONBOX *" "buttonbox",
+.BI "int " "button");
 .TP 15
 .B "void setCDKButtonboxHighlight ("
 .BI "CDKBUTTONBOX *" "buttonbox",
@@ -174,12 +194,21 @@ object used.
 draws the buttonbox widget on the screen.
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
+.B drawCDKButtonboxButtons
+draws the buttons.
+.TP 5
 .B eraseCDKButtonbox
 removes the widget from the screen.
 This does \fINOT\fR destroy the widget.
 .TP 5
 .B getCDKButtonboxBox
 returns true if the widget will be drawn with a box around it.
+.TP 5
+.B getCDKButtonboxButtonCount
+returns the number of buttons in the button box.
+.TP 5
+.B getCDKButtonboxCurrentButton
+returns the current button-number.
 .TP 5
 .B getCDKButtonboxHighlight
 returns the highlight attribute of the widget.
@@ -305,6 +334,9 @@ sets true if the widget will be drawn with a box around it.
 .TP 5
 .B setCDKButtonboxBoxAttribute
 sets the attribute of the box.
+.TP 5
+.B setCDKButtonboxCurrentButton
+sets the current button-number for the box.
 .TP 5
 .B setCDKButtonboxHighlight
 sets the highlight attribute of the selected button.

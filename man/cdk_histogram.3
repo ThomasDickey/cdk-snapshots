@@ -1,37 +1,42 @@
 '\" t
-.\" $Id: cdk_histogram.3,v 1.11 2005/04/15 23:45:24 tom Exp $
+.\" $Id: cdk_histogram.3,v 1.14 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_histogram 3
 .SH NAME
-destroyCDKHistogram,
-drawCDKHistogram,
-eraseCDKHistogram,
-getCDKHistogramBox,
-getCDKHistogramFillerChar,
-getCDKHistogramHighValue,
-getCDKHistogramLowValue,
-getCDKHistogramStatsAttr,
-getCDKHistogramStatsPos,
-getCDKHistogramValue,
-getCDKHistogramViewType,
-moveCDKHistogram,
-newCDKHistogram,
-positionCDKHistogram,
-setCDKHistogram,
-setCDKHistogramBackgroundAttrib,
-setCDKHistogramBackgroundColor,
-setCDKHistogramBox,
-setCDKHistogramBoxAttribute,
-setCDKHistogramFillerChar,
-setCDKHistogramHorizontalChar,
-setCDKHistogramLLChar,
-setCDKHistogramLRChar,
-setCDKHistogramStatsAttr,
-setCDKHistogramStatsPos,
-setCDKHistogramULChar,
-setCDKHistogramURChar,
-setCDKHistogramValue,
-setCDKHistogramVerticalChar,
-setCDKHistogramViewType \- curses histogram widget
+.XX activateCDKHistogram
+.XX destroyCDKHistogram
+.XX drawCDKHistogram
+.XX eraseCDKHistogram
+.XX getCDKHistogramBox
+.XX getCDKHistogramFillerChar
+.XX getCDKHistogramHighValue
+.XX getCDKHistogramLowValue
+.XX getCDKHistogramStatsAttr
+.XX getCDKHistogramStatsPos
+.XX getCDKHistogramValue
+.XX getCDKHistogramViewType
+.XX moveCDKHistogram
+.XX newCDKHistogram
+.XX positionCDKHistogram
+.XX setCDKHistogram
+.XX setCDKHistogramBackgroundAttrib
+.XX setCDKHistogramBackgroundColor
+.XX setCDKHistogramBox
+.XX setCDKHistogramBoxAttribute
+.XX setCDKHistogramDisplayType
+.XX setCDKHistogramFillerChar
+.XX setCDKHistogramHorizontalChar
+.XX setCDKHistogramLLChar
+.XX setCDKHistogramLRChar
+.XX setCDKHistogramStatsAttr
+.XX setCDKHistogramStatsPos
+.XX setCDKHistogramULChar
+.XX setCDKHistogramURChar
+.XX setCDKHistogramValue
+.XX setCDKHistogramVerticalChar
+.XX setCDKHistogramViewType
+cdk_histogram \- curses histogram widget
 .SH SYNOPSIS
 .LP
 .B cc
@@ -41,6 +46,10 @@ setCDKHistogramViewType \- curses histogram widget
 .LP
 #include <cdk.h>
 .nf
+.TP 15
+.B "void activateCDKHistogram ("
+.BI "CDKHISTOGRAM *" "histogram",
+.BI "chtype " "unused");
 .TP 15
 .B "void destroyCDKHistogram ("
 .BI "CDKHISTOGRAM *" "histogram");
@@ -124,6 +133,10 @@ setCDKHistogramViewType \- curses histogram widget
 .BI "CDKHISTOGRAM *" "histogram",
 .BI "chtype " "character");
 .TP 15
+.B "void setCDKHistogramDisplayType ("
+.BI "CDKHISTOGRAM *" "histogram",
+.BI "EHistogramDisplayType " "viewtype");
+.TP 15
 .B "void setCDKHistogramFillerChar ("
 .BI "CDKHISTOGRAM *" "histogram",
 .BI "chtype " "fillerCharacter");
@@ -175,6 +188,9 @@ The Cdk histogram widget creates a histogram widget.
 This widget can draw a vertical or horizontal histogram.
 The functions create or manipulate the Cdk histogram box widget.
 .SH AVAILABLE FUNCTIONS
+.TP 5
+.B activateCDKHistogram
+obsolete entrypoint which calls \fBdrawCDKHistogram\fP.
 .TP 5
 .B destroyCDKHistogram
 removes the widget from the screen and frees memory the object used.
@@ -310,11 +326,15 @@ vREAL/Displays the current value.
 \&
 The \fBstatsPosition\fR parameter states where the statistics will be displayed.
 It accepts \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.IP
 The parameter \fBstatsAttribute\fR sets the attributes of the statistics.
+.IP
 The parameters \fBlowValue\fR, \fBhighValue\fR, and \fBcurrentValue\fR are the low, high,
 and current values respectively.
+.IP
 The \fBfiller\fR character is the character
 to use in the unused space in the histogram.
+.IP
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
 .B setCDKHistogramBackgroundAttrib
@@ -332,6 +352,9 @@ sets whether the widget will be drawn with a box around it.
 .TP 5
 .B setCDKHistogramBoxAttribute
 sets the attribute of the box.
+.TP 5
+.B setCDKHistogramDisplayType
+sets the display type (see \fBgetCDKHistogramViewType\fP).
 .TP 5
 .B setCDKHistogramFillerChar
 sets the character to use when drawing the histogram bar.
@@ -371,7 +394,7 @@ the given character.
 .TP 5
 .B setCDKHistogramViewType
 sets the view type of the histogram.
-Look at the \fIsetCDKHistogram\fR description for more details.
+Look at the \fBsetCDKHistogram\fR description for more details.
 .SH SEE ALSO
 .BR cdk (3),
 .BR cdk_binding (3),

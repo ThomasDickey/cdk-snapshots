@@ -1,6 +1,6 @@
-/* $Id: menu_ex.c,v 1.10 2005/03/08 19:45:41 tom Exp $ */
+/* $Id: menu_ex.c,v 1.11 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "menu_ex";
@@ -86,7 +86,7 @@ int main (void)
    destroyCDKLabel (infoBox);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 /*

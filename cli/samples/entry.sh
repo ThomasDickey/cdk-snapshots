@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: entry.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,10 +10,11 @@
 #
 # Create some global variables.
 #
-CDK_ENTRY="../cdkentry"
-CDK_LABEL="../cdklabel"
-output="/tmp/entry_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_ENTRY="${CDK_BINDIR=..}/cdkentry"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+output="${TMPDIR=/tmp}/entry_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Create the title.
@@ -26,9 +28,8 @@ buttons=" OK
 #
 ${CDK_ENTRY} -f 20 -T "${title}" -B "${buttons}" -F "</5>_ " -O ${output} -S
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
+
 answer=`cat ${output}`
 
 #

@@ -1,6 +1,6 @@
-/* $Id: scroll_ex.c,v 1.20 2005/04/15 19:44:43 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.22 2005/12/28 02:01:48 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "scroll_ex";
@@ -55,6 +55,11 @@ static int delItemCB (EObjectType cdktype GCC_UNUSED, void *object,
 
 /*
  * This program demonstrates the Cdk scrolling list widget.
+ *
+ * Options (in addition to normal CLI parameters):
+ *	-c	create the data after the widget
+ *	-s SPOS	location for the scrollbar
+ *	-t TEXT	title for the widget
  */
 int main (int argc, char **argv)
 {
@@ -69,7 +74,7 @@ int main (int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams (argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr ();
@@ -89,7 +94,8 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'H', 10),
 			      CDKparamValue (&params, 'W', 50),
 			      CDKparamString2(&params, 't', title),
-			      item, count,
+			      CDKparamNumber(&params, 'c') ? 0 : item,
+			      CDKparamNumber(&params, 'c') ? 0 : count,
 			      TRUE,
 			      A_REVERSE,
 			      CDKparamValue (&params, 'N', TRUE),
@@ -105,9 +111,13 @@ int main (int argc, char **argv)
       /* Print out a message and exit. */
       printf
 	      ("Oops. Could not make scrolling list. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
+   if (CDKparamNumber(&params, 'c'))
+   {
+      setCDKScrollItems (scrollList, item, count, TRUE);
+   }
 #if 0
    drawCDKScroll (scrollList, 1);
 
@@ -159,5 +169,5 @@ int main (int argc, char **argv)
    destroyCDKScroll (scrollList);
    destroyCDKScreen (cdkscreen);
    endCDK ();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

@@ -1,6 +1,6 @@
-/* $Id: cdklabel.c,v 1.8 2005/03/08 19:52:01 tom Exp $ */
+/* $Id: cdklabel.c,v 1.10 2005/12/27 16:06:34 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdklabel";
@@ -26,7 +26,7 @@ int main (int argc, char **argv)
    int messageLines		= -1;
    char **messageList		= 0;
    char tempCommand[1000];
-   int x, j1, j2;
+   int j1, j2;
 
    CDK_PARAMS params;
    boolean boxWidget;
@@ -67,14 +67,14 @@ int main (int argc, char **argv)
 	 if (messageLines == -1)
 	 {
 	    fprintf (stderr, "Error: Could not open the file %s\n", filename);
-	    exit (-1);
+	    ExitProgram (CLI_ERROR);
 	 }
       }
       else
       {
 	 /* No message, no file, it's an error. */
 	 fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
-	 exit (-1);
+	 ExitProgram (CLI_ERROR);
       }
    }
    else
@@ -114,21 +114,14 @@ int main (int argc, char **argv)
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      /* Clean up some memory. */
-      for (x=0; x < messageLines; x++)
-      {
-	 freeChar (messageList[x]);
-      }
+      CDKfreeStrings (messageList);
 
-      /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
       endCDK();
 
-      /* Spit out the message. */
       fprintf (stderr, "Error: Could not create the label. Is the window too small?\n");
 
-      /* Exit with an error. */
-      exit (-1);
+      ExitProgram (CLI_ERROR);
    }
 
    /* Check if the user wants to set the background of the widget. */
@@ -157,15 +150,12 @@ int main (int argc, char **argv)
       sleep (sleepLength);
    }
 
-   /* Clean up. */
-   for (x=0; x < messageLines; x++)
-   {
-      freeChar (messageList[x]);
-   }
+   CDKfreeStrings (messageList);
+
    destroyCDKLabel (widget);
    destroyCDKScreen (cdkScreen);
    endCDK();
 
    /* Exit cleanly. */
-   exit (0);
+   ExitProgram (0);
 }

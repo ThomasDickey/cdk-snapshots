@@ -1,24 +1,19 @@
 /*
- * $Id: traverse.h,v 1.9 2005/12/30 01:09:09 tom Exp $
+ * $Id: cdk_test.h,v 1.2 2005/12/26 22:29:23 tom Exp $
  */
 
 #ifndef CDKINCLUDES
-#ifndef CDKTRAVERSE_H
-#define CDKTRAVERSE_H 1
+#ifndef CDK_TEST_H
+#define CDK_TEST_H
 
-#include "cdk.h"
-
-#ifndef CDK_H
-#define CDKINCLUDES
-#include <cdk.h>
-#undef CDKINCLUDES
-#include <binding.h>
-#include <cdkscreen.h>
-#include <cdk_objs.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+#include <cdk.h>
+
 /*
- * Copyright 1999-2004,2005 Thomas E. Dickey
+ * Copyright 2005 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,24 +45,36 @@
  * SUCH DAMAGE.
  */
 
-typedef boolean (*CHECK_KEYCODE)(int /* keyCode */, int /* functionKey */);
+/*
+ * The whole point of this header is to define ExitProgram(), which is used for
+ * leak-checking when ncurses's _nc_free_and_exit() function is available. 
+ * Invoking that rather than 'exit()' tells ncurses to free all of the
+ * "permanent" memory leaks, making analysis much simpler.
+ */
+#ifdef HAVE_NC_ALLOC_H
 
-extern CDKOBJS *getCDKFocusCurrent (CDKSCREEN * /* screen */);
-extern CDKOBJS *setCDKFocusCurrent (CDKSCREEN * /*screen */, CDKOBJS * /* obj */);
-extern CDKOBJS *setCDKFocusNext (CDKSCREEN * /* screen */);
-extern CDKOBJS *setCDKFocusPrevious (CDKSCREEN * /* screen */);
-extern CDKOBJS *setCDKFocusFirst (CDKSCREEN * /* screen */);
-extern CDKOBJS *setCDKFocusLast (CDKSCREEN * /* screen */);
+#ifndef HAVE_LIBDBMALLOC
+#define HAVE_LIBDBMALLOC 0
+#endif
 
-extern int  traverseCDKScreen (CDKSCREEN * /* screen */);
+#ifndef HAVE_LIBDMALLOC
+#define HAVE_LIBDMALLOC 0
+#endif
 
-extern void exitCancelCDKScreen (CDKSCREEN * /* screen */);
-extern void exitCancelCDKScreenOf (CDKOBJS * /* obj */);
-extern void exitOKCDKScreen (CDKSCREEN * /* screen */);
-extern void exitOKCDKScreenOf (CDKOBJS * /* obj */);
-extern void resetCDKScreen (CDKSCREEN * /* screen */);
-extern void resetCDKScreenOf (CDKOBJS * /* obj */);
-extern void traverseCDKOnce (CDKSCREEN * /*screen */, CDKOBJS * /*curobj */, int /* keyCode */, boolean /* functionKey */, CHECK_KEYCODE /*funcMenuKey */);
+#ifndef HAVE_LIBMPATROL
+#define HAVE_LIBMPATROL 0
+#endif
 
-#endif /* CDKTRAVERSE_H */
+#include <nc_alloc.h>
+#endif
+
+#ifndef ExitProgram
+#define ExitProgram(code) exit(code)
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* CDK_TEST_H */
 #endif /* CDKINCLUDES */

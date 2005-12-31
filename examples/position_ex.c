@@ -1,6 +1,6 @@
-/* $Id: position_ex.c,v 1.12 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: position_ex.c,v 1.13 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "position_ex";
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 
       /* Print out a little message. */
       printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Let the user move the widget around the window. */
@@ -83,5 +83,5 @@ int main(int argc, char **argv)
    destroyCDKEntry (directory);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

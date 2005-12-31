@@ -1,9 +1,9 @@
-/* $Id: calendar_ex.c,v 1.12 2004/08/28 01:02:30 tom Exp $ */
+/* $Id: calendar_ex.c,v 1.13 2005/12/26 22:04:35 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="calendar_ex";
+char *XCursesProgramName = "calendar_ex";
 #endif
 
 static BINDFN_PROTO(createCalendarMarkCB);
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 
       /* Spit out a message. */
       printf ("Oops. Can't seem to create the calendar. Is the window too small?\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
    }
 
    /* Create a key binding to mark days on the calendar. */
@@ -110,7 +110,7 @@ int main (int argc, char **argv)
    endCDK();
    fflush (stdout);
    printf ("Selected Time: %s\n", ctime(&retVal));
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }
 
 /*

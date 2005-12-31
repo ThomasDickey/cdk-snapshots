@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/04/24 15:08:17 $
- * $Revision: 1.198 $
+ * $Date: 2005/12/28 21:50:11 $
+ * $Revision: 1.200 $
  */
 
 #define L_MARKER '<'
@@ -83,7 +83,8 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 
    first = getbegy(window);
    last	 = getmaxy(window);
-   if ((gap = (last - boxHeight)) < 0) gap = 0;
+   if ((gap = (last - boxHeight)) < 0)
+      gap = 0;
    last	 = first + gap;
 
    switch (*ypos)
@@ -98,9 +99,12 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
       (*ypos) = first + (gap/2);
       break;
    default:
-      if ((*ypos) > last) {
+      if ((*ypos) > last)
+      {
 	 (*ypos) = last;
-      } else if ((*ypos) < first) {
+      }
+      else if ((*ypos) < first)
+      {
 	 (*ypos) = first;
       }
       break;
@@ -297,6 +301,7 @@ static int encodeAttribute(char *string, int from, chtype *mask)
  */
 static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, chtype newattr)
 {
+   /* *INDENT-OFF* */
    static const struct {
       int	code;
       chtype	mask;
@@ -308,6 +313,7 @@ static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, cht
       { 'S', A_STANDOUT },
       { 'U', A_UNDERLINE },
    };
+   /* *INDENT-ON* */
 
    char temp[80];
    char *result = (string != 0) ? string : temp;
@@ -665,6 +671,13 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	 }
       }
       *to = used;
+   } else {
+      /*
+       * Try always to return something; otherwise lists of chtype strings
+       * would get a spurious null pointer whenever there is a blank line,
+       * and CDKfreeChtypes() would fail to free the whole list.
+       */
+      result = typeCallocN(chtype, 1);
    }
    return result;
 }
@@ -796,6 +809,7 @@ char *chtype2String (chtype *string)
  */
 EDisplayType char2DisplayType (char *string)
 {
+   /* *INDENT-OFF* */
    static const struct {
       const char *name;
       EDisplayType code;
@@ -817,6 +831,7 @@ EDisplayType char2DisplayType (char *string)
       { "VIEWONLY",	vVIEWONLY },
       { 0,		vINVALID },
    };
+   /* *INDENT-ON* */
 
    /* Make sure we cover our bases... */
    if (string != 0)
@@ -836,7 +851,7 @@ static int comparSort (const void *a, const void *b)
    return strcmp(*(const char *const*)a, (* (const char *const*) b));
 }
 
-void sortList (char *list[], int length)
+void sortList (char **list, int length)
 {
    if (length > 1)
       qsort(list, (unsigned) length, sizeof(list[0]), comparSort);
@@ -995,14 +1010,16 @@ void CDKfreeChtypes(chtype **list)
    if (list != 0)
    {
       void *base = (void *)list;
-      while (*list != 0)
+      while (*list != 0) {
 	 freeChtype(*list++);
+      }
       free(base);
    }
 }
 
 int mode2Filetype (mode_t mode)
 {
+   /* *INDENT-OFF* */
    static const struct {
       mode_t	mode;
       char	code;
@@ -1021,6 +1038,8 @@ int mode2Filetype (mode_t mode)
 #endif
       { S_IFIFO,  '&' },  /* Pipe */
    };
+   /* *INDENT-ON* */
+
    int filetype = '?';
    unsigned n;
 
@@ -1041,6 +1060,7 @@ int mode2Filetype (mode_t mode)
  */
 int mode2Char (char *string, mode_t mode)
 {
+   /* *INDENT-OFF* */
    static struct {
       mode_t	mask;
       unsigned	col;
@@ -1061,6 +1081,7 @@ int mode2Char (char *string, mode_t mode)
       { S_ISVTX,	9,	't' },
 #endif
    };
+   /* *INDENT-ON* */
 
    /* Declare local variables.	*/
    int permissions = 0;

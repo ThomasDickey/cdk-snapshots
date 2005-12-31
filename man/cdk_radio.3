@@ -1,39 +1,46 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.22 2005/04/24 22:19:20 tom Exp $
+.\" $Id: cdk_radio.3,v 1.28 2005/12/28 21:52:07 tom Exp $
+.de XX
+..
 .TH cdk_radio 3
 .SH NAME
-activateCDKRadio,
-destroyCDKRadio,
-drawCDKRadio,
-eraseCDKRadio,
-getCDKRadioBox,
-getCDKRadioChoiceCharacter,
-getCDKRadioCurrentItem,
-getCDKRadioHighlight,
-getCDKRadioLeftBrace,
-getCDKRadioRightBrace,
-injectCDKRadio,
-moveCDKRadio,
-newCDKRadio,
-positionCDKRadio,
-setCDKRadio,
-setCDKRadioBackgroundAttrib,
-setCDKRadioBackgroundColor,
-setCDKRadioBox,
-setCDKRadioBoxAttribute,
-setCDKRadioChoiceCharacter,
-setCDKRadioCurrentItem,
-setCDKRadioHighlight,
-setCDKRadioHorizontalChar,
-setCDKRadioLLChar,
-setCDKRadioLRChar,
-setCDKRadioLeftBrace,
-setCDKRadioPostProcess,
-setCDKRadioPreProcess,
-setCDKRadioRightBrace,
-setCDKRadioULChar,
-setCDKRadioURChar,
-setCDKRadioVerticalChar \- curses radio list widget.
+.XX activateCDKRadio
+.XX destroyCDKRadio
+.XX drawCDKRadio
+.XX eraseCDKRadio
+.XX getCDKRadioBox
+.XX getCDKRadioChoiceCharacter
+.XX getCDKRadioCurrentItem
+.XX getCDKRadioHighlight
+.XX getCDKRadioItems
+.XX getCDKRadioLeftBrace
+.XX getCDKRadioRightBrace
+.XX getCDKRadioSelectedItem
+.XX injectCDKRadio
+.XX moveCDKRadio
+.XX newCDKRadio
+.XX positionCDKRadio
+.XX setCDKRadio
+.XX setCDKRadioBackgroundAttrib
+.XX setCDKRadioBackgroundColor
+.XX setCDKRadioBox
+.XX setCDKRadioBoxAttribute
+.XX setCDKRadioChoiceCharacter
+.XX setCDKRadioCurrentItem
+.XX setCDKRadioHighlight
+.XX setCDKRadioHorizontalChar
+.XX setCDKRadioItems
+.XX setCDKRadioLLChar
+.XX setCDKRadioLRChar
+.XX setCDKRadioLeftBrace
+.XX setCDKRadioPostProcess
+.XX setCDKRadioPreProcess
+.XX setCDKRadioRightBrace
+.XX setCDKRadioSelectedItem
+.XX setCDKRadioULChar
+.XX setCDKRadioURChar
+.XX setCDKRadioVerticalChar
+cdk_radio \- curses radio list widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -70,10 +77,17 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .B "chtype getCDKRadioHighlight ("
 .BI "CDKRADIO *" "radio");
 .TP 15
+.B "int getCDKRadioItems ("
+.BI "CDKRADIO *" "radio",
+.BI "char **" "list");
+.TP 15
 .B "chtype getCDKRadioLeftBrace ("
 .BI "CDKRADIO *" "radio");
 .TP 15
 .B "chtype getCDKRadioRightBrace ("
+.BI "CDKRADIO *" "radio");
+.TP 15
+.B "int getCDKRadioSelectedItem ("
 .BI "CDKRADIO *" "radio");
 .TP 15
 .B "int injectCDKRadio ("
@@ -144,6 +158,11 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .BI "CDKRADIO *" "radio",
 .BI "chtype " "character");
 .TP 15
+.B "void setCDKRadioItems ("
+.BI "CDKRADIO *" "radio",
+.BI "char **" "list",
+.BI "int " "listSize");
+.TP 15
 .B "void setCDKRadioLLChar ("
 .BI "CDKRADIO *" "radio",
 .BI "chtype " "character");
@@ -169,6 +188,10 @@ setCDKRadioVerticalChar \- curses radio list widget.
 .B "void setCDKRadioRightBrace ("
 .BI "CDKRADIO *" "radio",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKRadioSelectedItem ("
+.BI "CDKRADIO *" "radio",
+.BI "int " "item");
 .TP 15
 .B "void setCDKRadioULChar ("
 .BI "CDKRADIO *" "radio",
@@ -227,11 +250,19 @@ returns the index of the current item.
 .B getCDKRadioHighlight
 returns the attribute of the highlight bar.
 .TP 5
+.B getCDKRadioItems
+copies the radio box items into the caller's list,
+which must be large enough since this function does not allocate it.
+It returns the list size.
+.TP 5
 .B getCDKRadioLeftBrace
 returns the character being used to draw the left brace of the selection box.
 .TP 5
 .B getCDKRadioRightBrace
 returns the character being used to draw the right brace of the selection box.
+.TP 5
+.B getCDKRadioSelectedItem,
+returns the selected item of the widget.
 .TP 5
 .B injectCDKRadio
 function injects a single character into the widget.
@@ -330,11 +361,11 @@ is the list of items to display in the radio list.
 \fBradioListLength\fR
 is the number of elements in the given list.
 .TP 5
-\fBhighlight\fR
-specifies the display attribute of the currently selected item.
-.TP 5
 \fBchoiceCharacter\fR
 is the character to use to highlight the current selection.
+.TP 5
+\fBhighlight\fR
+specifies the display attribute of the currently selected item.
 .TP 5
 \fBdefaultItem\fR
 is the index in the list of the default selection.
@@ -356,7 +387,7 @@ See \fRcdk_position (3)\fR for key bindings.
 .B setCDKRadio
 lets the programmer modify certain elements of an existing radio widget.
 The parameter names correspond to the same parameter names listed
-in the \fInewCDKRadio\fR function.
+in the \fBnewCDKRadio\fR function.
 .TP 5
 .B setCDKRadioBackgroundAttrib
 sets the background attribute of the widget.
@@ -386,6 +417,10 @@ sets the attribute of the highlight bar.
 .B setCDKRadioHorizontalChar
 sets the horizontal drawing character for the box to the given character.
 .TP 5
+.B setCDKRadioItems
+set the radio list items and display the result.
+The current item is set to the beginning of the list.
+.TP 5
 .B setCDKRadioLLChar
 sets the lower left hand corner of the widget's box to the given character.
 .TP 5
@@ -411,6 +446,9 @@ To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKRadioRightBrace
 sets the character to use to draw the right brace of the selection box.
+.TP 5
+.B setCDKRadioSelectedItem
+sets the selected item.
 .TP 5
 .B setCDKRadioULChar
 function sets the upper left hand corner of the widget's box to

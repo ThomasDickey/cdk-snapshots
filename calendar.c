@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/12/23 22:24:08 $
- * $Revision: 1.80 $
+ * $Date: 2005/12/30 00:17:57 $
+ * $Revision: 1.83 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -204,10 +204,8 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
    for (x = 0; x < (int) SIZEOF(bindings); ++x)
       bindCDKObject (vCALENDAR, calendar, bindings[x].from, getcCDKBind, (void *)(long)bindings[x].to);
 
-   /* Register this baby. */
    registerCDKObject (cdkscreen, vCALENDAR, calendar);
 
-   /* Return the calendar pointer. */
    return (calendar);
 }
 
@@ -216,20 +214,18 @@ CDKCALENDAR *newCDKCalendar(CDKSCREEN *cdkscreen, int xplace, int yplace, char *
  */
 time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
 {
-   /* Declare local variables. */
    chtype input = 0;
+   boolean functionKey;
    time_t ret	= -1;
 
    /* Draw the widget. */
    drawCDKCalendar (calendar, ObjOf(calendar)->box);
 
-   /* Check if 'actions' is null. */
    if (actions == 0)
    {
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(calendar));
+	 input = getchCDKObject (ObjOf(calendar), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKCalendar (calendar, input);
@@ -366,6 +362,7 @@ static int _injectCDKCalendar (CDKOBJS *object, chtype input)
    if (!complete) {
       setExitType(calendar, 0);
    }
+
    ResultOf(calendar).valueInt = ret;
    return (ret != unknownInt);
 }
@@ -447,7 +444,6 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
    /* Refresh the main window. */
    refreshCDKWindow (calendar->win);
 
-   /* Draw in the calendar field. */
    drawCDKCalendarField (calendar);
 }
 
@@ -458,12 +454,12 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 {
    /* Declare local variables. */
    char *monthName	= calendar->MonthName[calendar->month];
-   int monthNameLength	= (int)strlen (monthName);
    int monthLength	= getMonthLength (calendar->year, calendar->month);
    int yearIndex	= YEAR2INDEX(calendar->year);
    int yearLen		= 0;
    int day		= 1;
    int x, y;
+   int save_y = -1, save_x = -1;
    char temp[10];
 
    for (x = 1; x <= 6; x++)
@@ -472,6 +468,9 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
       {
 	 if (day <= monthLength)
 	 {
+	    int ypos = y * 3;
+	    int xpos = x;
+
 	    chtype marker = calendar->dayAttrib;
 
 	    sprintf(temp, "%02d", day);
@@ -479,12 +478,14 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	    if (calendar->day == day)
 	    {
 	       marker = calendar->highlight;
+	       save_y = xpos + getbegy(calendar->fieldWin) - getbegy(InputWindowOf(calendar));
+	       save_x = 1;
 	    }
 	    else
 	    {
 	       marker |= getCDKCalendarMarker(calendar, day, calendar->month, yearIndex);
 	    }
-	    writeCharAttrib (calendar->fieldWin, y*3, x,
+	    writeCharAttrib (calendar->fieldWin, ypos, xpos,
 			     temp, marker, HORIZONTAL, 0, 2);
 	 }
 	 day++;
@@ -495,8 +496,10 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    /* Draw the month in. */
    if (calendar->labelWin != 0)
    {
+      sprintf (temp, "%s %d,", monthName, calendar->day);
       writeChar (calendar->labelWin, 0, 0,
-		 monthName, HORIZONTAL, 0, monthNameLength);
+		 temp, HORIZONTAL, 0, strlen(temp));
+      wclrtoeol (calendar->labelWin);
 
       /* Draw the year in. */
       sprintf (temp, "%d", calendar->year);
@@ -505,7 +508,11 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 		 calendar->fieldWidth - yearLen, 0,
 		 temp, HORIZONTAL, 0, yearLen);
 
+      wmove (calendar->labelWin, 0, 0);
       refreshCDKWindow (calendar->labelWin);
+   } else if (save_y >= 0) {
+      wmove (InputWindowOf(calendar), save_y, save_x);
+      wrefresh (InputWindowOf(calendar));
    }
 }
 
@@ -681,6 +688,9 @@ static void _destroyCDKCalendar (CDKOBJS *object)
       deleteCursesWindow (calendar->fieldWin);
       deleteCursesWindow (calendar->shadowWin);
       deleteCursesWindow (calendar->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vCALENDAR, calendar);
 
       /* Unregister the object. */
       unregisterCDKObject (vCALENDAR, calendar);

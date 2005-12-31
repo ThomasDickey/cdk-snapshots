@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Thorsten.Glaser $
- * $Date: 2005/04/24 20:27:19 $
- * $Revision: 1.109 $
+ * $Author: tom $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.113 $
  */
 
 /*
@@ -428,16 +428,15 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
    /* Draw the scrolling list */
    drawCDKSwindow (swindow, ObjOf(swindow)->box);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       chtype input;
+      boolean functionKey;
       int ret;
 
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(swindow));
+	 input = getchCDKObject (ObjOf(swindow), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKSwindow (swindow, input);
@@ -810,6 +809,9 @@ static void _destroyCDKSwindow (CDKOBJS *object)
       deleteCursesWindow (swindow->fieldWin);
       deleteCursesWindow (swindow->win);
 
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vSWINDOW, swindow);
+
       /* Unregister this object. */
       unregisterCDKObject (vSWINDOW, swindow);
    }
@@ -1081,16 +1083,14 @@ static void _unfocusCDKSwindow(CDKOBJS *object)
    drawCDKSwindow (widget, ObjOf(widget)->box);
 }
 
-dummyRefreshData(Swindow)
-
-dummySaveData(Swindow)
-
 static int createList(CDKSWINDOW *swindow, int listSize)
 {
    int status = 0;
+
    if (listSize <= 0)
    {
       destroyInfo(swindow);
+      status = 1;
    }
    else
    {
@@ -1118,3 +1118,7 @@ static int createList(CDKSWINDOW *swindow, int listSize)
    }
    return status;
 }
+
+dummyRefreshData(Swindow)
+
+dummySaveData(Swindow)

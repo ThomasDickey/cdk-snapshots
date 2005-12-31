@@ -2,11 +2,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2004/08/31 23:26:45 $
- * $Revision: 1.73 $
+ * $Date: 2005/12/30 00:29:34 $
+ * $Revision: 1.78 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
+static int createFieldWin (CDKITEMLIST *itemlist, int ypos, int xpos);
+static int maximumFieldWidth (CDKITEMLIST *itemlist);
+static void updateFieldWidth (CDKITEMLIST *itemlist);
 
 DeclareCDKObjects(ITEMLIST, Itemlist, setCdk, Int);
 
@@ -21,11 +24,10 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    int parentHeight	= getmaxy(cdkscreen->window);
    int boxWidth		= 0;
    int boxHeight;
-   int maxWidth		= INT_MIN;
    int fieldWidth	= 0;
    int xpos		= xplace;
    int ypos		= yplace;
-   int x, junk;
+   int junk;
 
    if ((itemlist = newCDKObject(CDKITEMLIST, &my_funcs)) == 0
     || !createList(itemlist, item, count))
@@ -48,28 +50,22 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       itemlist->label = char2Chtype (label, &itemlist->labelLen, &junk);
    }
 
-   /* Go through the list and determine the widest item. */
-   for (x=0; x < count; x++)
-   {
-      maxWidth = MAXIMUM (maxWidth, itemlist->itemLen[x]);
-   }
-
    /*
     * Set the box width.  Allow an extra char in field width for cursor
     */
-   fieldWidth = maxWidth + 1;
+   fieldWidth = maximumFieldWidth (itemlist) + 1;
    boxWidth = fieldWidth + itemlist->labelLen + 2 * BorderOf(itemlist);
 
    boxWidth = setCdkTitle(ObjOf(itemlist), title, boxWidth);
 
    boxHeight += TitleLinesOf(itemlist);
 
-  /*
-   * Make sure we didn't extend beyond the dimensions of the window.
-   */
-   boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
-   boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = MINIMUM(fieldWidth, boxWidth - itemlist->labelLen - 2 * BorderOf(itemlist));
+   /*
+    * Make sure we didn't extend beyond the dimensions of the window.
+    */
+   itemlist->boxWidth = MINIMUM(boxWidth, parentWidth);
+   itemlist->boxHeight = MINIMUM(boxHeight, parentHeight);
+   updateFieldWidth (itemlist);
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
@@ -100,30 +96,20 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
    keypad (itemlist->win, TRUE);
 
    /* Make the field window */
-   itemlist->fieldWin = subwin (itemlist->win,
-				1,
-				fieldWidth,
-				ypos + BorderOf(itemlist) + TitleLinesOf(itemlist),
-				xpos + itemlist->labelLen + BorderOf(itemlist));
-   if (itemlist->fieldWin == 0)
+   if (!createFieldWin (itemlist, 
+			ypos + BorderOf(itemlist) + TitleLinesOf(itemlist),
+			xpos + itemlist->labelLen + BorderOf(itemlist)))
    {
       destroyCDKObject (itemlist);
       return (0);
    }
 
-   keypad (itemlist->fieldWin, TRUE);
-
    /* Set up the rest of the structure. */
    ScreenOf(itemlist)			= cdkscreen;
    itemlist->parent			= cdkscreen->window;
    itemlist->shadowWin			= 0;
-   itemlist->boxHeight			= boxHeight;
-   itemlist->boxWidth			= boxWidth;
-   itemlist->fieldWidth			= fieldWidth;
-   itemlist->listSize			= count;
    initExitType(itemlist);
    ObjOf(itemlist)->acceptsFocus	= TRUE;
-   ObjOf(itemlist)->inputWindow		= itemlist->fieldWin;
    itemlist->shadow			= shadow;
 
    setCDKItemlistBox (itemlist, Box);
@@ -151,9 +137,6 @@ CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen, int xplace, int yplace, char 
       }
    }
 
-   /* Clean the key bindings. */
-   cleanCDKObjectBindings (vITEMLIST, itemlist);
-
    /* Register this baby.		 */
    registerCDKObject (cdkscreen, vITEMLIST, itemlist);
 
@@ -173,14 +156,14 @@ int activateCDKItemlist (CDKITEMLIST *itemlist, chtype *actions)
    drawCDKItemlist (itemlist, ObjOf(itemlist)->box);
    drawCDKItemlistField(itemlist, TRUE);
 
-   /* Check if actions is null. */
    if (actions == 0)
    {
       chtype input = 0;
+      boolean functionKey;
+
       for (;;)
       {
-	 /* Get the input. */
-	 input = getcCDKObject (ObjOf(itemlist));
+	 input = getchCDKObject (ObjOf(itemlist), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKItemlist (itemlist, input);
@@ -311,7 +294,8 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
       }
    }
 
-   if (!complete) {
+   if (!complete)
+   {
       drawCDKItemlistField (itemlist,TRUE);
       setExitType(itemlist, 0);
    }
@@ -475,6 +459,17 @@ static void _eraseCDKItemlist (CDKOBJS *object)
    }
 }
 
+static void destroyInfo (CDKITEMLIST *widget)
+{
+   widget->listSize = 0;
+
+   CDKfreeChtypes (widget->item);
+   widget->item = 0;
+
+   freeAndNull (widget->itemPos);
+   freeAndNull (widget->itemLen);
+}
+
 /*
  * This function destroys the widget and all the memory it used.
  */
@@ -486,13 +481,16 @@ static void _destroyCDKItemlist (CDKOBJS *object)
 
       cleanCdkTitle (object);
       freeChtype (itemlist->label);
-      CDKfreeChtypes (itemlist->item);
+      destroyInfo (itemlist);
 
       /* Delete the windows. */
       deleteCursesWindow (itemlist->fieldWin);
       deleteCursesWindow (itemlist->labelWin);
       deleteCursesWindow (itemlist->shadowWin);
       deleteCursesWindow (itemlist->win);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vITEMLIST, itemlist);
 
       /* Unregister this object. */
       unregisterCDKObject (vITEMLIST, itemlist);
@@ -515,11 +513,25 @@ void setCDKItemlistValues (CDKITEMLIST *itemlist, char **item, int count, int de
 {
    if (createList(itemlist, item, count))
    {
+      int oldWidth = itemlist->fieldWidth;
+
       /* Set the default item. */
       if ((defaultItem >= 0) && (defaultItem < itemlist->listSize))
       {
 	 itemlist->currentItem = defaultItem;
 	 itemlist->defaultItem = defaultItem;
+      }
+
+      /*
+       * This will not resize the outer windows but can still make a usable
+       * field width if the title made the outer window wide enough.
+       */
+      updateFieldWidth (itemlist);
+      if (itemlist->fieldWidth > oldWidth)
+      {
+	 createFieldWin (itemlist,
+			 getbegy(itemlist->fieldWin),
+			 getbegx(itemlist->fieldWin));
       }
 
       /* Draw the field. */
@@ -705,10 +717,7 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
 
       if (status)
       {
-	 /* Free up the old memory. */
-	 CDKfreeChtypes (itemlist->item);
-	 freeChecked (itemlist->itemPos);
-	 freeChecked (itemlist->itemLen);
+	 destroyInfo (itemlist);
 
 	 /* Copy in the new information. */
 	 itemlist->listSize = count;
@@ -723,5 +732,50 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
 	 freeChecked (newLen);
       }
    }
+   else
+   {
+      destroyInfo (itemlist);
+      status = TRUE;
+   }
+
    return status;
+}
+
+/* Go through the list and determine the widest item. */
+static int maximumFieldWidth (CDKITEMLIST *itemlist)
+{
+   int x;
+   int maxWidth	= INT_MIN;
+
+   for (x=0; x < itemlist->listSize; x++)
+   {
+      maxWidth = MAXIMUM (maxWidth, itemlist->itemLen[x]);
+   }
+   maxWidth = MAXIMUM (maxWidth, 0);
+
+   return maxWidth;
+}
+
+static void updateFieldWidth (CDKITEMLIST *itemlist)
+{
+   int want = maximumFieldWidth (itemlist) + 1;
+   int have = itemlist->boxWidth - itemlist->labelLen - 2 * BorderOf(itemlist);
+   itemlist->fieldWidth = MINIMUM(want, have);
+}
+
+/* Make the field window */
+static int createFieldWin (CDKITEMLIST *itemlist, int ypos, int xpos)
+{
+   itemlist->fieldWin = subwin (itemlist->win,
+				1,
+				itemlist->fieldWidth,
+				ypos,
+				xpos);
+   if (itemlist->fieldWin != 0)
+   {
+      keypad (itemlist->fieldWin, TRUE);
+      ObjOf(itemlist)->inputWindow = itemlist->fieldWin;
+      return 1;
+   }
+   return 0;
 }

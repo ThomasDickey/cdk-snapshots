@@ -1,8 +1,8 @@
 #! /bin/sh
-# $Id: manlinks.sh,v 1.3 2002/08/09 23:56:21 tom Exp $
+# $Id: manlinks.sh,v 1.5 2005/12/29 00:22:00 tom Exp $
 # install/uninstall aliases for one or more manpages,
 #
-#  Copyright 2002, Thomas Dickey
+#  Copyright 2002,2005 Thomas Dickey
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -44,6 +44,9 @@ shift
 mandir=$1
 shift
 
+mansect=$1
+shift
+
 parent=`pwd`
 script=$srcdir/manlinks.sed
 
@@ -66,7 +69,12 @@ case $source in #(vi
 	cd $mandir || exit 1
 	if test $verb = installing ; then
 		test -n "$aliases" && (
-			target=`basename $source`
+			if test "$suffix" = ".$mansect" ; then
+				target=`basename $source`
+			else
+				target=`basename $source $suffix`.$mansect
+				suffix=".$mansect"
+			fi
 			for cf_alias in $aliases
 			do
 				cf_doit=no
@@ -92,6 +100,7 @@ case $source in #(vi
 			done
 		)
 	elif test $verb = removing ; then
+		suffix=".$mansect"
 		test -n "$aliases" && (
 			for cf_alias in $aliases
 			do

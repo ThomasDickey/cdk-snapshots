@@ -1,35 +1,40 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.20 2005/04/16 00:01:22 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.23 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_matrix 3
 .SH NAME
-activateCDKMatrix,
-cleanCDKMatrix,
-cleanCDKMatrixCell,
-destroyCDKMatrix,
-drawCDKMatrix,
-eraseCDKMatrix,
-getCDKMatrixBox,
-getCDKMatrixCell,
-injectCDKMatrix,
-jumpToCell,
-moveToCDKMatrixCell,
-newCDKMatrix,
-setCDKMatrix,
-setCDKMatrixBackgroundAttrib,
-setCDKMatrixBackgroundColor,
-setCDKMatrixBox,
-setCDKMatrixBoxAttribute,
-setCDKMatrixCB,
-setCDKMatrixCell,
-setCDKMatrixCells,
-setCDKMatrixHorizontalChar,
-setCDKMatrixLLChar,
-setCDKMatrixLRChar,
-setCDKMatrixPostProcess,
-setCDKMatrixPreProcess,
-setCDKMatrixULChar,
-setCDKMatrixURChar,
-setCDKMatrixVerticalChar \- curses matrix widget.
+.XX activateCDKMatrix
+.XX cleanCDKMatrix
+.XX cleanCDKMatrixCell
+.XX destroyCDKMatrix
+.XX drawCDKMatrix
+.XX eraseCDKMatrix
+.XX getCDKMatrixBox
+.XX getCDKMatrixCell
+.XX getCDKMatrixCol
+.XX getCDKMatrixRow
+.XX injectCDKMatrix
+.XX jumpToCell
+.XX moveToCDKMatrixCell
+.XX newCDKMatrix
+.XX setCDKMatrix
+.XX setCDKMatrixBackgroundAttrib
+.XX setCDKMatrixBackgroundColor
+.XX setCDKMatrixBox
+.XX setCDKMatrixBoxAttribute
+.XX setCDKMatrixCB
+.XX setCDKMatrixCell
+.XX setCDKMatrixCells
+.XX setCDKMatrixHorizontalChar
+.XX setCDKMatrixLLChar
+.XX setCDKMatrixLRChar
+.XX setCDKMatrixPostProcess
+.XX setCDKMatrixPreProcess
+.XX setCDKMatrixULChar
+.XX setCDKMatrixURChar
+.XX setCDKMatrixVerticalChar
+cdk_matrix \- curses matrix widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -69,6 +74,12 @@ setCDKMatrixVerticalChar \- curses matrix widget.
 .BI "CDKMATRIX *" "matrix",
 .BI "int " "row",
 .BI "int " "col");
+.TP 15
+.B "int getCDKMatrixCol ("
+.BI "CDKMENTRY *" "matrix");
+.TP 15
+.B "int getCDKMatrixRow ("
+.BI "CDKMENTRY *" "matrix");
 .TP 15
 .B "int injectCDKMatrix ("
 .BI "CDKMATRIX *" "matrix",
@@ -231,6 +242,12 @@ returns true if the widget will be drawn with a box around it.
 .TP 5
 .B getCDKMatrixCell
 returns the contents of the cell located by the \fBrow\fR and \fBcol\fR pair.
+.TP 5
+.B getCDKMatrixCol
+returns the current column index.
+.TP 5
+.B getCDKMatrixRow
+returns the current row index.
 .TP 5
 .B injectCDKMatrix
 injects a single character into the widget.
@@ -478,7 +495,7 @@ Ctrl-F/Moves one page forward.
 Prev Page/Moves one page backward.
 Ctrl-B/Moves one page backward.
 Ctrl-G/T{
-Calls the function \fIjumpToCell\fR and requests which cell the user wishes to jump to.
+Calls the function \fBjumpToCell\fR and requests which cell the user wishes to jump to.
 T}
 Ctrl-P/T{
 Pastes whatever is in the paste buffer, into the current cell.

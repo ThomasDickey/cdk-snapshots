@@ -1,16 +1,19 @@
-.\" $Id: cdk_screen.3,v 1.5 2005/04/22 21:31:31 tom Exp $
+.\" $Id: cdk_screen.3,v 1.8 2005/12/29 01:31:04 tom Exp $
+.de XX
+..
 .TH cdk_screen 3
 .SH NAME
-destroyCDKScreen,
-endCDK,
-eraseCDKScreen,
-initCDKColor,
-initCDKScreen,
-lowerCDKObject,
-raiseCDKObject,
-refreshCDKScreen,
-registerCDKObject,
-unregisterCDKObject \- Cdk Screen and Widget Manipulation Functions
+.XX destroyCDKScreen
+.XX endCDK
+.XX eraseCDKScreen
+.XX initCDKColor
+.XX initCDKScreen
+.XX lowerCDKObject
+.XX raiseCDKObject
+.XX refreshCDKScreen
+.XX registerCDKObject
+.XX unregisterCDKObject
+cdk_screen \- Cdk Screen and Widget Manipulation Functions
 .SH SYNOPSIS
 .LP
 .B cc
@@ -87,7 +90,7 @@ This also starts curses, so no curses initialization calls have
 to be made when using Cdk.
 .TP 5
 .B lowerCDKObject
-has the opposite effect of the \fIraiseCDKObject\fR function call.
+has the opposite effect of the \fBraiseCDKObject\fR function call.
 .TP 5
 .B raiseCDKObject
 raises the widget to the top of the screen.
@@ -104,7 +107,7 @@ given screen.
 .B registerCDKObject
 is called automatically when a widget is created.
 If for some
-reason an object does get unregistered, by calling \fIunregisterCDKObject\fR,
+reason an object does get unregistered, by calling \fBunregisterCDKObject\fR,
 the widget can be registered again by calling this function.
 The \fIwidgetType\fR parameter states what Cdk widget type this object is.
 The \fIobject\fR parameter is a void pointer to the object.
@@ -113,11 +116,11 @@ The \fIobject\fR parameter is a void pointer to the object.
 removes the widget from the screen.
 This does \fBNOT\fR destroy
 the object, it removes the widget from any further refreshes by the function
-\fIrefreshCDKScreen\fR.
+\fBrefreshCDKScreen\fR.
 The \fIwidgetType\fR parameter states what Cdk widget
 type this object is.
 The \fIobject\fR parameter is a void pointer to the object.
 .SH SEE ALSO
-.BR cdk (3X),
-.BR cdk_binding (3X),
-.BR cdk_display (3X)
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3)

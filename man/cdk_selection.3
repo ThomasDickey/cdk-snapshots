@@ -1,41 +1,48 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.18 2005/04/24 22:21:24 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.22 2005/12/28 21:52:07 tom Exp $"
+.de XX
+..
 .TH cdk_selection 3
 .SH NAME
-activateCDKSelection,
-destroyCDKSelection,
-drawCDKSelection,
-eraseCDKSelection,
-getCDKSelectionBox,
-getCDKSelectionChoice,
-getCDKSelectionChoices,
-getCDKSelectionCurrent,
-getCDKSelectionHighlight,
-getCDKSelectionMode,
-getCDKSelectionModes,
-injectCDKSelection,
-moveCDKSelection,
-newCDKSelection,
-positionCDKSelection,
-setCDKSelection,
-setCDKSelectionBackgroundAttrib,
-setCDKSelectionBackgroundColor,
-setCDKSelectionBox,
-setCDKSelectionBoxAttribute,
-setCDKSelectionChoice,
-setCDKSelectionChoices,
-setCDKSelectionCurrent,
-setCDKSelectionHighlight,
-setCDKSelectionHorizontalChar,
-setCDKSelectionLLChar,
-setCDKSelectionLRChar,
-setCDKSelectionMode,
-setCDKSelectionModes,
-setCDKSelectionPostProcess,
-setCDKSelectionPreProcess,
-setCDKSelectionULChar,
-setCDKSelectionURChar,
-setCDKSelectionVerticalChar \- curses selection list widget.
+.XX activateCDKSelection
+.XX destroyCDKSelection
+.XX drawCDKSelection
+.XX eraseCDKSelection
+.XX getCDKSelectionBox
+.XX getCDKSelectionChoice
+.XX getCDKSelectionChoices
+.XX getCDKSelectionCurrent
+.XX getCDKSelectionHighlight
+.XX getCDKSelectionItems
+.XX getCDKSelectionMode
+.XX getCDKSelectionModes
+.XX getCDKSelectionTitle
+.XX injectCDKSelection
+.XX moveCDKSelection
+.XX newCDKSelection
+.XX positionCDKSelection
+.XX setCDKSelection
+.XX setCDKSelectionBackgroundAttrib
+.XX setCDKSelectionBackgroundColor
+.XX setCDKSelectionBox
+.XX setCDKSelectionBoxAttribute
+.XX setCDKSelectionChoice
+.XX setCDKSelectionChoices
+.XX setCDKSelectionCurrent
+.XX setCDKSelectionHighlight
+.XX setCDKSelectionHorizontalChar
+.XX setCDKSelectionItems
+.XX setCDKSelectionLLChar
+.XX setCDKSelectionLRChar
+.XX setCDKSelectionMode
+.XX setCDKSelectionModes
+.XX setCDKSelectionPostProcess
+.XX setCDKSelectionPreProcess
+.XX setCDKSelectionTitle
+.XX setCDKSelectionULChar
+.XX setCDKSelectionURChar
+.XX setCDKSelectionVerticalChar
+cdk_selection \- curses selection list widget.
 .SH SYNOPSIS
 .LP
 .B cc
@@ -76,11 +83,18 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .B "chtype getCDKSelectionHighlight ("
 .BI "CDKSELECTION *" "selection");
 .TP 15
+.B "int getCDKSelectionItems ("
+.BI "CDKSELECTION *" "selection",
+.BI "char **" "list");
+.TP 15
 .B "int getCDKSelectionMode ("
 .BI "CDKSELECTION *" "selection",
 .BI "int " "index");
 .TP 15
 .B "int *getCDKSelectionModes ("
+.BI "CDKSELECTION *" "selection");
+.TP 15
+.B "char *getCDKSelectionTitle ("
 .BI "CDKSELECTION *" "selection");
 .TP 15
 .B "int injectCDKSelection ("
@@ -116,7 +130,7 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .B "void setCDKSelection ("
 .BI "CDKSELECTION *" "selection",
 .BI "chtype " "highlight",
-.BI "int " "defChoices"[],
+.BI "int *" "defChoices",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKSelectionBackgroundAttrib ("
@@ -142,7 +156,7 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .TP 15
 .B "void setCDKSelectionChoices ("
 .BI "CDKSELECTION *" "selection",
-.BI "int " "choices[]");
+.BI "int *" "choices");
 .TP 15
 .B "void setCDKSelectionCurrent ("
 .BI "CDKSELECTION *" "selection",
@@ -155,6 +169,11 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .B "void setCDKSelectionHorizontalChar ("
 .BI "CDKSELECTION *" "selection",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKSelectionItems ("
+.BI "CDKSELECTION *" "selection",
+.BI "char **" "list",
+.BI "int " "listSize");
 .TP 15
 .B "void setCDKSelectionLLChar ("
 .BI "CDKSELECTION *" "selection",
@@ -171,7 +190,7 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .TP 15
 .B "void setCDKSelectionModes ("
 .BI "CDKSELECTION *" "selection",
-.BI "int " "modes[]");
+.BI "int *" "modes");
 .TP 15
 .B "void setCDKSelectionPostProcess ("
 .BI "CDKSELECTION *" "selection",
@@ -182,6 +201,10 @@ setCDKSelectionVerticalChar \- curses selection list widget.
 .BI "CDKSELECTION *" "selection",
 .BI "PROCESSFN " "callback",
 .BI "void * " "data");
+.TP 15
+.B "void setCDKSelectionTitle ("
+.BI "CDKSELECTION *" "selection",
+.BI "char *" "title");
 .TP 15
 .B "void setCDKSelectionULChar ("
 .BI "CDKSELECTION *" "selection",
@@ -241,11 +264,19 @@ returns the current selection index.
 .B getCDKSelectionHighlight
 returns the attribute of the highlight bar.
 .TP 5
+.B getCDKSelectionItems
+copies the selection-list items into the caller's array
+and returns the number of items in the list.
+.TP 5
 .B getCDKSelectionMode
 returns the selection mode at the given index.
 .TP 5
 .B getCDKSelectionModes
 returns an array of the current modes for the widget.
+.TP 5
+.B getCDKSelectionTitle
+returns the first line of the title of the selection widget.
+The caller must free the returned value.
 .TP 5
 .B injectCDKSelection
 injects a single character into the widget.
@@ -371,7 +402,7 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKSelection
 lets the programmer modify certain elements of an existing selection widget.
 The parameter names correspond to the same
-parameter names listed in the \fInewCDKSelection\fR function.
+parameter names listed in the \fBnewCDKSelection\fR function.
 .TP 5
 .B setCDKSelectionBackgroundAttrib
 sets the background attribute of the widget.
@@ -404,6 +435,9 @@ sets the attribute of the highlight bar.
 .B setCDKSelectionHorizontalChar
 sets the horizontal drawing character for the box to the given character.
 .TP 5
+.B setCDKSelectionItems
+sets the selection list items.
+.TP 5
 .B setCDKSelectionLLChar
 sets the lower left hand corner of the widget's box to the given character.
 .TP 5
@@ -432,6 +466,9 @@ The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR is a pointer to
 \fIvoid\fR.
 To learn more about pre-processing see \fIcdk_process (3)\fR.
+.TP 5
+.B setCDKSelectionTitle
+set the selection list's title.
 .TP 5
 .B setCDKSelectionULChar
 sets the upper left hand corner of the widget's box to the given character.

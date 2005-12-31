@@ -1,4 +1,5 @@
 #!/bin/sh
+# $Id: radio.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
 
 #
 # Description:
@@ -9,12 +10,13 @@
 #
 # Create some global variables.
 #
-CDK_RADIO="../cdkradio"
-CDK_LABEL="../cdklabel"
-fileSystemList="/tmp/fsList.$$"
-diskInfo="/tmp/diskInfo.$$"
-output="/tmp/radio_output.$$"
-tmp="/tmp/tmp.$$"
+CDK_RADIO="${CDK_BINDIR=..}/cdkradio"
+CDK_LABEL="${CDK_BINDIR=..}/cdklabel"
+
+fileSystemList="${TMPDIR=/tmp}/fsList.$$"
+diskInfo="${TMPDIR=/tmp}/diskInfo.$$"
+output="${TMPDIR=/tmp}/radio_output.$$"
+tmp="${TMPDIR=/tmp}/tmp.$$"
 
 #
 # Get the filesystem information.
@@ -68,9 +70,7 @@ grep "^/" ${diskInfo} | awk '{printf "%s\n", $1}' > ${fileSystemList}
 #
 ${CDK_RADIO} -T "${title}" -f "${fileSystemList}" -c "</U>*" -B "${buttons}" 2> $output
 selected=$?
-if [ $selected -lt 0 ]; then
-   exit;
-fi
+test $selected = 255 && exit 1
 
 #
 # The selection is now in the file $output.

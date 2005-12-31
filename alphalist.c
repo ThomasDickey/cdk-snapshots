@@ -1,18 +1,18 @@
 #include <cdk_int.h>
- 
+
 /*
  * $Author: tom $
- * $Date: 2005/04/01 21:25:01 $
- * $Revision: 1.82 $
+ * $Date: 2005/12/30 09:44:16 $
+ * $Revision: 1.89 $
  */
- 
+
 /*
  * Declare file local prototypes.
  */
 static BINDFN_PROTO(adjustAlphalistCB);
 static BINDFN_PROTO(completeWordCB);
 static int preProcessEntryField (EObjectType cdktype, void *object, void *clientData, chtype input);
-static int createList (CDKALPHALIST *alphalist, char *list[], int listSize);
+static int createList (CDKALPHALIST *alphalist, char **list, int listSize);
 
 DeclareSetXXchar(static, _setMy);
 DeclareCDKObjects(ALPHALIST, Alphalist, _setMy, String);
@@ -20,7 +20,7 @@ DeclareCDKObjects(ALPHALIST, Alphalist, _setMy, String);
 /*
  * This creates the alphalist widget.
  */
-CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *label, char *list[], int listSize, chtype fillerChar, chtype highlight, boolean Box, boolean shadow)
+CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int height, int width, char *title, char *label, char **list, int listSize, chtype fillerChar, chtype highlight, boolean Box, boolean shadow)
 {
    CDKALPHALIST *alphalist	= 0;
    chtype *chtypeLabel		= 0;
@@ -100,17 +100,6 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
       alphalist->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
    }
 
-   /* We need to sort the list before we use it. */
-   /* FIXME: sort after copying, so we don't break the caller */
-   sortList (list, listSize);
-
-   /* Copy the list information. */
-   for (x=0; x < listSize; x++)
-   {
-      alphalist->list[x] = copyChar (list[x]);
-   }
-   alphalist->listSize = listSize;
-
    /* Create the entry field. */
    tempWidth = (isFullWidth(width)
    		 ? FULL
@@ -119,9 +108,14 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
 					getbegx(alphalist->win),
 					getbegy(alphalist->win),
 					title, label,
-					A_NORMAL, fillerChar, 
+					A_NORMAL, fillerChar,
 					vMIXED, tempWidth, 0, 512,
 					Box, FALSE);
+   if (alphalist->entryField == 0)
+   {
+      destroyCDKObject (alphalist);
+      return (0);
+   }
    setCDKEntryLLChar (alphalist->entryField, ACS_LTEE);
    setCDKEntryLRChar (alphalist->entryField, ACS_RTEE);
 
@@ -143,7 +137,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    tempWidth = (isFullWidth(width)
    		? FULL
 		: boxWidth - 1);
-   alphalist->scrollField = newCDKScroll (cdkscreen, 
+   alphalist->scrollField = newCDKScroll (cdkscreen,
 					  getbegx(alphalist->win),
 					  getbegy(alphalist->entryField->win) + tempHeight,
 					  RIGHT,
@@ -302,18 +296,10 @@ static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
    return (ret != unknownString);
 }
 
-dummyFocus(Alphalist)
-
-dummyUnfocus(Alphalist)
-
-dummyRefreshData(Alphalist)
-
-dummySaveData(Alphalist)
-
 /*
  * This sets multiple attributes of the widget.
  */
-void setCDKAlphalist (CDKALPHALIST *alphalist, char *list[], int listSize, chtype fillerChar, chtype highlight, boolean Box)
+void setCDKAlphalist (CDKALPHALIST *alphalist, char **list, int listSize, chtype fillerChar, chtype highlight, boolean Box)
 {
    setCDKAlphalistContents (alphalist, list, listSize);
    setCDKAlphalistFillerChar (alphalist, fillerChar);
@@ -324,7 +310,7 @@ void setCDKAlphalist (CDKALPHALIST *alphalist, char *list[], int listSize, chtyp
 /*
  * This function sets the information inside the file selector.
  */
-void setCDKAlphalistContents (CDKALPHALIST *alphalist, char *list[], int listSize)
+void setCDKAlphalistContents (CDKALPHALIST *alphalist, char **list, int listSize)
 {
    /* Declare local variables. */
    CDKSCROLL *scrollp	= (CDKSCROLL *)alphalist->scrollField;
@@ -446,7 +432,7 @@ static void _setMyBXattr (CDKOBJS *object, chtype character)
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 static void _setBKattrAlphalist (CDKOBJS *obj, chtype attrib)
 {
    CDKALPHALIST *alphalist = (CDKALPHALIST *) obj;
@@ -455,8 +441,16 @@ static void _setBKattrAlphalist (CDKOBJS *obj, chtype attrib)
    setCDKScrollBackgroundAttrib (alphalist->scrollField, attrib);
 }
 
+static void destroyInfo (CDKALPHALIST *widget)
+{
+   CDKfreeStrings(widget->list);
+   widget->list = 0;
+
+   widget->listSize = 0;
+}
+
 /*
- * This destroys the file selector.	
+ * This destroys the file selector.
  */
 static void _destroyCDKAlphalist (CDKOBJS *object)
 {
@@ -464,11 +458,14 @@ static void _destroyCDKAlphalist (CDKOBJS *object)
    {
       CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
 
-      CDKfreeStrings(alphalist->list);
+      destroyInfo (alphalist);
+
+      /* Clean the key bindings. */
+      cleanCDKObjectBindings (vALPHALIST, alphalist);
 
       destroyCDKEntry (alphalist->entryField);
       destroyCDKScroll (alphalist->scrollField);
-    
+
       /* Free up the window pointers. */
       deleteCursesWindow (alphalist->shadowWin);
       deleteCursesWindow (alphalist->win);
@@ -485,7 +482,7 @@ void setCDKAlphalistPreProcess (CDKALPHALIST *alphalist, PROCESSFN callback, voi
 {
    setCDKEntryPreProcess (alphalist->entryField, callback, data);
 }
- 
+
 /*
  * This function sets the post-process function.
  */
@@ -547,7 +544,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void *object GC
       /* Copy the information from the entry field. */
       strcpy (pattern, entry->info);
 
-      /* Truncate/Concatenate to the information in the entry field. */	 
+      /* Truncate/Concatenate to the information in the entry field. */
       if (input == KEY_BACKSPACE || input == KEY_DC)
       {
 	 pattern[infoLen] = '\0';
@@ -695,7 +692,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       {
 	 used = CDKallocStrings(&altWords, alphalist->list[currentIndex++], altCount++, used);
       }
-      
+
       /* Determine the height of the scrolling list. */
       height = (altCount < 8 ? altCount + 3 : 11);
 
@@ -708,7 +705,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       /* Allow them to select a close match. */
       match = activateCDKScroll (scrollp, 0);
       selected = scrollp->currentItem;
-      
+
       /* Check how they exited the list. */
       if (scrollp->exitType == vESCAPE_HIT)
       {
@@ -753,7 +750,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    return (TRUE);
 }
 
-static int createList (CDKALPHALIST *alphalist, char *list[], int listSize)
+static int createList (CDKALPHALIST *alphalist, char **list, int listSize)
 {
    int status = 0;
 
@@ -763,7 +760,6 @@ static int createList (CDKALPHALIST *alphalist, char *list[], int listSize)
 
       if (newlist != 0)
       {
-	 char **oldlist = alphalist->list;
 	 int x;
 
 	 /*
@@ -785,7 +781,7 @@ static int createList (CDKALPHALIST *alphalist, char *list[], int listSize)
 	 }
 	 if (status)
 	 {
-	    CDKfreeStrings(oldlist);
+	    destroyInfo (alphalist);
 	    alphalist->listSize = listSize;
 	    alphalist->list = newlist;
 	 }
@@ -795,5 +791,18 @@ static int createList (CDKALPHALIST *alphalist, char *list[], int listSize)
 	 }
       }
    }
+   else
+   {
+      destroyInfo (alphalist);
+      status = TRUE;
+   }
    return status;
 }
+
+dummyFocus(Alphalist)
+
+dummyUnfocus(Alphalist)
+
+dummyRefreshData(Alphalist)
+
+dummySaveData(Alphalist)

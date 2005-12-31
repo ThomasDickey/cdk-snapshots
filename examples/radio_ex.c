@@ -1,6 +1,6 @@
-/* $Id: radio_ex.c,v 1.14 2005/04/15 21:42:42 tom Exp $ */
+/* $Id: radio_ex.c,v 1.16 2005/12/28 01:43:29 tom Exp $ */
 
-#include <cdk.h>
+#include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "radio_ex";
@@ -8,6 +8,12 @@ char *XCursesProgramName = "radio_ex";
 
 /*
  * This program demonstrates the Cdk radio widget.
+ *
+ * Options (in addition to normal CLI parameters):
+ *	-c	create the data after the widget
+ *	-s SPOS	location for the scrollbar
+ *	-t TEXT	title for the widget
+ *
  */
 int main(int argc, char **argv)
 {
@@ -22,7 +28,15 @@ int main(int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
+   CDKparseParams(argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
+
+   /* Use the current diretory list to fill the radio list. */
+   count = CDKgetDirectoryContents (".", &item);
+   if (count <= 0)
+   {
+      fprintf(stderr, "Cannot get directory list\n");
+      ExitProgram (EXIT_FAILURE);
+   }
 
    /* Set up CDK. */
    cursesWin = initscr();
@@ -30,9 +44,6 @@ int main(int argc, char **argv)
 
    /* Set up CDK Colors. */
    initCDKColor();
-
-   /* Use the current diretory list to fill the radio list. */
-   count = CDKgetDirectoryContents (".", &item);
 
    /* Create the radio list. */
    radio = newCDKRadio (cdkscreen,
@@ -42,7 +53,8 @@ int main(int argc, char **argv)
 			CDKparamValue(&params, 'H', 10),
 			CDKparamValue(&params, 'W', 40),
 			CDKparamString2(&params, 't', title),
-			item, count,
+			CDKparamNumber(&params, 'c') ? 0 : item,
+			CDKparamNumber(&params, 'c') ? 0 : count,
 			'#'|A_REVERSE, 1,
 			A_REVERSE,
 			CDKparamValue(&params, 'N', TRUE),
@@ -57,7 +69,12 @@ int main(int argc, char **argv)
 
       /* Print out a message and exit. */
       printf ("Oops. Can't seem to create the radio widget. Is the window too small??\n");
-      exit (EXIT_FAILURE);
+      ExitProgram (EXIT_FAILURE);
+   }
+
+   if (CDKparamNumber(&params, 'c'))
+   {
+      setCDKRadioItems (radio, item, count);
    }
 
    /* loop until user selects a file, or cancels */
@@ -113,5 +130,5 @@ int main(int argc, char **argv)
    destroyCDKRadio (radio);
    destroyCDKScreen (cdkscreen);
    endCDK();
-   exit (EXIT_SUCCESS);
+   ExitProgram (EXIT_SUCCESS);
 }

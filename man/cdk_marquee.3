@@ -1,24 +1,28 @@
-.\" $Id: cdk_marquee.3,v 1.13 2005/04/15 23:57:04 tom Exp $
+.\" $Id: cdk_marquee.3,v 1.15 2005/12/28 18:35:31 tom Exp $
+.de XX
+..
 .TH cdk_marquee 3
 .SH NAME
-activateCDKMarquee,
-destroyCDKMarquee,
-drawCDKMarquee,
-eraseCDKMarquee,
-getCDKMarqueeBox,
-moveCDKMarquee,
-newCDKMarquee,
-positionCDKMarquee,
-setCDKMarqueeBackgroundAttrib,
-setCDKMarqueeBackgroundColor,
-setCDKMarqueeBox,
-setCDKMarqueeBoxAttribute,
-setCDKMarqueeHorizontalChar,
-setCDKMarqueeLLChar,
-setCDKMarqueeLRChar,
-setCDKMarqueeULChar,
-setCDKMarqueeURChar,
-setCDKMarqueeVerticalChar \- curses marquee widget
+.XX activateCDKMarquee
+.XX deactivateCDKMarquee
+.XX destroyCDKMarquee
+.XX drawCDKMarquee
+.XX eraseCDKMarquee
+.XX getCDKMarqueeBox
+.XX moveCDKMarquee
+.XX newCDKMarquee
+.XX positionCDKMarquee
+.XX setCDKMarqueeBackgroundAttrib
+.XX setCDKMarqueeBackgroundColor
+.XX setCDKMarqueeBox
+.XX setCDKMarqueeBoxAttribute
+.XX setCDKMarqueeHorizontalChar
+.XX setCDKMarqueeLLChar
+.XX setCDKMarqueeLRChar
+.XX setCDKMarqueeULChar
+.XX setCDKMarqueeURChar
+.XX setCDKMarqueeVerticalChar
+cdk_marquee \- curses marquee widget
 .SH SYNOPSIS
 .LP
 .B cc
@@ -35,6 +39,9 @@ setCDKMarqueeVerticalChar \- curses marquee widget
 .BI "int " "delay",
 .BI "int " "repeat",
 .BI "boolean " "box");
+.TP 15
+.B "void deactivateCDKMarquee ("
+.BI "CDKMARQUEE *" "marquee");
 .TP 15
 .B "void destroyCDKMarquee ("
 .BI "CDKMARQUEE *" "marquee");
@@ -127,6 +134,9 @@ The \fBbox\fR option draws the widget with or
 without a box.
 This function returns -1 if the message passed is \fINULL\fR,
 0 otherwise.
+.TP 5
+.B deactivateCDKMarquee
+deactivates the marquee widget.
 .TP 5
 .B destroyCDKMarquee
 removes the widget from the screen and frees memory the object used.
