@@ -1,9 +1,15 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2004, 2005
+Modifications copyright Thomas E. Dickey 1999-2005, 2006
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2006/02/20
+	+ correct makefile dependency so $(MAN_DIR) and $(INCLUDE_DIR) are
+	  created before headers.sed and manpage.sed, since headers.sh
+	  relies on the existence of the destination directory (reports
+	  by Marek Lipovean, Marcelo Goes, also Gentoo #123374).
 
 2005/12/30
 	+ add some redundant pointer checks, e.g., to entry.c, to avoid core
