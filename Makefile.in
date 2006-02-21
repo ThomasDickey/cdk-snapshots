@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.71 2005/12/29 01:50:48 tom Exp $
+# $Id: Makefile.in,v 1.73 2006/02/21 01:39:15 tom Exp $
 #
-#  Copyright 2001-2004,2005 Thomas Dickey
+#  Copyright 2001-2005,2006 Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -96,7 +96,7 @@ UNINSTALL_LIB	= $(LIBTOOL_UNINSTALL) $(RM)
 
 .SUFFIXES: .c .o .os .i
 
-DEFAULT		= $(CDKLIB) headers.sed
+DEFAULT		= $(CDKLIB)
 
 default :: $(DEFAULT)
 
@@ -267,7 +267,7 @@ $(CDKLIB) :: $(OBJECTS)
 	@echo creating $@; $(LIBTOOL_CREATE) $@ $(LIB_OBJECT)
 	@$(RANLIB) $@
 
-cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS) headers.sed
+cdkshlib $(CDKSHLIB) :: $(CDKSHOBJS)
 	gcc -shared -Wl,-soname=$(SONAME) $(LDFLAGS) -o $(CDKSHLIB) $(CDKSHOBJS)
 
 #
@@ -322,7 +322,7 @@ uninstallCDKReadme ::
 # This installs the CDK man pages.
 #
 install \
-installCDKManPages :: headers.sed manpage.sed $(AUTO_MAN) $(MAN_DIR)
+installCDKManPages ::  $(INCLUDE_DIR) headers.sed $(MAN_DIR) manpage.sed $(AUTO_MAN)
 	@echo "Installing the CDK man pages in $(MAN_DIR) ..."
 	@for i in $(AUTO_MAN); do \
 	   $(SHELL) $(srcdir)/headers.sh \
@@ -357,7 +357,7 @@ uninstallCDKManPages ::
 # This installs the header files.
 #
 install \
-installCDKHeaderFiles :: headers.sed $(MY_HDR) $(INCLUDE_DIR)
+installCDKHeaderFiles ::  $(INCLUDE_DIR) headers.sed $(MY_HDR)
 	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
 	$(SHELL) $(srcdir)/headers.sh -x "$(INSTALL_DATA)" -d $(INCLUDE_DIR) -s $(srcdir) $(MY_HDR)
 	@for i in $(CDKHDR); do \
