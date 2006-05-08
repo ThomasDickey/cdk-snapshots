@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_misc.3,v 1.15 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_misc.3,v 1.16 2006/05/07 01:09:57 tom Exp $
 .de XX
 ..
 .TH cdk_misc 3
@@ -19,7 +19,9 @@
 .XX cleanChtype
 .XX cmpStrChstr
 .XX copyChar
+.XX copyCharList
 .XX copyChtype
+.XX copyChtypeList
 .XX dirName
 .XX floorCDK
 .XX freeChar
@@ -27,6 +29,8 @@
 .XX freeChtype
 .XX freeChtypeList
 .XX intlen
+.XX lenCharList
+.XX lenChtypeList
 .XX mode2Char
 .XX searchList
 .XX sortList
@@ -97,8 +101,14 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .B "char *copyChar ("
 .BI "char *" "string");
 .TP 15
+.B "char **copyCharList ("
+.BI "char **" "list");
+.TP 15
 .B "chtype *copyChtype ("
 .BI "chtype *" "string");
+.TP 15
+.B "chtype **copyChtypeList ("
+.BI "chtype **" "list");
 .TP 15
 .B "char *dirName ("
 .BI "char *" "filename");
@@ -122,6 +132,12 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .TP 15
 .B "int intlen ("
 .BI "int " "value");
+.TP 15
+.B "int lenCharList ("
+.BI "char **" "list");
+.TP 15
+.B "int lenChtypeList ("
+.BI "chtype **" "list");
 .TP 15
 .B "int mode2Char ("
 .BI "char *" "string",
@@ -211,9 +227,15 @@ to greater than \fIchstr\fP.
 copies the string passed in.
 Unlike \fIstrdup\fR this checks to see if the string is NULL before copying.
 .TP 5
+.B copyCharList
+copies the given list.
+.TP 5
 .B copyChtype
 function copies the string passed in, analogous to \fBcopyChar\fR, but
 for chtype strings.
+.TP 5
+.B copyChtypeList
+copies the given list.
 .TP 5
 .B dirName
 Returns the directory for the given \fIfilename\fP,
@@ -242,6 +264,12 @@ The number of strings to free is given by \fIsize\fP.
 .B intlen
 returns the length of an integer, i.e., the number of characters
 needed to represent it.
+.TP 5
+.B lenCharList
+returns the length of the given list.
+.TP 5
+.B lenChtypeList
+returns the length of the given list.
 .TP 5
 .B mode2Char
 Given a file protection mode \fIfileMode\fP,

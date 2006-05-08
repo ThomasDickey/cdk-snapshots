@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.73 2006/02/21 01:39:15 tom Exp $
+# $Id: Makefile.in,v 1.74 2006/04/17 23:13:49 tom Exp $
 #
 #  Copyright 2001-2005,2006 Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -177,6 +177,7 @@ CDKSRC		= \
 		calendar.c \
 		cdk.c \
 		cdk_compat.c \
+		cdk_display.c \
 		cdk_objs.c \
 		cdk_params.c \
 		cdkscreen.c \

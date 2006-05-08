@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.23 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.24 2006/04/15 14:10:32 tom Exp $
 .de XX
 ..
 .TH cdk_matrix 3
@@ -507,8 +507,14 @@ Ctrl-T/T{
 Copies the contents of the current cell into the paste buffer.
 T}
 Ctrl-E/Erases the contents of the current cell.
-Delete/Deletes the character before the cursor.
-Backspace/Deletes the character before the cursor.
+Delete/T{
+Deletes the character before the cursor, moves cursor left.
+There is no function to delete the character at the cursor since there
+are no functions for moving the cursor within the edited text.
+T}
+Backspace/T{
+Deletes the character before cursor, moves cursor left.
+T}
 Ctrl-H/Deletes the character before the cursor.
 Return/T{
 Exits the widget and returns 1.

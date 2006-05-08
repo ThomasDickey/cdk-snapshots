@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:17:57 $
- * $Revision: 1.83 $
+ * $Date: 2006/05/05 00:27:45 $
+ * $Revision: 1.84 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -441,8 +441,7 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
 	      calendar->xOffset, TitleLinesOf(calendar) + 2,
 	      calendar->DayName, HORIZONTAL, 0, headerLen);
 
-   /* Refresh the main window. */
-   refreshCDKWindow (calendar->win);
+   wrefresh (calendar->win);
 
    drawCDKCalendarField (calendar);
 }
@@ -491,7 +490,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	 day++;
       }
    }
-   refreshCDKWindow (calendar->fieldWin);
+   wrefresh (calendar->fieldWin);
 
    /* Draw the month in. */
    if (calendar->labelWin != 0)
@@ -509,7 +508,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 		 temp, HORIZONTAL, 0, yearLen);
 
       wmove (calendar->labelWin, 0, 0);
-      refreshCDKWindow (calendar->labelWin);
+      wrefresh (calendar->labelWin);
    } else if (save_y >= 0) {
       wmove (InputWindowOf(calendar), save_y, save_x);
       wrefresh (InputWindowOf(calendar));

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:17:57 $
- * $Revision: 1.97 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.98 $
  */
 
 #define TITLELINES 1
@@ -397,14 +397,14 @@ void drawCDKMenuSubwin (CDKMENU *menu)
    }
 
    selectItem (menu, menu->currentSubtitle, x0);
-   refreshCDKWindow (menu->pullWin[menu->currentTitle]);
+   wrefresh (menu->pullWin[menu->currentTitle]);
 
    /* Highlight the title. */
    writeChtypeAttrib (menu->titleWin[menu->currentTitle],
 		      0, 0, menu->title[menu->currentTitle],
 		      menu->titleAttr, HORIZONTAL, 0,
 		      menu->titleLen[menu->currentTitle]);
-   refreshCDKWindow (menu->titleWin[menu->currentTitle]);
+   wrefresh (menu->titleWin[menu->currentTitle]);
 }
 
 /*
@@ -416,7 +416,7 @@ void eraseCDKMenuSubwin (CDKMENU *menu)
 
    /* Redraw the sub-menu title. */
    drawTitle (menu, menu->currentTitle);
-   refreshCDKWindow (menu->titleWin[menu->currentTitle]);
+   wrefresh (menu->titleWin[menu->currentTitle]);
 }
 
 /*
@@ -431,7 +431,7 @@ static void _drawCDKMenu (CDKOBJS *object, boolean Box GCC_UNUSED)
    for (x = 0; x < menu->menuItems; x++)
    {
       drawTitle (menu, x);
-      refreshCDKWindow (menu->titleWin[x]);
+      wrefresh (menu->titleWin[x]);
    }
 }
 

@@ -5,6 +5,39 @@ Modifications copyright Thomas E. Dickey 1999-2005, 2006
 
 This file outlines all of the changes/additions from one release to another.
 
+2006/05/07
+	+ reduce the number of calls on touchwin(), which is used mainly for
+	  cleanup after moving a window.
+	+ improve focus in alphalist.c and fselect.c to ensure that the
+	  dependent scroll widget highlights data after losing focus to the
+	  entry widget (report by Harry Brueckner).
+	+ add getCDKScrollCurrentItem(), setCDKScrollCurrentItem(),
+	  getCDKScrollCurrentTop() and setCDKScrollCurrentTop().
+	+ add getCDKFselectCurrentItem(), setCDKFselectCurrentItem(), use these
+	  in fselect_ex.c to illustrate how to modify list displayed by
+	  the fselect widget.
+	+ add getCDKAlphalistCurrentItem(), setCDKAlphalistCurrentItem(), use
+	  these in alphalist_ex.c to illustrate how to modify list displayed by
+	  the alphalist widget.
+	+ add copyCharList(), copyChtypeList(), lenCharList(), lenChtypeList().
+	+ fix misformatted cdk_display manpage, which did not show vINT
+	  and some other data properly (report by Dominik Douville-Belanger).
+	+ split-out cdk_display.c to eliminate repeated logic in entry.c,
+	  matrix.c and mentry.c, and implement hidden fields for the matrix
+	  widget.
+	+ correct box-height for marquee widget.  The box parameter was
+	  previously ignored; this correction will make some applications no
+	  longer show a box (report by Michael White).
+	+ modify logic for KEY_DC and KEY_BACKSPACE so the former only deletes
+	  the current character, and the latter only deletes the previous,
+	  rather than equating them.  This affects alphalist, entry, mentry,
+	  template (request by Harry Brueckner).
+	+ suppress conversion of control characters in getcCDKObject() if the
+	  character is bound to another.  This was last changed in 2004/8/24
+	  (report by Harry Brueckner).
+	+ add check in adjustAlphalistCB() in case the list is empty (report by
+	  Harry Brueckner).
+
 2006/02/20
 	+ correct makefile dependency so $(MAN_DIR) and $(INCLUDE_DIR) are
 	  created before headers.sed and manpage.sed, since headers.sh

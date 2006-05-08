@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.22 2005/12/28 18:35:31 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.23 2006/05/07 01:04:30 tom Exp $"
 .de XX
 ..
 .TH cdk_alphalist 3
@@ -10,6 +10,7 @@
 .XX eraseCDKAlphalist
 .XX getCDKAlphalistBox
 .XX getCDKAlphalistContents
+.XX getCDKAlphalistCurrentItem
 .XX getCDKAlphalistFillerChar
 .XX getCDKAlphalistHighlight
 .XX injectCDKAlphalist
@@ -22,6 +23,7 @@
 .XX setCDKAlphalistBox
 .XX setCDKAlphalistBoxAttribute
 .XX setCDKAlphalistContents
+.XX setCDKAlphalistCurrentItem
 .XX setCDKAlphalistFillerChar
 .XX setCDKAlphalistHighlight
 .XX setCDKAlphalistHorizontalChar
@@ -63,6 +65,9 @@ cdk_alphalist \- curses sorted list widget.
 .B "char **getCDKAlphalistContents ("
 .BI "CDKALPHALIST *" "alphalist",
 .BI "int *" "size");
+.TP 15
+.B "int getCDKAlphalistCurrentItem ("
+.BI "CDKALPHALIST *" "widget");
 .TP 15
 .B "chtype getCDKAlphalistFillerChar ("
 .BI "CDKALPHALIST *" "alphalist");
@@ -127,6 +132,10 @@ cdk_alphalist \- curses sorted list widget.
 .BI "CDKALPHALIST *" "alphalist",
 .BI "char ** " "list",
 .BI "int " "listSize");
+.TP 15
+.B "void setCDKAlphalistCurrentItem ("
+.BI "CDKALPHALIST *" "widget",
+.BI "int " "item");
 .TP 15
 .B "void setCDKAlphalistFillerChar ("
 .BI "CDKALPHALIST *" "alphalist",
@@ -216,6 +225,9 @@ returns true if the widget will be drawn with a box around it.
 .TP 5
 .B getCDKAlphalistContents
 returns the contents of the alphalist.
+.TP 5
+.B getCDKAlphalistCurrentItem
+returns the current position in the scroll-widget.
 .TP 5
 .B getCDKAlphalistFillerChar
 returns the character being used as the filler character in the
@@ -359,6 +371,9 @@ sets the attribute of the box.
 .B setCDKAlphalistContents
 sets the contents of the alphalist widget
 (note that it sorts the caller's copy of the list).
+.TP 5
+.B setCDKAlphalistCurrentItem
+set the current position in the scroll-widget.
 .TP 5
 .B setCDKAlphalistFillerChar
 sets the character to use when drawing the entry field portion of the widget.

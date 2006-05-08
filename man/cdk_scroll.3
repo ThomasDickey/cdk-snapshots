@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.25 2005/12/28 18:35:31 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.26 2006/05/07 00:49:10 tom Exp $"
 .de XX
 ..
 .TH cdk_scroll 3
@@ -12,6 +12,8 @@
 .XX eraseCDKScroll
 .XX getCDKScrollBox
 .XX getCDKScrollCurrent
+.XX getCDKScrollCurrentItem
+.XX getCDKScrollCurrentTop
 .XX getCDKScrollHighlight
 .XX getCDKScrollItems
 .XX injectCDKScroll
@@ -25,6 +27,8 @@
 .XX setCDKScrollBox
 .XX setCDKScrollBoxAttribute
 .XX setCDKScrollCurrent
+.XX setCDKScrollCurrentItem
+.XX setCDKScrollCurrentTop
 .XX setCDKScrollHighlight
 .XX setCDKScrollHorizontalChar
 .XX setCDKScrollItems
@@ -75,9 +79,15 @@ cdk_scroll \- curses scrolling list widget.
 .B "int getCDKScrollCurrent("
 .BI "CDKSCROLL *" "scroll");
 .TP 15
+.B "int getCDKScrollCurrentItem ("
+.BI "CDKSCROLL *" "widget");
+.TP 15
 .B "chtype getCDKScrollHighlight ("
 .BI "CDKSCROLL *" "scroll",
 .BI "chtype " "highlight");
+.TP 15
+.B "int getCDKScrollCurrentTop ("
+.BI "CDKSCROLL *" "widget");
 .TP 15
 .B "int getCDKScrollItems ("
 .BI "CDKSCROLL *" "scroll",
@@ -143,6 +153,13 @@ cdk_scroll \- curses scrolling list widget.
 .B "void setCDKScrollCurrent(
 .BI "CDKSCROLL *" "scroll",
 .BI "int" "item");
+.TP 15
+.B "void setCDKScrollCurrentItem ("
+.BI "CDKSCROLL *" "widget",
+.BI "int" "item");
+.TP 15
+.B "int getCDKScrollCurrentTop ("
+.BI "CDKSCROLL *" "widget");
 .TP 15
 .B "void setCDKScrollHighlight ("
 .BI "CDKSCROLL *" "scroll",
@@ -245,8 +262,14 @@ returns true if the widget will be drawn with a box around it.
 .B getCDKScrollCurrent
 returns the current item's index.
 .TP 5
+.B getCDKScrollCurrentItem
+returns the current item number in the scroller.
+.TP 5
 .B getCDKScrollHighlight
 returns the attribute of the highlight bar.
+.TP 5
+.B getCDKScrollCurrentTop
+returns the top line of the scroller, counting from zero.
 .TP 5
 .B getCDKScrollItems
 fills the parameter \fBitemList\fR with the contents of the scrolling list.
@@ -404,6 +427,12 @@ sets the attribute of the box.
 .TP 5
 .B setCDKScrollCurrent
 sets the index for the current item.
+.TP 5
+.B setCDKScrollCurrentItem
+set the current item number in the scroller.
+.TP 5
+.B setCDKScrollCurrentTop
+set the top line number of the scroller.
 .TP 5
 .B setCDKScrollHighlight
 sets the attribute of the highlight bar.

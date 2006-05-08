@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.26 2005/12/28 21:44:56 tom Exp $
+ * $Id: cdk_util.h,v 1.28 2006/04/22 16:17:32 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003,2005 copyright Thomas E. Dickey
+ * Changes 1999-2005,2006 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -316,29 +316,62 @@ void chstrncpy(char *		/* dest */,
 		int		/* maxcount */);
 
 /*
- * This takes a character pointer and returns the equivalent
- * display type.
+ * Given a character pointer, returns the equivalent display type.
  */
 EDisplayType char2DisplayType (
 		char *		/* string */);
 
 /*
- * This copies the given string.
+ * Tell if a display type is "hidden"
+ */
+boolean isHiddenDisplayType (
+		EDisplayType	/* type */);
+
+/*
+ * Filter an input character according to the display type.
+ */
+int filterByDisplayType(
+		EDisplayType	/* type */,
+		chtype		/* input */);
+
+/*
+ * Copy the given string.
  */
 chtype *copyChtype (
 		chtype *	/* string */);
 
 /*
- * This copies the given string.
+ * Copy the given string.
  */
 char *copyChar (
 		char *		/* string */);
 
 /*
- * This returns the length of the given string.
+ * Copy the given list.
+ */
+char **copyCharList (
+		char **		/* list */);
+
+/*
+ * Copy the given list.
+ */
+chtype **copyChtypeList (
+		chtype **	/* list */);
+
+/*
+ * Return the length of the given string.
  */
 int chlen (
 		chtype *	/* string */);
+
+/*
+ * Return the length of the given list.
+ */
+int lenCharList (
+		char **		/* list */);
+
+int lenChtypeList (
+		chtype **	/* list */);
 
 /*
  * This takes a file mode and returns the first character of the file

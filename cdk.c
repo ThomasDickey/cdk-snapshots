@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/28 21:50:11 $
- * $Revision: 1.200 $
+ * $Date: 2006/04/23 00:01:26 $
+ * $Revision: 1.204 $
  */
 
 #define L_MARKER '<'
@@ -14,9 +14,9 @@ char *GPasteBuffer = 0;
 /*
  * This beeps then flushes the stdout stream.
  */
-void Beep(void)
+void Beep (void)
 {
-   beep();
+   beep ();
    fflush (stdout);
 }
 
@@ -28,7 +28,7 @@ void cleanChar (char *s, int len, char character)
    if (s != 0)
    {
       int x;
-      for (x=0; x < len; x++)
+      for (x = 0; x < len; x++)
       {
 	 s[x] = character;
       }
@@ -41,7 +41,7 @@ void cleanChtype (chtype *s, int len, chtype character)
    if (s != 0)
    {
       int x;
-      for (x=0; x < len; x++)
+      for (x = 0; x < len; x++)
       {
 	 s[x] = character;
       }
@@ -57,10 +57,11 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 {
    int first, gap, last;
 
-   first = getbegx(window);
-   last	 = getmaxx(window);
-   if ((gap = (last - boxWidth)) < 0) gap = 0;
-   last	 = first + gap;
+   first = getbegx (window);
+   last = getmaxx (window);
+   if ((gap = (last - boxWidth)) < 0)
+      gap = 0;
+   last = first + gap;
 
    switch (*xpos)
    {
@@ -81,11 +82,11 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
       break;
    }
 
-   first = getbegy(window);
-   last	 = getmaxy(window);
+   first = getbegy (window);
+   last = getmaxy (window);
    if ((gap = (last - boxHeight)) < 0)
       gap = 0;
-   last	 = first + gap;
+   last = first + gap;
 
    switch (*ypos)
    {
@@ -96,7 +97,7 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
       (*ypos) = first + gap;
       break;
    case CENTER:
-      (*ypos) = first + (gap/2);
+      (*ypos) = first + (gap / 2);
       break;
    default:
       if ((*ypos) > last)
@@ -154,14 +155,15 @@ void freeChtype (chtype *string)
 }
 
 /*
- * Corresponding list freeing
+ * Corresponding list freeing (does not free the list pointer).
  */
 void freeCharList (char **list, unsigned size)
 {
-   if (list != 0) {
+   if (list != 0)
+   {
       while (size-- != 0)
       {
-	 freeChar(list[size]);
+	 freeChar (list[size]);
 	 list[size] = 0;
       }
    }
@@ -169,10 +171,11 @@ void freeCharList (char **list, unsigned size)
 
 void freeChtypeList (chtype **list, unsigned size)
 {
-   if (list != 0) {
+   if (list != 0)
+   {
       while (size-- != 0)
       {
-	 freeChtype(list[size]);
+	 freeChtype (list[size]);
 	 list[size] = 0;
       }
    }
@@ -188,8 +191,8 @@ char *copyChar (char *original)
 
    if (original != 0)
    {
-      if ((newstring = typeMallocN(char, strlen(original) + 1)) != 0)
-	 strcpy (newstring, original);
+      if ((newstring = typeMallocN (char, strlen (original) + 1)) != 0)
+	   strcpy (newstring, original);
    }
    return (newstring);
 }
@@ -203,9 +206,9 @@ chtype *copyChtype (chtype *original)
       int len = chlen (original);
       int x;
 
-      if ((newstring = typeMallocN(chtype, len + 4)) != 0)
+      if ((newstring = typeMallocN (chtype, len + 4)) != 0)
       {
-	 for (x=0; x < len; x++)
+	 for (x = 0; x < len; x++)
 	 {
 	    newstring[x] = original[x];
 	 }
@@ -219,6 +222,64 @@ chtype *copyChtype (chtype *original)
 
    }
    return (newstring);
+}
+
+/*
+ * Copy the given lists.
+ */
+char **copyCharList (char **list)
+{
+   unsigned size = lenCharList (list) + 1;
+   char **result = typeMallocN (char *, size);
+
+   if (result != 0)
+   {
+      unsigned n;
+      for (n = 0; n < size; ++n)
+	 result[n] = copyChar (list[n]);
+   }
+   return result;
+}
+
+chtype **copyChtypeList (chtype **list)
+{
+   unsigned size = lenChtypeList (list) + 1;
+   chtype **result = typeMallocN (chtype *, size);
+
+   if (result != 0)
+   {
+      while (size-- != 0)
+      {
+	 freeChtype (list[size]);
+	 list[size] = 0;
+      }
+   }
+   return result;
+}
+
+/*
+ * Return the length of the given lists.
+ */
+int lenCharList (char **list)
+{
+   int result = 0;
+   if (list != 0)
+   {
+      while (*list++ != 0)
+	 ++result;
+   }
+   return result;
+}
+
+int lenChtypeList (chtype **list)
+{
+   int result = 0;
+   if (list != 0)
+   {
+      while (*list++ != 0)
+	 ++result;
+   }
+   return result;
 }
 
 /*
@@ -237,12 +298,12 @@ int CDKreadFile (char *filename, char ***array)
       return (-1);
    }
 
-   while ((fgets (temp, sizeof(temp), fd) != 0))
+   while ((fgets (temp, sizeof (temp), fd) != 0))
    {
-      size_t len = strlen(temp);
-      if (len != 0 && temp[len-1] == '\n')
+      size_t len = strlen (temp);
+      if (len != 0 && temp[len - 1] == '\n')
 	 temp[--len] = '\0';
-      used = CDKallocStrings(array, temp, lines++, used);
+      used = CDKallocStrings (array, temp, lines++, used);
    }
    fclose (fd);
 
@@ -251,42 +312,55 @@ int CDKreadFile (char *filename, char ***array)
 
 #define DigitOf(c) ((c)-'0')
 
-static int encodeAttribute(char *string, int from, chtype *mask)
+static int encodeAttribute (char *string, int from, chtype *mask)
 {
    int pair = 0;
 
    *mask = 0;
    switch (string[from + 1])
    {
-   case 'B':	*mask = A_BOLD;		break;
-   case 'D':	*mask = A_DIM;		break;
-   case 'K':	*mask = A_BLINK;	break;
-   case 'R':	*mask = A_REVERSE;	break;
-   case 'S':	*mask = A_STANDOUT;	break;
-   case 'U':	*mask = A_UNDERLINE;	break;
+   case 'B':
+      *mask = A_BOLD;
+      break;
+   case 'D':
+      *mask = A_DIM;
+      break;
+   case 'K':
+      *mask = A_BLINK;
+      break;
+   case 'R':
+      *mask = A_REVERSE;
+      break;
+   case 'S':
+      *mask = A_STANDOUT;
+      break;
+   case 'U':
+      *mask = A_UNDERLINE;
+      break;
    }
 
    if (*mask != 0)
    {
       from++;
    }
-   else if (isdigit(CharOf(string[from + 1])) && isdigit(CharOf(string[from + 2])))
+   else if (isdigit (CharOf (string[from + 1])) &&
+	    isdigit (CharOf (string[from + 2])))
    {
 #ifdef HAVE_START_COLOR
-      pair	= DigitOf(string[from + 1]) * 10 + DigitOf(string[from + 2]);
-      *mask	= COLOR_PAIR(pair);
+      pair = DigitOf (string[from + 1]) * 10 + DigitOf (string[from + 2]);
+      *mask = COLOR_PAIR (pair);
 #else
-      *mask	= A_BOLD;
+      *mask = A_BOLD;
 #endif
       from += 2;
    }
-   else if (isdigit(CharOf(string[from + 1])))
+   else if (isdigit (CharOf (string[from + 1])))
    {
 #ifdef HAVE_START_COLOR
-      pair	= DigitOf(string[from + 1]);
-      *mask	= COLOR_PAIR(pair);
+      pair = DigitOf (string[from + 1]);
+      *mask = COLOR_PAIR (pair);
 #else
-      *mask	= A_BOLD;
+      *mask = A_BOLD;
 #endif
       from++;
    }
@@ -299,7 +373,10 @@ static int encodeAttribute(char *string, int from, chtype *mask)
  * the same string, we do not necessarily reconstruct them in the same order.
  * Also, alignment markers and tabs are lost.
  */
-static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, chtype newattr)
+static unsigned decodeAttribute (char *string,
+				 unsigned from,
+				 chtype oldattr,
+				 chtype newattr)
 {
    /* *INDENT-OFF* */
    static const struct {
@@ -328,7 +405,7 @@ static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, cht
 	 unsigned n;
 	 bool found = FALSE;
 
-	 for (n = 0; n < sizeof(table)/sizeof(table[0]); ++n)
+	 for (n = 0; n < sizeof (table) / sizeof (table[0]); ++n)
 	 {
 	    if ((table[n].mask & tmpattr) != (table[n].mask & newattr))
 	    {
@@ -351,8 +428,8 @@ static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, cht
 #ifdef HAVE_START_COLOR
 	 if ((tmpattr & A_COLOR) != (newattr & A_COLOR))
 	 {
-	    int oldpair = PAIR_NUMBER(tmpattr);
-	    int newpair = PAIR_NUMBER(newattr);
+	    int oldpair = PAIR_NUMBER (tmpattr);
+	    int newpair = PAIR_NUMBER (newattr);
 	    if (!found)
 	    {
 	       found = TRUE;
@@ -361,14 +438,14 @@ static unsigned decodeAttribute(char *string, unsigned from, chtype oldattr, cht
 	    if (newpair == 0)
 	    {
 	       *result++ = '!';
-	       sprintf(result, "%d", oldpair);
+	       sprintf (result, "%d", oldpair);
 	    }
 	    else
 	    {
 	       *result++ = '/';
-	       sprintf(result, "%d", newpair);
+	       sprintf (result, "%d", newpair);
 	    }
-	    result += strlen(result);
+	    result += strlen (result);
 	    tmpattr &= ~A_COLOR;
 	    newattr &= ~A_COLOR;
 	 }
@@ -408,7 +485,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 
    if (string != 0 && *string != 0)
    {
-      len = (int)strlen(string);
+      len = (int)strlen (string);
       used = 0;
       /*
        * We make two passes because we may have indents and tabs to expand, and
@@ -418,7 +495,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
       {
 	 if (pass != 0)
 	 {
-	    if ((result = typeMallocN(chtype, used + 2)) == 0)
+	    if ((result = typeMallocN (chtype, used + 2)) == 0)
 	    {
 	       used = 0;
 	       break;
@@ -450,7 +527,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	    }
 	    else if (string[1] == 'B' && string[2] == '=')
 	    {
-	       /* Set the item index value in the string.	*/
+	       /* Set the item index value in the string.       */
 	       if (result != 0)
 	       {
 		  result[0] = ' ';
@@ -478,9 +555,9 @@ chtype *char2Chtype (char *string, int *to, int *align)
 
 	       while (string[++from] != R_MARKER && string[from] != 0)
 	       {
-		  if (isdigit(CharOf(string[from])))
+		  if (isdigit (CharOf (string[from])))
 		  {
-		     adjust = (adjust * 10) + DigitOf(string[from]);
+		     adjust = (adjust * 10) + DigitOf (string[from]);
 		     x++;
 		  }
 	       }
@@ -497,18 +574,18 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	 }
 
 	 /* Set the format marker boolean to false.  */
-	 insideMarker	= FALSE;
+	 insideMarker = FALSE;
 
-	 /* Start parsing the character string.	 */
+	 /* Start parsing the character string.  */
 	 for (from = start; from < len; from++)
 	 {
 	    /* Are we inside a format marker?  */
-	    if (! insideMarker)
+	    if (!insideMarker)
 	    {
 	       if (string[from] == L_MARKER
-		&& (string[from + 1] == '/'
-		 || string[from + 1] == '!'
-		 || string[from + 1] == '#'))
+		   && (string[from + 1] == '/'
+		       || string[from + 1] == '!'
+		       || string[from + 1] == '#'))
 	       {
 		  insideMarker = TRUE;
 	       }
@@ -516,7 +593,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       {
 		  from++;
 		  if (result != 0)
-		     result[used] = CharOf(string[from]) | attrib;
+		     result[used] = CharOf (string[from]) | attrib;
 		  used++;
 		  from++;
 	       }
@@ -533,7 +610,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       else
 	       {
 		  if (result != 0)
-		     result[used] = CharOf(string[from]) | attrib;
+		     result[used] = CharOf (string[from]) | attrib;
 		  used++;
 	       }
 	    }
@@ -545,109 +622,133 @@ chtype *char2Chtype (char *string, int *to, int *align)
 		  insideMarker = 0;
 		  break;
 	       case '#':
-	       {
-		  lastChar = 0;
-		  switch(string[from + 2])
 		  {
-		  case 'L':
-		     switch (string[from + 1])
+		     lastChar = 0;
+		     switch (string[from + 2])
 		     {
-		     case 'L': lastChar = ACS_LLCORNER; break;
-		     case 'U': lastChar = ACS_ULCORNER; break;
-		     case 'H': lastChar = ACS_HLINE; break;
-		     case 'V': lastChar = ACS_VLINE; break;
-		     case 'P': lastChar = ACS_PLUS; break;
-		     }
-		     break;
-		  case 'R':
-		     switch (string[from + 1])
-		     {
-		     case 'L': lastChar = ACS_LRCORNER; break;
-		     case 'U': lastChar = ACS_URCORNER; break;
-		     }
-		     break;
-		  case 'T':
-		     switch (string[from + 1])
-		     {
-		     case 'T': lastChar = ACS_TTEE; break;
-		     case 'R': lastChar = ACS_RTEE; break;
-		     case 'L': lastChar = ACS_LTEE; break;
-		     case 'B': lastChar = ACS_BTEE; break;
-		     }
-		     break;
-		  case 'A':
-		     switch (string[from + 1])
-		     {
-		     case 'L': lastChar = ACS_LARROW; break;
-		     case 'R': lastChar = ACS_RARROW; break;
-		     case 'U': lastChar = ACS_UARROW; break;
-		     case 'D': lastChar = ACS_DARROW; break;
-		     }
-		     break;
-		  default:
-		     if (string[from + 1] == 'D'
-		      && string[from + 2] == 'I')
-			lastChar = ACS_DIAMOND;
-		     else
-		     if (string[from + 1] == 'C'
-		      && string[from + 2] == 'B')
-			lastChar = ACS_CKBOARD;
-		     else
-		     if (string[from + 1] == 'D'
-		      && string[from + 2] == 'G')
-			lastChar = ACS_DEGREE;
-		     else
-		     if (string[from + 1] == 'P'
-		      && string[from + 2] == 'M')
-			lastChar = ACS_PLMINUS;
-		     else
-		     if (string[from + 1] == 'B'
-		      && string[from + 2] == 'U')
-			lastChar = ACS_BULLET;
-		     else
-		     if (string[from + 1] == 'S'
-		      && string[from + 2] == '1')
-			lastChar = ACS_S1;
-		     else
-		     if (string[from + 1] == 'S'
-		      && string[from + 2] == '9')
-			lastChar = ACS_S9;
-		  }
-
-		  if (lastChar != 0)
-		  {
-		     adjust = 1;
-		     from += 2;
-
-		     if (string[from + 1] == '(')
-		     /* Check for a possible numeric modifier.	*/
-		     {
-			from++;
-			adjust = 0;
-
-			while (string[++from] != ')' && string[from] != 0)
+		     case 'L':
+			switch (string[from + 1])
 			{
-			   if (isdigit(CharOf(string[from])))
+			case 'L':
+			   lastChar = ACS_LLCORNER;
+			   break;
+			case 'U':
+			   lastChar = ACS_ULCORNER;
+			   break;
+			case 'H':
+			   lastChar = ACS_HLINE;
+			   break;
+			case 'V':
+			   lastChar = ACS_VLINE;
+			   break;
+			case 'P':
+			   lastChar = ACS_PLUS;
+			   break;
+			}
+			break;
+		     case 'R':
+			switch (string[from + 1])
+			{
+			case 'L':
+			   lastChar = ACS_LRCORNER;
+			   break;
+			case 'U':
+			   lastChar = ACS_URCORNER;
+			   break;
+			}
+			break;
+		     case 'T':
+			switch (string[from + 1])
+			{
+			case 'T':
+			   lastChar = ACS_TTEE;
+			   break;
+			case 'R':
+			   lastChar = ACS_RTEE;
+			   break;
+			case 'L':
+			   lastChar = ACS_LTEE;
+			   break;
+			case 'B':
+			   lastChar = ACS_BTEE;
+			   break;
+			}
+			break;
+		     case 'A':
+			switch (string[from + 1])
+			{
+			case 'L':
+			   lastChar = ACS_LARROW;
+			   break;
+			case 'R':
+			   lastChar = ACS_RARROW;
+			   break;
+			case 'U':
+			   lastChar = ACS_UARROW;
+			   break;
+			case 'D':
+			   lastChar = ACS_DARROW;
+			   break;
+			}
+			break;
+		     default:
+			if (string[from + 1] == 'D' &&
+			    string[from + 2] == 'I')
+			   lastChar = ACS_DIAMOND;
+			else if (string[from + 1] == 'C' &&
+				 string[from + 2] == 'B')
+			   lastChar = ACS_CKBOARD;
+			else if (string[from + 1] == 'D' &&
+				 string[from + 2] == 'G')
+			   lastChar = ACS_DEGREE;
+			else if (string[from + 1] == 'P' &&
+				 string[from + 2] == 'M')
+			   lastChar = ACS_PLMINUS;
+			else if (string[from + 1] == 'B' &&
+				 string[from + 2] == 'U')
+			   lastChar = ACS_BULLET;
+			else if (string[from + 1] == 'S' &&
+				 string[from + 2] == '1')
+			   lastChar = ACS_S1;
+			else if (string[from + 1] == 'S' &&
+				 string[from + 2] == '9')
+			   lastChar = ACS_S9;
+		     }
+
+		     if (lastChar != 0)
+		     {
+			adjust = 1;
+			from += 2;
+
+			if (string[from + 1] == '(')
+			   /* Check for a possible numeric modifier.  */
+			{
+			   from++;
+			   adjust = 0;
+
+			   while (string[++from] != ')' && string[from] != 0)
 			   {
-			      adjust = (adjust * 10) + DigitOf(string[from]);
+			      if (isdigit (CharOf (string[from])))
+			      {
+				 adjust = (adjust * 10) + DigitOf (string[from]);
+			      }
 			   }
 			}
 		     }
+		     for (x = 0; x < adjust; x++)
+		     {
+			if (result != 0)
+			   result[used] = lastChar | attrib;
+			used++;
+		     }
+		     break;
 		  }
-		  for (x=0; x < adjust; x++)
-		  {
-		     if (result != 0)
-			result[used] = lastChar | attrib;
-		     used++;
-		  }
-		  break;
-	       }
 	       case '/':
-		  from = encodeAttribute(string, from, &mask);
+		  from = encodeAttribute (string, from, &mask);
 		  attrib = attrib | mask;
 		  break;
 	       case '!':
-		  from = encodeAttribute(string, from, &mask);
+		  from = encodeAttribute (string, from, &mask);
 		  attrib = attrib & ~mask;
 		  break;
 	       }
@@ -665,19 +766,21 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	  * the first character of the array.
 	  */
 	 if (used == 0
-	  && result != 0)
+	     && result != 0)
 	 {
 	    result[0] = attrib;
 	 }
       }
       *to = used;
-   } else {
+   }
+   else
+   {
       /*
        * Try always to return something; otherwise lists of chtype strings
        * would get a spurious null pointer whenever there is a blank line,
        * and CDKfreeChtypes() would fail to free the whole list.
        */
-      result = typeCallocN(chtype, 1);
+      result = typeCallocN (chtype, 1);
    }
    return result;
 }
@@ -701,7 +804,7 @@ int chlen (chtype *string)
 /*
  * Compare a regular string to a chtype string
  */
-int cmpStrChstr(char *str, chtype *chstr)
+int cmpStrChstr (char *str, chtype *chstr)
 {
    int r = 0;
 
@@ -714,26 +817,26 @@ int cmpStrChstr(char *str, chtype *chstr)
 
    while (!r && *str && *chstr)
    {
-      r = *str - CharOf(*chstr);
+      r = *str - CharOf (*chstr);
       ++str;
       ++chstr;
    }
 
    if (r)
       return r;
-   else if (! *str)
+   else if (!*str)
       return -1;
-   else if (! *chstr)
+   else if (!*chstr)
       return 1;
    return 0;
 }
 
-void chstrncpy(char *dest, chtype *src, int maxcount)
+void chstrncpy (char *dest, chtype *src, int maxcount)
 {
    int i = 0;
 
    while (i < maxcount && *src)
-      *dest++ = CharOf(*src++);
+      *dest++ = CharOf (*src++);
 
    *dest = '\0';
 }
@@ -748,14 +851,14 @@ char *chtype2Char (chtype *string)
 
    if (string != 0)
    {
-      int len = chlen(string);
+      int len = chlen (string);
       int x;
 
-      if ((newstring = typeMallocN(char, len + 1)) != 0)
+      if ((newstring = typeMallocN (char, len + 1)) != 0)
       {
-	 for (x=0; x < len; x++)
+	 for (x = 0; x < len; x++)
 	 {
-	    newstring[x] = (char)CharOf(string[x]);
+	    newstring[x] = (char)CharOf (string[x]);
 	 }
 	 newstring[len] = '\0';
       }
@@ -774,7 +877,7 @@ char *chtype2String (chtype *string)
    if (string != 0)
    {
       int pass;
-      int len = chlen(string);
+      int len = chlen (string);
 
       for (pass = 0; pass < 2; ++pass)
       {
@@ -783,11 +886,11 @@ char *chtype2String (chtype *string)
 
 	 for (x = 0; x < len; ++x)
 	 {
-	    need = decodeAttribute(newstring, need,
-				   (x > 0) ? string[x-1] : 0,
-				   string[x]);
+	    need = decodeAttribute (newstring, need,
+				    (x > 0) ? string[x - 1] : 0,
+				    string[x]);
 	    if (newstring != 0)
-	       newstring[need] = CharOf(string[x]);
+	       newstring[need] = CharOf (string[x]);
 	    ++need;
 	 }
 	 if (pass)
@@ -795,66 +898,23 @@ char *chtype2String (chtype *string)
 	 ++need;
 	 if (!pass)
 	 {
-	    if ((newstring = typeMallocN(char, need)) == 0)
-	       break;
+	    if ((newstring = typeMallocN (char, need)) == 0)
+	         break;
 	 }
       }
    }
    return (newstring);
 }
 
-/*
- * This takes a character pointer and returns the equivalent
- * display type.
- */
-EDisplayType char2DisplayType (char *string)
-{
-   /* *INDENT-OFF* */
-   static const struct {
-      const char *name;
-      EDisplayType code;
-   } table[] = {
-      { "CHAR",		vCHAR },
-      { "HCHAR",	vHCHAR },
-      { "INT",		vINT },
-      { "HINT",		vHINT },
-      { "UCHAR",	vUCHAR },
-      { "LCHAR",	vLCHAR },
-      { "UHCHAR",	vUHCHAR },
-      { "LHCHAR",	vLHCHAR },
-      { "MIXED",	vMIXED },
-      { "HMIXED",	vHMIXED },
-      { "UMIXED",	vUMIXED },
-      { "LMIXED",	vLMIXED },
-      { "UHMIXED",	vUHMIXED },
-      { "LHMIXED",	vLHMIXED },
-      { "VIEWONLY",	vVIEWONLY },
-      { 0,		vINVALID },
-   };
-   /* *INDENT-ON* */
-
-   /* Make sure we cover our bases... */
-   if (string != 0)
-   {
-      int n;
-      for (n = 0; table[n].name != 0; n++)
-      {
-	 if (!strcmp(string, table[n].name))
-	    return table[n].code;
-      }
-   }
-   return (EDisplayType)vINVALID;
-}
-
 static int comparSort (const void *a, const void *b)
 {
-   return strcmp(*(const char *const*)a, (* (const char *const*) b));
+   return strcmp (*(const char *const *)a, (*(const char *const *)b));
 }
 
 void sortList (char **list, int length)
 {
    if (length > 1)
-      qsort(list, (unsigned) length, sizeof(list[0]), comparSort);
+      qsort (list, (unsigned)length, sizeof (list[0]), comparSort);
 }
 
 /*
@@ -862,14 +922,14 @@ void sortList (char **list, int length)
  */
 void stripWhiteSpace (EStripType stripType, char *string)
 {
-   /* Declare local variables.	*/
+   /* Declare local variables.  */
    unsigned stringLength = 0;
    unsigned alphaChar = 0;
    unsigned x;
 
-   /* Make sure the string is not null.	 */
+   /* Make sure the string is not null.  */
    if (string != 0
-    && (stringLength = strlen(string)) != 0)
+       && (stringLength = strlen (string)) != 0)
    {
       /* Strip leading whitespace */
       if (stripType == vFRONT || stripType == vBOTH)
@@ -887,9 +947,10 @@ void stripWhiteSpace (EStripType stripType, char *string)
       /* Strip trailing whitespace */
       if (stripType == vBACK || stripType == vBOTH)
       {
-	 stringLength = strlen(string);
-	 while (stringLength-- != 0
-	   && (string[stringLength] == ' ' || string[stringLength] == '\t'))
+	 stringLength = strlen (string);
+	 while (stringLength-- != 0 &&
+		(string[stringLength] == ' ' ||
+		 string[stringLength] == '\t'))
 	 {
 	    string[stringLength] = '\0';
 	 }
@@ -897,7 +958,7 @@ void stripWhiteSpace (EStripType stripType, char *string)
    }
 }
 
-static unsigned countChar(char *string, int separator)
+static unsigned countChar (char *string, int separator)
 {
    unsigned result = 0;
    int ch;
@@ -913,7 +974,7 @@ static unsigned countChar(char *string, int separator)
 /*
  * Split a string into a list of strings.
  */
-char **CDKsplitString(char *string, int separator)
+char **CDKsplitString (char *string, int separator)
 {
    char **result = 0;
    char *first;
@@ -923,21 +984,21 @@ char **CDKsplitString(char *string, int separator)
 
    if (string != 0 && *string != 0)
    {
-      need = countChar(string, separator) + 2;
-      if ((result = typeMallocN(char *, need)) != 0)
+      need = countChar (string, separator) + 2;
+      if ((result = typeMallocN (char *, need)) != 0)
       {
 	 item = 0;
 	 first = string;
-	 for(;;)
+	 for (;;)
 	 {
 	    while (*string != 0 && *string != separator)
 	       string++;
 
 	    need = string - first;
-	    if ((temp = typeMallocN(char, need + 1)) == 0)
-	       break;
+	    if ((temp = typeMallocN (char, need + 1)) == 0)
+	         break;
 
-	    memcpy(temp, first, need);
+	    memcpy (temp, first, need);
 	    temp[need] = 0;
 	    result[item++] = temp;
 
@@ -955,21 +1016,25 @@ char **CDKsplitString(char *string, int separator)
  * Add a new string to a list.  Keep a null pointer on the end so we can use
  * CDKfreeStrings() to deallocate the whole list.
  */
-unsigned CDKallocStrings(char ***list, char *item, unsigned length, unsigned used)
+unsigned CDKallocStrings (char ***list, char *item, unsigned length, unsigned used)
 {
    unsigned need = 1;
 
    while (need < length + 2)
       need *= 2;
-   if (need > used) {
+   if (need > used)
+   {
       used = need;
-      if (*list == 0) {
-	 *list = typeMallocN(char *, used);
-      } else {
-	 *list = typeReallocN(char *, *list, used);
+      if (*list == 0)
+      {
+	 *list = typeMallocN (char *, used);
+      }
+      else
+      {
+	 *list = typeReallocN (char *, *list, used);
       }
    }
-   (*list)[length++] = copyChar(item);
+   (*list)[length++] = copyChar (item);
    (*list)[length] = 0;
    return used;
 }
@@ -977,7 +1042,7 @@ unsigned CDKallocStrings(char ***list, char *item, unsigned length, unsigned use
 /*
  * Count the number of items in a list of strings.
  */
-unsigned CDKcountStrings(char **list)
+unsigned CDKcountStrings (char **list)
 {
    unsigned result = 0;
    if (list != 0)
@@ -991,29 +1056,30 @@ unsigned CDKcountStrings(char **list)
 /*
  * Free a list of strings, terminated by a null pointer.
  */
-void CDKfreeStrings(char **list)
+void CDKfreeStrings (char **list)
 {
    if (list != 0)
    {
       void *base = (void *)list;
       while (*list != 0)
-	 free(*list++);
-      free(base);
+	 free (*list++);
+      free (base);
    }
 }
 
 /*
  * Free a list of chtype-strings, terminated by a null pointer.
  */
-void CDKfreeChtypes(chtype **list)
+void CDKfreeChtypes (chtype **list)
 {
    if (list != 0)
    {
       void *base = (void *)list;
-      while (*list != 0) {
-	 freeChtype(*list++);
+      while (*list != 0)
+      {
+	 freeChtype (*list++);
       }
-      free(base);
+      free (base);
    }
 }
 
@@ -1043,8 +1109,10 @@ int mode2Filetype (mode_t mode)
    int filetype = '?';
    unsigned n;
 
-   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++) {
-      if ((mode & S_IFMT) == table[n].mode) {
+   for (n = 0; n < sizeof (table) / sizeof (table[0]); n++)
+   {
+      if ((mode & S_IFMT) == table[n].mode)
+      {
 	 filetype = table[n].code;
 	 break;
       }
@@ -1083,20 +1151,22 @@ int mode2Char (char *string, mode_t mode)
    };
    /* *INDENT-ON* */
 
-   /* Declare local variables.	*/
+   /* Declare local variables.  */
    int permissions = 0;
-   int filetype = mode2Filetype(mode);
+   int filetype = mode2Filetype (mode);
    unsigned n;
 
-   /* Clean the string.	 */
+   /* Clean the string.  */
    cleanChar (string, 11, '-');
    string[11] = '\0';
 
    if (filetype == '?')
       return -1;
 
-   for (n = 0; n < sizeof(table)/sizeof(table[0]); n++) {
-      if ((mode & table[n].mask) != 0) {
+   for (n = 0; n < sizeof (table) / sizeof (table[0]); n++)
+   {
+      if ((mode & table[n].mask) != 0)
+      {
 	 string[table[n].col] = table[n].flag;
 	 permissions |= table[n].mask;
       }
@@ -1104,9 +1174,9 @@ int mode2Char (char *string, mode_t mode)
 
    /* Check for unusual permissions.  */
    if (((mode & S_IXUSR) == 0) &&
-	((mode & S_IXGRP) == 0) &&
-	((mode & S_IXOTH) == 0) &&
-	(mode & S_ISUID) != 0)
+       ((mode & S_IXGRP) == 0) &&
+       ((mode & S_IXOTH) == 0) &&
+       (mode & S_ISUID) != 0)
    {
       string[3] = 'S';
    }
@@ -1120,9 +1190,9 @@ int mode2Char (char *string, mode_t mode)
 int intlen (int value)
 {
    if (value < 0)
-      return 1 + intlen(-value);
+      return 1 + intlen (-value);
    else if (value >= 10)
-      return 1 + intlen(value/10);
+      return 1 + intlen (value / 10);
    return 1;
 }
 
@@ -1131,7 +1201,7 @@ int intlen (int value)
  */
 int CDKgetDirectoryContents (char *directory, char ***list)
 {
-   /* Declare local variables.	*/
+   /* Declare local variables.  */
    struct dirent *dirStruct;
    int counter = 0;
    DIR *dp;
@@ -1149,8 +1219,8 @@ int CDKgetDirectoryContents (char *directory, char ***list)
    /* Read the directory.  */
    while ((dirStruct = readdir (dp)) != 0)
    {
-      if (strcmp(dirStruct->d_name, "."))
-	 used = CDKallocStrings(list, dirStruct->d_name, counter++, used);
+      if (strcmp (dirStruct->d_name, "."))
+	 used = CDKallocStrings (list, dirStruct->d_name, counter++, used);
    }
 
    /* Close the directory.  */
@@ -1168,7 +1238,7 @@ int CDKgetDirectoryContents (char *directory, char ***list)
  */
 int searchList (char **list, int listSize, char *pattern)
 {
-   /* Declare local variables.	*/
+   /* Declare local variables.  */
    unsigned len;
    int Index = -1;
    int x, ret;
@@ -1179,19 +1249,19 @@ int searchList (char **list, int listSize, char *pattern)
       len = strlen (pattern);
 
       /* Cycle through the list looking for the word. */
-      for (x=0; x < listSize; x++)
+      for (x = 0; x < listSize; x++)
       {
 	 /* Do a string compare. */
 	 ret = strncmp (list[x], pattern, len);
 
-	/*
-	 * If 'ret' is less than 0, then the current word is alphabetically
-	 * less than the provided word.  At this point we will set the index to
-	 * the current position.  If 'ret' is greater than 0, then the current
-	 * word is alphabetically greater than the given word.  We should
-	 * return with index, which might contain the last best match.  If they
-	 * are equal, then we've found it.
-	 */
+	 /*
+	  * If 'ret' is less than 0, then the current word is alphabetically
+	  * less than the provided word.  At this point we will set the index
+	  * to the current position.  If 'ret' is greater than 0, then the
+	  * current word is alphabetically greater than the given word.  We
+	  * should return with index, which might contain the last best match. 
+	  * If they are equal, then we've found it.
+	  */
 	 if (ret < 0)
 	 {
 	    Index = ret;
@@ -1212,9 +1282,9 @@ int searchList (char **list, int listSize, char *pattern)
  */
 int checkForLink (char *line, char *filename)
 {
-   int len	= 0;
-   int fPos	= 0;
-   int x	= 3;
+   int len = 0;
+   int fPos = 0;
+   int x = 3;
 
    /* Make sure the line isn't null. */
    if (line == 0)
@@ -1253,8 +1323,8 @@ char *baseName (char *pathname)
    unsigned x;
 
    if (pathname != 0
-    && *pathname != '\0'
-    && (base = copyChar (pathname)) != 0)
+       && *pathname != '\0'
+       && (base = copyChar (pathname)) != 0)
    {
       if ((pathLen = strlen (pathname)) != 0)
       {
@@ -1263,7 +1333,7 @@ char *baseName (char *pathname)
 	    /* Find the last '/' in the pathname. */
 	    if (pathname[x] == '/')
 	    {
-	       strcpy(base, pathname + x + 1);
+	       strcpy (base, pathname + x + 1);
 	       break;
 	    }
 	 }
@@ -1284,8 +1354,8 @@ char *dirName (char *pathname)
 
    /* Check if the string is null.  */
    if (pathname != 0
-    && (dir = copyChar (pathname)) != 0
-    && (pathLen = strlen (pathname)) != 0)
+       && (dir = copyChar (pathname)) != 0
+       && (pathLen = strlen (pathname)) != 0)
    {
       x = pathLen;
       while ((dir[x] != '/') && (x > 0))
@@ -1298,10 +1368,9 @@ char *dirName (char *pathname)
 }
 
 /*
- * If the dimension is a negative value, the dimension will
- * be the full height/width of the parent window - the value
- * of the dimension. Otherwise, the dimension will be the
- * given value.
+ * If the dimension is a negative value, the dimension will be the full
+ * height/width of the parent window - the value of the dimension.  Otherwise,
+ * the dimension will be the given value.
  */
 int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
 {
@@ -1324,10 +1393,10 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
       }
       else
       {
-	/*
-	 * If they gave a negative value, then return the
-	 * dimension of the parent plus the value given.
-	 */
+	 /*
+	  * If they gave a negative value, then return the
+	  * dimension of the parent plus the value given.
+	  */
 	 dimension = parentDim + proposedDim;
 
 	 /* Just to make sure. */
@@ -1372,17 +1441,17 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
    {
       int xpos, ypos;
 
-      getbegyx(window, ypos, xpos);
-      if (setbegyx(window, ypos, xpos) != ERR)
+      getbegyx (window, ypos, xpos);
+      if (setbegyx (window, ypos, xpos) != ERR)
       {
 	 xpos += xdiff;
 	 ypos += ydiff;
-	 werase(window);
-	 (void) setbegyx(window, ypos, xpos);
+	 werase (window);
+	 (void)setbegyx (window, ypos, xpos);
       }
       else
       {
-	 Beep();
+	 Beep ();
       }
    }
 }
@@ -1390,10 +1459,10 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
 /*
  * Return an integer like 'floor()', which returns a double.
  */
-int floorCDK(double value)
+int floorCDK (double value)
 {
    int result = (int)value;
-   if (result > value)	/* e.g., value < 0.0 and value is not an integer */
+   if (result > value)		/* e.g., value < 0.0 and value is not an integer */
       result--;
    return result;
 }
@@ -1401,44 +1470,40 @@ int floorCDK(double value)
 /*
  * Return an integer like 'ceil()', which returns a double.
  */
-int ceilCDK(double value)
+int ceilCDK (double value)
 {
-   return -floorCDK(-value);
+   return -floorCDK (-value);
 }
 
 /*
  * Compatibility for different versions of curses.
  */
 #if !(defined(HAVE_GETBEGX) && defined(HAVE_GETBEGY))
-int
-getbegx(WINDOW *win)
+int getbegx (WINDOW *win)
 {
-    int y, x;
-    getbegyx(win, y, x);
-    return x;
+   int y, x;
+   getbegyx (win, y, x);
+   return x;
 }
-int
-getbegy(WINDOW *win)
+int getbegy (WINDOW *win)
 {
-    int y, x;
-    getbegyx(win, y, x);
-    return y;
+   int y, x;
+   getbegyx (win, y, x);
+   return y;
 }
 #endif
 
 #if !(defined(HAVE_GETMAXX) && defined(HAVE_GETMAXY))
-int
-getmaxx(WINDOW *win)
+int getmaxx (WINDOW *win)
 {
-    int y, x;
-    getmaxyx(win, y, x);
-    return x;
+   int y, x;
+   getmaxyx (win, y, x);
+   return x;
 }
-int
-getmaxy(WINDOW *win)
+int getmaxy (WINDOW *win)
 {
-    int y, x;
-    getmaxyx(win, y, x);
-    return y;
+   int y, x;
+   getmaxyx (win, y, x);
+   return y;
 }
 #endif

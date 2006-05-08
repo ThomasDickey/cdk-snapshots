@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.21 2005/12/28 21:45:28 tom Exp $
+ * $Id: alphalist.h,v 1.23 2006/04/23 19:22:36 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2004,2005 copyright Thomas E. Dickey
+ * Changes 1999-2005,2006 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -134,6 +134,16 @@ void setCDKAlphalistContents (
 char **getCDKAlphalistContents (
 		CDKALPHALIST *	/* alphalist */,
 		int *		/* size */);
+
+/*
+ * Get/set the current position in the scroll-widget.
+ */
+int getCDKAlphalistCurrentItem(
+		CDKALPHALIST *	/* widget */);
+
+void setCDKAlphalistCurrentItem(
+		CDKALPHALIST *	/* widget */,
+		int		/* item */);
 
 /*
  * This sets the filler character of the entry field of the alphalist.
