@@ -1,5 +1,5 @@
 /*
- * $Id: fselect.h,v 1.20 2004/08/30 00:00:57 tom Exp $
+ * $Id: fselect.h,v 1.23 2006/05/04 09:54:39 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2003,2006 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -221,6 +221,28 @@ int setCDKFselectDirContents (
 char **getCDKFselectDirContents (
 		CDKFSELECT *	/* fselect */,
 		int *		/* count */);
+
+/*
+ * This sets the contents of the file selector.
+ */
+void setCDKFselectContents (
+		CDKFSELECT *	/* fselect */,
+		char **		/* list */,
+		int		/* listSize */);
+
+char **getCDKFselectContents (
+		CDKFSELECT *	/* fselect */,
+		int *		/* size */);
+
+/*
+ * Get/set the current position in the scroll-widget.
+ */
+int getCDKFselectCurrentItem(
+		CDKFSELECT *	/* widget */);
+
+void setCDKFselectCurrentItem(
+		CDKFSELECT *	/* widget */,
+		int		/* item */);
 
 /*
  * These functions set the drawing characters of the widget.

@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.29 2005/04/15 00:25:57 tom Exp $
+ * $Id: scroll.h,v 1.30 2006/05/04 11:24:28 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2004,2005 copyright Thomas E. Dickey
+ * Changes 1999-2005,2006 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -149,6 +149,20 @@ int  getCDKScrollCurrent(
 		CDKSCROLL *	/* scroll */);
 
 void setCDKScrollCurrent(
+		CDKSCROLL *	/* scroll */,
+		int		/* i */);
+
+int  getCDKScrollCurrentTop(
+		CDKSCROLL *	/* scroll */);
+
+void setCDKScrollCurrentTop(
+		CDKSCROLL *	/* scroll */,
+		int		/* i */);
+
+int  getCDKScrollCurrentItem(
+		CDKSCROLL *	/* scroll */);
+
+void setCDKScrollCurrentItem(
 		CDKSCROLL *	/* scroll */,
 		int		/* i */);
 

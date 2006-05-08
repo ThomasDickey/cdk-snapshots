@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:17:57 $
- * $Revision: 1.83 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.84 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -197,7 +197,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    }
 
    /* Refresh the window. */
-   refreshCDKWindow (label->win);
+   wrefresh (label->win);
 }
 
 /*

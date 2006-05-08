@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.78 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.79 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -384,7 +384,7 @@ static void _drawCDKItemlist (CDKOBJS *object, int Box)
 		chlen(itemlist->label));
    }
 
-   refreshCDKWindow (itemlist->win);
+   wrefresh (itemlist->win);
 
    /* Draw in the field. */
    drawCDKItemlistField(itemlist, FALSE);
@@ -440,7 +440,7 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist, boolean highlight)
    }
 
    /* Redraw the field window. */
-   refreshCDKWindow (itemlist->fieldWin);
+   wrefresh (itemlist->fieldWin);
 }
 
 /*

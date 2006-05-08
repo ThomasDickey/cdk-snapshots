@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/31 00:34:14 $
- * $Revision: 1.81 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.82 $
  */
 
 DeclareCDKObjects (GRAPH, Graph, setCdk, Unknown);
@@ -471,7 +471,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    mvwaddch (widget->win, widget->boxHeight - 3, widget->boxWidth, ACS_URCORNER);
 
    /* Refresh and lets see 'er. */
-   refreshCDKWindow (widget->win);
+   wrefresh (widget->win);
 }
 
 /*

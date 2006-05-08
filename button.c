@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.31 $
+ * $Date: 2006/05/05 00:27:45 $
+ * $Revision: 1.32 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -239,7 +239,7 @@ static void _drawCDKButton (CDKOBJS * object, boolean Box GCC_UNUSED)
       drawObjBox (button->win, ObjOf(button));
    }
    drawCDKButtonText (button);
-   refreshCDKWindow (button->win);
+   wrefresh (button->win);
 }
 
 /*

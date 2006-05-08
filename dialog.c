@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.94 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.95 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -348,8 +348,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    /* Draw in the buttons. */
    drawCDKDialogButtons (dialog);
 
-   /* Refresh the window. */
-   refreshCDKWindow (dialog->win);
+   wrefresh (dialog->win);
 }
 
 /*

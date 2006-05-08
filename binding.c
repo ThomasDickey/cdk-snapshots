@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 20:15:26 $
- * $Revision: 1.53 $
+ * $Date: 2006/04/06 19:59:29 $
+ * $Revision: 1.54 $
  *
  * Notes:
  *
@@ -176,7 +176,9 @@ int getcCDKObject (CDKOBJS *obj)
    {
       result = (int)(long)test->bindingList[result].bindData;
    }
-   else
+   else if (test == 0
+	    || (unsigned)result > test->bindingCount
+	    || test->bindingList[result].bindFunction == 0)
    {
       switch (result)
       {

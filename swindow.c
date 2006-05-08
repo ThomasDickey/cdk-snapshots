@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.113 $
+ * $Date: 2006/05/05 00:33:16 $
+ * $Revision: 1.114 $
  */
 
 /*
@@ -710,7 +710,7 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
 
    drawCdkTitle (swindow->win, object);
 
-   refreshCDKWindow (swindow->win);
+   wrefresh (swindow->win);
 
    /* Draw in the list. */
    drawCDKSwindowList (swindow, Box);
@@ -759,8 +759,7 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
       }
    }
 
-   /* Reddraw the window. */
-   refreshCDKWindow (swindow->fieldWin);
+   wrefresh (swindow->fieldWin);
 }
 
 /*

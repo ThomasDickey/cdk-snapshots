@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/31 00:22:30 $
- * $Revision: 1.85 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.86 $
  */
 
 DeclareCDKObjects (HISTOGRAM, Histogram, setCdk, Unknown);
@@ -646,7 +646,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    }
 
    /* Refresh the window. */
-   refreshCDKWindow (widget->win);
+   wrefresh (widget->win);
 }
 
 /*

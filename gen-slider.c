@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.17 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.19 $
  */
 
 /*
@@ -184,10 +184,8 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int) SIZEOF(bindings); ++x)
       bindCDKObject (v<UPPER>, widget, bindings[x].from, getcCDKBind, (void *)(long)bindings[x].to);
 
-   /* Register this baby. */
    registerCDKObject (cdkscreen, v<UPPER>, widget);
 
-   /* Return the pointer. */
    return (widget);
 }
 
@@ -613,7 +611,7 @@ static void _drawCDK<MIXED> (CDKOBJS *object, boolean Box)
 		   widget->labelLen);
       wrefresh (widget->labelWin);
    }
-   refreshCDKWindow (widget->win);
+   wrefresh (widget->win);
 
    /* Draw the field window. */
    drawCDK<MIXED>Field (widget);
@@ -662,7 +660,7 @@ static void drawCDK<MIXED>Field (CDK<UPPER> *widget)
 		    (int)strlen(temp));
 
    moveToEditPosition(widget, widget->fieldEdit);
-   refreshCDKWindow (widget->fieldWin);
+   wrefresh (widget->fieldWin);
 }
 
 /*

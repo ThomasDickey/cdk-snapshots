@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/31 00:30:01 $
- * $Revision: 1.75 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.77 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
@@ -22,15 +22,16 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
    int parentWidth	= getmaxx (cdkscreen->window);
    int xpos		= xplace;
    int ypos		= yplace;
-   int boxHeight	= 3;
-   int boxWidth		= width;
+   int boxHeight;
+   int boxWidth;
 
    if ((widget = newCDKObject (CDKMARQUEE, &my_funcs)) == 0)
-      return (0);
+        return (0);
 
    setCDKMarqueeBox (widget, Box);
 
    boxWidth = setWidgetDimension (parentWidth, width, 0);
+   boxHeight = (BorderOf (widget) * 2) + 1;
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
@@ -281,7 +282,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
    }
 
    /* Refresh the window. */
-   refreshCDKWindow (widget->win);
+   wrefresh (widget->win);
 }
 
 /*

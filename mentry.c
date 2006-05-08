@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:17:57 $
- * $Revision: 1.154 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.160 $
  */
 
 /*
@@ -11,16 +11,29 @@
  */
 static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character);
 
-DeclareCDKObjects(MENTRY, Mentry, setCdk, String);
+DeclareCDKObjects (MENTRY, Mentry, setCdk, String);
 
 /*
  * This creates a pointer to a multiple line entry widget.
  */
-CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *title, char *label, chtype fieldAttr, chtype filler, EDisplayType dispType, int fWidth, int fRows, int logicalRows, int min, boolean Box, boolean shadow)
+CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
+			 int xplace,
+			 int yplace,
+			 char *title,
+			 char *label,
+			 chtype fieldAttr,
+			 chtype filler,
+			 EDisplayType dispType,
+			 int fWidth,
+			 int fRows,
+			 int logicalRows,
+			 int min,
+			 boolean Box,
+			 boolean shadow)
 {
    CDKMENTRY *mentry	= 0;
-   int parentWidth	= getmaxx(cdkscreen->window);
-   int parentHeight	= getmaxy(cdkscreen->window);
+   int parentWidth	= getmaxx (cdkscreen->window);
+   int parentHeight	= getmaxy (cdkscreen->window);
    int fieldWidth	= fWidth;
    int fieldRows	= fRows;
    int boxWidth		= 0;
@@ -30,23 +43,23 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    int ypos		= yplace;
    int junk;
 
-   if ((mentry = newCDKObject(CDKMENTRY, &my_funcs)) == 0)
-      return (0);
+   if ((mentry = newCDKObject (CDKMENTRY, &my_funcs)) == 0)
+        return (0);
 
    setCDKMentryBox (mentry, Box);
 
-  /*
-   * If the fieldWidth is a negative value, the fieldWidth will
-   * be COLS-fieldWidth, otherwise, the fieldWidth will be the
-   * given width.
-   */
+   /*
+    * If the fieldWidth is a negative value, the fieldWidth will
+    * be COLS-fieldWidth, otherwise, the fieldWidth will be the
+    * given width.
+    */
    fieldWidth = setWidgetDimension (parentWidth, fieldWidth, 0);
 
-  /*
-   * If the fieldRows is a negative value, the fieldRows will
-   * be ROWS-fieldRows, otherwise, the fieldRows will be the
-   * given height.
-   */
+   /*
+    * If the fieldRows is a negative value, the fieldRows will
+    * be ROWS-fieldRows, otherwise, the fieldRows will be the
+    * given height.
+    */
    fieldRows = setWidgetDimension (parentWidth, fieldRows, 0);
    boxHeight = fieldRows + 2;
 
@@ -58,23 +71,27 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* We need to translate the char * label to a chtype * */
    if (label != 0)
    {
-      mentry->label	= char2Chtype (label, &mentry->labelLen, &junk);
+      mentry->label = char2Chtype (label, &mentry->labelLen, &junk);
    }
    boxWidth = mentry->labelLen + fieldWidth + 2;
 
    oldWidth = boxWidth;
-   boxWidth = setCdkTitle(ObjOf(mentry), title, boxWidth);
+   boxWidth = setCdkTitle (ObjOf (mentry), title, boxWidth);
    horizontalAdjust = (boxWidth - oldWidth) / 2;
 
-   boxHeight += TitleLinesOf(mentry);
+   boxHeight += TitleLinesOf (mentry);
 
-  /*
-   * Make sure we didn't extend beyond the parent window.
-   */
+   /*
+    * Make sure we didn't extend beyond the parent window.
+    */
    boxWidth = (boxWidth > parentWidth ? parentWidth : boxWidth);
    boxHeight = (boxHeight > parentHeight ? parentHeight : boxHeight);
-   fieldWidth = (fieldWidth > (boxWidth - mentry->labelLen - 2) ? (boxWidth - mentry->labelLen - 2) : fieldWidth);
-   fieldRows = (fieldRows > (boxHeight - TitleLinesOf(mentry) - 2) ? (boxHeight - TitleLinesOf(mentry) - 2) : fieldRows);
+   fieldWidth = (fieldWidth > (boxWidth - mentry->labelLen - 2)
+		 ? (boxWidth - mentry->labelLen - 2)
+		 : fieldWidth);
+   fieldRows = (fieldRows > (boxHeight - TitleLinesOf (mentry) - 2)
+		? (boxHeight - TitleLinesOf (mentry) - 2)
+		: fieldRows);
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
@@ -85,7 +102,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    /* Is the window null??? */
    if (mentry->win == 0)
    {
-      destroyCDKObject(mentry);
+      destroyCDKObject (mentry);
       return (0);
    }
 
@@ -93,15 +110,15 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    if (mentry->label != 0)
    {
       mentry->labelWin = subwin (mentry->win, fieldRows,
-					mentry->labelLen + 2,
-					ypos + TitleLinesOf(mentry) + 1,
-					xpos + horizontalAdjust + 1);
+				 mentry->labelLen + 2,
+				 ypos + TitleLinesOf (mentry) + 1,
+				 xpos + horizontalAdjust + 1);
    }
 
    /* Make the field window. */
    mentry->fieldWin = subwin (mentry->win, fieldRows, fieldWidth,
-				ypos + TitleLinesOf(mentry) + 1,
-				xpos + mentry->labelLen + horizontalAdjust + 1);
+			      ypos + TitleLinesOf (mentry) + 1,
+			      xpos + mentry->labelLen + horizontalAdjust + 1);
 
    /* Turn on the keypad. */
    keypad (mentry->fieldWin, TRUE);
@@ -112,11 +129,11 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->totalWidth	= (fieldWidth*logicalRows) + 1;
 
    /* Create the info char * pointer. */
-   mentry->info = typeMallocN(char, mentry->totalWidth + 3);
+   mentry->info = typeMallocN (char, mentry->totalWidth + 3);
    cleanChar (mentry->info, mentry->totalWidth + 3, '\0');
 
    /* Set up the rest of the widget information. */
-   ScreenOf(mentry)		= cdkscreen;
+   ScreenOf (mentry)		= cdkscreen;
    mentry->shadowWin		= 0;
    mentry->fieldAttr		= fieldAttr;
    mentry->fieldWidth		= fieldWidth;
@@ -125,8 +142,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->boxWidth		= boxWidth;
    mentry->filler		= filler;
    mentry->hidden		= filler;
-   ObjOf(mentry)->inputWindow	= mentry->win;
-   ObjOf(mentry)->acceptsFocus	= TRUE;
+   ObjOf (mentry)->inputWindow	= mentry->win;
+   ObjOf (mentry)->acceptsFocus	= TRUE;
    mentry->currentRow		= 0;
    mentry->currentCol		= 0;
    mentry->topRow		= 0;
@@ -134,7 +151,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen, int xplace, int yplace, char *tit
    mentry->dispType		= dispType;
    mentry->min			= min;
    mentry->logicalRows		= logicalRows;
-   initExitType(mentry);
+   initExitType (mentry);
    mentry->callbackfn		= CDKMentryCallBack;
 
    /* Do we need to create a shadow. */
@@ -157,16 +174,16 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 {
    chtype input = 0;
    boolean functionKey;
-   char *ret	= 0;
+   char *ret = 0;
 
    /* Draw the mentry widget. */
-   drawCDKMentry (mentry, ObjOf(mentry)->box);
+   drawCDKMentry (mentry, ObjOf (mentry)->box);
 
    if (actions == 0)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf(mentry), &functionKey);
+	 input = getchCDKObject (ObjOf (mentry), &functionKey);
 
 	 /* Inject this character into the widget. */
 	 ret = injectCDKMentry (mentry, input);
@@ -182,7 +199,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
       int x;
 
       /* Inject each character one at a time. */
-      for (x=0; x < length; x++)
+      for (x = 0; x < length; x++)
       {
 	 ret = injectCDKMentry (mentry, actions[x]);
 	 if (mentry->exitType != vEARLY_EXIT)
@@ -193,7 +210,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
    }
 
    /* Set the exit type and exit. */
-   setExitType(mentry, 0);
+   setExitType (mentry, 0);
    return 0;
 }
 
@@ -207,10 +224,10 @@ static bool setTopRow (CDKMENTRY *widget, int row)
    return FALSE;
 }
 
-static bool setCurPos(CDKMENTRY *widget, int row, int col)
+static bool setCurPos (CDKMENTRY *widget, int row, int col)
 {
-   if (widget->currentRow != row
-    || widget->currentCol != col)
+   if (widget->currentRow != row ||
+       widget->currentCol != col)
    {
       widget->currentRow = row;
       widget->currentCol = col;
@@ -219,31 +236,74 @@ static bool setCurPos(CDKMENTRY *widget, int row, int col)
    return FALSE;
 }
 
+static bool handle_KEY_LEFT (CDKMENTRY *mentry, bool *moved, bool *redraw)
+{
+   bool result = TRUE;
+
+   if (mentry->currentCol != 0)
+   {
+      *moved = setCurPos (mentry,
+			  mentry->currentRow,
+			  mentry->currentCol - 1);
+   }
+   else if (mentry->currentRow == 0)
+   {
+      if (mentry->topRow != 0)
+      {
+	 *moved = setCurPos (mentry,
+			     mentry->currentRow,
+			     mentry->fieldWidth - 1);
+	 *redraw = setTopRow (mentry, mentry->topRow - 1);
+      }
+   }
+   else
+   {
+      *moved = setCurPos (mentry,
+			  mentry->currentRow - 1,
+			  mentry->fieldWidth - 1);
+   }
+
+   if (!*moved && !*redraw)
+   {
+      Beep ();
+      result = FALSE;
+   }
+   return result;
+}
+
+static int getCursorPos (CDKMENTRY *mentry)
+{
+   return (((mentry->currentRow + mentry->topRow) * mentry->fieldWidth) +
+	   mentry->currentCol);
+}
+
 /*
  * This injects a character into the widget.
  */
 static int _injectCDKMentry (CDKOBJS *object, chtype input)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
-   int cursorPos	= ((mentry->currentRow + mentry->topRow) *
-				mentry->fieldWidth) + mentry->currentCol;
-   int ppReturn		= 1;
+   int cursorPos = getCursorPos (mentry);
+   int ppReturn = 1;
    int x, fieldCharacters;
    char holder;
    char *ret = unknownString;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(mentry, 0);
+   setExitType (mentry, 0);
 
    /* Refresh the field. */
    drawCDKMentryField (mentry);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(mentry) != 0)
+   if (PreProcessFuncOf (mentry) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(mentry) (vMENTRY, mentry, PreProcessDataOf(mentry), input);
+      ppReturn = PreProcessFuncOf (mentry) (vMENTRY,
+					    mentry,
+					    PreProcessDataOf (mentry),
+					    input);
    }
 
    /* Should we continue? */
@@ -252,280 +312,232 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
       /* Check for a key binding... */
       if (checkCDKObjectBind (vMENTRY, mentry, input) != 0)
       {
-	 checkEarlyExit(mentry);
+	 checkEarlyExit (mentry);
 	 complete = TRUE;
       }
       else
       {
 	 bool moved = FALSE;
 	 bool redraw = FALSE;
-	 int infoLength = (int)strlen(mentry->info);
+	 int infoLength = (int)strlen (mentry->info);
 
 	 switch (input)
 	 {
-	    case KEY_HOME :
-		 moved = setCurPos (mentry, 0, 0);
-		 redraw = setTopRow (mentry, 0);
-		 break;
+	 case KEY_HOME:
+	    moved = setCurPos (mentry, 0, 0);
+	    redraw = setTopRow (mentry, 0);
+	    break;
 
-	    case KEY_END :
-		 fieldCharacters = mentry->rows * mentry->fieldWidth;
-		 if (infoLength < fieldCharacters)
-		 {
-		    redraw = setTopRow (mentry, 0);
-		    moved = setCurPos (mentry,
-				       infoLength / mentry->fieldWidth,
-				       infoLength % mentry->fieldWidth);
-		 }
-		 else
-		 {
-		    redraw = setTopRow (mentry, (infoLength / mentry->fieldWidth) - mentry->rows + 1);
-		    moved = setCurPos (mentry,
-				       mentry->rows - 1,
-				       infoLength % mentry->fieldWidth);
-		 }
-		 break;
+	 case KEY_END:
+	    fieldCharacters = mentry->rows * mentry->fieldWidth;
+	    if (infoLength < fieldCharacters)
+	    {
+	       redraw = setTopRow (mentry, 0);
+	       moved = setCurPos (mentry,
+				  infoLength / mentry->fieldWidth,
+				  infoLength % mentry->fieldWidth);
+	    }
+	    else
+	    {
+	       redraw = setTopRow (mentry,
+				   (infoLength / mentry->fieldWidth) -
+				   mentry->rows + 1);
+	       moved = setCurPos (mentry,
+				  mentry->rows - 1,
+				  infoLength % mentry->fieldWidth);
+	    }
+	    break;
 
-	    case KEY_LEFT :
-		 if (mentry->currentCol != 0)
-		 {
-		    moved = setCurPos(mentry, mentry->currentRow, mentry->currentCol - 1);
-		 }
-		 else if (mentry->currentRow == 0)
-		 {
-		    if (mentry->topRow != 0)
-		    {
-		       moved = setCurPos(mentry, mentry->currentRow, mentry->fieldWidth - 1);
-		       redraw = setTopRow (mentry, mentry->topRow - 1);
-		    }
-		 }
-		 else
-		 {
-		    moved = setCurPos(mentry, mentry->currentRow - 1, mentry->fieldWidth - 1);
-		 }
-		 if (!moved && !redraw)
-		    Beep();
-		 break;
+	 case KEY_LEFT:
+	    handle_KEY_LEFT (mentry, &moved, &redraw);
+	    break;
 
-	    case KEY_RIGHT :
-		 if (mentry->currentCol < (mentry->fieldWidth - 1))
-		 {
-		    if ((((mentry->topRow + mentry->currentRow) * mentry->fieldWidth) + mentry->currentCol + 1) <= infoLength)
-		    {
-		       moved = setCurPos(mentry, mentry->currentRow, mentry->currentCol + 1);
-		    }
-		 }
-		 else if (mentry->currentRow == mentry->rows - 1)
-		 {
-		    if ((mentry->topRow + mentry->currentRow + 1) <= mentry->logicalRows)
-		    {
-		       moved = setCurPos(mentry, mentry->currentRow, 0);
-		       redraw = setTopRow (mentry, mentry->topRow + 1);
-		    }
-		 }
-		 else
-		 {
-		    moved = setCurPos(mentry, mentry->currentRow + 1, 0);
-		 }
-		 if (!moved && !redraw)
-		    Beep();
-		 break;
+	 case KEY_RIGHT:
+	    if (mentry->currentCol < (mentry->fieldWidth - 1))
+	    {
+	       if ((getCursorPos (mentry) + 1) <= infoLength)
+	       {
+		  moved = setCurPos (mentry,
+				     mentry->currentRow,
+				     mentry->currentCol + 1);
+	       }
+	    }
+	    else if (mentry->currentRow == mentry->rows - 1)
+	    {
+	       if ((mentry->topRow + mentry->currentRow + 1) <= mentry->logicalRows)
+	       {
+		  moved = setCurPos (mentry, mentry->currentRow, 0);
+		  redraw = setTopRow (mentry, mentry->topRow + 1);
+	       }
+	    }
+	    else
+	    {
+	       moved = setCurPos (mentry, mentry->currentRow + 1, 0);
+	    }
+	    if (!moved && !redraw)
+	       Beep ();
+	    break;
 
-	    case KEY_DOWN :
-		 if (mentry->currentRow != (mentry->rows-1))
-		 {
-		    if ((((mentry->topRow + mentry->currentRow + 1) * mentry->fieldWidth) + mentry->currentCol) <= infoLength - 1)
-		    {
-		       moved = setCurPos (mentry, mentry->currentRow + 1, mentry->currentCol);
-		    }
-		 }
-		 else if (mentry->topRow < mentry->logicalRows - mentry->rows)
-		 {
-		    if (((mentry->topRow + mentry->currentRow + 1) * mentry->fieldWidth) <= infoLength)
-		    {
-		       redraw = setTopRow (mentry, mentry->topRow + 1);
-		    }
-		 }
-		 if (!moved && !redraw)
-		    Beep();
-		 break;
+	 case KEY_DOWN:
+	    if (mentry->currentRow != (mentry->rows - 1))
+	    {
+	       if ((getCursorPos (mentry) + mentry->fieldWidth + 1)
+		   <= infoLength)
+	       {
+		  moved = setCurPos (mentry, mentry->currentRow + 1, mentry->currentCol);
+	       }
+	    }
+	    else if (mentry->topRow < mentry->logicalRows - mentry->rows)
+	    {
+	       if (((mentry->topRow + mentry->currentRow + 1) *
+		    mentry->fieldWidth) <= infoLength)
+	       {
+		  redraw = setTopRow (mentry, mentry->topRow + 1);
+	       }
+	    }
+	    if (!moved && !redraw)
+	       Beep ();
+	    break;
 
-	    case KEY_UP :
-		 if (mentry->currentRow != 0)
-		 {
-		    moved = setCurPos (mentry, mentry->currentRow - 1, mentry->currentCol);
-		 }
-		 else if (mentry->topRow != 0)
-		 {
-		    redraw = setTopRow (mentry, mentry->topRow - 1);
-		 }
-		 if (!moved && !redraw)
-		    Beep();
-		 break;
+	 case KEY_UP:
+	    if (mentry->currentRow != 0)
+	    {
+	       moved = setCurPos (mentry, mentry->currentRow - 1, mentry->currentCol);
+	    }
+	    else if (mentry->topRow != 0)
+	    {
+	       redraw = setTopRow (mentry, mentry->topRow - 1);
+	    }
+	    if (!moved && !redraw)
+	       Beep ();
+	    break;
 
-	    case KEY_BACKSPACE : case KEY_DC :
-		 if (mentry->dispType == vVIEWONLY)
-		 {
-		    Beep();
-		 }
-		 else if (infoLength == 0)
-		 {
-		    Beep();
-		 }
-		 else if (cursorPos != infoLength)
-		 {
-		    /* We are deleting from the middle of the string.  */
-		    for (x = cursorPos; x < infoLength; x++)
-		    {
-		       mentry->info[x] = mentry->info[x + 1];
-		    }
-		    mentry->info[--infoLength] = '\0';
+	 case KEY_BACKSPACE:
+	 case KEY_DC:
+	    if (mentry->dispType == vVIEWONLY)
+	    {
+	       Beep ();
+	    }
+	    else if (infoLength == 0)
+	    {
+	       Beep ();
+	    }
+	    else if (input == KEY_DC
+		     || handle_KEY_LEFT (mentry, &moved, &redraw))
+	    {
+	       cursorPos = getCursorPos (mentry);
+	       if (mentry->info[cursorPos] != '\0')
+	       {
+		  for (x = cursorPos; x < infoLength; x++)
+		  {
+		     mentry->info[x] = mentry->info[x + 1];
+		  }
+		  mentry->info[--infoLength] = '\0';
 
-		    /* We have to redraw the screen. */
-		    drawCDKMentryField (mentry);
-		 }
-		 else
-		 {
-		    /* We are deleting from the end of the string. */
-		    mentry->info[--infoLength] = '\0';
+		  drawCDKMentryField (mentry);
+	       }
+	       else
+	       {
+		  Beep ();
+	       }
+	    }
+	    break;
 
-		    /* Adjust the currentRow/currentCol vars. */
-		    if (mentry->currentCol == 0 &&
-			  mentry->currentRow == 0)
-		    {
-		       if (mentry->topRow == 0)
-		       {
-			  Beep();
-		       }
-		       else
-		       {
-			  /* Bump everything down X lines. */
-			  int rows = infoLength / mentry->fieldWidth;
-			  int cols = infoLength % mentry->fieldWidth;
+	 case CDK_TRANSPOSE:
+	    if (cursorPos >= infoLength - 1)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       holder = mentry->info[cursorPos];
+	       mentry->info[cursorPos] = mentry->info[cursorPos + 1];
+	       mentry->info[cursorPos + 1] = holder;
+	       drawCDKMentryField (mentry);
+	    }
+	    break;
 
-			  if (rows < mentry->rows)
-			  {
-			     redraw = setTopRow (mentry, 0);
-			     mentry->currentCol = cols;
-			     mentry->currentRow = rows;
-			  }
-			  else
-			  {
-			     mentry->topRow -= mentry->rows;
-			     mentry->currentRow = mentry->rows - 1;
-			     mentry->currentCol = cols;
-			  }
-		       }
-		    }
-		    else if (mentry->currentCol == 0)
-		    {
-		       mentry->currentCol = mentry->fieldWidth - 1;
-		       mentry->currentRow--;
-		    }
-		    else
-		    {
-		       mentry->currentCol--;
-		    }
+	 case CDK_ERASE:
+	    if (infoLength != 0)
+	    {
+	       cleanCDKMentry (mentry);
+	       drawCDKMentryField (mentry);
+	    }
+	    break;
 
-		    /* We have to redraw the screen. */
-		    drawCDKMentryField (mentry);
-		 }
-		 break;
+	 case CDK_CUT:
+	    if (infoLength == 0)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       freeChar (GPasteBuffer);
+	       GPasteBuffer = copyChar (mentry->info);
+	       cleanCDKMentry (mentry);
+	       drawCDKMentryField (mentry);
+	    }
+	    break;
 
-	    case CDK_TRANSPOSE :
-		 if (cursorPos >= infoLength-1)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    holder = mentry->info[cursorPos];
-		    mentry->info[cursorPos] = mentry->info[cursorPos + 1];
-		    mentry->info[cursorPos + 1] = holder;
-		    drawCDKMentryField (mentry);
-		 }
-		 break;
+	 case CDK_COPY:
+	    if (infoLength == 0)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       freeChar (GPasteBuffer);
+	       GPasteBuffer = copyChar (mentry->info);
+	    }
+	    break;
 
-	    case CDK_ERASE :
-		 if (infoLength != 0)
-		 {
-		    cleanCDKMentry (mentry);
-		    drawCDKMentryField (mentry);
-		 }
-		 break;
+	 case CDK_PASTE:
+	    if (GPasteBuffer == 0)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       setCDKMentryValue (mentry, GPasteBuffer);
+	       drawCDKMentry (mentry, ObjOf (mentry)->box);
+	    }
+	    break;
 
-	    case CDK_CUT:
-		 if (infoLength == 0)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    freeChar (GPasteBuffer);
-		    GPasteBuffer = copyChar (mentry->info);
-		    cleanCDKMentry (mentry);
-		    drawCDKMentryField (mentry);
-		 }
-		 break;
+	 case KEY_TAB:
+	 case KEY_ENTER:
+	    if (infoLength < mentry->min + 1)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       setExitType (mentry, input);
+	       ret = (mentry->info);
+	       complete = TRUE;
+	    }
+	    break;
 
-	    case CDK_COPY:
-		 if (infoLength == 0)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    freeChar (GPasteBuffer);
-		    GPasteBuffer = copyChar (mentry->info);
-		 }
-		 break;
+	 case KEY_ESC:
+	    setExitType (mentry, input);
+	    complete = TRUE;
+	    break;
 
-	    case CDK_PASTE:
-		 if (GPasteBuffer == 0)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    setCDKMentryValue (mentry, GPasteBuffer);
-		    drawCDKMentry (mentry, ObjOf(mentry)->box);
-		 }
-		 break;
+	 case CDK_REFRESH:
+	    eraseCDKScreen (ScreenOf (mentry));
+	    refreshCDKScreen (ScreenOf (mentry));
+	    break;
 
-	    case KEY_TAB : case KEY_ENTER :
-		 if (infoLength < mentry->min + 1)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    setExitType(mentry, input);
-		    ret = (mentry->info);
-		    complete = TRUE;
-		 }
-		 break;
-
-	    case KEY_ESC :
-		 setExitType(mentry, input);
-		 complete = TRUE;
-		 break;
-
-	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(mentry));
-		 refreshCDKScreen (ScreenOf(mentry));
-		 break;
-
-	    default :
-		 if (mentry->dispType == vVIEWONLY
-		  || infoLength >= mentry->totalWidth)
-		 {
-		    Beep();
-		 }
-		 else
-		 {
-		    (mentry->callbackfn)(mentry, input);
-		 }
-		 break;
+	 default:
+	    if (mentry->dispType == vVIEWONLY
+		|| infoLength >= mentry->totalWidth)
+	    {
+	       Beep ();
+	    }
+	    else
+	    {
+	       (mentry->callbackfn) (mentry, input);
+	    }
+	    break;
 	 }
 
 	 if (redraw)
@@ -540,28 +552,36 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf(mentry) != 0))
+      if (!complete && (PostProcessFuncOf (mentry) != 0))
       {
-	 PostProcessFuncOf(mentry) (vMENTRY, mentry, PostProcessDataOf(mentry), input);
+	 PostProcessFuncOf (mentry) (vMENTRY,
+				     mentry,
+				     PostProcessDataOf (mentry),
+				     input);
       }
    }
 
-   if (!complete) {
-      setExitType(mentry, 0);
+   if (!complete)
+   {
+      setExitType (mentry, 0);
    }
 
-   ResultOf(mentry).valueString = ret;
+   ResultOf (mentry).valueString = ret;
    return (ret != unknownString);
 }
 
 /*
  * This moves the mentry field to the given location.
  */
-static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean relative, boolean refresh_flag)
+static void _moveCDKMentry (CDKOBJS *object,
+			    int xplace,
+			    int yplace,
+			    boolean relative,
+			    boolean refresh_flag)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
-   int currentX = getbegx(mentry->win);
-   int currentY = getbegy(mentry->win);
+   int currentX = getbegx (mentry->win);
+   int currentY = getbegy (mentry->win);
    int xpos	= xplace;
    int ypos	= yplace;
    int xdiff	= 0;
@@ -573,30 +593,30 @@ static void _moveCDKMentry (CDKOBJS *object, int xplace, int yplace, boolean rel
     */
    if (relative)
    {
-      xpos = getbegx(mentry->win) + xplace;
-      ypos = getbegy(mentry->win) + yplace;
+      xpos = getbegx (mentry->win) + xplace;
+      ypos = getbegy (mentry->win) + yplace;
    }
 
    /* Adjust the window if we need to. */
-   alignxy (WindowOf(mentry), &xpos, &ypos, mentry->boxWidth, mentry->boxHeight);
+   alignxy (WindowOf (mentry), &xpos, &ypos, mentry->boxWidth, mentry->boxHeight);
 
    /* Get the difference. */
    xdiff = currentX - xpos;
    ydiff = currentY - ypos;
 
    /* Move the window to the new location. */
-   moveCursesWindow(mentry->win, -xdiff, -ydiff);
-   moveCursesWindow(mentry->fieldWin, -xdiff, -ydiff);
-   moveCursesWindow(mentry->labelWin, -xdiff, -ydiff);
-   moveCursesWindow(mentry->shadowWin, -xdiff, -ydiff);
+   moveCursesWindow (mentry->win, -xdiff, -ydiff);
+   moveCursesWindow (mentry->fieldWin, -xdiff, -ydiff);
+   moveCursesWindow (mentry->labelWin, -xdiff, -ydiff);
+   moveCursesWindow (mentry->shadowWin, -xdiff, -ydiff);
 
    /* Touch the windows so they 'move'. */
-   refreshCDKWindow (WindowOf(mentry));
+   refreshCDKWindow (WindowOf (mentry));
 
    /* Redraw the window, if they asked for it. */
    if (refresh_flag)
    {
-      drawCDKMentry (mentry, ObjOf(mentry)->box);
+      drawCDKMentry (mentry, ObjOf (mentry)->box);
    }
 }
 
@@ -616,35 +636,31 @@ void drawCDKMentryField (CDKMENTRY *mentry)
       return;
    }
 
-   drawCdkTitle (mentry->win, ObjOf(mentry));
+   drawCdkTitle (mentry->win, ObjOf (mentry));
 
-   refreshCDKWindow (mentry->win);
+   wrefresh (mentry->win);
 
    /* The information isn't null, redraw the field. */
    length = (int)strlen (mentry->info);
-   lastpos = ((chtype)mentry->info[length] == (chtype)mentry->filler ? length-1 : length);
+   lastpos = ((chtype)mentry->info[length] == (chtype)mentry->filler
+	      ? length - 1
+	      : length);
 
    /* Start redrawing the fields. */
-   for (x=0; x < mentry->rows; x++)
+   for (x = 0; x < mentry->rows; x++)
    {
-      for (y=0; y < mentry->fieldWidth ; y++)
+      for (y = 0; y < mentry->fieldWidth; y++)
       {
 	 if (currchar < lastpos)
 	 {
-	    if (mentry->dispType == vHCHAR ||
-			mentry->dispType == vHINT ||
-			mentry->dispType == vHMIXED ||
-			mentry->dispType == vUHCHAR ||
-			mentry->dispType == vLHCHAR ||
-			mentry->dispType == vUHMIXED ||
-			mentry->dispType == vLHMIXED)
+	    if (isHiddenDisplayType (mentry->dispType))
 	    {
 	       mvwaddch (mentry->fieldWin, x, y, mentry->filler);
 	    }
 	    else
 	    {
 	       mvwaddch (mentry->fieldWin, x, y,
-			CharOf(mentry->info[currchar++]) | mentry->fieldAttr);
+			 CharOf (mentry->info[currchar++]) | mentry->fieldAttr);
 	    }
 	 }
 	 else
@@ -656,7 +672,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 
    /* Refresh the screen. */
    wmove (mentry->fieldWin, mentry->currentRow, mentry->currentCol);
-   refreshCDKWindow (mentry->fieldWin);
+   wrefresh (mentry->fieldWin);
 }
 
 /*
@@ -666,102 +682,28 @@ void drawCDKMentryField (CDKMENTRY *mentry)
  */
 static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 {
-   int cursorPos = ((mentry->currentRow + mentry->topRow) *
-			 mentry->fieldWidth) + mentry->currentCol;
+   int cursorPos = getCursorPos (mentry);
    int infoLength = (int)strlen (mentry->info);
-   chtype newchar;
+   char newchar = filterByDisplayType (mentry->dispType, character);
    int x;
 
-   /* Check the type of character we are looking for. */
-   if (!isChar(character))
+   if (newchar == ERR)
    {
-      Beep();
-   }
-   else if ((mentry->dispType == vINT ||
-	mentry->dispType == vHINT) &&
-	!isdigit(CharOf(character)))
-   {
-      Beep();
-   }
-   else if ((mentry->dispType == vCHAR ||
-		mentry->dispType == vUCHAR ||
-		mentry->dispType == vLCHAR ||
-		mentry->dispType == vUHCHAR ||
-		mentry->dispType == vLHCHAR) &&
-		isdigit(CharOf(character)))
-   {
-      Beep();
+      Beep ();
    }
    else
    {
-      /* We will make any adjustments to the case of the character. */
-      newchar = character;
-      if ((mentry->dispType == vUCHAR ||
-		mentry->dispType == vUHCHAR ||
-		mentry->dispType == vUMIXED ||
-		mentry->dispType == vUHMIXED) &&
-		!isdigit(CharOf(character)))
+      for (x = infoLength + 1; x > cursorPos; x--)
       {
-	 newchar = toupper (character);
+	 mentry->info[x] = mentry->info[x - 1];
       }
-      else if ((mentry->dispType == vLCHAR ||
-		mentry->dispType == vLHCHAR ||
-		mentry->dispType == vLMIXED ||
-		mentry->dispType == vLHMIXED) &&
-		!isdigit(CharOf(character)))
-      {
-	 newchar = tolower (character);
-      }
+      mentry->info[cursorPos] = newchar;
+      mentry->currentCol++;
 
-      /*
-       * Check if we are adding onto the end or we are adding
-       * into the middle?
-	*/
-      if (cursorPos != infoLength-1)
-      {
-	 /* We are adding in the middle of the string. */
-	 for (x = infoLength + 1; x > cursorPos; x--)
-	 {
-	    mentry->info[x] = mentry->info[x-1];
-	 }
-	 mentry->info[cursorPos] = newchar;
-	 mentry->currentCol++;
-
-	 /* We have to redraw the screen. */
-	 drawCDKMentryField (mentry);
-      }
-      else
-      {
-	 /* We are adding onto the end of the string. */
-	 mentry->info[infoLength-1]	= newchar;
-	 mentry->info[infoLength]	= mentry->filler;
-
-	 /* Add the character on the screen */
-	 if (mentry->dispType == vHCHAR ||
-			mentry->dispType == vHINT ||
-			mentry->dispType == vHMIXED ||
-			mentry->dispType == vUHCHAR ||
-			mentry->dispType == vLHCHAR ||
-			mentry->dispType == vUHMIXED ||
-			mentry->dispType == vLHMIXED)
-	 {
-	    mvwaddch (mentry->fieldWin,
-			mentry->currentRow,
-			mentry->currentCol++,
-			mentry->filler);
-	 }
-	 else
-	 {
-	    mvwaddch (mentry->fieldWin,
-			mentry->currentRow,
-			mentry->currentCol++,
-			newchar|mentry->fieldAttr);
-	 }
-	 wrefresh (mentry->fieldWin);
-      }
+      drawCDKMentryField (mentry);
 
       /* Have we gone out of bounds. */
-      if (mentry->currentCol == mentry->fieldWidth)
+      if (mentry->currentCol >= mentry->fieldWidth)
       {
 	 /* Update the row and col values. */
 	 mentry->currentCol = 0;
@@ -794,7 +736,7 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
    /* Box the widget if asked. */
    if (Box)
    {
-      drawObjBox (mentry->win, ObjOf(mentry));
+      drawObjBox (mentry->win, ObjOf (mentry));
       wrefresh (mentry->win);
    }
 
@@ -808,9 +750,9 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
    if (mentry->labelWin != 0)
    {
       writeChtype (mentry->labelWin, 0, 0,
-			mentry->label,
-			HORIZONTAL, 0,
-			mentry->labelLen);
+		   mentry->label,
+		   HORIZONTAL, 0,
+		   mentry->labelLen);
       wrefresh (mentry->labelWin);
    }
 
@@ -980,12 +922,12 @@ int getCDKMentryMin (CDKMENTRY *mentry)
  */
 void setCDKMentryBox (CDKMENTRY *mentry, boolean Box)
 {
-   ObjOf(mentry)->box = Box;
-   ObjOf(mentry)->borderSize = Box ? 1 : 0;
+   ObjOf (mentry)->box = Box;
+   ObjOf (mentry)->borderSize = Box ? 1 : 0;
 }
 boolean getCDKMentryBox (CDKMENTRY *mentry)
 {
-   return ObjOf(mentry)->box;
+   return ObjOf (mentry)->box;
 }
 
 /*
@@ -1007,21 +949,21 @@ void setCDKMentryCB (CDKMENTRY *mentry, MENTRYCB callback)
    mentry->callbackfn = callback;
 }
 
-static void _focusCDKMentry(CDKOBJS *object)
+static void _focusCDKMentry (CDKOBJS *object)
 {
-   CDKMENTRY *mentry = (CDKMENTRY*)object;
+   CDKMENTRY *mentry = (CDKMENTRY *)object;
 
-   wmove(mentry->fieldWin, 0, mentry->currentCol);
+   wmove (mentry->fieldWin, 0, mentry->currentCol);
    wrefresh (mentry->fieldWin);
 }
 
-static void _unfocusCDKMentry(CDKOBJS *object)
+static void _unfocusCDKMentry (CDKOBJS *object)
 {
-   CDKMENTRY *mentry = (CDKMENTRY*)object;
+   CDKMENTRY *mentry = (CDKMENTRY *)object;
 
    wrefresh (mentry->fieldWin);
 }
 
-dummyRefreshData(Mentry)
+dummyRefreshData (Mentry)
 
-dummySaveData(Mentry)
+dummySaveData (Mentry)

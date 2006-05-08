@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_fselect.3,v 1.23 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_fselect.3,v 1.24 2006/05/07 01:00:01 tom Exp $
 .de XX
 ..
 .TH cdk_fselect 3
@@ -10,6 +10,8 @@
 .XX drawCDKFselect
 .XX eraseCDKFselect
 .XX getCDKFselectBox
+.XX getCDKFselectContents
+.XX getCDKFselectCurrentItem
 .XX getCDKFselectDirAttribute
 .XX getCDKFselectDirContents
 .XX getCDKFselectDirectory
@@ -27,6 +29,8 @@
 .XX setCDKFselectBackgroundColor
 .XX setCDKFselectBox
 .XX setCDKFselectBoxAttribute
+.XX setCDKFselectContents
+.XX setCDKFselectCurrentItem
 .XX setCDKFselectDirAttribute
 .XX setCDKFselectDirContents
 .XX setCDKFselectDirectory
@@ -73,6 +77,13 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "boolean getCDKFselectBox ("
 .BI "CDKFSELECT *" "fselect");
+.TP 15
+.B "char **getCDKFselectContents ("
+.BI "CDKFSELECT *" "widget",
+.BI "int *" "size");
+.TP 15
+.B "int getCDKFselectCurrentItem ("
+.BI "CDKFSELECT *" "widget");
 .TP 15
 .B "char *getCDKFselectDirAttribute ("
 .BI "CDKFSELECT *" "fselect");
@@ -158,6 +169,15 @@ cdk_fselect \- curses file selector widget.
 .B "void setCDKFselectBoxAttribute ("
 .BI "CDKFSELECT *" "fselect",
 .BI "chtype " "character");
+.TP 15
+.B "void setCDKFselectContents ("
+.BI "CDKFSELECT *" "widget",
+.BI "char **" "list",
+.BI "int " "listSize");
+.TP 15
+.B "void setCDKFselectCurrentItem ("
+.BI "CDKFSELECT *" "widget",
+.BI "int " "item");
 .TP 15
 .B "void setCDKFselectDirAttribute ("
 .BI "CDKFSELECT *" "fselect",
@@ -255,6 +275,13 @@ This does \fINOT\fR destroy the widget.
 .TP 5
 .B getCDKFselectBox
 returns true if the widget will be drawn with a box around it.
+.TP 5
+.B getCDKFselectContents
+returns the directory-contents (which are formatted),
+and sets the number of entries via the \fIsize\fP parameter.
+.TP 5
+.B getCDKFselectCurrentItem
+returns the current position in the scroll-widget.
 .TP 5
 .B getCDKFselectDirAttribute
 returns the attribute that directories are drawn with in the
@@ -418,6 +445,12 @@ sets whether the widget will be drawn with a box around it.
 .TP 5
 .B setCDKFselectBoxAttribute
 sets the attribute of the box.
+.TP 5
+.B setCDKFselectContents
+sets the contents of the widget.
+.TP 5
+.B setCDKFselectCurrentItem
+set the current position in the scroll-widget.
 .TP 5
 .B setCDKFselectDirAttribute
 sets the attribute that directories will be drawn with in the scrolling

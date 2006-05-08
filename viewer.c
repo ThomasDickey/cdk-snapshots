@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:28:57 $
- * $Revision: 1.155 $
+ * $Date: 2006/05/05 00:27:44 $
+ * $Revision: 1.156 $
  */
 
 /*
@@ -1041,7 +1041,7 @@ static void drawCDKViewerButtons (CDKVIEWER *viewer)
    }
 
    /* Refresh the window. */
-   refreshCDKWindow (viewer->win);
+   wrefresh (viewer->win);
 }
 
 /*

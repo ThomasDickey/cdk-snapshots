@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.61 $
+ * $Date: 2006/05/05 00:27:45 $
+ * $Revision: 1.62 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -422,7 +422,7 @@ void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
    }
    if (cur_row >= 0 && cur_col >= 0)
       wmove(buttonbox->win, cur_row, cur_col);
-   refreshCDKWindow (buttonbox->win);
+   wrefresh (buttonbox->win);
 }
 
 /*
