@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.130 $
+ * $Date: 2007/04/02 00:30:40 $
+ * $Revision: 1.131 $
  */
 
 /*
@@ -742,7 +742,7 @@ static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
    int status = 0;
    int widestItem = 0;
 
-   if (listSize > 0)
+   if (listSize >= 0)
    {
       chtype **newList = typeCallocN(chtype *, listSize + 1);
       int *newLen = typeCallocN(int, listSize + 1);

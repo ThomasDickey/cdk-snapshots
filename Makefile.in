@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.74 2006/04/17 23:13:49 tom Exp $
+# $Id: Makefile.in,v 1.75 2007/04/01 23:52:18 tom Exp $
 #
-#  Copyright 2001-2005,2006 Thomas Dickey
+#  Copyright 2001-2006,2007 Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -57,14 +57,16 @@ o		= .@OBJEXT@
 a		= @LIB_SUFFIX@
 
 DESTDIR		=
-includedir	= $(DESTDIR)@includedir@
-libdir		= $(DESTDIR)@libdir@
-mandir		= $(DESTDIR)@mandir@
+bindir		= @bindir@
+includedir	= @includedir@
+libdir		= @libdir@
+mandir		= @mandir@
 
 DOCUMENT_DIR	= @prefix@/doc/cdk
-INCLUDE_DIR	= $(includedir)/cdk
-LIB_DIR		= $(libdir)
-MAN_DIR		= $(mandir)/man@MAN_DIR@
+BIN_DIR		= $(DESTDIR)$(bindir)
+INCLUDE_DIR	= $(DESTDIR)$(includedir)/cdk
+LIB_DIR		= $(DESTDIR)$(libdir)
+MAN_DIR		= $(DESTDIR)$(mandir)/man@MAN_TAG@
 MANSECT		= @MANSECT@
 
 CC		= @CC@
@@ -389,6 +391,21 @@ uninstallCDKLibrary ::
 	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(CDKLIB) 
 
 #
+# This installs the CDK package-config script.
+#
+install \
+installCDKHeaderFiles \
+installCDKLibrary :: $(BIN_DIR) cdk-config
+	@echo "Installing CDK package-config"
+	@$(INSTALL) cdk-config $(BIN_DIR)/cdk$(VERSION_MAJOR)-config
+
+uninstall \
+uninstallCDKHeaderFiles \
+uninstallCDKLibrary :: cdk-config
+	@echo "Uninstalling CDK package-config"
+	@$(RM) $(BIN_DIR)/cdk$(VERSION_MAJOR)-config
+
+#
 # This installs the CDK shared library.  The rules are for an RPM spec, and
 # not of general interest.
 #
@@ -446,6 +463,7 @@ distclean :: realclean
 	$(RM) include/cdk_config.h
 	$(RM) include/cdk_version.h
 	$(RM) Makefile
+	$(RM) cdk-config
 	@- $(SHELL) -c 'if test "$(srcdir)" != . ; then \
 			rmdir examples; \
 			rmdir demos; \
@@ -469,6 +487,7 @@ distclean :: realclean
 	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
 
 man \
+$(BIN_DIR) \
 $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \
 $(LIB_DIR) \

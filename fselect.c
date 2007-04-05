@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/07 00:22:25 $
- * $Revision: 1.68 $
+ * $Date: 2007/04/02 00:30:22 $
+ * $Revision: 1.69 $
  */
 
 /*
@@ -1534,7 +1534,7 @@ static int createList (CDKFSELECT *widget, char **list, int listSize)
 {
    int status = 0;
 
-   if (listSize > 0)
+   if (listSize >= 0)
    {
       char **newlist = typeCallocN (char *, listSize + 1);
 

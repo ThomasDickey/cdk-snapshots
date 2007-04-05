@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:33:16 $
- * $Revision: 1.114 $
+ * $Date: 2007/04/02 00:31:15 $
+ * $Revision: 1.115 $
  */
 
 /*
@@ -1086,12 +1086,7 @@ static int createList(CDKSWINDOW *swindow, int listSize)
 {
    int status = 0;
 
-   if (listSize <= 0)
-   {
-      destroyInfo(swindow);
-      status = 1;
-   }
-   else
+   if (listSize >= 0)
    {
       chtype **newList = typeCallocN(chtype *, listSize + 1);
       int *newPos = typeCallocN(int, listSize + 1);
@@ -1114,6 +1109,11 @@ static int createList(CDKSWINDOW *swindow, int listSize)
 	 freeChecked (newPos);
 	 freeChecked (newLen);
       }
+   }
+   else
+   {
+      destroyInfo(swindow);
+      status = 1;
    }
    return status;
 }
