@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.156 $
+ * $Date: 2007/04/02 00:31:37 $
+ * $Revision: 1.157 $
  */
 
 /*
@@ -1226,11 +1226,8 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
 static int createList (CDKVIEWER *swindow, int listSize)
 {
    int status = 0;
-   if (listSize <= 0)
-   {
-      destroyInfo (swindow);
-   }
-   else
+
+   if (listSize >= 0)
    {
       chtype **newList = typeCallocN (chtype *, listSize + 1);
       int *newPos = typeCallocN (int, listSize + 1);
@@ -1253,6 +1250,10 @@ static int createList (CDKVIEWER *swindow, int listSize)
 	 freeChecked (newPos);
 	 freeChecked (newLen);
       }
+   }
+   else
+   {
+      destroyInfo (swindow);
    }
    return status;
 }

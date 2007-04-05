@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2005/12/30 00:29:34 $
- * $Revision: 1.143 $
+ * $Date: 2007/04/02 00:30:48 $
+ * $Revision: 1.144 $
  */
 
 /*
@@ -881,7 +881,7 @@ static int createList(CDKSELECTION *selection, char **list, int listSize)
    int widestItem = 0;
    int j;
 
-   if (listSize > 0)
+   if (listSize >= 0)
    {
       chtype **	newList = typeCallocN(chtype *, listSize + 1);
       int *	newLen  = typeCallocN(int, listSize + 1);

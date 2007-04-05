@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.79 $
+ * $Date: 2007/04/02 00:30:33 $
+ * $Revision: 1.80 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -682,7 +682,7 @@ static int createList (CDKITEMLIST *itemlist, char **item, int count)
 {
    int status = 0;
 
-   if (count > 0)
+   if (count >= 0)
    {
       chtype **newItems = typeCallocN(chtype*, count + 1);
       int *newPos = typeCallocN(int, count + 1);

@@ -1,9 +1,17 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2005, 2006
+Modifications copyright Thomas E. Dickey 1999-2006, 2007
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2007/0?/??
+	+ allow widgets to create empty lists, a feature assumed by Harry
+	  Brueckner's cpm program (reports by Lars Strand, Harry Brueckner).
+	+ modify Makefile.in for consistent usage of DESTDIR.
+	+ add cdk5-config script to install
+	+ update configure script, e.g., tests for curses libraries.
+	+ update config.guess, config.sub
 
 2006/05/07
 	+ reduce the number of calls on touchwin(), which is used mainly for
@@ -298,10 +306,10 @@ This file outlines all of the changes/additions from one release to another.
 	+ cleanup menu in traverse.c if escape character is used to cancel it.
 	+ move curs_set() calls out of focus/unfocus functions, into traverse.c
 	+ remove the SIGBUS/SIGSEGV handler, since it is redundant.
-	+ updated configure script (CF_ADD_CFLAGS, CF_CHECK_CACHE,
-	  CF_GCC_WARNINGS, CF_NCURSES_LIBS, CF_PROG_EXT, CF_WITH_DBMALLOC,
-	  CF_WITH_DMALLOC, CF_WITH_LIBTOOL, CF_WITH_WARNINGS, CF_X_ATHENA,
-	  CF_X_TOOLKIT).
+	+ updated configure script, e.g,.  macros CF_ADD_CFLAGS,
+	  CF_CHECK_CACHE, CF_GCC_WARNINGS, CF_NCURSES_LIBS, CF_PROG_EXT,
+	  CF_WITH_DBMALLOC, CF_WITH_DMALLOC, CF_WITH_LIBTOOL, CF_WITH_WARNINGS,
+	  CF_X_ATHENA, CF_X_TOOLKIT.
 	+ updated config.guess, config.sub
 	> patches by ewigg (Ed Wigg?) for fselect.c:
 	+ add a range check to ensure that filename completion at the end of

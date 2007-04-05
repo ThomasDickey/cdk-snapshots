@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.44 2005/12/28 22:41:13 tom Exp $
+dnl $Id: configure.in,v 1.45 2007/04/01 23:48:01 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -40,8 +40,8 @@ case .$MANSECT in
 	MANSECT=3
 	;;
 esac
-MAN_DIR=`echo $MANSECT | sed -e 's/^\(.\).*/\1/'`
-AC_SUBST(MAN_DIR)
+MAN_TAG=`echo $MANSECT | sed -e 's/^\(.\).*/\1/'`
+AC_SUBST(MAN_TAG)
 AC_SUBST(MANSECT)
 
 CF_WITH_CURSES_DIR
@@ -143,6 +143,7 @@ dnl
 dnl Set pre-processor compile time variables.
 dnl
 AC_OUTPUT(
+	cdk-config
 	include/cdk_version.h:include/cdk_version.hin
 	Makefile
 	cli/Makefile

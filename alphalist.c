@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/04 10:42:58 $
- * $Revision: 1.102 $
+ * $Date: 2007/04/01 23:06:55 $
+ * $Revision: 1.103 $
  */
 
 /*
@@ -849,7 +849,7 @@ static int createList (CDKALPHALIST *alphalist, char **list, int listSize)
 {
    int status = 0;
 
-   if (listSize > 0)
+   if (listSize >= 0)
    {
       char **newlist = typeCallocN (char *, listSize + 1);
 
