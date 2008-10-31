@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.20 2005/12/31 00:36:00 tom Exp $ */
+/* $Id: rolodex.c,v 1.21 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -86,7 +86,11 @@ int main(void)
    }
 
    /* Make the rolodex directory. */
+#if defined (__MINGW32__)
+   mkdir (GDBMDir);
+#else
    mkdir (GDBMDir, 0755);
+#endif
 
    /* Open the rolodex RC file. */
    groupCount = readRCFile (GRCFile, groupList);
@@ -1509,7 +1513,11 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex *groupList, int groupCount)
 int printGroup (SRolodex groupRecord, char *filename, char *printer)
 {
    /* Declare local variables. */
+#if defined (__MINGW32__)
+   int uid = 0;
+#else
    uid_t uid = getuid();
+#endif
    char tempFilename[256], command[256];
    SPhoneData phoneData;
    SPhoneRecord *phoneRecord;

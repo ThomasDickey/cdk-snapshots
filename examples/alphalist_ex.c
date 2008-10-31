@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.22 2006/05/07 23:15:34 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.23 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
@@ -32,15 +32,19 @@ static int undoSize;
  */
 static int getUserList (char ***list)
 {
+#if defined (HAVE_PWD_H)
    struct passwd *ent;
+#endif
    int x = 0;
    unsigned used = 0;
 
+#if defined (HAVE_PWD_H)
    while ((ent = getpwent ()) != 0)
    {
       used = CDKallocStrings (list, ent->pw_name, x++, used);
    }
    endpwent ();
+#endif
    return x;
 }
 

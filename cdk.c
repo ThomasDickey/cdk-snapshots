@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2006/04/23 00:01:26 $
- * $Revision: 1.204 $
+ * $Author: Gregory.Sharp $
+ * $Date: 2008/10/31 00:11:46 $
+ * $Revision: 1.205 $
  */
 
 #define L_MARKER '<'
@@ -1137,14 +1137,22 @@ int mode2Char (char *string, mode_t mode)
       { S_IRUSR,	1,	'r' },
       { S_IWUSR,	2,	'w' },
       { S_IXUSR,	3,	'x' },
+#if defined (S_IRGRP) && defined (S_IWGRP) && defined (S_IXGRP)
       { S_IRGRP,	4,	'r' },
       { S_IWGRP,	5,	'w' },
       { S_IXGRP,	6,	'x' },
+#endif
+#if defined (S_IROTH) && defined (S_IWOTH) && defined (S_IXOTH)
       { S_IROTH,	7,	'r' },
       { S_IWOTH,	8,	'w' },
       { S_IXOTH,	9,	'x' },
+#endif
+#ifdef S_ISUID
       { S_ISUID,	3,	's' },
+#endif
+#ifdef S_ISGID
       { S_ISGID,	6,	's' },
+#endif
 #ifdef S_ISVTX
       { S_ISVTX,	9,	't' },
 #endif
@@ -1173,6 +1181,7 @@ int mode2Char (char *string, mode_t mode)
    }
 
    /* Check for unusual permissions.  */
+#ifdef S_ISUID
    if (((mode & S_IXUSR) == 0) &&
        ((mode & S_IXGRP) == 0) &&
        ((mode & S_IXOTH) == 0) &&
@@ -1180,6 +1189,7 @@ int mode2Char (char *string, mode_t mode)
    {
       string[3] = 'S';
    }
+#endif
 
    return permissions;
 }

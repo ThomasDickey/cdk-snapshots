@@ -1,4 +1,4 @@
-/* $Id: vinstall.c,v 1.13 2005/12/27 12:36:06 tom Exp $ */
+/* $Id: vinstall.c,v 1.14 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
@@ -414,7 +414,9 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 {
    char *buttons[]	= {"Yes", "No"};
    int status		= 0;
+#if !defined (__MINGW32__)
    mode_t dirMode	= S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH;
+#endif
    struct stat fileStat;
    char *mesg[10];
    char *error[10];
@@ -437,7 +439,11 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 	 if (popupDialog (cdkScreen, mesg, 4, buttons, 2) == 0)
 	 {
 	    /* Create the directory. */
+#if defined (__MINGW32__)
+	    if (mkdir (directory) != 0)
+#else
 	    if (mkdir (directory, dirMode) != 0)
+#endif
 	    {
 	       /* Create the error message. */
 	       error[0] = "<C>Could not create the directory";

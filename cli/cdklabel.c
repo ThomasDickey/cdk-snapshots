@@ -1,9 +1,13 @@
-/* $Id: cdklabel.c,v 1.10 2005/12/27 16:06:34 tom Exp $ */
+/* $Id: cdklabel.c,v 1.11 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
 char *XCursesProgramName="cdklabel";
+#endif
+
+#if !defined (HAVE_SLEEP) && defined (_WIN32)  /* Mingw */
+#define sleep(x) _sleep(x*1000)
 #endif
 
 /*

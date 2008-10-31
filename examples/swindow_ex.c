@@ -1,9 +1,13 @@
-/* $Id: swindow_ex.c,v 1.11 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: swindow_ex.c,v 1.12 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "swindow_ex";
+#endif
+
+#if !defined (HAVE_SLEEP) && defined (_WIN32)  /* Mingw */
+#define sleep(x) _sleep(x*1000)
 #endif
 
 /*

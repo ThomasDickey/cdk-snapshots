@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:45 $
- * $Revision: 1.84 $
+ * $Date: 2008/09/29 23:15:41 $
+ * $Revision: 1.85 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -459,7 +459,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    int day		= 1;
    int x, y;
    int save_y = -1, save_x = -1;
-   char temp[10];
+   char temp[30];
 
    for (x = 1; x <= 6; x++)
    {

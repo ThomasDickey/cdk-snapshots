@@ -1,11 +1,17 @@
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2006, 2007
+Modifications copyright Thomas E. Dickey 1999-2007, 2008
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 
-2007/0?/??
+2008/0?/??
+	+ make CDK build/work with MinGW (patch by Gregory Sharp).
+	+ correct setCDKTemplateValue() logic, which caused the source to
+	  be repeated (report/patch by Christian Gaida).
+	+ use prefix makefile-variable in DOCUMENT_DIR expression to allow
+	  override of prefix at build-time (patch by Saurabh Nix).
+	+ increase a buffer size in calendar.c (Debian #452401).
 	+ allow widgets to create empty lists, a feature assumed by Harry
 	  Brueckner's cpm program (reports by Lars Strand, Harry Brueckner).
 	+ modify Makefile.in for consistent usage of DESTDIR.
