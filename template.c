@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.130 $
+ * $Author: Christian.Gaida $
+ * $Date: 2008/10/31 00:05:17 $
+ * $Revision: 1.131 $
  */
 
 /*
@@ -489,7 +489,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
 		  cdktemplate->platePos < cdktemplate->fieldWidth)
 	 {
 	    test[mark] = CharOf (input);
-	    strcpy (test + mark + 1, cdktemplate->info + mark);
+	    strcpy (test + mark + 1, cdktemplate->info + mark + 1);
 	    change = TRUE;
 	    amount = 1;
 	 }

@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.45 2007/04/01 23:48:01 tom Exp $
+dnl $Id: configure.in,v 1.47 2008/10/31 00:11:46 Gregory.Sharp Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -55,8 +55,7 @@ dnl
 dnl Checks for libraries.
 dnl
 
-CF_WITH_DBMALLOC
-CF_WITH_DMALLOC
+CF_WITH_NO_LEAKS
 
 dnl
 dnl Checks for header files.
@@ -66,6 +65,8 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(\
 limits.h \
 unistd.h \
+pwd.h \
+grp.h \
 )
 
 dnl
@@ -84,6 +85,8 @@ getcwd \
 mktime \
 strdup \
 strerror \
+getlogin \
+sleep \
 )
 
 CF_FUNC_LSTAT

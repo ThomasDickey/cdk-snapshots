@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.75 2007/04/01 23:52:18 tom Exp $
+# $Id: Makefile.in,v 1.76 2008/10/30 23:40:47 Saurabh.Nix Exp $
 #
 #  Copyright 2001-2006,2007 Thomas Dickey
 #  Copyright 1999, Mike Glover
@@ -62,7 +62,7 @@ includedir	= @includedir@
 libdir		= @libdir@
 mandir		= @mandir@
 
-DOCUMENT_DIR	= @prefix@/doc/cdk
+DOCUMENT_DIR	= $(prefix)/doc/cdk
 BIN_DIR		= $(DESTDIR)$(bindir)
 INCLUDE_DIR	= $(DESTDIR)$(includedir)/cdk
 LIB_DIR		= $(DESTDIR)$(libdir)

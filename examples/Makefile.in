@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.18 2005/12/28 00:03:39 tom Exp $
+# $Id: Makefile.in,v 1.19 2008/10/30 23:34:32 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -18,7 +18,7 @@ LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 LIBTOOL		= @LIBTOOL@ @ECHO_LT@
 LIBTOOL_CLEAN	= @LIB_CLEAN@
 LIBTOOL_LINK	= @LIB_LINK@
-LINK		= $(LIBTOOL_LINK) $(CC)
+LINK		= $(LIBTOOL_LINK)
 
 x		= @EXEEXT@
 o		= .@OBJEXT@

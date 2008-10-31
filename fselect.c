@@ -2,9 +2,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2007/04/02 00:30:22 $
- * $Revision: 1.69 $
+ * $Author: Gregory.Sharp $
+ * $Date: 2008/10/31 00:11:46 $
+ * $Revision: 1.70 $
  */
 
 /*
@@ -577,12 +577,17 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
       if (lstat (dirList[x], &fileStat) == 0)
       {
 	 mode = " ";
-	 if (((fileStat.st_mode & S_IXUSR) != 0) ||
-	     ((fileStat.st_mode & S_IXGRP) != 0) ||
+	 if ((fileStat.st_mode & S_IXUSR) != 0)
+	 {
+	    mode = "*";
+	 }
+#if defined (S_IXGRP) && defined (S_IXOTH)
+	 else if (((fileStat.st_mode & S_IXGRP) != 0) ||
 	     ((fileStat.st_mode & S_IXOTH) != 0))
 	 {
 	    mode = "*";
 	 }
+#endif
       }
 
       switch (mode2Filetype (fileStat.st_mode))
@@ -968,8 +973,10 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED,
    CDKFSELECT		*fselect	= (CDKFSELECT *)clientData;
    CDKLABEL		*infoLabel;
    struct stat		fileStat;
+#ifdef HAVE_PWD_H
    struct passwd	*pwEnt;
    struct group		*grEnt;
+#endif
    char			*filename;
    char			*filetype;
    char			*mesg[10];
@@ -1013,8 +1020,10 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED,
    }
 
    /* Get the user name and group name. */
+#ifdef HAVE_PWD_H
    pwEnt = getpwuid (fileStat.st_uid);
    grEnt = getgrgid (fileStat.st_gid);
+#endif
 
    /* Convert the mode_t type to both string and int. */
    intMode = mode2Char (stringMode, fileStat.st_mode);
@@ -1022,8 +1031,13 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED,
    /* Create the message. */
    mesg[0] = format1String ("Directory  : </U>%s", fselect->pwd);
    mesg[1] = format1String ("Filename   : </U>%s", filename);
+#ifdef HAVE_PWD_H
    mesg[2] = format1StrVal ("Owner      : </U>%s<!U> (%d)", pwEnt->pw_name, (int)fileStat.st_uid);
    mesg[3] = format1StrVal ("Group      : </U>%s<!U> (%d)", grEnt->gr_name, (int)fileStat.st_gid);
+#else
+   mesg[2] = format1Number ("Owner      : (%ld)", (long)fileStat.st_uid);
+   mesg[3] = format1Number ("Group      : (%ld)", (long)fileStat.st_gid);
+#endif
    mesg[4] = format1StrVal ("Permissions: </U>%s<!U> (%o)", stringMode, intMode);
    mesg[5] = format1Number ("Size       : </U>%ld<!U> bytes", (long) fileStat.st_size);
    mesg[6] = format1Date   ("Last Access: </U>%s", fileStat.st_atime);
@@ -1487,11 +1501,13 @@ static char *expandTilde (char *filename)
       pathname[len_p] = '\0';
 
       home = 0;
+#ifdef HAVE_PWD_H
       if (strlen (account) != 0 &&
 	  (accountInfo = getpwnam (account)) != 0)
       {
 	 home = accountInfo->pw_dir;
       }
+#endif
       if (home == 0 || *home == '\0')
 	 home = getenv ("HOME");
       if (home == 0 || *home == '\0')

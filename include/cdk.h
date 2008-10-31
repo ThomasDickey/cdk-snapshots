@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.34 2004/08/29 21:49:32 tom Exp $
+ * $Id: cdk.h,v 1.35 2008/10/31 00:18:34 Gregory.Sharp Exp $
  */
 
 #ifndef CDK_H
@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 2000-2003,2004 copyright Thomas E. Dickey
+ * Changes 2000-2004,2008 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -75,13 +75,20 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
+#endif
 #include <time.h>
 #include <errno.h>
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
+#ifdef HAVE_GRP_H
 #include <grp.h>
-
+#endif
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif

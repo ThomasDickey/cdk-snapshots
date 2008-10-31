@@ -1,9 +1,13 @@
-/* $Id: histogram_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: histogram_ex.c,v 1.10 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
 char *XCursesProgramName = "histogram_ex";
+#endif
+
+#if !defined (HAVE_SLEEP) && defined (_WIN32)  /* Mingw */
+#define sleep(x) _sleep(x*1000)
 #endif
 
 int main(int argc, char **argv)

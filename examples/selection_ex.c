@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.15 2005/12/28 01:46:34 tom Exp $ */
+/* $Id: selection_ex.c,v 1.16 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,9 @@ int main (int argc, char **argv)
    char *choices[]		= {"   ", "-->"};
    char **item = 0;
    char temp[256], *mesg[200];
+#if defined (HAVE_PWD_H)
    struct passwd *ent;
+#endif
    unsigned x, y;
    unsigned used = 0;
    unsigned count = 0;
@@ -36,11 +38,13 @@ int main (int argc, char **argv)
 
    /* Use the account names to create a list. */
    count = 0;
+#if defined (HAVE_PWD_H)
    while ((ent = getpwent ()) != 0)
    {
       used = CDKallocStrings(&item, ent->pw_name, count++, used);
    }
    endpwent();
+#endif
    count--;
 
    /* Set up CDK. */

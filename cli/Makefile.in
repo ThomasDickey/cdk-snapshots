@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.4 2003/11/27 12:03:41 tom Exp $
+# $Id: Makefile.in,v 1.5 2008/10/30 23:34:49 tom Exp $
 #
 # Makefile for the cli directory.
 #
@@ -18,7 +18,7 @@ LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 LIBTOOL		= @LIBTOOL@ @ECHO_LT@
 LIBTOOL_CLEAN	= @LIB_CLEAN@
 LIBTOOL_LINK	= @LIB_LINK@
-LINK		= $(LIBTOOL_LINK) $(CC)
+LINK		= $(LIBTOOL_LINK)
 
 x		= @EXEEXT@
 o		= .@OBJEXT@
