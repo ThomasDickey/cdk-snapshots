@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.84 $
+ * $Date: 2008/11/01 14:27:42 $
+ * $Revision: 1.85 $
  */
 
 DeclareCDKObjects(LABEL, Label, setCdk, Unknown);
@@ -71,6 +71,7 @@ CDKLABEL *newCDKLabel(CDKSCREEN *cdkscreen, int xplace, int yplace, char **mesg,
    label->boxWidth	= boxWidth;
    label->boxHeight	= boxHeight;
    ObjOf(label)->inputWindow  = label->win;
+   ObjOf(label)->hasFocus     = FALSE; 
    label->shadow	= shadow;
 
    /* Is the window null? */

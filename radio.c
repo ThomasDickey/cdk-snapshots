@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2007/04/02 00:30:40 $
- * $Revision: 1.131 $
+ * $Date: 2008/11/01 16:16:43 $
+ * $Revision: 1.133 $
  */
 
 /*
@@ -79,7 +79,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen, int xplace, int yplace, int splace,
    if (TitleLinesOf(radio) > boxHeight)
    {
       boxHeight = TitleLinesOf(radio)
-      		+ MINIMUM(listSize, 8)
+		+ MINIMUM(listSize, 8)
 		+ 2 * BorderOf(radio);
    }
 
@@ -454,47 +454,54 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    int xpos, ypos;
 
    /* draw the list */
-   for (j=0; j < radio->viewSize; j++)
+   for (j = 0; j < radio->viewSize; j++)
    {
-      xpos = SCREEN_XPOS(radio, 0);
-      ypos = SCREEN_YPOS(radio, j);
+      int k = j + radio->currentTop;
+      if (k < radio->listSize)
+      {
+	 xpos = SCREEN_XPOS(radio, 0);
+	 ypos = SCREEN_YPOS(radio, j);
 
-      screenPos = SCREENPOS(radio, j + radio->currentTop);
+	 screenPos = SCREENPOS(radio, k);
 
-      /* Draw the empty string. */
-      writeBlanks (radio->win, xpos, ypos,
-		   HORIZONTAL, 0, radio->boxWidth - BorderOf(radio));
+	 /* Draw the empty string. */
+	 writeBlanks (radio->win, xpos, ypos,
+		      HORIZONTAL, 0, radio->boxWidth - BorderOf(radio));
 
-      /* Draw the line. */
-      writeChtype (radio->win,
-		   (screenPos >= 0) ? screenPos : 1,
-		   ypos,
-		   radio->item[j + radio->currentTop],
-		   HORIZONTAL,
-		   (screenPos >= 0) ? 0 : (1 - screenPos),
-		   radio->itemLen[j + radio->currentTop]);
+	 /* Draw the line. */
+	 writeChtype (radio->win,
+		      (screenPos >= 0) ? screenPos : 1,
+		      ypos,
+		      radio->item[k],
+		      HORIZONTAL,
+		      (screenPos >= 0) ? 0 : (1 - screenPos),
+		      radio->itemLen[k]);
 
-      /* Draw the selected choice... */
-      xpos += scrollbarAdj;
-      mvwaddch (radio->win, ypos, xpos++, radio->leftBoxChar);
-      mvwaddch (radio->win, ypos, xpos++, ((j + radio->currentTop) == radio->selectedItem) ? radio->choiceChar : ' ');
-      mvwaddch (radio->win, ypos, xpos++, radio->rightBoxChar);
+	 /* Draw the selected choice... */
+	 xpos += scrollbarAdj;
+	 mvwaddch (radio->win, ypos, xpos++, radio->leftBoxChar);
+	 mvwaddch (radio->win, ypos, xpos++, (k == radio->selectedItem) ? radio->choiceChar : ' ');
+	 mvwaddch (radio->win, ypos, xpos++, radio->rightBoxChar);
+      }
    }
 
    /* Highlight the current item. */
    if (ObjPtr(radio)->hasFocus)
    {
-      screenPos = SCREENPOS(radio, radio->currentItem);
-      ypos = SCREEN_YPOS(radio, radio->currentHigh);
+      int k = radio->currentItem;
+      if (k < radio->listSize) {
+	 screenPos = SCREENPOS(radio, k);
+	 ypos = SCREEN_YPOS(radio, radio->currentHigh);
 
-      writeChtypeAttrib (radio->win,
-			(screenPos >= 0) ? screenPos : (1 + scrollbarAdj),
-			ypos,
-			radio->item[radio->currentItem],
-			radio->highlight,
-			HORIZONTAL,
-			(screenPos >= 0) ? 0 : (1 - screenPos),
-			radio->itemLen[radio->currentItem]);
+	 writeChtypeAttrib (radio->win,
+			   (screenPos >= 0) ? screenPos : (1 + scrollbarAdj),
+			   ypos,
+			   radio->item[k],
+			   radio->highlight,
+			   HORIZONTAL,
+			   (screenPos >= 0) ? 0 : (1 - screenPos),
+			   radio->itemLen[k]);
+      }
    }
 
    if (radio->scrollbar)
@@ -750,7 +757,7 @@ static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
       int j;
 
       if (newList != 0
-        && newLen != 0
+	&& newLen != 0
 	&& newPos != 0)
       {
 	 /* Each item in the needs to be converted to chtype * */

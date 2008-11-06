@@ -1,5 +1,5 @@
 /*
- * $Id: matrix.h,v 1.28 2004/08/30 00:00:57 tom Exp $
+ * $Id: matrix.h,v 1.29 2008/11/05 01:26:30 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003 copyright Thomas E. Dickey
+ * Changes 1999-2004,2008 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -114,8 +114,8 @@ struct SMatrix {
    int		col;
    int		crow;		/* current row */
    int		ccol;		/* current column */
-   int		trow;
-   int		lcol;
+   int		trow;		/* topmost row shown in screen */
+   int		lcol;		/* leftmost column shown in screen */
    int		oldcrow;
    int		oldccol;
    int		oldvrow;

@@ -1,4 +1,4 @@
-/* $Id: cdkslider.c,v 1.9 2005/12/27 17:47:12 tom Exp $ */
+/* $Id: cdkslider.c,v 1.10 2008/11/04 23:36:39 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -55,7 +55,7 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "a:f:h:i:l:s:B:F:L:O:T:" "X:Y:NS");
+   CDKparseParams(argc, argv, &params, "a:f:h:i:l:s:B:F:L:O:T:" CDK_MIN_PARAMS);
 
    xpos            = CDKparamValue(&params, 'X', CENTER);
    ypos            = CDKparamValue(&params, 'Y', CENTER);

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.37 2008/10/31 00:16:55 tom Exp $
+dnl $Id: aclocal.m4,v 1.39 2008/11/01 16:45:01 tom Exp $
 dnl macros used for CDK configure script
 dnl -- Thomas E. Dickey
 dnl ---------------------------------------------------------------------------
@@ -707,6 +707,28 @@ AC_SUBST(ECHO_LD)
 AC_SUBST(RULE_CC)
 AC_SUBST(SHOW_CC)
 AC_SUBST(ECHO_CC)
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl CF_DISABLE_LEAKS version: 4 updated: 2006/12/16 15:10:42
+dnl ----------------
+dnl Combine no-leak checks with the libraries or tools that are used for the
+dnl checks.
+AC_DEFUN([CF_DISABLE_LEAKS],[
+
+AC_REQUIRE([CF_WITH_DMALLOC])
+AC_REQUIRE([CF_WITH_DBMALLOC])
+AC_REQUIRE([CF_WITH_VALGRIND])
+
+AC_MSG_CHECKING(if you want to perform memory-leak testing)
+AC_ARG_ENABLE(leaks,
+	[  --disable-leaks         test: free permanent memory, analyze leaks],
+	[with_no_leaks=yes],
+	: ${with_no_leaks:=no})
+AC_MSG_RESULT($with_no_leaks)
+
+if test "$with_no_leaks" = yes ; then
+	AC_DEFINE(NO_LEAKS)
+fi
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_FIND_LIBRARY version: 9 updated: 2008/03/23 14:48:54
@@ -2378,7 +2400,7 @@ AC_SUBST(LIB_UNINSTALL)
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_NC_ALLOC_H version: 2 updated: 2005/12/26 17:09:34
+dnl CF_WITH_NC_ALLOC_H version: 4 updated: 2008/11/01 12:44:02
 dnl ------------------
 dnl Applications that use ncurses can provide better leak-checking if they
 dnl call ncurses' functions to free its memory on exit.  That is normally not
@@ -2387,46 +2409,17 @@ dnl
 dnl Use this after checking for ncurses/ncursesw libraries.
 AC_DEFUN([CF_WITH_NC_ALLOC_H],
 [
+AC_REQUIRE([CF_DISABLE_LEAKS])
+
 case $LIBS in #(vi
 *ncurses*)
 
-AC_MSG_CHECKING(if you want to check for memory leaks)
-cf_disable_leaks=no
-AC_ARG_ENABLE(leaks,
-	[  --disable-leaks         test: suppress permanent memory-leaks],
-	[test "$enableval" = no && cf_disable_leaks=yes])
-AC_MSG_RESULT($cf_disable_leaks)
-
-if test "$cf_disable_leaks" = yes ; then
-	AC_DEFINE(NO_LEAKS)
+if test "$with_no_leaks" = yes ; then
 	AC_CHECK_HEADER(nc_alloc.h)
 	AC_CHECK_FUNCS(_nc_free_and_exit)
 fi
 ;;
 esac
-])dnl
-dnl ---------------------------------------------------------------------------
-dnl CF_WITH_NO_LEAKS version: 1 updated: 2006/12/14 18:00:21
-dnl ----------------
-AC_DEFUN([CF_WITH_NO_LEAKS],[
-
-AC_REQUIRE([CF_WITH_DMALLOC])
-AC_REQUIRE([CF_WITH_DBMALLOC])
-AC_REQUIRE([CF_WITH_PURIFY])
-AC_REQUIRE([CF_WITH_VALGRIND])
-
-AC_MSG_CHECKING(if you want to perform memory-leak testing)
-AC_ARG_WITH(no-leaks,
-	[  --with-no-leaks         test: free permanent memory, analyze leaks],
-	[AC_DEFINE(NO_LEAKS)
-	 cf_doalloc=".${with_dmalloc}${with_dbmalloc}${with_purify}${with_valgrind}"
-	 case ${cf_doalloc} in #(vi
-	 *yes*) ;;
-	 *) AC_DEFINE(DOALLOC,10000) ;;
-	 esac
-	 with_no_leaks=yes],
-	[with_no_leaks=])
-AC_MSG_RESULT($with_no_leaks)
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_WITH_PURIFY version: 2 updated: 2006/12/14 18:43:43
