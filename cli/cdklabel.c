@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.11 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
+/* $Id: cdklabel.c,v 1.12 2008/11/04 23:36:39 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -43,7 +43,7 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "c:f:m:p:s:" "X:Y:NS");
+   CDKparseParams(argc, argv, &params, "c:f:m:p:s:" CDK_MIN_PARAMS);
 
    xpos         = CDKparamValue(&params, 'X', CENTER);
    ypos         = CDKparamValue(&params, 'Y', CENTER);

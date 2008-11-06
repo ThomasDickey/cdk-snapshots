@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:24:56 $
- * $Revision: 1.146 $
+ * $Date: 2008/11/01 16:00:02 $
+ * $Revision: 1.147 $
  */
 
 /*
@@ -569,7 +569,7 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 	 /* Draw the elements in the scrolling list. */
 	 if (k < scrollp->listSize)
 	 {
-	    int screenPos = SCREENPOS (scrollp, j + scrollp->currentTop);
+	    int screenPos = SCREENPOS (scrollp, k);
 	    int ypos = SCREEN_YPOS (scrollp, j);
 
 	    /* Write in the correct line. */

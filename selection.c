@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2007/04/02 00:30:48 $
- * $Revision: 1.144 $
+ * $Date: 2008/11/01 16:10:40 $
+ * $Revision: 1.145 $
  */
 
 /*
@@ -44,8 +44,8 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    int junk2;
 
    static const struct { int from; int to; } bindings[] = {
-	     	{ CDK_BACKCHAR,	KEY_PPAGE },
-	     	{ CDK_FORCHAR,	KEY_NPAGE },
+		{ CDK_BACKCHAR, KEY_PPAGE },
+		{ CDK_FORCHAR,	KEY_NPAGE },
 		{ 'g',		KEY_HOME },
 		{ '1',		KEY_HOME },
 		{ 'G',		KEY_END },
@@ -84,7 +84,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen, int xplace, int yplace, int
    if (TitleLinesOf(selection) > boxHeight)
    {
       boxHeight = TitleLinesOf(selection)
-      		+ MINIMUM(listSize, 8)
+		+ MINIMUM(listSize, 8)
 		+ 2 * BorderOf(selection);
    }
 
@@ -485,37 +485,40 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* draw the list... */
    for (j = 0; j < selection->viewSize; j++)
    {
-      screenPos = SCREENPOS(selection, j + selection->currentTop);
-      ypos = SCREEN_YPOS(selection, j);
-      xpos = SCREEN_XPOS(selection, 0);
+      int k = j + selection->currentTop;
+      if (k < selection->listSize) {
+	 screenPos = SCREENPOS(selection, k);
+	 ypos = SCREEN_YPOS(selection, j);
+	 xpos = SCREEN_XPOS(selection, 0);
 
-      /* Draw the empty line. */
-      writeBlanks (selection->win,
-		   xpos,
-		   ypos,
-		   HORIZONTAL, 0,
-		   getmaxx(selection->win));
+	 /* Draw the empty line. */
+	 writeBlanks (selection->win,
+		      xpos,
+		      ypos,
+		      HORIZONTAL, 0,
+		      getmaxx(selection->win));
 
-      /* Draw the selection item. */
-      writeChtypeAttrib (selection->win,
-		   (screenPos >= 0) ? screenPos : 1,
-		   ypos,
-		   selection->item[j + selection->currentTop],
-		   ((j + selection->currentTop == selItem)
-		     ? selection->highlight
-		     : A_NORMAL),
-		   HORIZONTAL,
-		   (screenPos >= 0) ? 0 : (1 - screenPos),
-		   selection->itemLen[j + selection->currentTop]);
+	 /* Draw the selection item. */
+	 writeChtypeAttrib (selection->win,
+		      (screenPos >= 0) ? screenPos : 1,
+		      ypos,
+		      selection->item[k],
+		      ((k == selItem)
+			? selection->highlight
+			: A_NORMAL),
+		      HORIZONTAL,
+		      (screenPos >= 0) ? 0 : (1 - screenPos),
+		      selection->itemLen[k]);
 
-      /* Draw the choice value. */
-      writeChtype (selection->win,
-		   xpos + scrollbarAdj,
-		   ypos,
-		   selection->choice[selection->selections[j + selection->currentTop]],
-		   HORIZONTAL,
-		   0,
-		   selection->choicelen[selection->selections[j + selection->currentTop]]);
+	 /* Draw the choice value. */
+	 writeChtype (selection->win,
+		      xpos + scrollbarAdj,
+		      ypos,
+		      selection->choice[selection->selections[k]],
+		      HORIZONTAL,
+		      0,
+		      selection->choicelen[selection->selections[k]]);
+      }
    }
 
    /* Determine where the toggle is supposed to be. */

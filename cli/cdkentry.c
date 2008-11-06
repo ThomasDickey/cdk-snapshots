@@ -1,4 +1,4 @@
-/* $Id: cdkentry.c,v 1.10 2005/12/27 16:19:26 tom Exp $ */
+/* $Id: cdkentry.c,v 1.11 2008/11/04 23:36:39 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "d:f:i:m:B:F:L:M:O:T:" "X:Y:NS");
+   CDKparseParams(argc, argv, &params, "d:f:i:m:B:F:L:M:O:T:" CDK_MIN_PARAMS);
 
    xpos         = CDKparamValue(&params, 'X', CENTER);
    ypos         = CDKparamValue(&params, 'Y', CENTER);

@@ -5,7 +5,22 @@ Modifications copyright Thomas E. Dickey 1999-2007, 2008
 
 This file outlines all of the changes/additions from one release to another.
 
-2008/0?/??
+2008/11/05
+	+ modify matrix widget so that if title, row-title, column-title or
+	  box-border are suppressed, the widget will shrink the matrix rather
+	  than leave those parts blank (request by Vincenzo Romano).
+	+ modify matrix_ex example to allow turning off title, column- and
+	  row-headers using -t, -c and -r options, and changing sense of -S
+	  option to allow turning off shadows.
+	+ fix a limit-check in getcCDKObject(), found with valgrind in
+	  buttonbox_ex.
+	+ apply same limit-check to radio.c as from selection.c
+	+ fix a limit-check in selection.c (report by Robin Lee Powell).
+	+ add -f/-h options to examples/selection_ex.c to test change to
+	  label.c
+	+ fix a case where focus would be lost on a selection widget if there
+	  was also a label on the screen, and both were repainted (report
+	  by Robin Lee Powell).
 	+ make CDK build/work with MinGW (patch by Gregory Sharp).
 	+ correct setCDKTemplateValue() logic, which caused the source to
 	  be repeated (report/patch by Christian Gaida).
