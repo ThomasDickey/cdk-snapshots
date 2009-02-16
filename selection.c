@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/01 16:10:40 $
- * $Revision: 1.145 $
+ * $Date: 2009/02/16 00:07:22 $
+ * $Revision: 1.147 $
  */
 
 /*
@@ -263,31 +263,31 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
  */
 static int _injectCDKSelection (CDKOBJS *object, chtype input)
 {
-   CDKSELECTION *selection = (CDKSELECTION *)object;
+   CDKSELECTION *widget = (CDKSELECTION *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(selection, 0);
+   setExitType(widget, 0);
 
-   /* Draw the selection list */
-   drawCDKSelectionList (selection, ObjOf(selection)->box);
+   /* Draw the widget list */
+   drawCDKSelectionList (widget, ObjOf(widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(selection) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(selection) (vSELECTION, selection, PreProcessDataOf(selection), input);
+      ppReturn = PreProcessFuncOf(widget) (vSELECTION, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a predefined binding. */
-      if (checkCDKObjectBind (vSELECTION, selection, input) != 0)
+      if (checkCDKObjectBind (vSELECTION, widget, input) != 0)
       {
-	 checkEarlyExit(selection);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -295,55 +295,55 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP :
-		 scroller_KEY_UP(selection);
+		 scroller_KEY_UP(widget);
 		 break;
 
 	    case KEY_DOWN :
-		 scroller_KEY_DOWN(selection);
+		 scroller_KEY_DOWN(widget);
 		 break;
 
 	    case KEY_RIGHT :
-		 scroller_KEY_RIGHT(selection);
+		 scroller_KEY_RIGHT(widget);
 		 break;
 
 	    case KEY_LEFT :
-		 scroller_KEY_LEFT(selection);
+		 scroller_KEY_LEFT(widget);
 		 break;
 
 	    case KEY_PPAGE :
-		 scroller_KEY_PPAGE(selection);
+		 scroller_KEY_PPAGE(widget);
 		 break;
 
 	    case KEY_NPAGE :
-		 scroller_KEY_NPAGE(selection);
+		 scroller_KEY_NPAGE(widget);
 		 break;
 
 	    case KEY_HOME :
-		 scroller_KEY_HOME(selection);
+		 scroller_KEY_HOME(widget);
 		 break;
 
 	    case KEY_END :
-		 scroller_KEY_END(selection);
+		 scroller_KEY_END(widget);
 		 break;
 
 	    case '$' :
-		 selection->leftChar = selection->maxLeftChar;
+		 widget->leftChar = widget->maxLeftChar;
 		 break;
 
 	    case '|' :
-		 selection->leftChar = 0;
+		 widget->leftChar = 0;
 		 break;
 
 	    case SPACE :
-		 if (selection->mode[selection->currentItem] == 0)
+		 if (widget->mode[widget->currentItem] == 0)
 		 {
-		    if (selection->selections[selection->currentItem] == selection->choiceCount - 1)
+		    if (widget->selections[widget->currentItem] == widget->choiceCount - 1)
 		    {
-		       selection->selections[selection->currentItem] = 0;
+		       widget->selections[widget->currentItem] = 0;
 		    }
 		    else
 		    {
-		       selection->selections[selection->currentItem]++;
+		       widget->selections[widget->currentItem]++;
 		    }
 		 }
 		 else
@@ -353,19 +353,24 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(selection, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case KEY_TAB : case KEY_ENTER :
-		 setExitType(selection, input);
+		 setExitType(widget, input);
 		 ret = 1;
 		 complete = TRUE;
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(selection));
-		 refreshCDKScreen (ScreenOf(selection));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    default :
@@ -374,19 +379,19 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(selection) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(selection) (vSELECTION, selection, PostProcessDataOf(selection), input);
+	 PostProcessFuncOf(widget) (vSELECTION, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      drawCDKSelectionList (selection, ObjOf(selection)->box);
-      setExitType(selection, 0);
+      drawCDKSelectionList (widget, ObjOf(widget)->box);
+      setExitType(widget, 0);
    }
 
-   ResultOf(selection).valueInt = ret;
-   fixCursorPosition (selection);
+   ResultOf(widget).valueInt = ret;
+   fixCursorPosition (widget);
    return (ret != unknownInt);
 }
 
@@ -483,7 +488,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       selItem = selection->currentItem;
 
    /* draw the list... */
-   for (j = 0; j < selection->viewSize; j++)
+   for (j = 0; j < selection->viewSize && (j + selection->currentTop) < selection->listSize; j++)
    {
       int k = j + selection->currentTop;
       if (k < selection->listSize) {

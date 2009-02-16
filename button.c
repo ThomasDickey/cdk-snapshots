@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:45 $
- * $Revision: 1.32 $
+ * $Date: 2009/02/15 23:56:23 $
+ * $Revision: 1.33 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -490,16 +490,16 @@ static void _destroyCDKButton (CDKOBJS * object)
  */
 static int _injectCDKButton (CDKOBJS * object, chtype input)
 {
-   CDKBUTTON *button = (CDKBUTTON *) object;
+   CDKBUTTON *widget = (CDKBUTTON *) object;
    int ret = unknownInt;
    bool complete = FALSE;
 
-   setExitType(button, 0);
+   setExitType(widget, 0);
 
    /* Check a predefined binding. */
-   if (checkCDKObjectBind (vBUTTON, button, input) != 0)
+   if (checkCDKObjectBind (vBUTTON, widget, input) != 0)
    {
-      checkEarlyExit(button);
+      checkEarlyExit(widget);
       complete = TRUE;
    }
    else
@@ -507,21 +507,26 @@ static int _injectCDKButton (CDKOBJS * object, chtype input)
       switch (input)
       {
       case KEY_ESC :
-	 setExitType(button, input);
+	 setExitType(widget, input);
+	 complete = TRUE;
+	 break;
+
+      case KEY_ERROR :
+	 setExitType(widget, input);
 	 complete = TRUE;
 	 break;
 
       case KEY_ENTER: case SPACE:
-	 if (button->callback)
-	    button->callback (button);
-	 setExitType(button, KEY_ENTER);
+	 if (widget->callback)
+	    widget->callback (widget);
+	 setExitType(widget, KEY_ENTER);
 	 ret = 0;
 	 complete = TRUE;
 	 break;
 
       case CDK_REFRESH:
-	 eraseCDKScreen (ScreenOf (button));
-	 refreshCDKScreen (ScreenOf (button));
+	 eraseCDKScreen (ScreenOf (widget));
+	 refreshCDKScreen (ScreenOf (widget));
 	 break;
 
       default:
@@ -531,10 +536,10 @@ static int _injectCDKButton (CDKOBJS * object, chtype input)
    }
 
    if (!complete) {
-      setExitType(button, 0);
+      setExitType(widget, 0);
    }
 
-   ResultOf(button).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

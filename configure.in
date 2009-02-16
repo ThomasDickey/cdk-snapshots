@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.48 2008/11/01 16:41:18 tom Exp $
+dnl $Id: configure.in,v 1.49 2009/02/16 00:54:28 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -108,13 +108,11 @@ AC_ARG_WITH(pdcurses,
 LIB_ROOTNAME=cdk
 case $use_library in #(vi
 ncurses) #(vi
-	CF_NCURSES_CPPFLAGS
-	CF_NCURSES_LIBS
+	CF_NCURSES_CONFIG
 	;;
 ncursesw)
 	CF_UTF8_LIB
-	CF_NCURSES_CPPFLAGS(ncursesw)
-	CF_NCURSES_LIBS(ncursesw)
+	CF_NCURSES_CONFIG(ncursesw)
 	LIB_ROOTNAME=cdkw
 	;;
 pdcurses) #(vi

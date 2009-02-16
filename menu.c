@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.98 $
+ * $Date: 2009/02/16 00:05:15 $
+ * $Revision: 1.99 $
  */
 
 #define TITLELINES 1
@@ -269,31 +269,31 @@ static void acrossSubmenus (CDKMENU *menu, int step)
  */
 static int _injectCDKMenu (CDKOBJS *object, chtype input)
 {
-   CDKMENU *menu = (CDKMENU *)object;
+   CDKMENU *widget = (CDKMENU *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType (menu, 0);
+   setExitType (widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (menu) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf (menu) (vMENU,
-					  menu,
-					  PreProcessDataOf (menu),
-					  input);
+      ppReturn = PreProcessFuncOf (widget) (vMENU,
+					    widget,
+					    PreProcessDataOf (widget),
+					    input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for key bindings. */
-      if (checkCDKObjectBind (vMENU, menu, input) != 0)
+      if (checkCDKObjectBind (vMENU, widget, input) != 0)
       {
-	 checkEarlyExit (menu);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
@@ -301,59 +301,64 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	 case KEY_LEFT:
-	    acrossSubmenus (menu, -1);
+	    acrossSubmenus (widget, -1);
 	    break;
 
 	 case KEY_RIGHT:
 	 case KEY_TAB:
-	    acrossSubmenus (menu, 1);
+	    acrossSubmenus (widget, 1);
 	    break;
 
 	 case KEY_UP:
-	    withinSubmenu (menu, -1);
+	    withinSubmenu (widget, -1);
 	    break;
 
 	 case KEY_DOWN:
 	 case SPACE:
-	    withinSubmenu (menu, 1);
+	    withinSubmenu (widget, 1);
 	    break;
 
 	 case KEY_ENTER:
-	    cleanUpMenu (menu);
-	    setExitType (menu, input);
-	    menu->lastSelection = ((menu->currentTitle * 100) + menu->currentSubtitle);
-	    ret = menu->lastSelection;
+	    cleanUpMenu (widget);
+	    setExitType (widget, input);
+	    widget->lastSelection = ((widget->currentTitle * 100) + widget->currentSubtitle);
+	    ret = widget->lastSelection;
 	    complete = TRUE;
 	    break;
 
 	 case KEY_ESC:
-	    cleanUpMenu (menu);
-	    setExitType (menu, input);
-	    menu->lastSelection = -1;
-	    ret = menu->lastSelection;
+	    cleanUpMenu (widget);
+	    setExitType (widget, input);
+	    widget->lastSelection = -1;
+	    ret = widget->lastSelection;
+	    complete = TRUE;
+	    break;
+
+	 case KEY_ERROR :
+	    setExitType(widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (menu));
-	    refreshCDKScreen (ScreenOf (menu));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 	 }
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (menu) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (menu) (vMENU, menu, PostProcessDataOf (menu), input);
+	 PostProcessFuncOf (widget) (vMENU, widget, PostProcessDataOf (widget), input);
       }
    }
 
    if (!complete)
    {
-      setExitType (menu, 0);
+      setExitType (widget, 0);
    }
 
-   ResultOf (menu).valueInt = ret;
+   ResultOf (widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

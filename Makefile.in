@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.76 2008/10/30 23:40:47 Saurabh.Nix Exp $
+# $Id: Makefile.in,v 1.78 2009/02/15 17:50:05 tom Exp $
 #
-#  Copyright 2001-2006,2007 Thomas Dickey
+#  Copyright 2001-2008,2009 Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -85,7 +85,7 @@ LDFLAGS		= @LDFLAGS@
 LIBTOOL		= @LIBTOOL@ @ECHO_LT@
 LIBTOOL_CLEAN	= @LIB_CLEAN@
 LIBTOOL_COMPILE	= @LIB_COMPILE@
-LIBTOOL_CREATE	= @LIB_CREATE@
+LIBTOOL_CREATE	= @LIB_CREATE@ $(EXTRA_LDFLAGS)
 LIBTOOL_LINK	= @LIB_LINK@
 LIBTOOL_INSTALL	= @LIB_INSTALL@
 LIBTOOL_UNINSTALL = @LIB_UNINSTALL@

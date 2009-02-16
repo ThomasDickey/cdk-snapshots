@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/01 16:00:02 $
- * $Revision: 1.147 $
+ * $Date: 2009/02/16 00:06:40 $
+ * $Revision: 1.148 $
  */
 
 /*
@@ -279,34 +279,34 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
  */
 static int _injectCDKScroll (CDKOBJS *object, chtype input)
 {
-   CDKSCROLL *scrollp = (CDKSCROLL *)object;
+   CDKSCROLL *widget = (CDKSCROLL *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type for the widget. */
-   setExitType (scrollp, 0);
+   setExitType (widget, 0);
 
    /* Draw the scrolling list */
-   drawCDKScrollList (scrollp, ObjOf (scrollp)->box);
+   drawCDKScrollList (widget, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (scrollp) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf (scrollp) (vSCROLL,
-					     scrollp,
-					     PreProcessDataOf (scrollp),
-					     input);
+      ppReturn = PreProcessFuncOf (widget) (vSCROLL,
+					    widget,
+					    PreProcessDataOf (widget),
+					    input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a predefined key binding. */
-      if (checkCDKObjectBind (vSCROLL, scrollp, input) != 0)
+      if (checkCDKObjectBind (vSCROLL, widget, input) != 0)
       {
-	 checkEarlyExit (scrollp);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
@@ -314,59 +314,64 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	 case KEY_UP:
-	    scroller_KEY_UP (scrollp);
+	    scroller_KEY_UP (widget);
 	    break;
 
 	 case KEY_DOWN:
-	    scroller_KEY_DOWN (scrollp);
+	    scroller_KEY_DOWN (widget);
 	    break;
 
 	 case KEY_RIGHT:
-	    scroller_KEY_RIGHT (scrollp);
+	    scroller_KEY_RIGHT (widget);
 	    break;
 
 	 case KEY_LEFT:
-	    scroller_KEY_LEFT (scrollp);
+	    scroller_KEY_LEFT (widget);
 	    break;
 
 	 case KEY_PPAGE:
-	    scroller_KEY_PPAGE (scrollp);
+	    scroller_KEY_PPAGE (widget);
 	    break;
 
 	 case KEY_NPAGE:
-	    scroller_KEY_NPAGE (scrollp);
+	    scroller_KEY_NPAGE (widget);
 	    break;
 
 	 case KEY_HOME:
-	    scroller_KEY_HOME (scrollp);
+	    scroller_KEY_HOME (widget);
 	    break;
 
 	 case KEY_END:
-	    scroller_KEY_END (scrollp);
+	    scroller_KEY_END (widget);
 	    break;
 
 	 case '$':
-	    scrollp->leftChar = scrollp->maxLeftChar;
+	    widget->leftChar = widget->maxLeftChar;
 	    break;
 
 	 case '|':
-	    scrollp->leftChar = 0;
+	    widget->leftChar = 0;
 	    break;
 
 	 case KEY_ESC:
-	    setExitType (scrollp, input);
+	    setExitType (widget, input);
+	    complete = TRUE;
+	    break;
+
+	 case KEY_ERROR :
+	    setExitType(widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (scrollp));
-	    refreshCDKScreen (ScreenOf (scrollp));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 case KEY_TAB:
 	 case KEY_ENTER:
-	    setExitType (scrollp, input);
-	    ret = scrollp->currentItem;
+	    setExitType (widget, input);
+	    ret = widget->currentItem;
 	    complete = TRUE;
 	    break;
 
@@ -376,23 +381,23 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (scrollp) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (scrollp) (vSCROLL,
-				      scrollp,
-				      PostProcessDataOf (scrollp),
-				      input);
+	 PostProcessFuncOf (widget) (vSCROLL,
+				     widget,
+				     PostProcessDataOf (widget),
+				     input);
       }
    }
 
    if (!complete)
    {
-      drawCDKScrollList (scrollp, ObjOf (scrollp)->box);
-      setExitType (scrollp, 0);
+      drawCDKScrollList (widget, ObjOf (widget)->box);
+      setExitType (widget, 0);
    }
 
-   fixCursorPosition (scrollp);
-   ResultOf (scrollp).valueInt = ret;
+   fixCursorPosition (widget);
+   ResultOf (widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

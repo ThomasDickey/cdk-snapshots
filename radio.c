@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/01 16:16:43 $
- * $Revision: 1.133 $
+ * $Date: 2009/02/16 00:05:48 $
+ * $Revision: 1.134 $
  */
 
 /*
@@ -252,31 +252,31 @@ int activateCDKRadio (CDKRADIO *radio, chtype *actions)
  */
 static int _injectCDKRadio (CDKOBJS *object, chtype input)
 {
-   CDKRADIO *radio = (CDKRADIO *)object;
+   CDKRADIO *widget = (CDKRADIO *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(radio, 0);
+   setExitType(widget, 0);
 
-   /* Draw the radio list */
-   drawCDKRadioList (radio, ObjOf(radio)->box);
+   /* Draw the widget list */
+   drawCDKRadioList (widget, ObjOf(widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(radio) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(radio) (vRADIO, radio, PreProcessDataOf(radio), input);
+      ppReturn = PreProcessFuncOf(widget) (vRADIO, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a predefined key binding. */
-      if (checkCDKObjectBind (vRADIO, radio, input) != 0)
+      if (checkCDKObjectBind (vRADIO, widget, input) != 0)
       {
-	 checkEarlyExit(radio);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -284,64 +284,69 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP :
-		 scroller_KEY_UP(radio);
+		 scroller_KEY_UP(widget);
 		 break;
 
 	    case KEY_DOWN :
-		 scroller_KEY_DOWN(radio);
+		 scroller_KEY_DOWN(widget);
 		 break;
 
 	    case KEY_RIGHT :
-		 scroller_KEY_RIGHT(radio);
+		 scroller_KEY_RIGHT(widget);
 		 break;
 
 	    case KEY_LEFT :
-		 scroller_KEY_LEFT(radio);
+		 scroller_KEY_LEFT(widget);
 		 break;
 
 	    case KEY_PPAGE :
-		 scroller_KEY_PPAGE(radio);
+		 scroller_KEY_PPAGE(widget);
 		 break;
 
 	    case KEY_NPAGE :
-		 scroller_KEY_NPAGE(radio);
+		 scroller_KEY_NPAGE(widget);
 		 break;
 
 	    case KEY_HOME :
-		 scroller_KEY_HOME(radio);
+		 scroller_KEY_HOME(widget);
 		 break;
 
 	    case KEY_END :
-		 scroller_KEY_END(radio);
+		 scroller_KEY_END(widget);
 		 break;
 
 	    case '$' :
-		 radio->leftChar = radio->maxLeftChar;
+		 widget->leftChar = widget->maxLeftChar;
 		 break;
 
 	    case '|' :
-		 radio->leftChar = 0;
+		 widget->leftChar = 0;
 		 break;
 
 	    case SPACE :
-		 radio->selectedItem = radio->currentItem;
+		 widget->selectedItem = widget->currentItem;
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(radio, input);
+		 setExitType(widget, input);
 		 ret = -1;
 		 complete = TRUE;
 		 break;
 
+	    case KEY_ERROR :
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
 	    case KEY_TAB : case KEY_ENTER :
-		 setExitType(radio, input);
-		 ret = radio->selectedItem;
+		 setExitType(widget, input);
+		 ret = widget->selectedItem;
 		 complete = TRUE;
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(radio));
-		 refreshCDKScreen (ScreenOf(radio));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    default :
@@ -350,19 +355,19 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(radio) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(radio) (vRADIO, radio, PostProcessDataOf(radio), input);
+	 PostProcessFuncOf(widget) (vRADIO, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      drawCDKRadioList (radio, ObjOf(radio)->box);
-      setExitType(radio, 0);
+      drawCDKRadioList (widget, ObjOf(widget)->box);
+      setExitType(widget, 0);
    }
 
-   fixCursorPosition (radio);
-   ResultOf(radio).valueInt = ret;
+   fixCursorPosition (widget);
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 
