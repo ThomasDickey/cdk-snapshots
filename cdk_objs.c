@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2005/04/15 22:08:58 $
- * $Revision: 1.12 $
+ * $Date: 2009/02/15 23:29:00 $
+ * $Revision: 1.13 $
  */
 
 /*
@@ -82,7 +82,7 @@ void setCDKObjectBackgroundColor (CDKOBJS *obj, char *color)
    holder = char2Chtype (color, &junk1, &junk2);
 
    /* Set the widget's background color. */
-   SetBackAttrObj(obj, holder[0]);        
+   SetBackAttrObj (obj, holder[0]);
 
    /* Clean up. */
    freeChtype (holder);
@@ -211,6 +211,9 @@ void setCdkExitType (CDKOBJS *obj, EExitType *type, chtype ch)
 {
    switch (ch)
    {
+   case KEY_ERROR:
+      *type = vERROR;
+      break;
    case KEY_ESC:
       *type = vESCAPE_HIT;
       break;

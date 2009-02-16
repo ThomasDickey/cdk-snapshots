@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.160 $
+ * $Date: 2009/02/16 00:04:28 $
+ * $Revision: 1.161 $
  */
 
 /*
@@ -282,8 +282,8 @@ static int getCursorPos (CDKMENTRY *mentry)
  */
 static int _injectCDKMentry (CDKOBJS *object, chtype input)
 {
-   CDKMENTRY *mentry = (CDKMENTRY *)object;
-   int cursorPos = getCursorPos (mentry);
+   CDKMENTRY *widget = (CDKMENTRY *)object;
+   int cursorPos = getCursorPos (widget);
    int ppReturn = 1;
    int x, fieldCharacters;
    char holder;
@@ -291,18 +291,18 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType (mentry, 0);
+   setExitType (widget, 0);
 
    /* Refresh the field. */
-   drawCDKMentryField (mentry);
+   drawCDKMentryField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (mentry) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf (mentry) (vMENTRY,
-					    mentry,
-					    PreProcessDataOf (mentry),
+      ppReturn = PreProcessFuncOf (widget) (vMENTRY,
+					    widget,
+					    PreProcessDataOf (widget),
 					    input);
    }
 
@@ -310,89 +310,89 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
    if (ppReturn != 0)
    {
       /* Check for a key binding... */
-      if (checkCDKObjectBind (vMENTRY, mentry, input) != 0)
+      if (checkCDKObjectBind (vMENTRY, widget, input) != 0)
       {
-	 checkEarlyExit (mentry);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
       {
 	 bool moved = FALSE;
 	 bool redraw = FALSE;
-	 int infoLength = (int)strlen (mentry->info);
+	 int infoLength = (int)strlen (widget->info);
 
 	 switch (input)
 	 {
 	 case KEY_HOME:
-	    moved = setCurPos (mentry, 0, 0);
-	    redraw = setTopRow (mentry, 0);
+	    moved = setCurPos (widget, 0, 0);
+	    redraw = setTopRow (widget, 0);
 	    break;
 
 	 case KEY_END:
-	    fieldCharacters = mentry->rows * mentry->fieldWidth;
+	    fieldCharacters = widget->rows * widget->fieldWidth;
 	    if (infoLength < fieldCharacters)
 	    {
-	       redraw = setTopRow (mentry, 0);
-	       moved = setCurPos (mentry,
-				  infoLength / mentry->fieldWidth,
-				  infoLength % mentry->fieldWidth);
+	       redraw = setTopRow (widget, 0);
+	       moved = setCurPos (widget,
+				  infoLength / widget->fieldWidth,
+				  infoLength % widget->fieldWidth);
 	    }
 	    else
 	    {
-	       redraw = setTopRow (mentry,
-				   (infoLength / mentry->fieldWidth) -
-				   mentry->rows + 1);
-	       moved = setCurPos (mentry,
-				  mentry->rows - 1,
-				  infoLength % mentry->fieldWidth);
+	       redraw = setTopRow (widget,
+				   (infoLength / widget->fieldWidth) -
+				   widget->rows + 1);
+	       moved = setCurPos (widget,
+				  widget->rows - 1,
+				  infoLength % widget->fieldWidth);
 	    }
 	    break;
 
 	 case KEY_LEFT:
-	    handle_KEY_LEFT (mentry, &moved, &redraw);
+	    handle_KEY_LEFT (widget, &moved, &redraw);
 	    break;
 
 	 case KEY_RIGHT:
-	    if (mentry->currentCol < (mentry->fieldWidth - 1))
+	    if (widget->currentCol < (widget->fieldWidth - 1))
 	    {
-	       if ((getCursorPos (mentry) + 1) <= infoLength)
+	       if ((getCursorPos (widget) + 1) <= infoLength)
 	       {
-		  moved = setCurPos (mentry,
-				     mentry->currentRow,
-				     mentry->currentCol + 1);
+		  moved = setCurPos (widget,
+				     widget->currentRow,
+				     widget->currentCol + 1);
 	       }
 	    }
-	    else if (mentry->currentRow == mentry->rows - 1)
+	    else if (widget->currentRow == widget->rows - 1)
 	    {
-	       if ((mentry->topRow + mentry->currentRow + 1) <= mentry->logicalRows)
+	       if ((widget->topRow + widget->currentRow + 1) <= widget->logicalRows)
 	       {
-		  moved = setCurPos (mentry, mentry->currentRow, 0);
-		  redraw = setTopRow (mentry, mentry->topRow + 1);
+		  moved = setCurPos (widget, widget->currentRow, 0);
+		  redraw = setTopRow (widget, widget->topRow + 1);
 	       }
 	    }
 	    else
 	    {
-	       moved = setCurPos (mentry, mentry->currentRow + 1, 0);
+	       moved = setCurPos (widget, widget->currentRow + 1, 0);
 	    }
 	    if (!moved && !redraw)
 	       Beep ();
 	    break;
 
 	 case KEY_DOWN:
-	    if (mentry->currentRow != (mentry->rows - 1))
+	    if (widget->currentRow != (widget->rows - 1))
 	    {
-	       if ((getCursorPos (mentry) + mentry->fieldWidth + 1)
+	       if ((getCursorPos (widget) + widget->fieldWidth + 1)
 		   <= infoLength)
 	       {
-		  moved = setCurPos (mentry, mentry->currentRow + 1, mentry->currentCol);
+		  moved = setCurPos (widget, widget->currentRow + 1, widget->currentCol);
 	       }
 	    }
-	    else if (mentry->topRow < mentry->logicalRows - mentry->rows)
+	    else if (widget->topRow < widget->logicalRows - widget->rows)
 	    {
-	       if (((mentry->topRow + mentry->currentRow + 1) *
-		    mentry->fieldWidth) <= infoLength)
+	       if (((widget->topRow + widget->currentRow + 1) *
+		    widget->fieldWidth) <= infoLength)
 	       {
-		  redraw = setTopRow (mentry, mentry->topRow + 1);
+		  redraw = setTopRow (widget, widget->topRow + 1);
 	       }
 	    }
 	    if (!moved && !redraw)
@@ -400,13 +400,13 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_UP:
-	    if (mentry->currentRow != 0)
+	    if (widget->currentRow != 0)
 	    {
-	       moved = setCurPos (mentry, mentry->currentRow - 1, mentry->currentCol);
+	       moved = setCurPos (widget, widget->currentRow - 1, widget->currentCol);
 	    }
-	    else if (mentry->topRow != 0)
+	    else if (widget->topRow != 0)
 	    {
-	       redraw = setTopRow (mentry, mentry->topRow - 1);
+	       redraw = setTopRow (widget, widget->topRow - 1);
 	    }
 	    if (!moved && !redraw)
 	       Beep ();
@@ -414,7 +414,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 
 	 case KEY_BACKSPACE:
 	 case KEY_DC:
-	    if (mentry->dispType == vVIEWONLY)
+	    if (widget->dispType == vVIEWONLY)
 	    {
 	       Beep ();
 	    }
@@ -423,18 +423,18 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	       Beep ();
 	    }
 	    else if (input == KEY_DC
-		     || handle_KEY_LEFT (mentry, &moved, &redraw))
+		     || handle_KEY_LEFT (widget, &moved, &redraw))
 	    {
-	       cursorPos = getCursorPos (mentry);
-	       if (mentry->info[cursorPos] != '\0')
+	       cursorPos = getCursorPos (widget);
+	       if (widget->info[cursorPos] != '\0')
 	       {
 		  for (x = cursorPos; x < infoLength; x++)
 		  {
-		     mentry->info[x] = mentry->info[x + 1];
+		     widget->info[x] = widget->info[x + 1];
 		  }
-		  mentry->info[--infoLength] = '\0';
+		  widget->info[--infoLength] = '\0';
 
-		  drawCDKMentryField (mentry);
+		  drawCDKMentryField (widget);
 	       }
 	       else
 	       {
@@ -450,18 +450,18 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       holder = mentry->info[cursorPos];
-	       mentry->info[cursorPos] = mentry->info[cursorPos + 1];
-	       mentry->info[cursorPos + 1] = holder;
-	       drawCDKMentryField (mentry);
+	       holder = widget->info[cursorPos];
+	       widget->info[cursorPos] = widget->info[cursorPos + 1];
+	       widget->info[cursorPos + 1] = holder;
+	       drawCDKMentryField (widget);
 	    }
 	    break;
 
 	 case CDK_ERASE:
 	    if (infoLength != 0)
 	    {
-	       cleanCDKMentry (mentry);
-	       drawCDKMentryField (mentry);
+	       cleanCDKMentry (widget);
+	       drawCDKMentryField (widget);
 	    }
 	    break;
 
@@ -473,9 +473,9 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    else
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (mentry->info);
-	       cleanCDKMentry (mentry);
-	       drawCDKMentryField (mentry);
+	       GPasteBuffer = copyChar (widget->info);
+	       cleanCDKMentry (widget);
+	       drawCDKMentryField (widget);
 	    }
 	    break;
 
@@ -487,7 +487,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    else
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (mentry->info);
+	       GPasteBuffer = copyChar (widget->info);
 	    }
 	    break;
 
@@ -498,75 +498,80 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       setCDKMentryValue (mentry, GPasteBuffer);
-	       drawCDKMentry (mentry, ObjOf (mentry)->box);
+	       setCDKMentryValue (widget, GPasteBuffer);
+	       drawCDKMentry (widget, ObjOf (widget)->box);
 	    }
 	    break;
 
 	 case KEY_TAB:
 	 case KEY_ENTER:
-	    if (infoLength < mentry->min + 1)
+	    if (infoLength < widget->min + 1)
 	    {
 	       Beep ();
 	    }
 	    else
 	    {
-	       setExitType (mentry, input);
-	       ret = (mentry->info);
+	       setExitType (widget, input);
+	       ret = (widget->info);
 	       complete = TRUE;
 	    }
 	    break;
 
+	 case KEY_ERROR :
+	    setExitType(widget, input);
+	    complete = TRUE;
+	    break;
+
 	 case KEY_ESC:
-	    setExitType (mentry, input);
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (mentry));
-	    refreshCDKScreen (ScreenOf (mentry));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 default:
-	    if (mentry->dispType == vVIEWONLY
-		|| infoLength >= mentry->totalWidth)
+	    if (widget->dispType == vVIEWONLY
+		|| infoLength >= widget->totalWidth)
 	    {
 	       Beep ();
 	    }
 	    else
 	    {
-	       (mentry->callbackfn) (mentry, input);
+	       (widget->callbackfn) (widget, input);
 	    }
 	    break;
 	 }
 
 	 if (redraw)
 	 {
-	    drawCDKMentryField (mentry);
+	    drawCDKMentryField (widget);
 	 }
 	 else if (moved)
 	 {
-	    wmove (mentry->fieldWin, mentry->currentRow, mentry->currentCol);
-	    wrefresh (mentry->fieldWin);
+	    wmove (widget->fieldWin, widget->currentRow, widget->currentCol);
+	    wrefresh (widget->fieldWin);
 	 }
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf (mentry) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (mentry) (vMENTRY,
-				     mentry,
-				     PostProcessDataOf (mentry),
+	 PostProcessFuncOf (widget) (vMENTRY,
+				     widget,
+				     PostProcessDataOf (widget),
 				     input);
       }
    }
 
    if (!complete)
    {
-      setExitType (mentry, 0);
+      setExitType (widget, 0);
    }
 
-   ResultOf (mentry).valueString = ret;
+   ResultOf (widget).valueString = ret;
    return (ret != unknownString);
 }
 

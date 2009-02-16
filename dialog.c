@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.95 $
+ * $Date: 2009/02/15 23:57:40 $
+ * $Revision: 1.96 $
  */
 
 DeclareCDKObjects(DIALOG, Dialog, setCdk, Int);
@@ -178,29 +178,29 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
  */
 static int _injectCDKDialog (CDKOBJS *object, chtype input)
 {
-   CDKDIALOG *dialog = (CDKDIALOG *)object;
+   CDKDIALOG *widget = (CDKDIALOG *)object;
    int firstButton	= 0;
-   int lastButton	= dialog->buttonCount - 1;
+   int lastButton	= widget->buttonCount - 1;
    int ppReturn		= 1;
    int ret		= unknownInt;
    bool complete	= FALSE;
 
    /* Set the exit type. */
-   setExitType(dialog, 0);
+   setExitType(widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(dialog) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
-      ppReturn = PreProcessFuncOf(dialog) (vDIALOG, dialog, PreProcessDataOf(dialog), input);
+      ppReturn = PreProcessFuncOf(widget) (vDIALOG, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a key binding. */
-      if (checkCDKObjectBind (vDIALOG, dialog, input) != 0)
+      if (checkCDKObjectBind (vDIALOG, widget, input) != 0)
       {
-	 checkEarlyExit(dialog);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -208,24 +208,24 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_LEFT : case KEY_BTAB : case KEY_BACKSPACE :
-		 if (dialog->currentButton == firstButton)
+		 if (widget->currentButton == firstButton)
 		 {
-		    dialog->currentButton = lastButton;;
+		    widget->currentButton = lastButton;;
 		 }
 		 else
 		 {
-		    dialog->currentButton--;
+		    widget->currentButton--;
 		 }
 		 break;
 
 	    case KEY_RIGHT : case KEY_TAB : case SPACE :
-		 if (dialog->currentButton == lastButton)
+		 if (widget->currentButton == lastButton)
 		 {
-		    dialog->currentButton = firstButton;
+		    widget->currentButton = firstButton;
 		 }
 		 else
 		 {
-		    dialog->currentButton++;
+		    widget->currentButton++;
 		 }
 		 break;
 
@@ -234,18 +234,23 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(dialog));
-		 refreshCDKScreen (ScreenOf(dialog));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(dialog, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case KEY_ENTER :
-		 setExitType(dialog, input);
-		 ret = dialog->currentButton;
+		 setExitType(widget, input);
+		 ret = widget->currentButton;
 		 complete = TRUE;
 		 break;
 
@@ -255,19 +260,19 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(dialog) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(dialog) (vDIALOG, dialog, PostProcessDataOf(dialog), input);
+	 PostProcessFuncOf(widget) (vDIALOG, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      drawCDKDialogButtons (dialog);
-      wrefresh (dialog->win);
-      setExitType(dialog, 0);
+      drawCDKDialogButtons (widget);
+      wrefresh (widget->win);
+      setExitType(widget, 0);
    }
 
-   ResultOf(dialog).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

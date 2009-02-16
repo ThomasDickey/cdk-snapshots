@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.19 $
+ * $Date: 2009/02/15 23:59:52 $
+ * $Revision: 1.20 $
  */
 
 /*
@@ -477,6 +477,11 @@ static int _injectCDK<MIXED> (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_ESC :
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
 		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;

@@ -1,9 +1,33 @@
+-- vile:fk=8bit txtmode
+-- $Id: CHANGES,v 1.149 2009/02/16 00:17:38 tom Exp $
+-------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 Modifications copyright Thomas E. Dickey 1999-2007, 2008
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2009/02/15
+	+ add KEY_ERROR case to each widget to make vERROR events handled by
+	  each.
+	+ modify scroller_SetPosition() macro to improve scrolling behavior
+	  (patch by Ricardo Cantu).
+	+ add vERROR event type to EExitType enumeration, using this in
+	  setCdkExitType() and the selection widget to handle errors (patch by
+	  Ricardo Cantu).
+	+ improve manpage descriptions for writeCharAttrib and
+	  writeChtypeAttrib (report by Knut Schwichten).
+	+ add EXTRA_LDFLAGS symbol to makefile rule for creating library,
+	  in case options are needed (prompted by patch by Timothy Redaelli).
+	+ modify matrix.c to allow defining empty column or row titles by
+	  passing a null pointer in the newCDKMatrix() call.  Fix repainting
+	  of column titles by first erasing the cell (patch by Vincenzo Romano).
+	+ regenerate configure script with autoconf 2.52 (patched) to make this
+	  work in non-POSIX locales (report by Mart Stöör).
+	+ update configure script macros, e.g., to ensure that options are
+	  appended to $CFLAGS rather than prepended.
+	+ update config.guess, config.sub
 
 2008/11/05
 	+ modify matrix widget so that if title, row-title, column-title or

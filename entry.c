@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:24:48 $
- * $Revision: 1.214 $
+ * $Date: 2009/02/16 00:13:12 $
+ * $Revision: 1.215 $
  */
 
 /*
@@ -247,7 +247,7 @@ static void setPositionToEnd (CDKENTRY *entry)
  */
 static int _injectCDKEntry (CDKOBJS *object, chtype input)
 {
-   CDKENTRY *entry = (CDKENTRY *)object;
+   CDKENTRY *widget = (CDKENTRY *)object;
    int ppReturn = 1;
    int x;
    char holder;
@@ -255,33 +255,33 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType (entry, 0);
+   setExitType (widget, 0);
 
-   /* Refresh the entry field. */
-   drawCDKEntryField (entry);
+   /* Refresh the widget field. */
+   drawCDKEntryField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (entry) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
-      ppReturn = PreProcessFuncOf (entry) (vENTRY,
-					   entry,
-					   PreProcessDataOf (entry),
-					   input);
+      ppReturn = PreProcessFuncOf (widget) (vENTRY,
+					    widget,
+					    PreProcessDataOf (widget),
+					    input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check a predefined binding... */
-      if (checkCDKObjectBind (vENTRY, entry, input) != 0)
+      if (checkCDKObjectBind (vENTRY, widget, input) != 0)
       {
-	 checkEarlyExit (entry);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
       {
-	 int infoLength = (int)strlen (entry->info);
-	 int currPos = entry->screenCol + entry->leftChar;
+	 int infoLength = (int)strlen (widget->info);
+	 int currPos = widget->screenCol + widget->leftChar;
 
 	 switch (input)
 	 {
@@ -291,9 +291,9 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_HOME:
-	    entry->leftChar = 0;
-	    entry->screenCol = 0;
-	    drawCDKEntryField (entry);
+	    widget->leftChar = 0;
+	    widget->screenCol = 0;
+	    drawCDKEntryField (widget);
 	    break;
 
 	 case CDK_TRANSPOSE:
@@ -303,16 +303,16 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       holder = entry->info[currPos];
-	       entry->info[currPos] = entry->info[currPos + 1];
-	       entry->info[currPos + 1] = holder;
-	       drawCDKEntryField (entry);
+	       holder = widget->info[currPos];
+	       widget->info[currPos] = widget->info[currPos + 1];
+	       widget->info[currPos + 1] = holder;
+	       drawCDKEntryField (widget);
 	    }
 	    break;
 
 	 case KEY_END:
-	    setPositionToEnd (entry);
-	    drawCDKEntryField (entry);
+	    setPositionToEnd (widget);
+	    drawCDKEntryField (widget);
 	    break;
 
 	 case KEY_LEFT:
@@ -320,15 +320,15 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    {
 	       Beep ();
 	    }
-	    else if (entry->screenCol == 0)
+	    else if (widget->screenCol == 0)
 	    {
 	       /* Scroll left.  */
-	       entry->leftChar--;
-	       drawCDKEntryField (entry);
+	       widget->leftChar--;
+	       drawCDKEntryField (widget);
 	    }
 	    else
 	    {
-	       wmove (entry->fieldWin, 0, --entry->screenCol);
+	       wmove (widget->fieldWin, 0, --widget->screenCol);
 	    }
 	    break;
 
@@ -337,22 +337,22 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    {
 	       Beep ();
 	    }
-	    else if (entry->screenCol == entry->fieldWidth - 1)
+	    else if (widget->screenCol == widget->fieldWidth - 1)
 	    {
 	       /* Scroll to the right. */
-	       entry->leftChar++;
-	       drawCDKEntryField (entry);
+	       widget->leftChar++;
+	       drawCDKEntryField (widget);
 	    }
 	    else
 	    {
 	       /* Move right. */
-	       wmove (entry->fieldWin, 0, ++entry->screenCol);
+	       wmove (widget->fieldWin, 0, ++widget->screenCol);
 	    }
 	    break;
 
 	 case KEY_BACKSPACE:
 	 case KEY_DC:
-	    if (entry->dispType == vVIEWONLY)
+	    if (widget->dispType == vVIEWONLY)
 	    {
 	       Beep ();
 	    }
@@ -369,13 +369,13 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 		  {
 		     for (x = currPos; x < infoLength; x++)
 		     {
-			entry->info[x] = entry->info[x + 1];
+			widget->info[x] = widget->info[x + 1];
 		     }
 		     success = TRUE;
 		  }
 		  else if (input == KEY_BACKSPACE)
 		  {
-		     entry->info[infoLength - 1] = '\0';
+		     widget->info[infoLength - 1] = '\0';
 		     success = TRUE;
 		  }
 	       }
@@ -384,13 +384,13 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	       {
 		  if (input == KEY_BACKSPACE)
 		  {
-		     if (entry->screenCol > 0)
-			entry->screenCol--;
+		     if (widget->screenCol > 0)
+			widget->screenCol--;
 		     else
-			entry->leftChar--;
+			widget->leftChar--;
 		  }
 
-		  drawCDKEntryField (entry);
+		  drawCDKEntryField (widget);
 	       }
 	       else
 	       {
@@ -400,15 +400,15 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_ESC:
-	    setExitType (entry, input);
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_ERASE:
 	    if (infoLength != 0)
 	    {
-	       cleanCDKEntry (entry);
-	       drawCDKEntryField (entry);
+	       cleanCDKEntry (widget);
+	       drawCDKEntryField (widget);
 	    }
 	    break;
 
@@ -416,9 +416,9 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    if (infoLength != 0)
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (entry->info);
-	       cleanCDKEntry (entry);
-	       drawCDKEntryField (entry);
+	       GPasteBuffer = copyChar (widget->info);
+	       cleanCDKEntry (widget);
+	       drawCDKEntryField (widget);
 	    }
 	    else
 	    {
@@ -430,7 +430,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    if (infoLength != 0)
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (entry->info);
+	       GPasteBuffer = copyChar (widget->info);
 	    }
 	    else
 	    {
@@ -441,8 +441,8 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	 case CDK_PASTE:
 	    if (GPasteBuffer != 0)
 	    {
-	       setCDKEntryValue (entry, GPasteBuffer);
-	       drawCDKEntryField (entry);
+	       setCDKEntryValue (widget, GPasteBuffer);
+	       drawCDKEntryField (widget);
 	    }
 	    else
 	    {
@@ -452,10 +452,10 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 
 	 case KEY_TAB:
 	 case KEY_ENTER:
-	    if (infoLength >= entry->min)
+	    if (infoLength >= widget->min)
 	    {
-	       setExitType (entry, input);
-	       ret = (entry->info);
+	       setExitType (widget, input);
+	       ret = (widget->info);
 	       complete = TRUE;
 	    }
 	    else
@@ -464,31 +464,36 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    }
 	    break;
 
+	 case KEY_ERROR :
+	    setExitType(widget, input);
+	    complete = TRUE;
+	    break;
+
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (entry));
-	    refreshCDKScreen (ScreenOf (entry));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 default:
-	    (entry->callbackfn) (entry, input);
+	    (widget->callbackfn) (widget, input);
 	    break;
 	 }
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf (entry) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (entry) (vENTRY,
-				    entry,
-				    PostProcessDataOf (entry),
-				    input);
+	 PostProcessFuncOf (widget) (vENTRY,
+				     widget,
+				     PostProcessDataOf (widget),
+				     input);
       }
    }
 
    if (!complete)
-      setExitType (entry, 0);
+      setExitType (widget, 0);
 
-   ResultOf (entry).valueString = ret;
+   ResultOf (widget).valueString = ret;
    return (ret != unknownString);
 }
 

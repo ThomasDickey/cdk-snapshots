@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.19 2005/04/15 00:01:49 tom Exp $
+ * $Id: cdk_int.h,v 1.22 2009/02/15 23:43:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2004,2005 Thomas E. Dickey
+ * Copyright 2003-2005,2009 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,13 +53,13 @@ extern "C" {
 #define typeMallocN(type,n)     (type*)malloc((n) * sizeof(type))
 #define typeMalloc(type)        typeMallocN(type,1)
 
-#define freeChecked(p)		if ((p) != 0) free (p)
-#define freeAndNull(p)		if ((p) != 0) { free (p); p = 0; }
+#define freeChecked(p)          if ((p) != 0) free (p)
+#define freeAndNull(p)          if ((p) != 0) { free (p); p = 0; }
 
-#define isChar(c)		((int)(c) >= 0 && (int)(c) < KEY_MIN)
+#define isChar(c)               ((int)(c) >= 0 && (int)(c) < KEY_MIN)
 #define CharOf(c)               ((unsigned char)(c))
 
-#define SIZEOF(v)		(sizeof(v)/sizeof((v)[0]))
+#define SIZEOF(v)               (sizeof(v)/sizeof((v)[0]))
 
 /*
  * Macros to check if caller is attempting to make the widget as high (or wide)
@@ -211,9 +211,9 @@ extern "C" {
 		   (w)->currentItem = item; \
 		   (w)->currentHigh = item - (w)->currentTop; \
 		} else { \
-		   (w)->currentTop = item; \
+		   (w)->currentTop = item - ((w)->viewSize - 1); \
 		   (w)->currentItem = item; \
-		   (w)->currentHigh = 0; \
+		   (w)->currentHigh = (w)->viewSize - 1; \
 		}
 
 #define scroller_MaxViewSize(w) \

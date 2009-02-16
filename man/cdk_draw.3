@@ -1,4 +1,4 @@
-.\" $Id: cdk_draw.3,v 1.3 2005/12/30 22:45:48 tom Exp $
+.\" $Id: cdk_draw.3,v 1.4 2009/02/15 17:10:04 tom Exp $
 .de XX
 ..
 .TH cdk_draw 3
@@ -159,6 +159,7 @@ The parameters are passed to \fBwriteCharAttrib\fP as is.
 writes out a \fBchar\ *\fP string with the given attributes added.
 The string is written to the given \fIwindow\fP,
 using its relative screen coordinates \fIypos\fP and \fIxpos\fP.
+.IP
 Compare with \fBwriteChtypeAttrib\fP, which writes a \fBchtype\ *\fP string.
 .IP
 The function ORs the attribute \fIattr\fP with each item from the string.
@@ -166,8 +167,10 @@ For instance, it may be \fBA_BOLD\fP.
 The \fIalign\fP parameter controls whether it is written horizontally
 (\fBHORIZONTAL\fP) or vertically (\fBVERTICAL\fP).
 .IP
-Finally, only a subset of the string is written,
-i.e., from indices \fIstart\fP to \fIend\fP.
+Finally, only a subset of the string is written.
+The function starts with the data from the \fIstart\fP item of
+\fIstring\fP, and ends before the \fIend\fP item.
+If \fIstart\fP is greater than, or equal to \fIend\fP, no data is written.
 .TP 5
 .B writeChtype
 writes out a \fBchtype\ *\fP string without adding attributes.
@@ -185,8 +188,10 @@ For instance, it may be \fBA_BOLD\fP.
 The \fIalign\fP parameter controls whether it is written horizontally
 (\fBHORIZONTAL\fP) or vertically (\fBVERTICAL\fP).
 .IP
-Finally, only a subset of the string is written,
-i.e., from indices \fIstart\fP to \fIend\fP.
+Finally, only a subset of the string is written.
+The function starts with the data from the \fIstart\fP item of
+\fIstring\fP, and ends before the \fIend\fP item.
+If \fIstart\fP is greater than, or equal to \fIend\fP, no data is written.
 .
 .SH SEE ALSO
 .BR cdk (3),

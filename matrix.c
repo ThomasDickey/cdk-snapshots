@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/06 01:19:23 $
- * $Revision: 1.187 $
+ * $Date: 2009/02/16 00:13:59 $
+ * $Revision: 1.189 $
  */
 
 /*
@@ -154,9 +154,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Determine the maximum row title width */
    for (x = 1; x <= rows; x++)
    {
-      if (!emptyString(rowtitles[x]))
+      if (rowtitles && !emptyString(rowtitles[x]))/*VR*/
 	 have_rowtitles = TRUE;
-      matrix->rowtitle[x] = char2Chtype (rowtitles[x],
+      matrix->rowtitle[x] = char2Chtype (rowtitles?rowtitles[x]:0,/*VR*/
 					 &matrix->rowtitleLen[x],
 					 &matrix->rowtitlePos[x]);
       maxRowTitleWidth = MAXIMUM (maxRowTitleWidth, matrix->rowtitleLen[x]);
@@ -217,9 +217,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Copy the titles into the structure. */
    for (x = 1; x <= cols; x++)
    {
-      if (!emptyString(coltitles[x]))
+      if (coltitles && !emptyString(coltitles[x]))/*VR*/
 	 have_coltitles = TRUE;
-      matrix->coltitle[x] = char2Chtype (coltitles[x],
+      matrix->coltitle[x] = char2Chtype (coltitles?coltitles[x]:0,/*VR*/
 					 &matrix->coltitleLen[x],
 					 &matrix->coltitlePos[x]);
       matrix->coltitlePos[x] = (BorderOf (matrix) +
@@ -399,46 +399,46 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
  */
 static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 {
-   CDKMATRIX *matrix = (CDKMATRIX *)object;
+   CDKMATRIX *widget = (CDKMATRIX *)object;
    int refreshCells	= FALSE;
    int movedCell	= FALSE;
-   int charcount	= (int)strlen (MATRIX_INFO (matrix, matrix->row, matrix->col));
+   int charcount	= (int)strlen (MATRIX_INFO (widget, widget->row, widget->col));
    int ppReturn		= 1;
    int infolen;
    int ret		= unknownInt;
    bool complete	= FALSE;
 
    /* Set the exit type. */
-   setExitType (matrix, 0);
+   setExitType (widget, 0);
 
    /* Move the cursor to the correct position within the cell. */
-   if (matrix->colwidths[matrix->ccol] == 1)
+   if (widget->colwidths[widget->ccol] == 1)
    {
-      wmove (CurMatrixCell (matrix), 1, 1);
+      wmove (CurMatrixCell (widget), 1, 1);
    }
    else
    {
-      wmove (CurMatrixCell (matrix),
+      wmove (CurMatrixCell (widget),
 	     1,
-	     (int)strlen (MATRIX_INFO (matrix, matrix->row, matrix->col)) + 1);
+	     (int)strlen (MATRIX_INFO (widget, widget->row, widget->col)) + 1);
    }
 
    /* Put the focus on the current cell */
-   attrbox (CurMatrixCell (matrix),
+   attrbox (CurMatrixCell (widget),
 	    ACS_ULCORNER, ACS_URCORNER,
 	    ACS_LLCORNER, ACS_LRCORNER,
 	    ACS_HLINE, ACS_VLINE,
 	    A_BOLD);
-   wrefresh (CurMatrixCell (matrix));
-   highlightCDKMatrixCell (matrix);
+   wrefresh (CurMatrixCell (widget));
+   highlightCDKMatrixCell (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (matrix) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf (matrix) (vMATRIX,
-					    matrix,
-					    PreProcessDataOf (matrix),
+      ppReturn = PreProcessFuncOf (widget) (vMATRIX,
+					    widget,
+					    PreProcessDataOf (widget),
 					    input);
    }
 
@@ -446,9 +446,9 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    if (ppReturn != 0)
    {
       /* Check the key bindings. */
-      if (checkCDKObjectBind (vMATRIX, matrix, input) != 0)
+      if (checkCDKObjectBind (vMATRIX, widget, input) != 0)
       {
-	 checkEarlyExit (matrix);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
@@ -466,41 +466,41 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 
 	 case KEY_BACKSPACE:
 	 case KEY_DC:
-	    if (matrix->colvalues[matrix->col] == vVIEWONLY || charcount <= 0)
+	    if (widget->colvalues[widget->col] == vVIEWONLY || charcount <= 0)
 	    {
 	       Beep ();
 	    }
 	    else
 	    {
 	       charcount--;
-	       mvwdelch (CurMatrixCell (matrix), 1, charcount + 1);
-	       mvwinsch (CurMatrixCell (matrix), 1, charcount + 1, matrix->filler);
-	       wrefresh (CurMatrixCell (matrix));
-	       MATRIX_INFO (matrix, matrix->row, matrix->col)[charcount] = '\0';
+	       mvwdelch (CurMatrixCell (widget), 1, charcount + 1);
+	       mvwinsch (CurMatrixCell (widget), 1, charcount + 1, widget->filler);
+	       wrefresh (CurMatrixCell (widget));
+	       MATRIX_INFO (widget, widget->row, widget->col)[charcount] = '\0';
 	    }
 	    break;
 
 	 case KEY_RIGHT:
 	 case KEY_TAB:
-	    if (matrix->ccol != matrix->vcols)
+	    if (widget->ccol != widget->vcols)
 	    {
 	       /* We are moving to the right... */
-	       matrix->col++;
-	       matrix->ccol++;
+	       widget->col++;
+	       widget->ccol++;
 	       movedCell = TRUE;
 	    }
 	    else
 	    {
 	       /* We have to shift the columns to the right. */
-	       if (matrix->col != matrix->cols)
+	       if (widget->col != widget->cols)
 	       {
-		  matrix->lcol++;
-		  matrix->col++;
+		  widget->lcol++;
+		  widget->col++;
 
 		  /* Redraw the column titles. */
-		  if (matrix->rows > matrix->vrows)
+		  if (widget->rows > widget->vrows)
 		  {
-		     redrawTitles (matrix, FALSE, TRUE);
+		     redrawTitles (widget, FALSE, TRUE);
 		  }
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
@@ -509,29 +509,29 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	       {
 		  /* We are at the far right column, we need  */
 		  /* shift down one row, if we can. */
-		  if (matrix->row == matrix->rows)
+		  if (widget->row == widget->rows)
 		  {
 		     Beep ();
 		  }
 		  else
 		  {
 		     /* Set up the columns info. */
-		     matrix->col = 1;
-		     matrix->lcol = 1;
-		     matrix->ccol = 1;
+		     widget->col = 1;
+		     widget->lcol = 1;
+		     widget->ccol = 1;
 
 		     /* Shift the rows... */
-		     if (matrix->crow != matrix->vrows)
+		     if (widget->crow != widget->vrows)
 		     {
-			matrix->row++;
-			matrix->crow++;
+			widget->row++;
+			widget->crow++;
 		     }
 		     else
 		     {
-			matrix->row++;
-			matrix->trow++;
+			widget->row++;
+			widget->trow++;
 		     }
-		     redrawTitles (matrix, TRUE, TRUE);
+		     redrawTitles (widget, TRUE, TRUE);
 		     refreshCells = TRUE;
 		     movedCell = TRUE;
 		  }
@@ -541,25 +541,25 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 
 	 case KEY_LEFT:
 	 case KEY_BTAB:
-	    if (matrix->ccol != 1)
+	    if (widget->ccol != 1)
 	    {
 	       /* We are moving to the left... */
-	       matrix->col--;
-	       matrix->ccol--;
+	       widget->col--;
+	       widget->ccol--;
 	       movedCell = TRUE;
 	    }
 	    else
 	    {
 	       /* Are we at the far left??? */
-	       if (matrix->lcol != 1)
+	       if (widget->lcol != 1)
 	       {
-		  matrix->lcol--;
-		  matrix->col--;
+		  widget->lcol--;
+		  widget->col--;
 
 		  /* Redraw the column titles. */
-		  if (matrix->cols > matrix->vcols)
+		  if (widget->cols > widget->vcols)
 		  {
-		     redrawTitles (matrix, FALSE, TRUE);
+		     redrawTitles (widget, FALSE, TRUE);
 		  }
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
@@ -567,29 +567,29 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	       else
 	       {
 		  /* Shift up one line if we can... */
-		  if (matrix->row == 1)
+		  if (widget->row == 1)
 		  {
 		     Beep ();
 		  }
 		  else
 		  {
 		     /* Set up the columns info. */
-		     matrix->col = matrix->cols;
-		     matrix->lcol = matrix->cols - matrix->vcols + 1;
-		     matrix->ccol = matrix->vcols;
+		     widget->col = widget->cols;
+		     widget->lcol = widget->cols - widget->vcols + 1;
+		     widget->ccol = widget->vcols;
 
 		     /* Shift the rows... */
-		     if (matrix->crow != 1)
+		     if (widget->crow != 1)
 		     {
-			matrix->row--;
-			matrix->crow--;
+			widget->row--;
+			widget->crow--;
 		     }
 		     else
 		     {
-			matrix->row--;
-			matrix->trow--;
+			widget->row--;
+			widget->trow--;
 		     }
-		     redrawTitles (matrix, TRUE, TRUE);
+		     redrawTitles (widget, TRUE, TRUE);
 		     refreshCells = TRUE;
 		     movedCell = TRUE;
 		  }
@@ -598,23 +598,23 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_UP:
-	    if (matrix->crow != 1)
+	    if (widget->crow != 1)
 	    {
-	       matrix->row--;
-	       matrix->crow--;
+	       widget->row--;
+	       widget->crow--;
 	       movedCell = TRUE;
 	    }
 	    else
 	    {
-	       if (matrix->trow != 1)
+	       if (widget->trow != 1)
 	       {
-		  matrix->trow--;
-		  matrix->row--;
+		  widget->trow--;
+		  widget->row--;
 
 		  /* Redraw the row titles. */
-		  if (matrix->rows > matrix->vrows)
+		  if (widget->rows > widget->vrows)
 		  {
-		     redrawTitles (matrix, TRUE, FALSE);
+		     redrawTitles (widget, TRUE, FALSE);
 		  }
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
@@ -627,23 +627,23 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_DOWN:
-	    if (matrix->crow != matrix->vrows)
+	    if (widget->crow != widget->vrows)
 	    {
-	       matrix->row++;
-	       matrix->crow++;
+	       widget->row++;
+	       widget->crow++;
 	       movedCell = TRUE;
 	    }
 	    else
 	    {
-	       if ((matrix->trow + matrix->vrows - 1) != matrix->rows)
+	       if ((widget->trow + widget->vrows - 1) != widget->rows)
 	       {
-		  matrix->trow++;
-		  matrix->row++;
+		  widget->trow++;
+		  widget->row++;
 
 		  /* Redraw the titles. */
-		  if (matrix->rows > matrix->vrows)
+		  if (widget->rows > widget->vrows)
 		  {
-		     redrawTitles (matrix, TRUE, FALSE);
+		     redrawTitles (widget, TRUE, FALSE);
 		  }
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
@@ -656,13 +656,13 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_NPAGE:
-	    if (matrix->rows > matrix->vrows)
+	    if (widget->rows > widget->vrows)
 	    {
-	       if ((matrix->trow + ((matrix->vrows - 1) * 2)) <= matrix->rows)
+	       if ((widget->trow + ((widget->vrows - 1) * 2)) <= widget->rows)
 	       {
-		  matrix->trow += matrix->vrows - 1;
-		  matrix->row += matrix->vrows - 1;
-		  redrawTitles (matrix, TRUE, FALSE);
+		  widget->trow += widget->vrows - 1;
+		  widget->row += widget->vrows - 1;
+		  redrawTitles (widget, TRUE, FALSE);
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
 	       }
@@ -678,13 +678,13 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case KEY_PPAGE:
-	    if (matrix->rows > matrix->vrows)
+	    if (widget->rows > widget->vrows)
 	    {
-	       if ((matrix->trow - ((matrix->vrows - 1) * 2)) >= 1)
+	       if ((widget->trow - ((widget->vrows - 1) * 2)) >= 1)
 	       {
-		  matrix->trow -= matrix->vrows - 1;
-		  matrix->row -= matrix->vrows - 1;
-		  redrawTitles (matrix, TRUE, FALSE);
+		  widget->trow -= widget->vrows - 1;
+		  widget->row -= widget->vrows - 1;
+		  redrawTitles (widget, TRUE, FALSE);
 		  refreshCells = TRUE;
 		  movedCell = TRUE;
 	       }
@@ -700,48 +700,48 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case CTRL ('G'):
-	    jumpToCell (matrix, -1, -1);
-	    drawCDKMatrix (matrix, ObjOf (matrix)->box);
+	    jumpToCell (widget, -1, -1);
+	    drawCDKMatrix (widget, ObjOf (widget)->box);
 	    break;
 
 	 case CDK_PASTE:
 	    if (GPasteBuffer == 0 ||
-		(int)strlen (GPasteBuffer) > matrix->colwidths[matrix->ccol])
+		(int)strlen (GPasteBuffer) > widget->colwidths[widget->ccol])
 	    {
 	       Beep ();
 	    }
 	    else
 	    {
-	       strcpy (CurMatrixInfo(matrix), GPasteBuffer);
-	       drawCurCDKMatrixCell (matrix);
+	       strcpy (CurMatrixInfo(widget), GPasteBuffer);
+	       drawCurCDKMatrixCell (widget);
 	    }
 	    break;
 
 	 case CDK_COPY:
 	    freeChar (GPasteBuffer);
-	    GPasteBuffer = copyChar (CurMatrixInfo (matrix));
+	    GPasteBuffer = copyChar (CurMatrixInfo (widget));
 	    break;
 
 	 case CDK_CUT:
 	    freeChar (GPasteBuffer);
-	    GPasteBuffer = copyChar (CurMatrixInfo (matrix));
-	    cleanCDKMatrixCell (matrix,
-				matrix->trow + matrix->crow - 1,
-				matrix->lcol + matrix->ccol - 1);
-	    drawCurCDKMatrixCell (matrix);
+	    GPasteBuffer = copyChar (CurMatrixInfo (widget));
+	    cleanCDKMatrixCell (widget,
+				widget->trow + widget->crow - 1,
+				widget->lcol + widget->ccol - 1);
+	    drawCurCDKMatrixCell (widget);
 	    break;
 
 	 case CDK_ERASE:
-	    cleanCDKMatrixCell (matrix,
-				matrix->trow + matrix->crow - 1,
-				matrix->lcol + matrix->ccol - 1);
-	    drawCurCDKMatrixCell (matrix);
+	    cleanCDKMatrixCell (widget,
+				widget->trow + widget->crow - 1,
+				widget->lcol + widget->ccol - 1);
+	    drawCurCDKMatrixCell (widget);
 	    break;
 
 	 case KEY_ENTER:
-	    if (!matrix->boxCell)
+	    if (!widget->boxCell)
 	    {
-	       attrbox (MATRIX_CELL (matrix, matrix->oldcrow, matrix->oldccol),
+	       attrbox (MATRIX_CELL (widget, widget->oldcrow, widget->oldccol),
 			' ', ' ',
 			' ', ' ',
 			' ', ' ',
@@ -749,18 +749,23 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       drawOldCDKMatrixCell (matrix);
+	       drawOldCDKMatrixCell (widget);
 	    }
-	    wrefresh (CurMatrixCell (matrix));
-	    setExitType (matrix, input);
+	    wrefresh (CurMatrixCell (widget));
+	    setExitType (widget, input);
 	    ret = 1;
 	    complete = TRUE;
 	    break;
 
+	 case KEY_ERROR :
+	    setExitType(widget, input);
+	    complete = TRUE;
+	    break;
+
 	 case KEY_ESC:
-	    if (!matrix->boxCell)
+	    if (!widget->boxCell)
 	    {
-	       attrbox (MATRIX_CELL (matrix, matrix->oldcrow, matrix->oldccol),
+	       attrbox (MATRIX_CELL (widget, widget->oldcrow, widget->oldccol),
 			' ', ' ',
 			' ', ' ',
 			' ', ' ',
@@ -768,20 +773,20 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       drawOldCDKMatrixCell (matrix);
+	       drawOldCDKMatrixCell (widget);
 	    }
-	    wrefresh (CurMatrixCell (matrix));
-	    setExitType (matrix, input);
+	    wrefresh (CurMatrixCell (widget));
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (matrix));
-	    refreshCDKScreen (ScreenOf (matrix));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 default:
-	    (matrix->callbackfn) (matrix, input);
+	    (widget->callbackfn) (widget, input);
 	    break;
 	 }
       }
@@ -792,9 +797,9 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	 if (movedCell)
 	 {
 	    /* un-highlight the old box  */
-	    if (!matrix->boxCell)
+	    if (!widget->boxCell)
 	    {
-	       attrbox (MATRIX_CELL (matrix, matrix->oldcrow, matrix->oldccol),
+	       attrbox (MATRIX_CELL (widget, widget->oldcrow, widget->oldccol),
 			' ', ' ',
 			' ', ' ',
 			' ', ' ',
@@ -802,56 +807,56 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       drawOldCDKMatrixCell (matrix);
+	       drawOldCDKMatrixCell (widget);
 	    }
-	    wrefresh (MATRIX_CELL (matrix, matrix->oldcrow, matrix->oldccol));
+	    wrefresh (MATRIX_CELL (widget, widget->oldcrow, widget->oldccol));
 
 	    /* Highlight the new cell. */
-	    attrbox (CurMatrixCell (matrix),
+	    attrbox (CurMatrixCell (widget),
 		     ACS_ULCORNER, ACS_URCORNER,
 		     ACS_LLCORNER, ACS_LRCORNER,
 		     ACS_HLINE, ACS_VLINE,
 		     A_BOLD);
-	    wrefresh (CurMatrixCell (matrix));
-	    highlightCDKMatrixCell (matrix);
+	    wrefresh (CurMatrixCell (widget));
+	    highlightCDKMatrixCell (widget);
 	 }
 
 	 /* Redraw each cell. */
 	 if (refreshCells)
 	 {
-	    drawEachCDKMatrixCell (matrix);
+	    drawEachCDKMatrixCell (widget);
 
 	    /* Highlight the current cell. */
-	    attrbox (CurMatrixCell (matrix),
+	    attrbox (CurMatrixCell (widget),
 		     ACS_ULCORNER, ACS_URCORNER,
 		     ACS_LLCORNER, ACS_LRCORNER,
 		     ACS_HLINE, ACS_VLINE,
 		     A_BOLD);
-	    wrefresh (CurMatrixCell (matrix));
-	    highlightCDKMatrixCell (matrix);
+	    wrefresh (CurMatrixCell (widget));
+	    highlightCDKMatrixCell (widget);
 	 }
 
 	 /* Move to the correct position in the cell. */
 	 if (refreshCells || movedCell)
 	 {
-	    if (matrix->colwidths[matrix->ccol] == 1)
+	    if (widget->colwidths[widget->ccol] == 1)
 	    {
-	       wmove (CurMatrixCell (matrix), 1, 1);
+	       wmove (CurMatrixCell (widget), 1, 1);
 	    }
 	    else
 	    {
-	       infolen = (int)strlen (CurMatrixInfo (matrix));
-	       wmove (CurMatrixCell (matrix), 1, infolen + 1);
+	       infolen = (int)strlen (CurMatrixInfo (widget));
+	       wmove (CurMatrixCell (widget), 1, infolen + 1);
 	    }
-	    wrefresh (CurMatrixCell (matrix));
+	    wrefresh (CurMatrixCell (widget));
 	 }
 
 	 /* Should we call a post-process? */
-	 if (PostProcessFuncOf (matrix) != 0)
+	 if (PostProcessFuncOf (widget) != 0)
 	 {
-	    PostProcessFuncOf (matrix) (vMATRIX,
-					matrix,
-					PostProcessDataOf (matrix),
+	    PostProcessFuncOf (widget) (vMATRIX,
+					widget,
+					PostProcessDataOf (widget),
 					input);
 	 }
       }
@@ -860,16 +865,16 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    if (!complete)
    {
       /* Set the variables we need. */
-      matrix->oldcrow = matrix->crow;
-      matrix->oldccol = matrix->ccol;
-      matrix->oldvrow = matrix->row;
-      matrix->oldvcol = matrix->col;
+      widget->oldcrow = widget->crow;
+      widget->oldccol = widget->ccol;
+      widget->oldvrow = widget->row;
+      widget->oldvcol = widget->col;
 
       /* Set the exit type and exit. */
-      setExitType (matrix, 0);
+      setExitType (widget, 0);
    }
 
-   ResultOf (matrix).valueInt = ret;
+   ResultOf (widget).valueInt = ret;
    return (ret != unknownInt);
 }
 
@@ -1237,6 +1242,7 @@ static void drawEachColTitle (CDKMATRIX *matrix)
    for (x = 1; x <= matrix->vcols; x++)
    {
       if (MATRIX_CELL (matrix, 0, x)) {
+	 werase (MATRIX_CELL (matrix, 0, x));/*VR*/
 	 writeChtype (MATRIX_CELL (matrix, 0, x),
 		      matrix->coltitlePos[matrix->lcol + x - 1], 0,
 		      matrix->coltitle[matrix->lcol + x - 1],

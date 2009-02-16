@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2007/04/02 00:30:33 $
- * $Revision: 1.80 $
+ * $Date: 2009/02/16 00:00:26 $
+ * $Revision: 1.81 $
  */
 
 static int createList (CDKITEMLIST *itemlist, char **item, int count);
@@ -199,32 +199,32 @@ int activateCDKItemlist (CDKITEMLIST *itemlist, chtype *actions)
  */
 static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 {
-   CDKITEMLIST *itemlist = (CDKITEMLIST *)object;
+   CDKITEMLIST *widget = (CDKITEMLIST *)object;
    /* Declare local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(itemlist, 0);
+   setExitType(widget, 0);
 
-   /* Draw the itemlist field. */
-   drawCDKItemlistField (itemlist,TRUE);
+   /* Draw the widget field. */
+   drawCDKItemlistField (widget,TRUE);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(itemlist) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(itemlist) (vITEMLIST, itemlist, PreProcessDataOf(itemlist), input);
+      ppReturn = PreProcessFuncOf(widget) (vITEMLIST, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check a predefined binding. */
-      if (checkCDKObjectBind (vITEMLIST, itemlist, input) != 0)
+      if (checkCDKObjectBind (vITEMLIST, widget, input) != 0)
       {
-	 checkEarlyExit(itemlist);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -232,53 +232,58 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP : case KEY_RIGHT : case SPACE : case '+' : case 'n' :
-		 if (itemlist->currentItem < itemlist->listSize - 1)
+		 if (widget->currentItem < widget->listSize - 1)
 		 {
-		    itemlist->currentItem++;
+		    widget->currentItem++;
 		 }
 		 else
 		 {
-		    itemlist->currentItem = 0;
+		    widget->currentItem = 0;
 		 }
 		 break;
 
 	    case KEY_DOWN : case KEY_LEFT : case '-' : case 'p' :
-		 if (itemlist->currentItem > 0)
+		 if (widget->currentItem > 0)
 		 {
-		    itemlist->currentItem--;
+		    widget->currentItem--;
 		 }
 		 else
 		 {
-		    itemlist->currentItem = itemlist->listSize - 1;
+		    widget->currentItem = widget->listSize - 1;
 		 }
 		 break;
 
 	    case 'd' : case 'D' :
-		 itemlist->currentItem = itemlist->defaultItem;
+		 widget->currentItem = widget->defaultItem;
 		 break;
 
 	    case '0' :
-		 itemlist->currentItem = 0;
+		 widget->currentItem = 0;
 		 break;
 
 	    case '$' :
-		 itemlist->currentItem = itemlist->listSize - 1;
+		 widget->currentItem = widget->listSize - 1;
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(itemlist, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case KEY_TAB : case KEY_ENTER :
-		 setExitType(itemlist, input);
-		 ret = itemlist->currentItem;
+		 setExitType(widget, input);
+		 ret = widget->currentItem;
 		 complete = TRUE;
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(itemlist));
-		 refreshCDKScreen (ScreenOf(itemlist));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    default :
@@ -288,19 +293,19 @@ static int _injectCDKItemlist (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(itemlist) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(itemlist) (vITEMLIST, itemlist, PostProcessDataOf(itemlist), input);
+	 PostProcessFuncOf(widget) (vITEMLIST, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete)
    {
-      drawCDKItemlistField (itemlist,TRUE);
-      setExitType(itemlist, 0);
+      drawCDKItemlistField (widget,TRUE);
+      setExitType(widget, 0);
    }
 
-   ResultOf(itemlist).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

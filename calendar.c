@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/09/29 23:15:41 $
- * $Revision: 1.85 $
+ * $Date: 2009/02/15 23:57:03 $
+ * $Revision: 1.86 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -258,32 +258,32 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
  */
 static int _injectCDKCalendar (CDKOBJS *object, chtype input)
 {
-   CDKCALENDAR *calendar = (CDKCALENDAR *)object;
+   CDKCALENDAR *widget = (CDKCALENDAR *)object;
    /* Declare local variables. */
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(calendar, 0);
+   setExitType(widget, 0);
 
-   /* Refresh the calendar field. */
-   drawCDKCalendarField (calendar);
+   /* Refresh the widget field. */
+   drawCDKCalendarField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(calendar) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(calendar) (vCALENDAR, calendar, PreProcessDataOf(calendar), input);
+      ppReturn = PreProcessFuncOf(widget) (vCALENDAR, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check a predefined binding. */
-      if (checkCDKObjectBind (vCALENDAR, calendar, input) != 0)
+      if (checkCDKObjectBind (vCALENDAR, widget, input) != 0)
       {
-	 checkEarlyExit(calendar);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -291,79 +291,84 @@ static int _injectCDKCalendar (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP :
-		 decrementCalendarDay (calendar, 7);
+		 decrementCalendarDay (widget, 7);
 		 break;
 
 	    case KEY_DOWN :
-		 incrementCalendarDay (calendar, 7);
+		 incrementCalendarDay (widget, 7);
 		 break;
 
 	    case KEY_LEFT :
-		 decrementCalendarDay (calendar, 1);
+		 decrementCalendarDay (widget, 1);
 		 break;
 
 	    case KEY_RIGHT :
-		 incrementCalendarDay (calendar, 1);
+		 incrementCalendarDay (widget, 1);
 		 break;
 
 	    case KEY_NPAGE :
-		 incrementCalendarMonth (calendar, 1);
+		 incrementCalendarMonth (widget, 1);
 		 break;
 
 	    case 'N' :
-		 incrementCalendarMonth (calendar, 6);
+		 incrementCalendarMonth (widget, 6);
 		 break;
 
 	    case KEY_PPAGE :
-		 decrementCalendarMonth (calendar, 1);
+		 decrementCalendarMonth (widget, 1);
 		 break;
 
 	    case 'P' :
-		 decrementCalendarMonth (calendar, 6);
+		 decrementCalendarMonth (widget, 6);
 		 break;
 
 	    case '-' :
-		 decrementCalendarYear (calendar, 1);
+		 decrementCalendarYear (widget, 1);
 		 break;
 
 	    case '+' :
-		 incrementCalendarYear (calendar, 1);
+		 incrementCalendarYear (widget, 1);
 		 break;
 
 	    case KEY_HOME:
-		 setCDKCalendarDate (calendar, -1, -1, -1);
+		 setCDKCalendarDate (widget, -1, -1, -1);
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(calendar, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case KEY_TAB : case KEY_ENTER :
-		 setExitType(calendar, input);
-		 ret = getCurrentTime (calendar);
+		 setExitType(widget, input);
+		 ret = getCurrentTime (widget);
 		 complete = TRUE;
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(calendar));
-		 refreshCDKScreen (ScreenOf(calendar));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 	 }
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf(calendar) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(calendar) (vCALENDAR, calendar, PostProcessDataOf(calendar), input);
+	 PostProcessFuncOf(widget) (vCALENDAR, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      setExitType(calendar, 0);
+      setExitType(widget, 0);
    }
 
-   ResultOf(calendar).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2007/04/02 00:31:37 $
- * $Revision: 1.157 $
+ * $Date: 2009/02/16 00:14:35 $
+ * $Revision: 1.158 $
  */
 
 /*
@@ -491,7 +491,7 @@ static void PatternNotFound (CDKVIEWER *viewer, char *pattern)
 /*
  * This function actually controls the viewer...
  */
-int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
+int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
 {
    char *fileInfo[10];
    char *tempInfo[2], temp[500];
@@ -504,9 +504,9 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
    fileInfo[0] = copyChar (temp);
    sprintf (temp, "</5>                          <!5>");
    fileInfo[1] = copyChar (temp);
-   sprintf (temp, "</5/R>Character Count:<!R> %-4ld     <!5>", viewer->characters);
+   sprintf (temp, "</5/R>Character Count:<!R> %-4ld     <!5>", widget->characters);
    fileInfo[2] = copyChar (temp);
-   sprintf (temp, "</5/R>Line Count     :<!R> %-4d     <!5>", viewer->listSize);
+   sprintf (temp, "</5/R>Line Count     :<!R> %-4d     <!5>", widget->listSize);
    fileInfo[3] = copyChar (temp);
    sprintf (temp, "</5>                          <!5>");
    fileInfo[4] = copyChar (temp);
@@ -518,10 +518,10 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
    tempInfo[1] = 0;
 
    /* Set the current button. */
-   viewer->currentButton = 0;
+   widget->currentButton = 0;
 
-   /* Draw the viewer list. */
-   drawCDKViewer (viewer, ObjOf (viewer)->box);
+   /* Draw the widget list. */
+   drawCDKViewer (widget, ObjOf (widget)->box);
 
    /* Do this until KEY_ENTER is hit. */
    for (;;)
@@ -529,49 +529,49 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
       /* Reset the refresh flag. */
       REFRESH = FALSE;
 
-      input = getchCDKObject (ObjOf (viewer), &functionKey);
-      if (!checkCDKObjectBind (vVIEWER, viewer, input))
+      input = getchCDKObject (ObjOf (widget), &functionKey);
+      if (!checkCDKObjectBind (vVIEWER, widget, input))
       {
 	 switch (input)
 	 {
 	 case KEY_TAB:
-	    if (viewer->buttonCount > 1)
+	    if (widget->buttonCount > 1)
 	    {
-	       if (viewer->currentButton == (viewer->buttonCount - 1))
+	       if (widget->currentButton == (widget->buttonCount - 1))
 	       {
-		  viewer->currentButton = 0;
+		  widget->currentButton = 0;
 	       }
 	       else
 	       {
-		  viewer->currentButton++;
+		  widget->currentButton++;
 	       }
 
 	       /* Redraw the buttons. */
-	       drawCDKViewerButtons (viewer);
+	       drawCDKViewerButtons (widget);
 	    }
 	    break;
 
 	 case CDK_PREV:
-	    if (viewer->buttonCount > 1)
+	    if (widget->buttonCount > 1)
 	    {
-	       if (viewer->currentButton == 0)
+	       if (widget->currentButton == 0)
 	       {
-		  viewer->currentButton = viewer->buttonCount - 1;
+		  widget->currentButton = widget->buttonCount - 1;
 	       }
 	       else
 	       {
-		  viewer->currentButton--;
+		  widget->currentButton--;
 	       }
 
 	       /* Redraw the buttons. */
-	       drawCDKViewerButtons (viewer);
+	       drawCDKViewerButtons (widget);
 	    }
 	    break;
 
 	 case KEY_UP:
-	    if (viewer->currentTop > 0)
+	    if (widget->currentTop > 0)
 	    {
-	       viewer->currentTop--;
+	       widget->currentTop--;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -581,9 +581,9 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_DOWN:
-	    if (viewer->currentTop < viewer->maxTopLine)
+	    if (widget->currentTop < widget->maxTopLine)
 	    {
-	       viewer->currentTop++;
+	       widget->currentTop++;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -593,9 +593,9 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_RIGHT:
-	    if (viewer->leftChar < viewer->maxLeftChar)
+	    if (widget->leftChar < widget->maxLeftChar)
 	    {
-	       viewer->leftChar++;
+	       widget->leftChar++;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -605,9 +605,9 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_LEFT:
-	    if (viewer->leftChar > 0)
+	    if (widget->leftChar > 0)
 	    {
-	       viewer->leftChar--;
+	       widget->leftChar--;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -617,16 +617,16 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_PPAGE:
-	    if (viewer->currentTop > 0)
+	    if (widget->currentTop > 0)
 	    {
-	       if ((viewer->currentTop - (viewer->viewSize-1)) > 0)
+	       if ((widget->currentTop - (widget->viewSize-1)) > 0)
 	       {
-		  viewer->currentTop = (viewer->currentTop
-					- (viewer->viewSize - 1));
+		  widget->currentTop = (widget->currentTop
+					- (widget->viewSize - 1));
 	       }
 	       else
 	       {
-		  viewer->currentTop = 0;
+		  widget->currentTop = 0;
 	       }
 	       REFRESH = TRUE;
 	    }
@@ -637,15 +637,15 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_NPAGE:
-	    if (viewer->currentTop < viewer->maxTopLine)
+	    if (widget->currentTop < widget->maxTopLine)
 	    {
-	       if ((viewer->currentTop + viewer->viewSize) < viewer->maxTopLine)
+	       if ((widget->currentTop + widget->viewSize) < widget->maxTopLine)
 	       {
-		  viewer->currentTop = viewer->currentTop + (viewer->viewSize - 1);
+		  widget->currentTop = widget->currentTop + (widget->viewSize - 1);
 	       }
 	       else
 	       {
-		  viewer->currentTop = viewer->maxTopLine;
+		  widget->currentTop = widget->maxTopLine;
 	       }
 	       REFRESH = TRUE;
 	    }
@@ -656,33 +656,33 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case KEY_HOME:
-	    viewer->leftChar = 0;
+	    widget->leftChar = 0;
 	    REFRESH = TRUE;
 	    break;
 
 	 case KEY_END:
-	    viewer->leftChar = viewer->maxLeftChar;
+	    widget->leftChar = widget->maxLeftChar;
 	    REFRESH = TRUE;
 	    break;
 
 	 case 'g':
 	 case '1':
 	 case '<':
-	    viewer->currentTop = 0;
+	    widget->currentTop = 0;
 	    REFRESH = TRUE;
 	    break;
 
 	 case 'G':
 	 case '>':
-	    viewer->currentTop = viewer->maxTopLine;
+	    widget->currentTop = widget->maxTopLine;
 	    REFRESH = TRUE;
 	    break;
 
 	 case 'L':
-	    x = (int)((viewer->listSize + viewer->currentTop) / 2);
-	    if (x < viewer->maxTopLine)
+	    x = (int)((widget->listSize + widget->currentTop) / 2);
+	    if (x < widget->maxTopLine)
 	    {
-	       viewer->currentTop = x;
+	       widget->currentTop = x;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -692,10 +692,10 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    break;
 
 	 case 'l':
-	    x = (int)(viewer->currentTop / 2);
+	    x = (int)(widget->currentTop / 2);
 	    if (x >= 0)
 	    {
-	       viewer->currentTop = x;
+	       widget->currentTop = x;
 	       REFRESH = TRUE;
 	    }
 	    else
@@ -706,20 +706,20 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 
 	 case '?':
 	    SearchDirection = UP;
-	    getAndStorePattern (ScreenOf (viewer));
-	    if (!searchForWord (viewer, SearchPattern, SearchDirection))
+	    getAndStorePattern (ScreenOf (widget));
+	    if (!searchForWord (widget, SearchPattern, SearchDirection))
 	    {
-	       PatternNotFound (viewer, SearchPattern);
+	       PatternNotFound (widget, SearchPattern);
 	    }
 	    REFRESH = TRUE;
 	    break;
 
 	 case '/':
 	    SearchDirection = DOWN;
-	    getAndStorePattern (ScreenOf (viewer));
-	    if (! searchForWord (viewer, SearchPattern, SearchDirection))
+	    getAndStorePattern (ScreenOf (widget));
+	    if (! searchForWord (widget, SearchPattern, SearchDirection))
 	    {
-	       PatternNotFound (viewer, SearchPattern);
+	       PatternNotFound (widget, SearchPattern);
 	    }
 	    REFRESH = TRUE;
 	    break;
@@ -729,44 +729,49 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
 	    if (SearchPattern == 0)
 	    {
 	       sprintf (temp, "</5>There is no pattern in the buffer.<!5>");
-	       popUpLabel (viewer, tempInfo);
+	       popUpLabel (widget, tempInfo);
 	    }
-	    else if (!searchForWord (viewer,
+	    else if (!searchForWord (widget,
 				     SearchPattern,
 				     ((input == 'n')
 				      ? SearchDirection
 				      : !SearchDirection)))
 	    {
-	       PatternNotFound (viewer, SearchPattern);
+	       PatternNotFound (widget, SearchPattern);
 	    }
 	    REFRESH = TRUE;
 	    break;
 
 	 case ':':
-	    viewer->currentTop = jumpToLine (viewer);
+	    widget->currentTop = jumpToLine (widget);
 	    REFRESH = TRUE;
 	    break;
 
 	 case 'i':
 	 case 's':
 	 case 'S':
-	    popUpLabel (viewer, fileInfo);
+	    popUpLabel (widget, fileInfo);
 	    REFRESH = TRUE;
 	    break;
 
 	 case KEY_ESC:
 	    freeCharList (fileInfo, 6);
-	    setExitType (viewer, input);
+	    setExitType (widget, input);
+	    return -1;
+
+	 case KEY_ERROR :
+	    freeCharList (fileInfo, 6);
+	    setExitType(widget, input);
 	    return -1;
 
 	 case KEY_ENTER:
 	    freeCharList (fileInfo, 6);
-	    setExitType (viewer, input);
-	    return viewer->currentButton;
+	    setExitType (widget, input);
+	    return widget->currentButton;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (viewer));
-	    refreshCDKScreen (ScreenOf (viewer));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 default:
@@ -778,7 +783,7 @@ int activateCDKViewer (CDKVIEWER *viewer, chtype *actions GCC_UNUSED)
       /* Do we need to redraw the screen??? */
       if (REFRESH)
       {
-	 drawCDKViewerInfo (viewer);
+	 drawCDKViewerInfo (widget);
       }
    }
 }

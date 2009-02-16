@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Christian.Gaida $
- * $Date: 2008/10/31 00:05:17 $
- * $Revision: 1.131 $
+ * $Author: tom $
+ * $Date: 2009/02/16 00:09:48 $
+ * $Revision: 1.132 $
  */
 
 /*
@@ -228,34 +228,34 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
  */
 static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 {
-   CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
+   CDKTEMPLATE *widget = (CDKTEMPLATE *)object;
    int ppReturn = 1;
    int length, x;
    char *ret = unknownString;
    bool complete = FALSE;
 
    /* Set the exit type and return. */
-   setExitType (cdktemplate, 0);
+   setExitType (widget, 0);
 
    /* Move the cursor. */
-   drawCDKTemplateField (cdktemplate);
+   drawCDKTemplateField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (cdktemplate) != 0)
+   if (PreProcessFuncOf (widget) != 0)
    {
-      ppReturn = PreProcessFuncOf (cdktemplate) (vTEMPLATE,
-						 cdktemplate,
-						 PreProcessDataOf (cdktemplate),
-						 input);
+      ppReturn = PreProcessFuncOf (widget) (vTEMPLATE,
+					    widget,
+					    PreProcessDataOf (widget),
+					    input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check a predefined binding...  */
-      if (checkCDKObjectBind (vTEMPLATE, cdktemplate, input) != 0)
+      if (checkCDKObjectBind (vTEMPLATE, widget, input) != 0)
       {
-	 checkEarlyExit (cdktemplate);
+	 checkEarlyExit (widget);
 	 complete = TRUE;
       }
       else
@@ -263,20 +263,20 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	 case CDK_ERASE:
-	    if (strlen (cdktemplate->info) != 0)
+	    if (strlen (widget->info) != 0)
 	    {
-	       cleanCDKTemplate (cdktemplate);
-	       drawCDKTemplateField (cdktemplate);
+	       cleanCDKTemplate (widget);
+	       drawCDKTemplateField (widget);
 	    }
 	    break;
 
 	 case CDK_CUT:
-	    if ((int)strlen (cdktemplate->info) != 0)
+	    if ((int)strlen (widget->info) != 0)
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (cdktemplate->info);
-	       cleanCDKTemplate (cdktemplate);
-	       drawCDKTemplateField (cdktemplate);
+	       GPasteBuffer = copyChar (widget->info);
+	       cleanCDKTemplate (widget);
+	       drawCDKTemplateField (widget);
 	    }
 	    else
 	    {
@@ -285,10 +285,10 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	    break;
 
 	 case CDK_COPY:
-	    if ((int)strlen (cdktemplate->info) != 0)
+	    if ((int)strlen (widget->info) != 0)
 	    {
 	       freeChar (GPasteBuffer);
-	       GPasteBuffer = copyChar (cdktemplate->info);
+	       GPasteBuffer = copyChar (widget->info);
 	    }
 	    else
 	    {
@@ -299,15 +299,15 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	 case CDK_PASTE:
 	    if (GPasteBuffer != 0)
 	    {
-	       cleanCDKTemplate (cdktemplate);
+	       cleanCDKTemplate (widget);
 
 	       /* Start inserting each character one at a time. */
 	       length = (int)strlen (GPasteBuffer);
 	       for (x = 0; x < length; x++)
 	       {
-		  (cdktemplate->callbackfn) (cdktemplate, GPasteBuffer[x]);
+		  (widget->callbackfn) (widget, GPasteBuffer[x]);
 	       }
-	       drawCDKTemplateField (cdktemplate);
+	       drawCDKTemplateField (widget);
 	    }
 	    else
 	    {
@@ -317,50 +317,55 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 
 	 case KEY_TAB:
 	 case KEY_ENTER:
-	    if ((int)strlen (cdktemplate->info) < (int)cdktemplate->min)
+	    if ((int)strlen (widget->info) < (int)widget->min)
 	    {
 	       Beep ();
 	    }
 	    else
 	    {
-	       setExitType (cdktemplate, input);
-	       ret = cdktemplate->info;
+	       setExitType (widget, input);
+	       ret = widget->info;
 	       complete = TRUE;
 	    }
 	    break;
 
 	 case KEY_ESC:
-	    setExitType (cdktemplate, input);
+	    setExitType (widget, input);
+	    complete = TRUE;
+	    break;
+
+	 case KEY_ERROR :
+	    setExitType(widget, input);
 	    complete = TRUE;
 	    break;
 
 	 case CDK_REFRESH:
-	    eraseCDKScreen (ScreenOf (cdktemplate));
-	    refreshCDKScreen (ScreenOf (cdktemplate));
+	    eraseCDKScreen (ScreenOf (widget));
+	    refreshCDKScreen (ScreenOf (widget));
 	    break;
 
 	 default:
-	    (cdktemplate->callbackfn) (cdktemplate, input);
+	    (widget->callbackfn) (widget, input);
 	    break;
 	 }
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (cdktemplate) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (cdktemplate) (vTEMPLATE,
-					  cdktemplate,
-					  PostProcessDataOf (cdktemplate),
-					  input);
+	 PostProcessFuncOf (widget) (vTEMPLATE,
+				     widget,
+				     PostProcessDataOf (widget),
+				     input);
       }
    }
 
    if (!complete)
    {
-      setExitType (cdktemplate, 0);
+      setExitType (widget, 0);
    }
 
-   ResultOf (cdktemplate).valueString = ret;
+   ResultOf (widget).valueString = ret;
    return (ret != unknownString);
 }
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2007/04/02 00:31:15 $
- * $Revision: 1.115 $
+ * $Date: 2009/02/16 00:08:33 $
+ * $Revision: 1.116 $
  */
 
 /*
@@ -473,31 +473,31 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
  */
 static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 {
-   CDKSWINDOW *swindow = (CDKSWINDOW *)object;
+   CDKSWINDOW *widget = (CDKSWINDOW *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
 
    /* Set the exit type. */
-   setExitType(swindow, 0);
+   setExitType(widget, 0);
 
    /* Draw the window.... */
-   drawCDKSwindow (swindow, ObjOf(swindow)->box);
+   drawCDKSwindow (widget, ObjOf(widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(swindow) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
       /* Call the pre-process function. */
-      ppReturn = PreProcessFuncOf(swindow) (vSWINDOW, swindow, PreProcessDataOf(swindow), input);
+      ppReturn = PreProcessFuncOf(widget) (vSWINDOW, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a key binding. */
-      if (checkCDKObjectBind (vSWINDOW, swindow, input) != 0)
+      if (checkCDKObjectBind (vSWINDOW, widget, input) != 0)
       {
-	 checkEarlyExit(swindow);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -505,9 +505,9 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_UP :
-		 if (swindow->currentTop > 0)
+		 if (widget->currentTop > 0)
 		 {
-		    swindow->currentTop--;
+		    widget->currentTop--;
 		 }
 		 else
 		 {
@@ -516,9 +516,9 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_DOWN :
-		 if (swindow->currentTop >= 0 && swindow->currentTop < swindow->maxTopLine)
+		 if (widget->currentTop >= 0 && widget->currentTop < widget->maxTopLine)
 		 {
-		    swindow->currentTop++;
+		    widget->currentTop++;
 		 }
 		 else
 		 {
@@ -527,9 +527,9 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_RIGHT :
-		 if (swindow->leftChar < swindow->maxLeftChar)
+		 if (widget->leftChar < widget->maxLeftChar)
 		 {
-		    swindow->leftChar ++;
+		    widget->leftChar ++;
 		 }
 		 else
 		 {
@@ -538,9 +538,9 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_LEFT :
-		 if (swindow->leftChar > 0)
+		 if (widget->leftChar > 0)
 		 {
-		    swindow->leftChar--;
+		    widget->leftChar--;
 		 }
 		 else
 		 {
@@ -549,15 +549,15 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_PPAGE :
-		 if (swindow->currentTop != 0)
+		 if (widget->currentTop != 0)
 		 {
-		    if (swindow->currentTop >= swindow->viewSize)
+		    if (widget->currentTop >= widget->viewSize)
 		    {
-		       swindow->currentTop	= swindow->currentTop - (swindow->viewSize - 1);
+		       widget->currentTop = widget->currentTop - (widget->viewSize - 1);
 		    }
 		    else
 		    {
-		       swindow->currentTop	= 0;
+		       widget->currentTop = 0;
 		    }
 		 }
 		 else
@@ -567,15 +567,15 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_NPAGE :
-		 if (swindow->currentTop != swindow->maxTopLine)
+		 if (widget->currentTop != widget->maxTopLine)
 		 {
-		    if ((swindow->currentTop + swindow->viewSize) < swindow->maxTopLine)
+		    if ((widget->currentTop + widget->viewSize) < widget->maxTopLine)
 		    {
-		       swindow->currentTop	= swindow->currentTop + (swindow->viewSize - 1);
+		       widget->currentTop = widget->currentTop + (widget->viewSize - 1);
 		    }
 		    else
 		    {
-		       swindow->currentTop	= swindow->maxTopLine;
+		       widget->currentTop = widget->maxTopLine;
 		    }
 		 }
 		 else
@@ -585,43 +585,48 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
 		 break;
 
 	    case KEY_HOME :
-		 swindow->leftChar = 0;
+		 widget->leftChar = 0;
 		 break;
 
 	    case KEY_END :
-		 swindow->leftChar = swindow->maxLeftChar + 1;
+		 widget->leftChar = widget->maxLeftChar + 1;
 		 break;
 
 	    case 'g' : case '1' : case '<' :
-		 swindow->currentTop = 0;
+		 widget->currentTop = 0;
 		 break;
 
 	    case 'G' : case '>' :
-		 swindow->currentTop = swindow->maxTopLine;
+		 widget->currentTop = widget->maxTopLine;
 		 break;
 
 	    case 'l' : case 'L' :
-		 loadCDKSwindowInformation (swindow);
+		 loadCDKSwindowInformation (widget);
 		 break;
 
 	    case 's' : case 'S' :
-		 saveCDKSwindowInformation (swindow);
+		 saveCDKSwindowInformation (widget);
 		 break;
 
 	    case KEY_TAB : case KEY_ENTER :
-		 setExitType(swindow, input);
+		 setExitType(widget, input);
 		 ret = 1;
 		 complete = TRUE;
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(swindow, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(swindow));
-		 refreshCDKScreen (ScreenOf(swindow));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    default :
@@ -630,18 +635,18 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(swindow) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(swindow) (vSWINDOW, swindow, PostProcessDataOf(swindow), input);
+	 PostProcessFuncOf(widget) (vSWINDOW, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      drawCDKSwindowList (swindow, ObjOf(swindow)->box);
-      setExitType(swindow, 0);
+      drawCDKSwindowList (widget, ObjOf(widget)->box);
+      setExitType(widget, 0);
    }
 
-   ResultOf(swindow).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 

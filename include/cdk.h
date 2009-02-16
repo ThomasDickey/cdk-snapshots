@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.35 2008/10/31 00:18:34 Gregory.Sharp Exp $
+ * $Id: cdk.h,v 1.36 2009/02/15 23:46:08 tom Exp $
  */
 
 #ifndef CDK_H
@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 2000-2004,2008 copyright Thomas E. Dickey
+ * Changes 2000-2008,2009 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -54,10 +54,10 @@ extern "C" {
 #ifdef HAVE_XCURSES
 #include <xcurses.h>
 #ifndef mvwhline
-#define mvwhline(win,y,x,c,n)     	(wmove(win,y,x) == ERR ? ERR : whline(win,c,n))
+#define mvwhline(win,y,x,c,n)     (wmove(win,y,x) == ERR ? ERR : whline(win,c,n))
 #endif
 #ifndef mvwvline
-#define mvwvline(win,y,x,c,n)     	(wmove(win,y,x) == ERR ? ERR : wvline(win,c,n))
+#define mvwvline(win,y,x,c,n)     (wmove(win,y,x) == ERR ? ERR : wvline(win,c,n))
 #endif
 #elif defined(HAVE_NCURSESW_NCURSES_H)
 #include <ncursesw/ncurses.h>
@@ -224,7 +224,7 @@ typedef enum {vFRONT, vBACK, vBOTH} EStripType;
  * This enumerated typedef defines the type of exits the widgets
  * recognize.
  */
-typedef enum {vEARLY_EXIT, vESCAPE_HIT, vNORMAL, vNEVER_ACTIVATED} EExitType;
+typedef enum {vEARLY_EXIT, vESCAPE_HIT, vNORMAL, vNEVER_ACTIVATED, vERROR} EExitType;
 
 /*
  * This defines a boolean type.

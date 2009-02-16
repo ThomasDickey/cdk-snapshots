@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:45 $
- * $Revision: 1.62 $
+ * $Date: 2009/02/16 00:12:24 $
+ * $Revision: 1.63 $
  */
 
 DeclareCDKObjects(BUTTONBOX, Buttonbox, setCdk, Int);
@@ -197,29 +197,29 @@ int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
  */
 static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
 {
-   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
+   CDKBUTTONBOX *widget = (CDKBUTTONBOX *)object;
    int firstButton	= 0;
-   int lastButton	= buttonbox->buttonCount - 1;
+   int lastButton	= widget->buttonCount - 1;
    int ppReturn		= 1;
    int ret              = unknownInt;
    bool complete        = FALSE;
 
    /* Set the exit type. */
-   setExitType(buttonbox, 0);
+   setExitType(widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf(buttonbox) != 0)
+   if (PreProcessFuncOf(widget) != 0)
    {
-      ppReturn = PreProcessFuncOf(buttonbox) (vBUTTONBOX, buttonbox, PreProcessDataOf(buttonbox), input);
+      ppReturn = PreProcessFuncOf(widget) (vBUTTONBOX, widget, PreProcessDataOf(widget), input);
    }
 
    /* Should we continue? */
    if (ppReturn != 0)
    {
       /* Check for a key binding. */
-      if (checkCDKObjectBind (vBUTTONBOX, buttonbox, input) != 0)
+      if (checkCDKObjectBind (vBUTTONBOX, widget, input) != 0)
       {
-	 checkEarlyExit(buttonbox);
+	 checkEarlyExit(widget);
 	 complete = TRUE;
       }
       else
@@ -227,62 +227,67 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
 	 switch (input)
 	 {
 	    case KEY_LEFT : case KEY_BTAB : case KEY_BACKSPACE :
-		 if ((buttonbox->currentButton-buttonbox->rows) < firstButton)
+		 if ((widget->currentButton - widget->rows) < firstButton)
 		 {
-		    buttonbox->currentButton = lastButton;
+		    widget->currentButton = lastButton;
 		 }
 		 else
 		 {
-		    buttonbox->currentButton -= buttonbox->rows;
+		    widget->currentButton -= widget->rows;
 		 }
 		 break;
 
 	    case KEY_RIGHT : case KEY_TAB : case SPACE :
-		 if ((buttonbox->currentButton + buttonbox->rows) > lastButton)
+		 if ((widget->currentButton + widget->rows) > lastButton)
 		 {
-		    buttonbox->currentButton = firstButton;
+		    widget->currentButton = firstButton;
 		 }
 		 else
 		 {
-		    buttonbox->currentButton += buttonbox->rows;
+		    widget->currentButton += widget->rows;
 		 }
 		 break;
 
 	    case KEY_UP :
-		 if ((buttonbox->currentButton-1) < firstButton)
+		 if ((widget->currentButton-1) < firstButton)
 		 {
-		    buttonbox->currentButton = lastButton;
+		    widget->currentButton = lastButton;
 		 }
 		 else
 		 {
-		    buttonbox->currentButton--;
+		    widget->currentButton--;
 		 }
 		 break;
 
 	    case KEY_DOWN :
-		 if ((buttonbox->currentButton + 1) > lastButton)
+		 if ((widget->currentButton + 1) > lastButton)
 		 {
-		    buttonbox->currentButton = firstButton;
+		    widget->currentButton = firstButton;
 		 }
 		 else
 		 {
-		    buttonbox->currentButton++;
+		    widget->currentButton++;
 		 }
 		 break;
 
 	    case CDK_REFRESH :
-		 eraseCDKScreen (ScreenOf(buttonbox));
-		 refreshCDKScreen (ScreenOf(buttonbox));
+		 eraseCDKScreen (ScreenOf(widget));
+		 refreshCDKScreen (ScreenOf(widget));
 		 break;
 
 	    case KEY_ESC :
-		 setExitType(buttonbox, input);
+		 setExitType(widget, input);
+		 complete = TRUE;
+		 break;
+
+	    case KEY_ERROR :
+		 setExitType(widget, input);
 		 complete = TRUE;
 		 break;
 
 	    case KEY_ENTER :
-		 setExitType(buttonbox, input);
-		 ret = buttonbox->currentButton;
+		 setExitType(widget, input);
+		 ret = widget->currentButton;
 		 complete = TRUE;
 		 break;
 
@@ -292,18 +297,18 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf(buttonbox) != 0))
+      if (!complete && (PostProcessFuncOf(widget) != 0))
       {
-	 PostProcessFuncOf(buttonbox) (vBUTTONBOX, buttonbox, PostProcessDataOf(buttonbox), input);
+	 PostProcessFuncOf(widget) (vBUTTONBOX, widget, PostProcessDataOf(widget), input);
       }
    }
 
    if (!complete) {
-      drawCDKButtonboxButtons (buttonbox);
-      setExitType(buttonbox, 0);
+      drawCDKButtonboxButtons (widget);
+      setExitType(widget, 0);
    }
 
-   ResultOf(buttonbox).valueInt = ret;
+   ResultOf(widget).valueInt = ret;
    return (ret != unknownInt);
 }
 
