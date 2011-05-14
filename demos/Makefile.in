@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.16 2008/10/30 23:34:56 tom Exp $
+# $Id: Makefile.in,v 1.17 2011/05/13 22:59:35 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -55,7 +55,7 @@ all : $(BINS)
 # Standard .c to .o compile line.
 #
 .c.o:
-@RULE_CC@
+	@RULE_CC@
 	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 #
 # Most of the examples are built from a single .c file using the same libraries

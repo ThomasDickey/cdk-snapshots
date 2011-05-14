@@ -1,12 +1,25 @@
 -- vile:fk=8bit txtmode
--- $Id: CHANGES,v 1.149 2009/02/16 00:17:38 tom Exp $
+-- $Id: CHANGES,v 1.155 2011/05/14 01:08:39 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2007, 2008
+Modifications copyright Thomas E. Dickey 1999-2010, 2011
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2011/05/13
+	+ drop cdk.spec, adapt 2-package rules from a Fedora spec file in
+	  the package subdirectory.
+	+ drop mkdirs.sh script, use "mkdir -p".
+	+ updated configure script macros, many changes for portability.
+	  These changes add "--with-pkg-config" and "--disable-libtool-version"
+	  options.
+	+ update config.guess, config.sub
+
+2010/11/07
+	+ indent using cdk-indent, from
+	  http://invisible-island.net/cindent/
 
 2009/02/15
 	+ add KEY_ERROR case to each widget to make vERROR events handled by

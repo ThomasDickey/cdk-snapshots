@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2009/02/16 00:13:59 $
- * $Revision: 1.189 $
+ * $Date: 2010/11/07 23:44:03 $
+ * $Revision: 1.190 $
  */
 
 /*
@@ -57,30 +57,32 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 			 boolean boxCell,
 			 boolean shadow)
 {
-   CDKMATRIX *matrix	= 0;
-   int parentWidth	= getmaxx (cdkscreen->window);
-   int parentHeight	= getmaxy (cdkscreen->window);
-   int boxHeight	= 0;
-   int boxWidth		= 0;
-   int xpos		= xplace;
-   int ypos		= yplace;
+   /* *INDENT-EQLS* */
+   CDKMATRIX *matrix    = 0;
+   int parentWidth      = getmaxx (cdkscreen->window);
+   int parentHeight     = getmaxy (cdkscreen->window);
+   int boxHeight        = 0;
+   int boxWidth         = 0;
+   int xpos             = xplace;
+   int ypos             = yplace;
    int maxWidth;
    int maxRowTitleWidth = 0;
-   int rowSpace		= MAXIMUM (0, rspace);
-   int colSpace		= MAXIMUM (0, cspace);
-   int begx		= 0;
-   int begy		= 0;
-   int cellWidth	= 0;
-   char **temp		= 0;
+   int rowSpace         = MAXIMUM (0, rspace);
+   int colSpace         = MAXIMUM (0, cspace);
+   int begx             = 0;
+   int begy             = 0;
+   int cellWidth        = 0;
+   char **temp          = 0;
    int x, y;
-   int borderw		= 0;
+   int borderw          = 0;
    bool have_rowtitles  = FALSE;
    bool have_coltitles  = FALSE;
-
+   /* *INDENT-OFF* */
    static const struct { int from; int to; } bindings[] = {
       { CDK_FORCHAR,	KEY_NPAGE },
       { CDK_BACKCHAR,	KEY_PPAGE },
    };
+   /* *INDENT-ON* */
 
    if ((matrix = newCDKObject (CDKMATRIX, &my_funcs)) == 0)
    {
@@ -98,7 +100,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    }
 #if NEW_CDKMATRIX
    matrix->cell = typeCallocN (WINDOW *, (rows + 1) * (cols + 1));
-   matrix->info = typeCallocN (char   *, (rows + 1) * (cols + 1));
+   matrix->info = typeCallocN (char *, (rows + 1) * (cols + 1));
 #endif
 
    /*
@@ -108,19 +110,17 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    vrows = (vrows > rows ? rows : vrows);
    vcols = (vcols > cols ? cols : vcols);
 
-   /*
-    * Set these early, since they are used in matrix index computations.
-    */
+   /* Set these early, since they are used in matrix index computations */
+   /* *INDENT-EQLS* */
    matrix->rows        = rows;
    matrix->cols        = cols;
-
+   /* columns */
    matrix->colwidths   = typeCallocN (int, cols + 1);
    matrix->colvalues   = typeCallocN (int, cols + 1);
-
    matrix->coltitle    = typeCallocN (chtype *, cols + 1);
    matrix->coltitleLen = typeCallocN (int, cols + 1);
    matrix->coltitlePos = typeCallocN (int, cols + 1);
-
+   /* titles */
    matrix->rowtitle    = typeCallocN (chtype *, rows + 1);
    matrix->rowtitleLen = typeCallocN (int, rows + 1);
    matrix->rowtitlePos = typeCallocN (int, rows + 1);
@@ -154,15 +154,16 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Determine the maximum row title width */
    for (x = 1; x <= rows; x++)
    {
-      if (rowtitles && !emptyString(rowtitles[x]))/*VR*/
+      if (rowtitles && !emptyString (rowtitles[x]))	/*VR */
 	 have_rowtitles = TRUE;
-      matrix->rowtitle[x] = char2Chtype (rowtitles?rowtitles[x]:0,/*VR*/
+      matrix->rowtitle[x] = char2Chtype (rowtitles ? rowtitles[x] : 0,	/*VR */
 					 &matrix->rowtitleLen[x],
 					 &matrix->rowtitlePos[x]);
       maxRowTitleWidth = MAXIMUM (maxRowTitleWidth, matrix->rowtitleLen[x]);
    }
 
-   if (have_rowtitles) {
+   if (have_rowtitles)
+   {
       matrix->maxrt = maxRowTitleWidth + 2;
 
       /* We need to rejustify the row title cell info. */
@@ -172,7 +173,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 						 matrix->rowtitleLen[x],
 						 matrix->rowtitlePos[x]);
       }
-   } else {
+   }
+   else
+   {
       matrix->maxrt = 0;
    }
 
@@ -217,9 +220,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Copy the titles into the structure. */
    for (x = 1; x <= cols; x++)
    {
-      if (coltitles && !emptyString(coltitles[x]))/*VR*/
+      if (coltitles && !emptyString (coltitles[x]))	/*VR */
 	 have_coltitles = TRUE;
-      matrix->coltitle[x] = char2Chtype (coltitles?coltitles[x]:0,/*VR*/
+      matrix->coltitle[x] = char2Chtype (coltitles ? coltitles[x] : 0,	/*VR */
 					 &matrix->coltitleLen[x],
 					 &matrix->coltitlePos[x]);
       matrix->coltitlePos[x] = (BorderOf (matrix) +
@@ -229,12 +232,17 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
       matrix->colwidths[x] = colwidths[x];
    }
 
-   if (have_coltitles) {
+   if (have_coltitles)
+   {
       /* Make the column titles. */
       for (x = 1; x <= vcols; x++)
       {
 	 cellWidth = colwidths[x] + 3;
-	 MATRIX_CELL (matrix, 0, x) = subwin (matrix->win, borderw, cellWidth, begy, begx);
+	 MATRIX_CELL (matrix, 0, x) = subwin (matrix->win,
+					      borderw,
+					      cellWidth,
+					      begy,
+					      begx);
 
 	 if (MATRIX_CELL (matrix, 0, x) == 0)
 	 {
@@ -249,7 +257,8 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Make the main cell body */
    for (x = 1; x <= vrows; x++)
    {
-      if (have_rowtitles) {
+      if (have_rowtitles)
+      {
 	 /* Make the row titles */
 	 MATRIX_CELL (matrix, x, 0) = subwin (matrix->win,
 					      3, matrix->maxrt,
@@ -285,34 +294,34 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    }
    keypad (matrix->win, TRUE);
 
-   /* Keep the rest of the info. */
-   ScreenOf (matrix)		= cdkscreen;
-   ObjOf (matrix)->acceptsFocus	= TRUE;
-   ObjOf (matrix)->inputWindow	= matrix->win;
-   matrix->parent		= cdkscreen->window;
-   matrix->vrows		= vrows;
-   matrix->vcols		= vcols;
-   matrix->boxWidth		= boxWidth;
-   matrix->boxHeight		= boxHeight;
-   matrix->rowSpace		= rowSpace;
-   matrix->colSpace		= colSpace;
-   matrix->filler		= filler;
-   matrix->dominant		= dominant;
-   matrix->row			= 1;
-   matrix->col			= 1;
-   matrix->crow			= 1;
-   matrix->ccol			= 1;
-   matrix->trow			= 1;
-   matrix->lcol			= 1;
-   matrix->oldcrow		= 1;
-   matrix->oldccol		= 1;
-   matrix->oldvrow		= 1;
-   matrix->oldvcol		= 1;
+   /* *INDENT-EQLS* Keep the rest of the info. */
+   ScreenOf (matrix)            = cdkscreen;
+   ObjOf (matrix)->acceptsFocus = TRUE;
+   ObjOf (matrix)->inputWindow  = matrix->win;
+   matrix->parent               = cdkscreen->window;
+   matrix->vrows                = vrows;
+   matrix->vcols                = vcols;
+   matrix->boxWidth             = boxWidth;
+   matrix->boxHeight            = boxHeight;
+   matrix->rowSpace             = rowSpace;
+   matrix->colSpace             = colSpace;
+   matrix->filler               = filler;
+   matrix->dominant             = dominant;
+   matrix->row                  = 1;
+   matrix->col                  = 1;
+   matrix->crow                 = 1;
+   matrix->ccol                 = 1;
+   matrix->trow                 = 1;
+   matrix->lcol                 = 1;
+   matrix->oldcrow              = 1;
+   matrix->oldccol              = 1;
+   matrix->oldvrow              = 1;
+   matrix->oldvcol              = 1;
    initExitType (matrix);
-   matrix->boxCell		= boxCell;
-   matrix->shadow		= shadow;
-   matrix->highlight		= A_REVERSE;
-   matrix->callbackfn		= CDKMatrixCallBack;
+   matrix->boxCell              = boxCell;
+   matrix->shadow               = shadow;
+   matrix->highlight            = A_REVERSE;
+   matrix->callbackfn           = CDKMatrixCallBack;
 
    /* Make room for the cell information. */
    for (x = 1; x <= rows; x++)
@@ -399,14 +408,15 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
  */
 static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 {
+   /* *INDENT-EQLS* */
    CDKMATRIX *widget = (CDKMATRIX *)object;
-   int refreshCells	= FALSE;
-   int movedCell	= FALSE;
-   int charcount	= (int)strlen (MATRIX_INFO (widget, widget->row, widget->col));
-   int ppReturn		= 1;
+   int refreshCells  = FALSE;
+   int movedCell     = FALSE;
+   int charcount     = (int)strlen (MATRIX_INFO (widget, widget->row, widget->col));
+   int ppReturn      = 1;
    int infolen;
-   int ret		= unknownInt;
-   bool complete	= FALSE;
+   int ret           = unknownInt;
+   bool complete     = FALSE;
 
    /* Set the exit type. */
    setExitType (widget, 0);
@@ -712,7 +722,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       strcpy (CurMatrixInfo(widget), GPasteBuffer);
+	       strcpy (CurMatrixInfo (widget), GPasteBuffer);
 	       drawCurCDKMatrixCell (widget);
 	    }
 	    break;
@@ -757,8 +767,8 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    complete = TRUE;
 	    break;
 
-	 case KEY_ERROR :
-	    setExitType(widget, input);
+	 case KEY_ERROR:
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
@@ -918,10 +928,11 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
  */
 static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 {
+   /* *INDENT-EQLS* */
    EDisplayType disptype = (EDisplayType) matrix->colvalues[matrix->col];
-   chtype highlight	= matrix->highlight;
-   int x		= 0;
-   int infolen		= (int)strlen (MATRIX_INFO (matrix, matrix->row, matrix->col));
+   chtype highlight      = matrix->highlight;
+   int x                 = 0;
+   int infolen           = (int)strlen (MATRIX_INFO (matrix, matrix->row, matrix->col));
 
    /*
     * Given the dominance of the colors/attributes, we need to set the
@@ -960,13 +971,14 @@ static void _moveCDKMatrix (CDKOBJS *object,
 			    boolean relative,
 			    boolean refresh_flag)
 {
+   /* *INDENT-EQLS* */
    CDKMATRIX *matrix = (CDKMATRIX *)object;
-   int currentX = getbegx (matrix->win);
-   int currentY = getbegy (matrix->win);
-   int xpos = xplace;
-   int ypos = yplace;
-   int xdiff = 0;
-   int ydiff = 0;
+   int currentX      = getbegx (matrix->win);
+   int currentY      = getbegy (matrix->win);
+   int xpos          = xplace;
+   int ypos          = yplace;
+   int xdiff         = 0;
+   int ydiff         = 0;
    int x, y;
 
    /*
@@ -1020,12 +1032,13 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
 			       chtype attr,
 			       boolean Box)
 {
-   WINDOW *cell		= MATRIX_CELL (matrix, row, col);
+   /* *INDENT-EQLS* */
+   WINDOW *cell         = MATRIX_CELL (matrix, row, col);
    EDisplayType disptype = (EDisplayType) matrix->colvalues[matrix->col];
-   chtype highlight	= matrix->filler & A_ATTRIBUTES;
-   int rows		= matrix->vrows;
-   int cols		= matrix->vcols;
-   int infolen		= (int)strlen (MATRIX_INFO (matrix, vrow, vcol));
+   chtype highlight     = matrix->filler & A_ATTRIBUTES;
+   int rows             = matrix->vrows;
+   int cols             = matrix->vcols;
+   int infolen          = (int)strlen (MATRIX_INFO (matrix, vrow, vcol));
    int x;
 
    /*
@@ -1241,8 +1254,9 @@ static void drawEachColTitle (CDKMATRIX *matrix)
 
    for (x = 1; x <= matrix->vcols; x++)
    {
-      if (MATRIX_CELL (matrix, 0, x)) {
-	 werase (MATRIX_CELL (matrix, 0, x));/*VR*/
+      if (MATRIX_CELL (matrix, 0, x))
+      {
+	 werase (MATRIX_CELL (matrix, 0, x));	/*VR */
 	 writeChtype (MATRIX_CELL (matrix, 0, x),
 		      matrix->coltitlePos[matrix->lcol + x - 1], 0,
 		      matrix->coltitle[matrix->lcol + x - 1],
@@ -1259,7 +1273,8 @@ static void drawEachRowTitle (CDKMATRIX *matrix)
 
    for (x = 1; x <= matrix->vrows; x++)
    {
-      if (MATRIX_CELL (matrix, x, 0)) {
+      if (MATRIX_CELL (matrix, x, 0))
+      {
 	 werase (MATRIX_CELL (matrix, x, 0));
 	 writeChtype (MATRIX_CELL (matrix, x, 0),
 		      matrix->rowtitlePos[matrix->trow + x - 1], 1,

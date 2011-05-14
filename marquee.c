@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2006/05/05 00:27:44 $
- * $Revision: 1.77 $
+ * $Date: 2010/11/08 01:14:09 $
+ * $Revision: 1.78 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
@@ -18,10 +18,11 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
 			   boolean Box,
 			   boolean shadow)
 {
-   CDKMARQUEE *widget	= 0;
-   int parentWidth	= getmaxx (cdkscreen->window);
-   int xpos		= xplace;
-   int ypos		= yplace;
+   /* *INDENT-EQLS* */
+   CDKMARQUEE *widget   = 0;
+   int parentWidth      = getmaxx (cdkscreen->window);
+   int xpos             = xplace;
+   int ypos             = yplace;
    int boxHeight;
    int boxWidth;
 
@@ -36,16 +37,16 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
-   /* Create the widget pointer. */
-   ScreenOf (widget)	= cdkscreen;
-   widget->parent	= cdkscreen->window;
-   widget->win		= newwin (boxHeight, boxWidth, ypos, xpos);
-   widget->boxHeight	= boxHeight;
-   widget->boxWidth	= boxWidth;
-   widget->shadowWin	= 0;
-   widget->active	= TRUE;
-   widget->width	= width;
-   widget->shadow	= shadow;
+   /* *INDENT-EQLS* Create the widget pointer. */
+   ScreenOf (widget)    = cdkscreen;
+   widget->parent       = cdkscreen->window;
+   widget->win          = newwin (boxHeight, boxWidth, ypos, xpos);
+   widget->boxHeight    = boxHeight;
+   widget->boxWidth     = boxWidth;
+   widget->shadowWin    = 0;
+   widget->active       = TRUE;
+   widget->width        = width;
+   widget->shadow       = shadow;
 
    /* Is the window null??? */
    if (widget->win == 0)
@@ -78,17 +79,18 @@ int activateCDKMarquee (CDKMARQUEE *widget,
 			int repeat,
 			boolean Box)
 {
-   chtype *message;
-   int mesgLength	= 0;
-   int startPos		= 0;
-   int firstChar	= 0;
-   int lastChar		= 1;
-   int repeatCount	= 0;
-   int viewSize		= 0;
+   /* *INDENT-EQLS* */
+   int mesgLength       = 0;
+   int startPos         = 0;
+   int firstChar        = 0;
+   int lastChar         = 1;
+   int repeatCount      = 0;
+   int viewSize         = 0;
    int viewLimit;
    int padding;
+   chtype *message;
    int x, y, junk, oldcurs;
-   bool firstTime	= TRUE;
+   bool firstTime       = TRUE;
 
    /* Make sure the message has some content. */
    if (mesg == 0 || *mesg == '\0')
@@ -221,12 +223,13 @@ static void _moveCDKMarquee (CDKOBJS *object,
 			     boolean refresh_flag)
 {
    CDKMARQUEE *widget = (CDKMARQUEE *)object;
+   /* *INDENT-EQLS* */
    int currentX = getbegx (widget->win);
    int currentY = getbegy (widget->win);
-   int xpos	= xplace;
-   int ypos	= yplace;
-   int xdiff	= 0;
-   int ydiff	= 0;
+   int xpos     = xplace;
+   int ypos     = yplace;
+   int xdiff    = 0;
+   int ydiff    = 0;
 
    /*
     * If this is a relative move, then we will adjust where we want
