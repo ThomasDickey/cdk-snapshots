@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.78 2009/02/15 17:50:05 tom Exp $
+# $Id: Makefile.in,v 1.81 2011/05/14 01:05:46 tom Exp $
 #
-#  Copyright 2001-2008,2009 Thomas Dickey
+#  Copyright 2001-2009,2011 Thomas Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -62,7 +62,7 @@ includedir	= @includedir@
 libdir		= @libdir@
 mandir		= @mandir@
 
-DOCUMENT_DIR	= $(prefix)/doc/cdk
+DOCUMENT_DIR	= $(DESTDIR)$(prefix)/doc/cdk
 BIN_DIR		= $(DESTDIR)$(bindir)
 INCLUDE_DIR	= $(DESTDIR)$(includedir)/cdk
 LIB_DIR		= $(DESTDIR)$(libdir)
@@ -74,6 +74,7 @@ CPP		= @CPP@
 AR		= @AR@
 RANLIB		= @LIB_PREP@
 RM		= rm -f
+LN_S		= @LN_S@
 
 LIBS		= @LIBS@
 
@@ -413,8 +414,8 @@ installCDKSHLibrary :: $(LIB_DIR) $(CDKSHLIB)
 	@echo "Installing CDK library"
 	@echo "	$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)"
 	@$(INSTALL_DATA) $(CDKSHLIB) $(LIB_DIR)
-	@echo " ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so"
-	@ln -sf $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so
+	@echo " $(LN_S) $(CDKSHLIB) $(LIB_DIR)/@LIB_PREFIX@@LIB_ROOTNAME@.so"
+	@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(CDKSHLIB) @LIB_PREFIX@@LIB_ROOTNAME@.so"
 
 uninstall \
 uninstallCDKSHLibrary ::
@@ -475,15 +476,15 @@ distclean :: realclean
 # Standard .c to .o compile line.
 #
 .c.o:
-@RULE_CC@
+	@RULE_CC@
 	@ECHO_CC@$(LIBTOOL_COMPILE) $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 .c.i:
-@RULE_CC@
+	@RULE_CC@
 	@ECHO_CC@$(CPP) $(CPPFLAGS) -E -C $< >$@
 
 .c.os:
-@RULE_CC@
+	@RULE_CC@
 	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
 
 man \
@@ -491,7 +492,7 @@ $(BIN_DIR) \
 $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \
 $(LIB_DIR) \
-$(MAN_DIR) : ; $(srcdir)/mkdirs.sh $@
+$(MAN_DIR) : ; mkdir -p $@
 
 #
 # Files generated from templates:

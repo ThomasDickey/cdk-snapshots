@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2009/02/16 00:04:28 $
- * $Revision: 1.161 $
+ * $Date: 2010/11/08 00:16:23 $
+ * $Revision: 1.162 $
  */
 
 /*
@@ -31,16 +31,17 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
 			 boolean Box,
 			 boolean shadow)
 {
-   CDKMENTRY *mentry	= 0;
-   int parentWidth	= getmaxx (cdkscreen->window);
-   int parentHeight	= getmaxy (cdkscreen->window);
-   int fieldWidth	= fWidth;
-   int fieldRows	= fRows;
-   int boxWidth		= 0;
-   int boxHeight	= 0;
+   /* *INDENT-EQLS* */
+   CDKMENTRY *mentry    = 0;
+   int parentWidth      = getmaxx (cdkscreen->window);
+   int parentHeight     = getmaxy (cdkscreen->window);
+   int fieldWidth       = fWidth;
+   int fieldRows        = fRows;
+   int boxWidth         = 0;
+   int boxHeight        = 0;
    int horizontalAdjust, oldWidth;
-   int xpos		= xplace;
-   int ypos		= yplace;
+   int xpos             = xplace;
+   int ypos             = yplace;
    int junk;
 
    if ((mentry = newCDKObject (CDKMENTRY, &my_funcs)) == 0)
@@ -63,10 +64,10 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
    fieldRows = setWidgetDimension (parentWidth, fieldRows, 0);
    boxHeight = fieldRows + 2;
 
-   /* Set some basic values of the mentry field. */
-   mentry->label	= 0;
-   mentry->labelLen	= 0;
-   mentry->labelWin	= 0;
+   /* *INDENT-EQLS* Set some basic values of the mentry field. */
+   mentry->label        = 0;
+   mentry->labelLen     = 0;
+   mentry->labelWin     = 0;
 
    /* We need to translate the char * label to a chtype * */
    if (label != 0)
@@ -124,35 +125,35 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
    keypad (mentry->fieldWin, TRUE);
    keypad (mentry->win, TRUE);
 
-   /* Set up the rest of the structure. */
-   mentry->parent	= cdkscreen->window;
-   mentry->totalWidth	= (fieldWidth*logicalRows) + 1;
+   /* *INDENT-EQLS* Set up the rest of the structure. */
+   mentry->parent       = cdkscreen->window;
+   mentry->totalWidth   = (fieldWidth * logicalRows) + 1;
 
    /* Create the info char * pointer. */
    mentry->info = typeMallocN (char, mentry->totalWidth + 3);
    cleanChar (mentry->info, mentry->totalWidth + 3, '\0');
 
-   /* Set up the rest of the widget information. */
-   ScreenOf (mentry)		= cdkscreen;
-   mentry->shadowWin		= 0;
-   mentry->fieldAttr		= fieldAttr;
-   mentry->fieldWidth		= fieldWidth;
-   mentry->rows			= fieldRows;
-   mentry->boxHeight		= boxHeight;
-   mentry->boxWidth		= boxWidth;
-   mentry->filler		= filler;
-   mentry->hidden		= filler;
-   ObjOf (mentry)->inputWindow	= mentry->win;
-   ObjOf (mentry)->acceptsFocus	= TRUE;
-   mentry->currentRow		= 0;
-   mentry->currentCol		= 0;
-   mentry->topRow		= 0;
-   mentry->shadow		= shadow;
-   mentry->dispType		= dispType;
-   mentry->min			= min;
-   mentry->logicalRows		= logicalRows;
+   /* *INDENT-EQLS* Set up the rest of the widget information. */
+   ScreenOf (mentry)            = cdkscreen;
+   mentry->shadowWin            = 0;
+   mentry->fieldAttr            = fieldAttr;
+   mentry->fieldWidth           = fieldWidth;
+   mentry->rows                 = fieldRows;
+   mentry->boxHeight            = boxHeight;
+   mentry->boxWidth             = boxWidth;
+   mentry->filler               = filler;
+   mentry->hidden               = filler;
+   ObjOf (mentry)->inputWindow  = mentry->win;
+   ObjOf (mentry)->acceptsFocus = TRUE;
+   mentry->currentRow           = 0;
+   mentry->currentCol           = 0;
+   mentry->topRow               = 0;
+   mentry->shadow               = shadow;
+   mentry->dispType             = dispType;
+   mentry->min                  = min;
+   mentry->logicalRows          = logicalRows;
    initExitType (mentry);
-   mentry->callbackfn		= CDKMentryCallBack;
+   mentry->callbackfn           = CDKMentryCallBack;
 
    /* Do we need to create a shadow. */
    if (shadow)
@@ -283,6 +284,7 @@ static int getCursorPos (CDKMENTRY *mentry)
 static int _injectCDKMentry (CDKOBJS *object, chtype input)
 {
    CDKMENTRY *widget = (CDKMENTRY *)object;
+   /* *INDENT-EQLS */
    int cursorPos = getCursorPos (widget);
    int ppReturn = 1;
    int x, fieldCharacters;
@@ -517,8 +519,8 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    }
 	    break;
 
-	 case KEY_ERROR :
-	    setExitType(widget, input);
+	 case KEY_ERROR:
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
@@ -585,12 +587,13 @@ static void _moveCDKMentry (CDKOBJS *object,
 			    boolean refresh_flag)
 {
    CDKMENTRY *mentry = (CDKMENTRY *)object;
+   /* *INDENT-EQLS* */
    int currentX = getbegx (mentry->win);
    int currentY = getbegy (mentry->win);
-   int xpos	= xplace;
-   int ypos	= yplace;
-   int xdiff	= 0;
-   int ydiff	= 0;
+   int xpos     = xplace;
+   int ypos     = yplace;
+   int xdiff    = 0;
+   int ydiff    = 0;
 
    /*
     * If this is a relative move, then we will adjust where we want
@@ -630,9 +633,10 @@ static void _moveCDKMentry (CDKOBJS *object,
  */
 void drawCDKMentryField (CDKMENTRY *mentry)
 {
-   int currchar		= (mentry->fieldWidth * mentry->topRow);
-   int length		= 0;
-   int lastpos		= 0;
+   /* *INDENT-EQLS* */
+   int currchar         = (mentry->fieldWidth * mentry->topRow);
+   int length           = 0;
+   int lastpos          = 0;
    int x, y;
 
    /* Check the value of info. */
@@ -687,9 +691,10 @@ void drawCDKMentryField (CDKMENTRY *mentry)
  */
 static void CDKMentryCallBack (CDKMENTRY *mentry, chtype character)
 {
-   int cursorPos = getCursorPos (mentry);
+   /* *INDENT-EQLS* */
+   int cursorPos  = getCursorPos (mentry);
    int infoLength = (int)strlen (mentry->info);
-   char newchar = filterByDisplayType (mentry->dispType, character);
+   char newchar   = filterByDisplayType (mentry->dispType, character);
    int x;
 
    if (newchar == ERR)
@@ -842,9 +847,10 @@ void setCDKMentry (CDKMENTRY *mentry, char *value, int min, boolean Box)
  */
 void setCDKMentryValue (CDKMENTRY *mentry, char *newValue)
 {
-   int fieldCharacters	= mentry->rows * mentry->fieldWidth;
-   int len		= 0;
-   int copychars	= 0;
+   /* *INDENT-EQLS* */
+   int fieldCharacters  = mentry->rows * mentry->fieldWidth;
+   int len              = 0;
+   int copychars        = 0;
    int rowsUsed;
 
    /* Just to be sure, if lets make sure the new value isn't null. */
@@ -856,8 +862,8 @@ void setCDKMentryValue (CDKMENTRY *mentry, char *newValue)
    }
 
    /* Determine how many characters we need to copy. */
-   len		= (int)strlen (newValue);
-   copychars	= (len < mentry->totalWidth ? len : mentry->totalWidth);
+   len = (int)strlen (newValue);
+   copychars = (len < mentry->totalWidth ? len : mentry->totalWidth);
 
    /* OK, erase the old value, and copy in the new value. */
    cleanChar (mentry->info, mentry->totalWidth, '\0');
@@ -872,10 +878,11 @@ void setCDKMentryValue (CDKMENTRY *mentry, char *newValue)
    }
    else
    {
-      rowsUsed			= len / mentry->fieldWidth;
-      mentry->topRow		= rowsUsed - mentry->rows + 1;
-      mentry->currentRow	= mentry->rows - 1;
-      mentry->currentCol	= len % mentry->fieldWidth;
+      /* *INDENT-EQLS* */
+      rowsUsed                  = len / mentry->fieldWidth;
+      mentry->topRow            = rowsUsed - mentry->rows + 1;
+      mentry->currentRow        = mentry->rows - 1;
+      mentry->currentCol        = len % mentry->fieldWidth;
    }
 
    /* Redraw the widget. */
@@ -941,9 +948,10 @@ boolean getCDKMentryBox (CDKMENTRY *mentry)
 void cleanCDKMentry (CDKMENTRY *mentry)
 {
    cleanChar (mentry->info, mentry->totalWidth, '\0');
-   mentry->currentRow	= 0;
-   mentry->currentCol	= 0;
-   mentry->topRow	= 0;
+   /* *INDENT-EQLS* */
+   mentry->currentRow   = 0;
+   mentry->currentCol   = 0;
+   mentry->topRow       = 0;
 }
 
 /*

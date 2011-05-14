@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2009/02/16 00:13:12 $
- * $Revision: 1.215 $
+ * $Date: 2010/11/07 23:46:23 $
+ * $Revision: 1.216 $
  */
 
 /*
@@ -31,15 +31,16 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 		       boolean Box,
 		       boolean shadow)
 {
-   CDKENTRY *entry	= 0;
-   int parentWidth	= getmaxx (cdkscreen->window);
-   int parentHeight	= getmaxy (cdkscreen->window);
-   int fieldWidth	= fWidth;
-   int boxWidth		= 0;
+   /* *INDENT-EQLS* */
+   CDKENTRY *entry      = 0;
+   int parentWidth      = getmaxx (cdkscreen->window);
+   int parentHeight     = getmaxy (cdkscreen->window);
+   int fieldWidth       = fWidth;
+   int boxWidth         = 0;
    int boxHeight;
-   int xpos		= xplace;
-   int ypos		= yplace;
-   int junk		= 0;
+   int xpos             = xplace;
+   int ypos             = yplace;
+   int junk             = 0;
    int horizontalAdjust, oldWidth;
 
    if ((entry = newCDKObject (CDKENTRY, &my_funcs)) == 0)
@@ -96,8 +97,10 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 
    /* Make the field window. */
    entry->fieldWin = subwin (entry->win, 1, fieldWidth,
-			     ypos + TitleLinesOf (entry) + BorderOf (entry),
-			     xpos + entry->labelLen + horizontalAdjust + BorderOf (entry));
+			     (ypos + TitleLinesOf (entry) + BorderOf (entry)),
+			     (xpos + entry->labelLen
+			      + horizontalAdjust
+			      + BorderOf (entry)));
    if (entry->fieldWin == 0)
    {
       destroyCDKObject (entry);
@@ -123,27 +126,27 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    cleanChar (entry->info, max + 3, '\0');
    entry->infoWidth = max + 3;
 
-   /* Set up the rest of the structure. */
-   ScreenOf (entry)		= cdkscreen;
-   entry->parent		= cdkscreen->window;
-   entry->shadowWin		= 0;
-   entry->fieldAttr		= fieldAttr;
-   entry->fieldWidth		= fieldWidth;
-   entry->filler		= filler;
-   entry->hidden		= filler;
-   ObjOf (entry)->inputWindow	= entry->fieldWin;
-   ObjOf (entry)->acceptsFocus	= TRUE;
-   ReturnOf (entry)		= NULL;
-   entry->shadow		= shadow;
-   entry->screenCol		= 0;
-   entry->leftChar		= 0;
-   entry->min			= min;
-   entry->max			= max;
-   entry->boxWidth		= boxWidth;
-   entry->boxHeight		= boxHeight;
+   /* *INDENT-EQLS* Set up the rest of the structure. */
+   ScreenOf (entry)             = cdkscreen;
+   entry->parent                = cdkscreen->window;
+   entry->shadowWin             = 0;
+   entry->fieldAttr             = fieldAttr;
+   entry->fieldWidth            = fieldWidth;
+   entry->filler                = filler;
+   entry->hidden                = filler;
+   ObjOf (entry)->inputWindow   = entry->fieldWin;
+   ObjOf (entry)->acceptsFocus  = TRUE;
+   ReturnOf (entry)             = NULL;
+   entry->shadow                = shadow;
+   entry->screenCol             = 0;
+   entry->leftChar              = 0;
+   entry->min                   = min;
+   entry->max                   = max;
+   entry->boxWidth              = boxWidth;
+   entry->boxHeight             = boxHeight;
    initExitType (entry);
-   entry->dispType		= dispType;
-   entry->callbackfn		= CDKEntryCallBack;
+   entry->dispType              = dispType;
+   entry->callbackfn            = CDKEntryCallBack;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -464,8 +467,8 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    }
 	    break;
 
-	 case KEY_ERROR :
-	    setExitType(widget, input);
+	 case KEY_ERROR:
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
@@ -506,13 +509,14 @@ static void _moveCDKEntry (CDKOBJS *object,
 			   boolean relative,
 			   boolean refresh_flag)
 {
+   /* *INDENT-EQLS* */
    CDKENTRY *entry = (CDKENTRY *)object;
-   int currentX = getbegx (entry->win);
-   int currentY = getbegy (entry->win);
-   int xpos	= xplace;
-   int ypos	= yplace;
-   int xdiff	= 0;
-   int ydiff	= 0;
+   int currentX    = getbegx (entry->win);
+   int currentY    = getbegy (entry->win);
+   int xpos        = xplace;
+   int ypos        = yplace;
+   int xdiff       = 0;
+   int ydiff       = 0;
 
    /*
     * If this is a relative move, then we will adjust where we want

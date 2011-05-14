@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.49 2009/02/16 00:54:28 tom Exp $
+dnl $Id: configure.in,v 1.51 2011/05/14 00:42:20 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -15,6 +15,7 @@ AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_RANLIB 
 AC_PROG_INSTALL
+CF_PROG_LN_S
 
 dnl needed for CF_WITH_LIBTOOL
 AC_CHECK_TOOL(AR, ar, ar)
@@ -46,6 +47,8 @@ AC_SUBST(MANSECT)
 
 CF_WITH_CURSES_DIR
 CF_WITH_WARNINGS
+CF_PKG_CONFIG
+
 CF_WITH_LIBTOOL
 if test "$with_libtool" = "yes" ; then
 	OBJEXT="lo"

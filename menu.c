@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2009/02/16 00:05:15 $
- * $Revision: 1.99 $
+ * $Date: 2010/11/08 00:13:05 $
+ * $Revision: 1.100 $
  */
 
 #define TITLELINES 1
@@ -27,31 +27,32 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
 		     chtype titleAttr,
 		     chtype subtitleAttr)
 {
-   CDKMENU *menu	= 0;
-   int rightcount	= menuItems - 1;
-   int rightloc		= getmaxx (cdkscreen->window);
-   int leftloc		= 0;
+   /* *INDENT-EQLS* */
+   CDKMENU *menu        = 0;
+   int rightcount       = menuItems - 1;
+   int rightloc         = getmaxx (cdkscreen->window);
+   int leftloc          = 0;
    int x, y, max, junk;
-   int xpos		= getbegx (cdkscreen->window);
-   int ypos		= getbegy (cdkscreen->window);
-   int ymax		= getmaxy (cdkscreen->window);
+   int xpos             = getbegx (cdkscreen->window);
+   int ypos             = getbegy (cdkscreen->window);
+   int ymax             = getmaxy (cdkscreen->window);
 
    if ((menu = newCDKObject (CDKMENU, &my_funcs)) == 0)
-      return (0);
+        return (0);
 
-   /* Start making a copy of the information. */
-   ScreenOf (menu)		= cdkscreen;
-   ObjOf (menu)->box		= FALSE;
-   ObjOf (menu)->acceptsFocus    = FALSE;
-   rightcount			= menuItems-1;
-   menu->parent			= cdkscreen->window;
-   menu->menuItems		= menuItems;
-   menu->titleAttr		= titleAttr;
-   menu->subtitleAttr		= subtitleAttr;
-   menu->currentTitle		= 0;
-   menu->currentSubtitle	= 0;
-   menu->lastSelection		= -1;
-   menu->menuPos		= menuPos;
+   /* *INDENT-EQLS* Start making a copy of the information. */
+   ScreenOf (menu)              = cdkscreen;
+   ObjOf (menu)->box            = FALSE;
+   ObjOf (menu)->acceptsFocus   = FALSE;
+   rightcount                   = menuItems - 1;
+   menu->parent                 = cdkscreen->window;
+   menu->menuItems              = menuItems;
+   menu->titleAttr              = titleAttr;
+   menu->subtitleAttr           = subtitleAttr;
+   menu->currentTitle           = 0;
+   menu->currentSubtitle        = 0;
+   menu->lastSelection          = -1;
+   menu->menuPos                = menuPos;
    initExitType (menu);
 
    /* Create the pull down menus. */
@@ -90,10 +91,19 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
       {
 	 x2 = (rightloc -= max + 2);
       }
-      menu->title[x1]	 = char2Chtype (menulist[x][0], &menu->titleLen[x1], &junk);
-      menu->subsize[x1]	 = subsize[x] - TITLELINES;
-      menu->titleWin[x1] = subwin (cdkscreen->window, TITLELINES, menu->titleLen[x1]+2, ypos + y1, xpos + x2);
-      menu->pullWin[x1]  = subwin (cdkscreen->window, high, max+2, ypos + y2, xpos + x2);
+      /* *INDENT-EQLS* */
+      menu->title[x1]    = char2Chtype (menulist[x][0], &menu->titleLen[x1], &junk);
+      menu->subsize[x1]  = subsize[x] - TITLELINES;
+      menu->titleWin[x1] = subwin (cdkscreen->window,
+				   TITLELINES,
+				   menu->titleLen[x1] + 2,
+				   ypos               + y1,
+				   xpos               + x2);
+      menu->pullWin[x1]  = subwin (cdkscreen->window,
+				   high,
+				   max                + 2,
+				   ypos               + y2,
+				   xpos               + x2);
       if (menu->titleWin[x1] == 0 || menu->pullWin[x1] == 0)
       {
 	 destroyCDKMenu (menu);
@@ -334,8 +344,8 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
 	    complete = TRUE;
 	    break;
 
-	 case KEY_ERROR :
-	    setExitType(widget, input);
+	 case KEY_ERROR:
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
@@ -349,7 +359,10 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
       /* Should we call a post-process? */
       if (!complete && (PostProcessFuncOf (widget) != 0))
       {
-	 PostProcessFuncOf (widget) (vMENU, widget, PostProcessDataOf (widget), input);
+	 PostProcessFuncOf (widget) (vMENU,
+				     widget,
+				     PostProcessDataOf (widget),
+				     input);
       }
    }
 
@@ -450,12 +463,13 @@ static void _moveCDKMenu (CDKOBJS *object,
 			  boolean refresh_flag)
 {
    CDKMENU *menu = (CDKMENU *)object;
+   /* *INDENT-EQLS* */
    int currentX = getbegx (WindowOf (menu));
    int currentY = getbegy (WindowOf (menu));
-   int xpos	= xplace;
-   int ypos	= yplace;
-   int xdiff	= 0;
-   int ydiff	= 0;
+   int xpos     = xplace;
+   int ypos     = yplace;
+   int xdiff    = 0;
+   int ydiff    = 0;
    int x;
 
    /*
@@ -586,13 +600,15 @@ void setCDKMenu (CDKMENU *menu,
  */
 void setCDKMenuCurrentItem (CDKMENU *menu, int menuitem, int submenuitem)
 {
-   menu->currentTitle    = wrapped (menuitem,    menu->menuItems);
+   /* *INDENT-EQLS* */
+   menu->currentTitle    = wrapped (menuitem, menu->menuItems);
    menu->currentSubtitle = wrapped (submenuitem, menu->subsize[menu->currentTitle]);
 }
 void getCDKMenuCurrentItem (CDKMENU *menu, int *menuItem, int *subMenuItem)
 {
-   (*menuItem)		= menu->currentTitle;
-   (*subMenuItem)	= menu->currentSubtitle;
+   /* *INDENT-EQLS* */
+   (*menuItem)          = menu->currentTitle;
+   (*subMenuItem)       = menu->currentSubtitle;
 }
 
 /*

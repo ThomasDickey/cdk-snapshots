@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2009/02/16 00:09:48 $
- * $Revision: 1.132 $
+ * $Date: 2010/11/07 23:53:05 $
+ * $Revision: 1.133 $
  */
 
 /*
@@ -30,17 +30,18 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
 			     boolean Box,
 			     boolean shadow)
 {
-   CDKTEMPLATE *cdktemplate	= 0;
-   int parentWidth		= getmaxx (cdkscreen->window);
-   int parentHeight		= getmaxy (cdkscreen->window);
-   int boxWidth			= 0;
-   int boxHeight		= Box ? 3 : 1;
-   int xpos			= xplace;
-   int ypos			= yplace;
+   /* *INDENT-EQLS* */
+   CDKTEMPLATE *cdktemplate     = 0;
+   int parentWidth              = getmaxx (cdkscreen->window);
+   int parentHeight             = getmaxy (cdkscreen->window);
+   int boxWidth                 = 0;
+   int boxHeight                = Box ? 3 : 1;
+   int xpos                     = xplace;
+   int ypos                     = yplace;
    int horizontalAdjust, oldWidth;
-   int fieldWidth		= 0;
-   int plateLen			= 0;
-   int junk			= 0;
+   int fieldWidth               = 0;
+   int plateLen                 = 0;
+   int junk                     = 0;
 
    if (plate == 0
        || (cdktemplate = newCDKObject (CDKTEMPLATE, &my_funcs)) == 0)
@@ -50,10 +51,10 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
 
    fieldWidth = (int)strlen (plate) + 2 * BorderOf (cdktemplate);
 
-   /* Set some basic values of the cdktemplate field. */
-   cdktemplate->label		= 0;
-   cdktemplate->labelLen	= 0;
-   cdktemplate->labelWin	= 0;
+   /* *INDENT-EQLS* Set some basic values of the cdktemplate field. */
+   cdktemplate->label     = 0;
+   cdktemplate->labelLen  = 0;
+   cdktemplate->labelWin  = 0;
 
    /* Translate the char * label to a chtype * */
    if (label != 0)
@@ -69,9 +70,10 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
    }
    else
    {
-      cdktemplate->overlay	= 0;
-      cdktemplate->overlayLen	= 0;
-      cdktemplate->fieldAttr	= A_NORMAL;
+      /* *INDENT-EQLS* */
+      cdktemplate->overlay      = 0;
+      cdktemplate->overlayLen   = 0;
+      cdktemplate->fieldAttr    = A_NORMAL;
    }
 
    /* Set the box width. */
@@ -86,9 +88,11 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
    /*
     * Make sure we didn't extend beyond the dimensions of the window.
     */
-   boxWidth = MINIMUM (boxWidth, parentWidth);
-   boxHeight = MINIMUM (boxHeight, parentHeight);
-   fieldWidth = MINIMUM (fieldWidth, boxWidth - cdktemplate->labelLen - 2 * BorderOf (cdktemplate));
+   /* *INDENT-EQLS* */
+   boxWidth   = MINIMUM (boxWidth, parentWidth);
+   boxHeight  = MINIMUM (boxHeight, parentHeight);
+   fieldWidth = MINIMUM (fieldWidth,
+			 boxWidth   - cdktemplate->labelLen - 2 * BorderOf (cdktemplate));
 
    /* Rejustify the x and y positions if we need to. */
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
@@ -139,8 +143,8 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
    }
 
    /* Copy the plate to the cdktemplate. */
-   plateLen		= strlen (plate);
-   cdktemplate->plate	= typeMallocN (char, plateLen + 3);
+   plateLen = strlen (plate);
+   cdktemplate->plate = typeMallocN (char, plateLen + 3);
    if (cdktemplate->plate == 0)
    {
       destroyCDKObject (cdktemplate);
@@ -148,22 +152,22 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
    }
    strcpy (cdktemplate->plate, plate);
 
-   /* Set up the rest of the structure	*/
-   ScreenOf (cdktemplate)		= cdkscreen;
-   cdktemplate->parent			= cdkscreen->window;
-   cdktemplate->shadowWin		= 0;
-   cdktemplate->fieldWidth		= fieldWidth;
-   cdktemplate->boxHeight		= boxHeight;
-   cdktemplate->boxWidth		= boxWidth;
-   cdktemplate->platePos		= 0;
-   cdktemplate->screenPos		= 0;
-   cdktemplate->infoPos			= 0;
+   /* *INDENT-EQLS* Set up the rest of the structure */
+   ScreenOf (cdktemplate)               = cdkscreen;
+   cdktemplate->parent                  = cdkscreen->window;
+   cdktemplate->shadowWin               = 0;
+   cdktemplate->fieldWidth              = fieldWidth;
+   cdktemplate->boxHeight               = boxHeight;
+   cdktemplate->boxWidth                = boxWidth;
+   cdktemplate->platePos                = 0;
+   cdktemplate->screenPos               = 0;
+   cdktemplate->infoPos                 = 0;
    initExitType (cdktemplate);
-   cdktemplate->min			= 0;
-   ObjOf (cdktemplate)->inputWindow	= cdktemplate->win;
-   ObjOf (cdktemplate)->acceptsFocus	= TRUE;
-   cdktemplate->shadow			= shadow;
-   cdktemplate->callbackfn		= CDKTemplateCallBack;
+   cdktemplate->min                     = 0;
+   ObjOf (cdktemplate)->inputWindow     = cdktemplate->win;
+   ObjOf (cdktemplate)->acceptsFocus    = TRUE;
+   cdktemplate->shadow                  = shadow;
+   cdktemplate->callbackfn              = CDKTemplateCallBack;
 
    /* Do we need to create a shadow??? */
    if (shadow)
@@ -334,8 +338,8 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	    complete = TRUE;
 	    break;
 
-	 case KEY_ERROR :
-	    setExitType(widget, input);
+	 case KEY_ERROR:
+	    setExitType (widget, input);
 	    complete = TRUE;
 	    break;
 
@@ -539,9 +543,10 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
  */
 char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
 {
-   char *mixedString	= 0;
-   int platePos		= 0;
-   int infoPos		= 0;
+   /* *INDENT-EQLS* */
+   char *mixedString    = 0;
+   int platePos         = 0;
+   int infoPos          = 0;
 
    if (cdktemplate->info != 0 && cdktemplate->info[0] != '\0')
    {
@@ -567,10 +572,11 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
  */
 char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, char *info)
 {
-   int x		= 0;
-   int pos		= 0;
-   int infolen		= (int)strlen (info);
-   char *unmixedString	= typeCallocN (char, infolen + 2);
+   /* *INDENT-EQLS* */
+   int x                = 0;
+   int pos              = 0;
+   int infolen          = (int)strlen (info);
+   char *unmixedString  = typeCallocN (char, infolen + 2);
 
    if (unmixedString != 0)
    {
@@ -600,12 +606,13 @@ static void _moveCDKTemplate (CDKOBJS *object,
 			      boolean refresh_flag)
 {
    CDKTEMPLATE *cdktemplate = (CDKTEMPLATE *)object;
+   /* *INDENT-EQLS* */
    int currentX = getbegx (cdktemplate->win);
    int currentY = getbegy (cdktemplate->win);
-   int xpos	= xplace;
-   int ypos	= yplace;
-   int xdiff	= 0;
-   int ydiff	= 0;
+   int xpos     = xplace;
+   int ypos     = yplace;
+   int xdiff    = 0;
+   int ydiff    = 0;
 
    /*
     * If this is a relative move, then we will adjust where we want
@@ -671,9 +678,10 @@ static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
  */
 static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 {
-   chtype fieldColor	= 0;
-   int infolen		= (int)strlen (cdktemplate->info);
-   int x		= 0;
+   /* *INDENT-EQLS* */
+   chtype fieldColor    = 0;
+   int infolen          = (int)strlen (cdktemplate->info);
+   int x                = 0;
 
    /* Draw in the label and the cdktemplate object. */
    if (cdktemplate->labelWin != 0)
@@ -808,8 +816,9 @@ void setCDKTemplate (CDKTEMPLATE *cdktemplate, char *newValue, boolean Box)
  */
 void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
 {
-   int len		= 0;
-   int copychars	= 0;
+   /* *INDENT-EQLS* */
+   int len              = 0;
+   int copychars        = 0;
    int x;
 
    /* Just to be sure, if let's make sure the new value isn't null. */
@@ -820,8 +829,8 @@ void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
    }
 
    /* Determine how many characters we need to copy. */
-   len		= (int)strlen (newValue);
-   copychars	= MINIMUM (len, cdktemplate->fieldWidth);
+   len = (int)strlen (newValue);
+   copychars = MINIMUM (len, cdktemplate->fieldWidth);
 
    /* OK, erase the old value, and copy in the new value. */
    cdktemplate->info[0] = '\0';
@@ -871,10 +880,11 @@ boolean getCDKTemplateBox (CDKTEMPLATE *cdktemplate)
  */
 void cleanCDKTemplate (CDKTEMPLATE *cdktemplate)
 {
-   cdktemplate->info[0] = '\0';
+   /* *INDENT-EQLS* */
+   cdktemplate->info[0]   = '\0';
    cdktemplate->screenPos = 0;
-   cdktemplate->infoPos = 0;
-   cdktemplate->platePos = 0;
+   cdktemplate->infoPos   = 0;
+   cdktemplate->platePos  = 0;
 }
 
 /*
