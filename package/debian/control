@@ -1,0 +1,58 @@
+Source: cdk
+Maintainer: Thomas E. Dickey <dickey@invisible-island.net>
+Section: misc
+Priority: optional
+Standards-Version: 3.8.4
+Build-Depends: debhelper (>= 5)
+Homepage: http://invisible-island.net/cdk/
+
+Package: libcdk5
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cdk - Curses Development Kit
+ Cdk stands for 'Curses Development Kit'. It currently contains 23 ready
+ to use widgets which facilitate the speedy development of full-screen
+ curses programs.
+
+Package: libcdk5-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cdk - Curses Development Kit
+ Cdk stands for 'Curses Development Kit'. It currently contains 23 ready
+ to use widgets which facilitate the speedy development of full-screen
+ curses programs.
+ .
+ This package contains the header-files and development libraries for
+ libcdk5.
+
+Package: libcdkw5
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cdk - Curses Development Kit
+ Cdk stands for 'Curses Development Kit'. It currently contains 23 ready
+ to use widgets which facilitate the speedy development of full-screen
+ curses programs.
+ .
+ This package is built with ncursesw, to make line-drawing work with
+ wide-character locales.
+
+Package: libcdkw5-dev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cdk - Curses Development Kit
+ Cdk stands for 'Curses Development Kit'. It currently contains 23 ready
+ to use widgets which facilitate the speedy development of full-screen
+ curses programs.
+ .
+ This package contains the header-files and development libraries for
+ libcdkw5.
+
+Package: libcdk5-doc
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cdk - Curses Development Kit
+ Cdk stands for 'Curses Development Kit'. It currently contains 23 ready
+ to use widgets which facilitate the speedy development of full-screen
+ curses programs.
+ .
+ This package contains the manpages for libcdk5 and libcdkw5.

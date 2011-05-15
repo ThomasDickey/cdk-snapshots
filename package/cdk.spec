@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.2 2011/05/14 00:37:30 tom Exp $
+# $Id: cdk.spec,v 1.3 2011/05/14 12:13:09 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20110513
+%define AppRelease 20110514
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}

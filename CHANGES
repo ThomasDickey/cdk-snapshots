@@ -1,5 +1,5 @@
 -- vile:fk=8bit txtmode
--- $Id: CHANGES,v 1.155 2011/05/14 01:08:39 tom Exp $
+-- $Id: CHANGES,v 1.157 2011/05/14 14:33:02 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -7,6 +7,9 @@ Modifications copyright Thomas E. Dickey 1999-2010, 2011
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+
+2011/05/14
+	+ add dpkg scripts, for test-builds.
 
 2011/05/13
 	+ drop cdk.spec, adapt 2-package rules from a Fedora spec file in
