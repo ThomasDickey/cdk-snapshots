@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2009/02/15 23:29:00 $
- * $Revision: 1.13 $
+ * $Date: 2011/05/15 19:29:07 $
+ * $Revision: 1.14 $
  */
 
 /*
@@ -109,7 +109,7 @@ int setCdkTitle (CDKOBJS *obj, char *title, int boxWidth)
 
 	 /* We need to split the title on \n. */
 	 temp = CDKsplitString (title, '\n');
-	 obj->titleLines = CDKcountStrings (temp);
+	 obj->titleLines = (int)CDKcountStrings (temp);
 
 	 obj->title = typeCallocN (chtype *, obj->titleLines + 1);
 	 obj->titlePos = typeCallocN (int, obj->titleLines + 1);

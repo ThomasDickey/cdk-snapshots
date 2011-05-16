@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:41:44 $
- * $Revision: 1.97 $
+ * $Date: 2011/05/15 19:29:34 $
+ * $Revision: 1.98 $
  */
 
 DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
@@ -160,7 +160,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (dialog), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (dialog), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKDialog (dialog, input);

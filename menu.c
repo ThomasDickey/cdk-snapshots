@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:13:05 $
- * $Revision: 1.100 $
+ * $Date: 2011/05/15 19:43:38 $
+ * $Revision: 1.101 $
  */
 
 #define TITLELINES 1
@@ -150,7 +150,7 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
       /* Start taking input from the keyboard. */
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (menu), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (menu), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMenu (menu, input);

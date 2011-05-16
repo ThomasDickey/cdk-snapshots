@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:10:32 $
- * $Revision: 1.135 $
+ * $Date: 2011/05/15 19:43:38 $
+ * $Revision: 1.136 $
  */
 
 /*
@@ -198,7 +198,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    for (j = 0; j < (int)SIZEOF (bindings); ++j)
       bindCDKObject (vRADIO,
 		     radio,
-		     bindings[j].from,
+		     (chtype)bindings[j].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[j].to);
 
@@ -239,7 +239,7 @@ int activateCDKRadio (CDKRADIO *radio, chtype *actions)
       for (;;)
       {
 	 fixCursorPosition (radio);
-	 input = getchCDKObject (ObjOf (radio), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (radio), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKRadio (radio, input);

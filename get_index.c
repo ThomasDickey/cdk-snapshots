@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2003/11/27 22:13:46 $
- * $Revision: 1.1 $
+ * $Date: 2011/05/15 19:54:51 $
+ * $Revision: 1.2 $
  */
 
 /*
@@ -11,11 +11,12 @@
  */
 int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boolean numbers)
 {
-   CDKSCROLL *scrollp	= 0;
-   int selected		= -1;
-   int height		= 10;
-   int width		= -1;
-   int len		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCROLL *scrollp   = 0;
+   int selected         = -1;
+   int height           = 10;
+   int width            = -1;
+   int len              = 0;
    int x;
 
    /* Determine the height of the list. */
@@ -25,23 +26,23 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
    }
 
    /* Determine the width of the list. */
-   for (x=0; x < listSize; x++)
+   for (x = 0; x < listSize; x++)
    {
-      int temp = strlen (list[x]) + 10;
+      int temp = (int)strlen (list[x]) + 10;
       width = MAXIMUM (width, temp);
    }
    if (title != 0)
    {
-      len = strlen (title);
+      len = (int)strlen (title);
    }
    width = MAXIMUM (width, len);
    width += 5;
 
    /* Create the scrolling list. */
    scrollp = newCDKScroll (screen, CENTER, CENTER, RIGHT,
-				height, width, title,
-				list, listSize, numbers,
-				A_REVERSE, TRUE, FALSE);
+			   height, width, title,
+			   list, listSize, numbers,
+			   A_REVERSE, TRUE, FALSE);
 
    /* Check if we made the list. */
    if (scrollp == 0)

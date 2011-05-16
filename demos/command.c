@@ -1,20 +1,22 @@
-/* $Id: command.c,v 1.16 2005/12/27 18:11:54 tom Exp $ */
+/* $Id: command.c,v 1.17 2011/05/15 20:40:40 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="command";
+char *XCursesProgramName = "command";
 #endif
 
 /* Define some global variables. */
 #define MAXHISTORY	5000
-static char *introductionMessage[] = {
+static char *introductionMessage[] =
+{
    "<C></B/16>Little Command Interface", "",
    "<C>Written by Mike Glover", "",
    "<C>Type </B>help<!B> to get help."};
 
 /* This structure is used for keeping command history. */
-struct history_st {
+struct history_st
+{
    int count;
    int current;
    char *command[MAXHISTORY];
@@ -23,31 +25,31 @@ struct history_st {
 /* Define some local prototypes. */
 char *uc (char *word);
 void help (CDKENTRY *entry);
-static BINDFN_PROTO(historyUpCB);
-static BINDFN_PROTO(historyDownCB);
-static BINDFN_PROTO(viewHistoryCB);
-static BINDFN_PROTO(listHistoryCB);
-static BINDFN_PROTO(jumpWindowCB);
+static BINDFN_PROTO (historyUpCB);
+static BINDFN_PROTO (historyDownCB);
+static BINDFN_PROTO (viewHistoryCB);
+static BINDFN_PROTO (listHistoryCB);
+static BINDFN_PROTO (jumpWindowCB);
 
 /*
  * Written by:	Mike Glover
  * Purpose:
  *		This creates a very simple command interface.
  */
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkscreen		= 0;
-   CDKSWINDOW *commandOutput	= 0;
-   CDKENTRY *commandEntry	= 0;
-   WINDOW *cursesWin		= 0;
-   chtype *convert		= 0;
-   char *command		= 0;
-   char *upper			= 0;
-   char *prompt			= "</B/24>Command >";
-   char *title			= "<C></B/5>Command Output Window";
-   int promptLen		= 0;
-   int commandFieldWidth	= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkscreen         = 0;
+   CDKSWINDOW *commandOutput    = 0;
+   CDKENTRY *commandEntry       = 0;
+   WINDOW *cursesWin            = 0;
+   chtype *convert              = 0;
+   char *command                = 0;
+   char *upper                  = 0;
+   char *prompt                 = "</B/24>Command >";
+   char *title                  = "<C></B/5>Command Output Window";
+   int promptLen                = 0;
+   int commandFieldWidth        = 0;
    struct history_st history;
    char temp[600];
    int ret, junk;
@@ -66,29 +68,29 @@ int main(int argc, char **argv)
       }
       switch (ret)
       {
-	 case 'p':
-	      prompt = copyChar (optarg);
-	      break;
+      case 'p':
+	 prompt = copyChar (optarg);
+	 break;
 
-	 case 't':
-	      title = copyChar (optarg);
-	      break;
+      case 't':
+	 title = copyChar (optarg);
+	 break;
 
-	 default:
-	      break;
+      default:
+	 break;
       }
    }
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Create the scrolling window. */
    commandOutput = newCDKSwindow (cdkscreen, CENTER, TOP, -8, -2,
-					title, 1000, TRUE, FALSE);
+				  title, 1000, TRUE, FALSE);
 
    /* Convert the prompt to a chtype and determine its length. */
    convert = char2Chtype (prompt, &promptLen, &junk);
@@ -97,15 +99,17 @@ int main(int argc, char **argv)
 
    /* Create the entry field. */
    commandEntry = newCDKEntry (cdkscreen, CENTER, BOTTOM,
-				0, prompt, A_BOLD|COLOR_PAIR(8), COLOR_PAIR(24)|'_',
-				vMIXED, commandFieldWidth, 1, 512, FALSE, FALSE);
+			       0, prompt,
+			       A_BOLD | COLOR_PAIR (8),
+			       COLOR_PAIR (24) | '_',
+			       vMIXED, commandFieldWidth, 1, 512, FALSE, FALSE);
 
    /* Create the key bindings. */
    bindCDKObject (vENTRY, commandEntry, KEY_UP, historyUpCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_DOWN, historyDownCB, &history);
    bindCDKObject (vENTRY, commandEntry, KEY_TAB, viewHistoryCB, commandOutput);
-   bindCDKObject (vENTRY, commandEntry, CTRL('^'), listHistoryCB, &history);
-   bindCDKObject (vENTRY, commandEntry, CTRL('G'), jumpWindowCB, commandOutput);
+   bindCDKObject (vENTRY, commandEntry, CTRL ('^'), listHistoryCB, &history);
+   bindCDKObject (vENTRY, commandEntry, CTRL ('G'), jumpWindowCB, commandOutput);
 
    /* Draw the screen. */
    refreshCDKScreen (cdkscreen);
@@ -118,16 +122,16 @@ int main(int argc, char **argv)
    for (;;)
    {
       /* Get the command. */
-      drawCDKEntry (commandEntry, ObjOf(commandEntry)->box);
-      command	= activateCDKEntry (commandEntry, 0);
-      upper	= uc (command);
+      drawCDKEntry (commandEntry, ObjOf (commandEntry)->box);
+      command = activateCDKEntry (commandEntry, 0);
+      upper = uc (command);
 
       /* Check the output of the command. */
       if (strcmp (upper, "QUIT") == 0 ||
-		strcmp (upper, "EXIT") == 0 ||
-		strcmp (upper, "Q") == 0 ||
-		strcmp (upper, "E") == 0 ||
-		commandEntry->exitType == vESCAPE_HIT)
+	  strcmp (upper, "EXIT") == 0 ||
+	  strcmp (upper, "Q") == 0 ||
+	  strcmp (upper, "E") == 0 ||
+	  commandEntry->exitType == vESCAPE_HIT)
       {
 	 /* All done. */
 	 freeChar (upper);
@@ -139,7 +143,7 @@ int main(int argc, char **argv)
 	 destroyCDKSwindow (commandOutput);
 	 destroyCDKScreen (cdkscreen);
 
-	 endCDK();
+	 endCDK ();
 
 	 ExitProgram (EXIT_SUCCESS);
       }
@@ -205,15 +209,17 @@ int main(int argc, char **argv)
 /*
  * This is the callback for the down arrow.
  */
-static int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object,
+			void *clientData,
+			chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   struct history_st *history = (struct history_st *) clientData;
+   struct history_st *history = (struct history_st *)clientData;
 
    /* Make sure we don't go out of bounds. */
    if (history->current == 0)
    {
-      Beep();
+      Beep ();
       return (FALSE);
    }
 
@@ -222,22 +228,24 @@ static int historyUpCB (EObjectType cdktype GCC_UNUSED, void *object, void *clie
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
    return (FALSE);
 }
 
 /*
  * This is the callback for the down arrow.
  */
-static int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object,
+			  void *clientData,
+			  chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   struct history_st *history = (struct history_st *) clientData;
+   struct history_st *history = (struct history_st *)clientData;
 
    /* Make sure we don't go out of bounds. */
    if (history->current == history->count)
    {
-      Beep();
+      Beep ();
       return (FALSE);
    }
 
@@ -248,44 +256,48 @@ static int historyDownCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
    if (history->current == history->count)
    {
       cleanCDKEntry (entry);
-      drawCDKEntry (entry, ObjOf(entry)->box);
+      drawCDKEntry (entry, ObjOf (entry)->box);
       return (FALSE);
    }
 
    /* Display the command. */
    setCDKEntryValue (entry, history->command[history->current]);
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
    return (FALSE);
 }
 
 /*
  * This callback allows the user to play with the scrolling window.
  */
-static int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
+			  void *clientData,
+			  chtype key GCC_UNUSED)
 {
-   CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
-   CDKENTRY *entry	= (CDKENTRY *)object;
+   CDKSWINDOW *swindow = (CDKSWINDOW *)clientData;
+   CDKENTRY *entry = (CDKENTRY *)object;
 
    /* Let them play... */
    activateCDKSwindow (swindow, 0);
 
    /* Redraw the entry field. */
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
    return (FALSE);
 }
 
 /*
  * This callback jumps to a line in the scrolling window.
  */
-static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object,
+			 void *clientData,
+			 chtype key GCC_UNUSED)
 {
-   CDKENTRY *entry	= (CDKENTRY *)object;
-   CDKSWINDOW *swindow	= (CDKSWINDOW *)clientData;
-   CDKSCALE *scale	= 0;
+   CDKENTRY *entry = (CDKENTRY *)object;
+   CDKSWINDOW *swindow = (CDKSWINDOW *)clientData;
+   CDKSCALE *scale = 0;
    int line;
 
    /* Ask them which line they want to jump to. */
-   scale = newCDKScale (ScreenOf(entry), CENTER, CENTER,
+   scale = newCDKScale (ScreenOf (entry), CENTER, CENTER,
 			"<C>Jump To Which Line",
 			"Line",
 			A_NORMAL, 5,
@@ -301,7 +313,7 @@ static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cli
    jumpToLineCDKSwindow (swindow, line);
 
    /* Redraw the widgets. */
-   drawCDKEntry (entry, ObjOf(entry)->box);
+   drawCDKEntry (entry, ObjOf (entry)->box);
    return (FALSE);
 }
 
@@ -309,34 +321,37 @@ static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object, void *cli
  * This callback allows the user to pick from the history list from a
  * scrolling list.
  */
-static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData, chtype key GCC_UNUSED)
+static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
+			  void *clientData,
+			  chtype key GCC_UNUSED)
 {
    CDKENTRY *entry = (CDKENTRY *)object;
-   struct history_st *history = (struct history_st *) clientData;
+   struct history_st *history = (struct history_st *)clientData;
    CDKSCROLL *scrollList;
-   int height = (history->count < 10 ? history->count+3 : 13);
+   int height = (history->count < 10 ? history->count + 3 : 13);
    int selection;
 
    /* No history, no list. */
    if (history->count == 0)
    {
       /* Popup a little window telling the user there are no commands. */
-      char *mesg[] = {"<C></B/16>No Commands Entered", "<C>No History"};
-      popupLabel (ScreenOf(entry), mesg, 2);
+      char *mesg[] =
+      {"<C></B/16>No Commands Entered", "<C>No History"};
+      popupLabel (ScreenOf (entry), mesg, 2);
 
       /* Redraw the screen. */
       eraseCDKEntry (entry);
-      drawCDKScreen (ScreenOf(entry));
+      drawCDKScreen (ScreenOf (entry));
 
       /* And leave... */
       return (FALSE);
    }
 
    /* Create the scrolling list of previous commands. */
-   scrollList = newCDKScroll (ScreenOf(entry), CENTER, CENTER, RIGHT,
-				height, 20, "<C></B/29>Command History",
-				history->command, history->count,
-				NUMBERS, A_REVERSE, TRUE, FALSE);
+   scrollList = newCDKScroll (ScreenOf (entry), CENTER, CENTER, RIGHT,
+			      height, 20, "<C></B/29>Command History",
+			      history->command, history->count,
+			      NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
    selection = activateCDKScroll (scrollList, 0);
@@ -351,7 +366,7 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object, void *cl
 
    /* Redraw the screen. */
    eraseCDKEntry (entry);
-   drawCDKScreen (ScreenOf(entry));
+   drawCDKScreen (ScreenOf (entry));
    return (FALSE);
 }
 
@@ -383,7 +398,7 @@ void help (CDKENTRY *entry)
    mesg[17] = "<B=Tab/Escape> Returns to the command line.";
    mesg[18] = "";
    mesg[19] = "<C> (</B/24>Refer to the scrolling window online manual for more help<!B!24>.)";
-   popupLabel (ScreenOf(entry), mesg, 20);
+   popupLabel (ScreenOf (entry), mesg, 20);
 }
 
 /*
@@ -391,8 +406,8 @@ void help (CDKENTRY *entry)
  */
 char *uc (char *word)
 {
-   char *upper	= 0;
-   int length	= 0;
+   char *upper = 0;
+   int length = 0;
    int x;
 
    /* Make sure the word is not null. */
@@ -400,22 +415,22 @@ char *uc (char *word)
    {
       return 0;
    }
-   length = strlen (word);
+   length = (int)strlen (word);
 
    /* Get the memory for the new word. */
-   upper = (char *)malloc (sizeof (char *) * (length+2));
+   upper = (char *)malloc (sizeof (char *) * (size_t) (length + 2));
    if (upper == 0)
    {
       return (word);
    }
 
    /* Start converting the case. */
-   for (x=0; x < length; x++)
+   for (x = 0; x < length; x++)
    {
       int ch = (unsigned char)(word[x]);
       if (isalpha (ch))
       {
-	 upper[x] = toupper(ch);
+	 upper[x] = (char)toupper (ch);
       }
       else
       {

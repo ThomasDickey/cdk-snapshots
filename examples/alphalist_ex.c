@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.23 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
+/* $Id: alphalist_ex.c,v 1.24 2011/05/15 20:07:33 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -41,7 +41,7 @@ static int getUserList (char ***list)
 #if defined (HAVE_PWD_H)
    while ((ent = getpwent ()) != 0)
    {
-      used = CDKallocStrings (list, ent->pw_name, x++, used);
+      used = CDKallocStrings (list, ent->pw_name, (unsigned)x++, used);
    }
    endpwent ();
 #endif
@@ -138,7 +138,7 @@ static int do_help (CB_PARAMS)
       "F5 = undo deletion",
       0
    };
-   popupLabel (cdkscreen, message, CDKcountStrings (message));
+   popupLabel (cdkscreen, message, (int)CDKcountStrings (message));
    return TRUE;
 }
 
@@ -167,7 +167,7 @@ static int do_undo (CB_PARAMS)
       int size;
       int n;
       char **oldlist = getCDKAlphalistContents (widget, &size);
-      char **newlist = (char **)malloc ((++size + 1) * sizeof (char *));
+      char **newlist = (char **)malloc ((size_t) (++size + 1) * sizeof (char *));
 
       --undoSize;
       newlist[size] = 0;
@@ -192,12 +192,13 @@ static int do_undo (CB_PARAMS)
 
 int main (int argc, char **argv)
 {
-   CDKALPHALIST *alphaList	= 0;
-   WINDOW *cursesWin		= 0;
-   char *title			= "<C></B/24>Alpha List\n<C>Title";
-   char *label			= "</B>Account: ";
-   char *word			= 0;
-   char **userList		= 0;
+   /* *INDENT-EQLS* */
+   CDKALPHALIST *alphaList      = 0;
+   WINDOW *cursesWin            = 0;
+   char *title                  = "<C></B/24>Alpha List\n<C>Title";
+   char *label                  = "</B>Account: ";
+   char *word                   = 0;
+   char **userList              = 0;
    char *mesg[5], temp[256];
 
    CDK_PARAMS params;
@@ -212,7 +213,7 @@ int main (int argc, char **argv)
       ExitProgram (EXIT_FAILURE);
    }
    myUserList = copyCharList (userList);
-   myUndoList = (UNDO *) malloc (userSize * sizeof (UNDO));
+   myUndoList = (UNDO *) malloc ((size_t) userSize * sizeof (UNDO));
    undoSize = 0;
 
    /* Set up CDK. */
@@ -276,7 +277,7 @@ int main (int argc, char **argv)
       popupLabel (cdkscreen, mesg, 4);
    }
 
-   freeCharList (myUserList, userSize);
+   freeCharList (myUserList, (size_t) userSize);
    free (myUserList);
 
    destroyCDKAlphalist (alphaList);

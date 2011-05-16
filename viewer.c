@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:33:09 $
- * $Revision: 1.159 $
+ * $Date: 2011/05/15 19:14:26 $
+ * $Revision: 1.160 $
  */
 
 /*
@@ -156,7 +156,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vVIEWER,
 		     viewer,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -247,7 +247,7 @@ static void setupLine (CDKVIEWER *viewer, boolean interpret, char *list, int x)
 	    }
 	    else
 	    {
-	       const char *s = unctrl (list[y]);
+	       const char *s = unctrl ((chtype)list[y]);
 	       while (*s != 0)
 	       {
 		  if (pass)
@@ -299,7 +299,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean inte
     */
    if (listSize < 0)
    {
-      listSize = CDKcountStrings (list);
+      listSize = (int)CDKcountStrings (list);
    }
 
    /* compute the size of the resulting display */
@@ -536,7 +536,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
       /* Reset the refresh flag. */
       REFRESH = FALSE;
 
-      input = getchCDKObject (ObjOf (widget), &functionKey);
+      input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
       if (!checkCDKObjectBind (vVIEWER, widget, input))
       {
 	 switch (input)
@@ -855,7 +855,7 @@ static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
    int found = 0;
 
    /* If the pattern is empty then return. */
-   if (pattern != 0 && (plen = strlen (pattern)) != 0)
+   if (pattern != 0 && (plen = (int)strlen (pattern)) != 0)
    {
       if (direction == DOWN)
       {
@@ -943,7 +943,7 @@ static void popUpLabel (CDKVIEWER *viewer, char **mesg)
 
    /* Set up variables. */
    label = newCDKLabel (ScreenOf (viewer), CENTER, CENTER, mesg,
-			CDKcountStrings (mesg), TRUE, FALSE);
+			(int)CDKcountStrings (mesg), TRUE, FALSE);
 
    /* Draw the label and wait. */
    drawCDKLabel (label, TRUE);

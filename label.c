@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:01:07 $
- * $Revision: 1.86 $
+ * $Date: 2011/05/15 19:31:39 $
+ * $Revision: 1.87 $
  */
 
 DeclareCDKObjects (LABEL, Label, setCdk, Unknown);
@@ -314,26 +314,27 @@ static void _destroyCDKLabel (CDKOBJS *object)
  */
 char waitCDKLabel (CDKLABEL *label, char key)
 {
+   int code;
    boolean functionKey;
 
    /* If the key is null, we'll accept anything. */
    if (key == 0)
    {
-      return (getchCDKObject (ObjOf (label), &functionKey));
+      code = getchCDKObject (ObjOf (label), &functionKey);
    }
    else
    {
       /* Only exit when a specific key is hit. */
-      int code;
       for (;;)
       {
 	 code = getchCDKObject (ObjOf (label), &functionKey);
 	 if (code == key)
 	 {
-	    return (code);
+	    break;
 	 }
       }
    }
+   return (char)(code);
 }
 
 dummyInject (Label)

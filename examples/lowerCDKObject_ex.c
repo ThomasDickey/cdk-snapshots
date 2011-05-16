@@ -1,4 +1,4 @@
-/* $Id: lowerCDKObject_ex.c,v 1.7 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: lowerCDKObject_ex.c,v 1.8 2011/05/15 20:18:15 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 
    refreshCDKScreen (cdkscreen);
 
-   while ((ch = getch ()) != 'q')
+   while ((ch = (char)getch ()) != 'q')
    {
       switch (ch)
       {

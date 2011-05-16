@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.21 2005/12/29 22:50:10 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.22 2011/05/15 20:05:13 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -169,7 +169,7 @@ static CDKOBJS *make_fslider (CDKSCREEN *cdkscreen, int x, int y)
 {
    float low = -32;
    float high = 64;
-   float inc = 0.1;
+   float inc = (float)0.1;
    CDKFSLIDER *widget = newCDKFSlider (cdkscreen,
 				       x,
 				       y,
@@ -291,7 +291,7 @@ static CDKOBJS *make_matrix (CDKSCREEN *cdkscreen, int x, int y)
    {
       sprintf (temp, "col%d", n);
       coltitle[n] = copyChar (temp);
-      colwidth[n] = strlen (temp);
+      colwidth[n] = (int)strlen (temp);
       coltypes[n] = vUCHAR;
       if (colwidth[n] > maxwidth)
 	 maxwidth = colwidth[n];
@@ -442,9 +442,9 @@ static CDKOBJS *make_template (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_uscale (CDKSCREEN *cdkscreen, int x, int y)
 {
-   int low = 0;
-   int high = 65535;
-   int inc = 1;
+   unsigned low = 0;
+   unsigned high = 65535;
+   unsigned inc = 1;
    CDKUSCALE *widget = newCDKUScale (cdkscreen,
 				     x,
 				     y,
@@ -459,9 +459,9 @@ static CDKOBJS *make_uscale (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_uslider (CDKSCREEN *cdkscreen, int x, int y)
 {
-   int low = 0;
-   int high = 65535;
-   int inc = 1;
+   unsigned low = 0;
+   unsigned high = 65535;
+   unsigned inc = 1;
    CDKUSLIDER *widget = newCDKUSlider (cdkscreen,
 				       x,
 				       y,

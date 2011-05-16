@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.51 2011/05/14 00:42:20 tom Exp $
+dnl $Id: configure.in,v 1.52 2011/05/15 16:13:26 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -98,6 +98,7 @@ CF_LOCALE([AC_DEFINE(HAVE_SETLOCALE)])
 dnl Check for curses libraries last, since XCurses has dependencies which
 dnl break the checks for other functions.
 use_library=curses
+AC_MSG_CHECKING(for library to use)
 AC_ARG_WITH(ncurses,
 	[  --with-ncurses          compile/link with ncurses library],
 	[use_library=ncurses],[
@@ -107,8 +108,12 @@ AC_ARG_WITH(ncursesw,
 AC_ARG_WITH(pdcurses,
 	[  --with-pdcurses         compile/link with pdcurses X11 library],
 	[use_library=pdcurses])])])
+AC_MSG_RESULT($use_library)
 
+CFG_ROOTNAME=cdk
+HDR_ROOTNAME=cdk
 LIB_ROOTNAME=cdk
+
 case $use_library in #(vi
 ncurses) #(vi
 	CF_NCURSES_CONFIG
@@ -128,6 +133,26 @@ pdcurses) #(vi
 	CF_CURSES_LIBS
 	;;
 esac
+
+AC_MSG_CHECKING(for XXX-config rootname)
+AC_ARG_WITH(cfgname,
+	[  --with-cfgname=XXX      override the XXX-config rootname],
+	[CFG_ROOTNAME=$withval])
+AC_MSG_RESULT($CFG_ROOTNAME)
+AC_SUBST(CFG_ROOTNAME)
+
+AC_MSG_CHECKING(for header subdirectory)
+AC_ARG_WITH(hdrname,
+	[  --with-hdrname=XXX      override the header subdirectory],
+	[HDR_ROOTNAME=$withval])
+AC_MSG_RESULT($HDR_ROOTNAME)
+AC_SUBST(HDR_ROOTNAME)
+
+AC_MSG_CHECKING(for library name)
+AC_ARG_WITH(libname,
+	[  --with-libname=XXX      override the library name],
+	[LIB_ROOTNAME=$withval])
+AC_MSG_RESULT($LIB_ROOTNAME)
 AC_SUBST(LIB_ROOTNAME)
 
 CF_CURSES_FUNCS(\

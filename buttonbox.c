@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:50:41 $
- * $Revision: 1.64 $
+ * $Date: 2011/05/15 19:27:11 $
+ * $Revision: 1.65 $
  */
 
 DeclareCDKObjects (BUTTONBOX, Buttonbox, setCdk, Int);
@@ -179,7 +179,7 @@ int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (buttonbox), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (buttonbox), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKButtonbox (buttonbox, input);

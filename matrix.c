@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:44:03 $
- * $Revision: 1.190 $
+ * $Date: 2011/05/15 20:01:03 $
+ * $Revision: 1.191 $
  */
 
 /*
@@ -84,6 +84,8 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
+
+
    if ((matrix = newCDKObject (CDKMATRIX, &my_funcs)) == 0)
    {
       return (0);
@@ -129,7 +131,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
     * Count the number of lines in the title (see setCdkTitle).
     */
    temp = CDKsplitString (title, '\n');
-   TitleLinesOf (matrix) = CDKcountStrings (temp);
+   TitleLinesOf (matrix) = (int)CDKcountStrings (temp);
    CDKfreeStrings (temp);
 
    /* Determine the height of the box. */
@@ -343,7 +345,8 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Setup the key bindings. */
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vMATRIX, matrix,
-		     bindings[x].from, getcCDKBind,
+		     (chtype)bindings[x].from,
+		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
    /* Register this baby. */
@@ -372,7 +375,7 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
       {
 	 ObjOf (matrix)->inputWindow = CurMatrixCell (matrix);
 	 keypad (ObjOf (matrix)->inputWindow, TRUE);
-	 input = getchCDKObject (ObjOf (matrix), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (matrix), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMatrix (matrix, input);
@@ -912,13 +915,13 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input)
 	     1,
 	     (int)strlen (MATRIX_INFO (matrix, matrix->row, matrix->col)) + 1);
       waddch (CurMatrixCell (matrix),
-	      ((isHiddenDisplayType (disptype))
-	       ? (int)matrix->filler
-	       : plainchar));
+	      (chtype)((isHiddenDisplayType (disptype))
+		       ? (int)matrix->filler
+		       : plainchar));
       wrefresh (CurMatrixCell (matrix));
 
       /* Update the character pointer. */
-      MATRIX_INFO (matrix, matrix->row, matrix->col)[charcount++] = plainchar;
+      MATRIX_INFO (matrix, matrix->row, matrix->col)[charcount++] = (char)plainchar;
       MATRIX_INFO (matrix, matrix->row, matrix->col)[charcount] = '\0';
    }
 }
@@ -1519,7 +1522,7 @@ void setCDKMatrixCells (CDKMATRIX *matrix,
 	       }
 	       strncpy (MATRIX_INFO (matrix, x, y),
 			source,
-			matrix->colwidths[y]);
+			(size_t) matrix->colwidths[y]);
 	    }
 	 }
 	 else
@@ -1789,7 +1792,9 @@ int setCDKMatrixCell (CDKMATRIX *matrix, int row, int col, char *value)
    }
 
    cleanCDKMatrixCell (matrix, row, col);
-   strncpy (MATRIX_INFO (matrix, row, col), value, matrix->colwidths[col]);
+   strncpy (MATRIX_INFO (matrix, row, col),
+	    value,
+	    (size_t) matrix->colwidths[col]);
    return 1;
 }
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:46:23 $
- * $Revision: 1.216 $
+ * $Date: 2011/05/15 19:36:38 $
+ * $Revision: 1.217 $
  */
 
 /*
@@ -181,7 +181,7 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (entry), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (entry), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKEntry (entry, input);
@@ -579,14 +579,14 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 	 {
 	    entry->info[x] = entry->info[x - 1];
 	 }
-	 entry->info[entry->screenCol + entry->leftChar] = plainchar;
+	 entry->info[entry->screenCol + entry->leftChar] = (char)plainchar;
 	 entry->screenCol++;
       }
       else
       {
 	 /* Update the character pointer. */
 	 temp = strlen (entry->info);
-	 entry->info[temp] = plainchar;
+	 entry->info[temp] = (char)plainchar;
 	 entry->info[temp + 1] = '\0';
 	 /* Do not update the pointer if it's the last character */
 	 if ((int)(temp + 1) < entry->max)

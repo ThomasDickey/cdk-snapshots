@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:12:34 $
- * $Revision: 1.12 $
+ * $Date: 2011/05/15 19:43:38 $
+ * $Revision: 1.13 $
  */
 
 #undef	ObjOf
@@ -29,7 +29,7 @@ void positionCDKObject (CDKOBJS *obj, WINDOW *win)
    boolean functionKey;
 
    /* Let them move the widget around until they hit return. */
-   while ((key = getchCDKObject (obj, &functionKey)) != KEY_ENTER)
+   while ((key = (chtype)getchCDKObject (obj, &functionKey)) != KEY_ENTER)
    {
       switch (key)
       {
