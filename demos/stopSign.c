@@ -1,29 +1,29 @@
-/* $Id: stopSign.c,v 1.9 2005/12/30 00:17:57 tom Exp $ */
+/* $Id: stopSign.c,v 1.10 2011/05/15 20:37:01 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="sillyness_ex";
+char *XCursesProgramName = "sillyness_ex";
 #endif
 
-int main(void)
+int main (void)
 {
-   /* Declare variables. */
+   /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
-   CDKLABEL *stopSign	= 0;
-   CDKLABEL *title	= 0;
-   WINDOW *cursesWin	= 0;
-   int currentLight	= 0;
+   CDKLABEL *stopSign   = 0;
+   CDKLABEL *title      = 0;
+   WINDOW *cursesWin    = 0;
+   int currentLight     = 0;
    char *mesg[5], *sign[4];
    chtype key;
    boolean functionKey;
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start CDK Colors. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Set the labels up. */
    mesg[0] = "<C><#HL(40)>";
@@ -45,7 +45,7 @@ int main(void)
       drawCDKLabel (title, FALSE);
       drawCDKLabel (stopSign, TRUE);
 
-      key = getchCDKObject (ObjOf(stopSign), &functionKey);
+      key = (chtype)getchCDKObject (ObjOf (stopSign), &functionKey);
       if (key == KEY_ESC || key == 'q' || key == 'Q')
       {
 	 break;
@@ -80,6 +80,6 @@ int main(void)
    destroyCDKLabel (title);
    destroyCDKLabel (stopSign);
    destroyCDKScreen (cdkscreen);
-   endCDK();
+   endCDK ();
    ExitProgram (EXIT_SUCCESS);
 }

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:01:19 $
- * $Revision: 1.117 $
+ * $Date: 2011/05/15 19:44:46 $
+ * $Revision: 1.118 $
  */
 
 /*
@@ -139,7 +139,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vSWINDOW,
 		     swindow,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -457,7 +457,7 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
 
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (swindow), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (swindow), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKSwindow (swindow, input);
@@ -920,7 +920,7 @@ static void showMessage2 (CDKSWINDOW *swindow, char *msg, char *msg2, char *file
    mesg[n++] = copyChar (" ");
    mesg[n++] = copyChar ("<C>Press any key to continue.");
    popupLabel (ScreenOf (swindow), mesg, n);
-   freeCharList (mesg, n);
+   freeCharList (mesg, (unsigned)n);
    free (temp);
 }
 

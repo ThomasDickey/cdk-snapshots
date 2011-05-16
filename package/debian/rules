@@ -23,13 +23,14 @@ P_WIDE = $(CURDIR)/t/libcdkw5
 
 verbose = # -v
 
+LOG = @echo "**"
+
 configure = ../../configure \
 		--disable-echo \
 		--host=$(DEB_HOST_GNU_TYPE) \
 		--build=$(DEB_BUILD_GNU_TYPE) \
 		--prefix=/usr \
 		--mandir=\$${prefix}/share/man \
-		--with-libtool \
 		--disable-rpath-hack
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
@@ -103,6 +104,7 @@ endif
 
 #------------------------------------------------------------------------------
 config-libcdk5-stamp       :
+	$(LOG) "configuring libcdk5"
 	dh_testdir
 
 	rm -rf $(P_NORM)
@@ -114,13 +116,15 @@ config-libcdk5-stamp       :
 	touch $@
 
 build-libcdk5-stamp        : config-libcdk5-stamp
+	$(LOG) "building libcdk5"
 	dh_testdir
 
-	$(MAKE) -C $(P_NORM)
+	$(MAKE) -C $(P_NORM) cdklib cdkshlib
 
 	touch $@
 
 install-libcdk5-stamp      : build-libcdk5-stamp
+	$(LOG) "installing libcdk5"
 	dh_testdir
 	dh_testroot
 	dh_prep $(verbose) -plibcdk5
@@ -138,12 +142,13 @@ build-libcdk5-dev-stamp    : build-libcdk5-stamp
 	touch $@
 
 install-libcdk5-dev-stamp  : install-libcdk5-stamp
+	$(LOG) "installing libcdk5-dev"
 	dh_testdir
 	dh_testroot
 	dh_prep $(verbose) -plibcdk5-dev
 	dh_installdirs $(verbose) -plibcdk5-dev
 
-	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdk5-dev installCDKLibrary
+	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdk5-dev installCDKHeaderFiles installCDKLibrary
 
 	touch $@
 
@@ -155,42 +160,46 @@ build-libcdk5-doc-stamp    : build-libcdk5-stamp
 	touch $@
 
 install-libcdk5-doc-stamp  : install-libcdk5-stamp
+	$(LOG) "installing libcdk5-doc"
 	dh_testdir
 	dh_testroot
 	dh_prep $(verbose) -plibcdk5-doc
 	dh_installdirs $(verbose) -plibcdk5-doc
 
-	echo LATER $(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdk5-doc installCDKManPages
-	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdk5-doc installCDKReadme
+	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdk5-doc installCDKManPages
+	dh_installexamples $(verbose) -plibcdk5-doc examples demos
 
 	touch $@
 
 #------------------------------------------------------------------------------
 config-libcdkw5-stamp      :
+	$(LOG) "configuring libcdkw5"
 	dh_testdir
 
 	rm -rf $(P_WIDE)
 	mkdir -p $(P_WIDE)
 
 	cd $(P_WIDE); CFLAGS="$(CFLAGS)" \
-	$(configure) --with-ncursesw
+	$(configure) --with-ncursesw --with-hdrname=cdkw --with-cfgname=cdkw
 
 	touch $@
 
 build-libcdkw5-stamp       : config-libcdkw5-stamp
+	$(LOG) "building libcdkw5"
 	dh_testdir
 
-	$(MAKE) -C $(P_WIDE)
+	$(MAKE) -C $(P_WIDE) cdklib cdkshlib
 
 	touch $@
 
 install-libcdkw5-stamp     : build-libcdkw5-stamp
+	$(LOG) "installing libcdkw5"
 	dh_testdir
 	dh_testroot
 	dh_prep $(verbose) -plibcdkw5
 	dh_installdirs $(verbose) -plibcdkw5
 
-	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdkw5 installCDKSHLibrary
+	$(MAKE) -C $(P_WIDE) DESTDIR=$(TARGET)/libcdkw5 installCDKSHLibrary
 
 	touch $@
 
@@ -202,12 +211,13 @@ build-libcdkw5-dev-stamp   : build-libcdkw5-stamp
 	touch $@
 
 install-libcdkw5-dev-stamp : install-libcdkw5-stamp
+	$(LOG) "installing libcdkw5-dev"
 	dh_testdir
 	dh_testroot
 	dh_prep $(verbose) -plibcdkw5-dev
 	dh_installdirs $(verbose) -plibcdkw5-dev
 
-	$(MAKE) -C $(P_NORM) DESTDIR=$(TARGET)/libcdkw5-dev installCDKLibrary
+	$(MAKE) -C $(P_WIDE) DESTDIR=$(TARGET)/libcdkw5-dev installCDKHeaderFiles installCDKLibrary
 
 	touch $@
 

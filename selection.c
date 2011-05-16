@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:06:21 $
- * $Revision: 1.148 $
+ * $Date: 2011/05/15 19:33:47 $
+ * $Revision: 1.149 $
  */
 
 /*
@@ -211,7 +211,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    for (j = 0; j < (int)SIZEOF (bindings); ++j)
       bindCDKObject (vSELECTION,
 		     selection,
-		     bindings[j].from,
+		     (chtype)bindings[j].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[j].to);
 
@@ -252,7 +252,7 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
       for (;;)
       {
 	 fixCursorPosition (selection);
-	 input = getchCDKObject (ObjOf (selection), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (selection), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKSelection (selection, input);

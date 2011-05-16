@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:27:34 $
- * $Revision: 1.149 $
+ * $Date: 2011/05/15 19:44:03 $
+ * $Revision: 1.150 $
  */
 
 /*
@@ -209,7 +209,7 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vSCROLL,
 		     scrollp,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -249,7 +249,7 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
       for (;;)
       {
 	 fixCursorPosition (scrollp);
-	 input = getchCDKObject (ObjOf (scrollp), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (scrollp), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKScroll (scrollp, input);

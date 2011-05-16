@@ -1,7 +1,7 @@
 #!@SHELL@
-# $Id: cdk-config.in,v 1.2 2007/04/01 23:50:33 tom Exp $
+# $Id: cdk-config.in,v 1.3 2011/05/15 17:14:06 tom Exp $
 ##############################################################################
-# Copyright (c) 2007 Thomas E. Dickey                                        #
+# Copyright (c) 2007,2011 Thomas E. Dickey                                   #
 #                                                                            #
 # Permission is hereby granted, free of charge, to any person obtaining a    #
 # copy of this software and associated documentation files (the "Software"), #
@@ -37,7 +37,9 @@ datadir="@datadir@"
 mandir="@mandir@"
 includedir="@includedir@"
 
-THIS="cdk"
+THIS="@CFG_ROOTNAME@"
+XHDR="@HDR_ROOTNAME@"
+XLIB="@LIB_ROOTNAME@"
 
 test $# = 0 && exec @SHELL@ $0 --error
 
@@ -68,14 +70,14 @@ while test $# -gt 0; do
 		;;
 	# compile/link
 	--cflags)
-		INCS="-I$includedir/$THIS"
+		INCS="-I$includedir/$XHDR"
 		sed -e 's,^[ ]*,,' -e 's, [ ]*, ,g' -e 's,[ ]*$,,' <<-ENDECHO
 			$INCS
 ENDECHO
 		;;
 	--libs)
 		sed -e 's,^[ ]*,,' -e 's, [ ]*, ,g' -e 's,[ ]*$,,' <<-ENDECHO
-			-L${exec_prefix}/lib -l${THIS} @LIBS@
+			-L${exec_prefix}/lib -l${XLIB} @LIBS@
 ENDECHO
 		;;
 	# identification

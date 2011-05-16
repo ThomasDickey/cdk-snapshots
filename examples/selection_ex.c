@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.17 2008/11/01 15:06:40 tom Exp $ */
+/* $Id: selection_ex.c,v 1.18 2011/05/15 20:19:43 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 				CDKparamValue (&params, 'W', 50),
 				CDKparamString2 (&params, 't', title),
 				CDKparamNumber (&params, 'c') ? 0 : item,
-				CDKparamNumber (&params, 'c') ? 0 : count,
+				CDKparamNumber (&params, 'c') ? 0 : (int)count,
 				choices, 2,
 				A_REVERSE,
 				CDKparamValue (&params, 'N', TRUE),
@@ -123,7 +123,7 @@ int main (int argc, char **argv)
 
    if (CDKparamNumber (&params, 'c'))
    {
-      setCDKSelectionItems (selection, item, count);
+      setCDKSelectionItems (selection, item, (int)count);
    }
 
    /* Activate the selection list. */
@@ -149,7 +149,7 @@ int main (int argc, char **argv)
 	    mesg[y++] = copyChar (temp);
 	 }
       }
-      popupLabel (cdkscreen, mesg, y);
+      popupLabel (cdkscreen, mesg, (int)y);
 
       /* Clean up. */
       for (x = 1; x < y; x++)

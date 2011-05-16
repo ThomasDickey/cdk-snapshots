@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/07 23:53:05 $
- * $Revision: 1.133 $
+ * $Date: 2011/05/15 19:18:25 $
+ * $Revision: 1.134 $
  */
 
 /*
@@ -143,7 +143,7 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
    }
 
    /* Copy the plate to the cdktemplate. */
-   plateLen = strlen (plate);
+   plateLen = (int)strlen (plate);
    cdktemplate->plate = typeMallocN (char, plateLen + 3);
    if (cdktemplate->plate == 0)
    {
@@ -196,7 +196,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (cdktemplate), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (cdktemplate), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKTemplate (cdktemplate, input);
@@ -309,7 +309,7 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	       length = (int)strlen (GPasteBuffer);
 	       for (x = 0; x < length; x++)
 	       {
-		  (widget->callbackfn) (widget, GPasteBuffer[x]);
+		  (widget->callbackfn) (widget, (chtype)GPasteBuffer[x]);
 	       }
 	       drawCDKTemplateField (widget);
 	    }
@@ -433,7 +433,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
    boolean change = FALSE;
    boolean moveby = FALSE;
    int amount = 0;
-   unsigned mark = cdktemplate->infoPos;
+   unsigned mark = (unsigned)cdktemplate->infoPos;
    unsigned have = strlen (cdktemplate->info);
 
    if (input == KEY_LEFT)
@@ -497,7 +497,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
 	 else if (isChar (input) &&
 		  cdktemplate->platePos < cdktemplate->fieldWidth)
 	 {
-	    test[mark] = CharOf (input);
+	    test[mark] = (char)(input);
 	    strcpy (test + mark + 1, cdktemplate->info + mark + 1);
 	    change = TRUE;
 	    amount = 1;
@@ -556,9 +556,9 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
       {
 	 while (platePos < cdktemplate->plateLen)
 	 {
-	    mixedString[platePos] = (isPlateChar (cdktemplate->plate[platePos])
-				     ? cdktemplate->info[infoPos++]
-				     : cdktemplate->plate[platePos]);
+	    mixedString[platePos] = (char)(isPlateChar (cdktemplate->plate[platePos])
+					   ? cdktemplate->info[infoPos++]
+					   : cdktemplate->plate[platePos]);
 	    platePos++;
 	 }
       }
@@ -834,7 +834,7 @@ void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
 
    /* OK, erase the old value, and copy in the new value. */
    cdktemplate->info[0] = '\0';
-   strncpy (cdktemplate->info, newValue, copychars);
+   strncpy (cdktemplate->info, newValue, (size_t) copychars);
 
    /* Use the function which handles the input of the characters. */
    for (x = 0; x < len; x++)

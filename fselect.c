@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:06:12 $
- * $Revision: 1.71 $
+ * $Date: 2011/05/15 19:37:34 $
+ * $Revision: 1.72 $
  */
 
 /*
@@ -227,7 +227,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vFSELECT,
 		     fselect,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -366,7 +366,7 @@ char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (fselect->entryField), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (fselect->entryField), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKFselect (fselect, input);
@@ -1253,7 +1253,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	     0 == strncmp (list[Index + 1], filename, filenameLen))
 	 {
 	    currentIndex = Index;
-	    baseChars = filenameLen;
+	    baseChars = (int)filenameLen;
 	    matches = 0;
 	    pos = 0;
 
@@ -1289,7 +1289,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	       }
 
 	       /* Inject the character into the entry field. */
-	       injectCDKEntry (fselect->entryField, list[Index][baseChars]);
+	       injectCDKEntry (fselect->entryField, (chtype)list[Index][baseChars]);
 	       baseChars++;
 	    }
 	 }
@@ -1300,7 +1300,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	    drawCDKEntry (entry, ObjOf (entry)->box);
 	 }
       }
-      freeCharList (list, fselect->fileCounter);
+      freeCharList (list, (unsigned)fselect->fileCounter);
       free (list);
    }
    freeChar (filename);
@@ -1510,7 +1510,7 @@ static char *expandTilde (char *filename)
 
    /* Make sure the filename is not null/empty, and begins with a tilde */
    if ((filename != 0) &&
-       (len = strlen (filename)) != 0 &&
+       (len = (int)strlen (filename)) != 0 &&
        filename[0] == '~' &&
        (account = copyChar (filename)) != 0 &&
        (pathname = copyChar (filename)) != 0)

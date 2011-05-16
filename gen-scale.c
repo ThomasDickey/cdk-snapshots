@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:57:19 $
- * $Revision: 1.21 $
+ * $Date: 2011/05/15 18:33:50 $
+ * $Revision: 1.22 $
  */
 
 /*
@@ -181,7 +181,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (v<UPPER>,
 		     widget,
-		     bindings[x].from,
+		     (chtype) bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -207,10 +207,10 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (widget), &functionKey);
+	 input = (chtype) getchCDKObject (ObjOf (widget), &functionKey);
 
 	 /* Inject the character into the widget. */
-	 ret = injectCDK<MIXED> (widget, input);
+	 ret = (<CTYPE>) injectCDK<MIXED> (widget, input);
 	 if (widget->exitType != vEARLY_EXIT)
 	 {
 	    return ret;
@@ -225,7 +225,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
       /* Inject each character one at a time. */
       for (x = 0; x < length; x++)
       {
-	 ret = injectCDK<MIXED> (widget, actions[x]);
+	 ret = (<CTYPE>) injectCDK<MIXED> (widget, actions[x]);
 	 if (widget->exitType != vEARLY_EXIT)
 	 {
 	    return ret;
@@ -342,7 +342,7 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
    bool modify = TRUE;
    int base = 0;
    int need = widget->fieldWidth;
-   char *temp = (char *)malloc (need + 2);
+   char *temp = (char *)malloc ((size_t) need + 2);
    char test;
    int col = need - widget->fieldEdit - 1;
 #if <FLOAT>
@@ -361,7 +361,7 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
       strcpy (temp + need, " ");
       if (isChar (input))	/* replace the char at the cursor */
       {
-	 temp[col] = CharOf (input);
+	 temp[col] = (char) (input);
       }
       else if (input == KEY_BACKSPACE)	/* delete the char before the cursor */
       {
@@ -381,7 +381,7 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
 	  && value >= widget->low
 	  && value <= widget->high)
       {
-	 setCDK<MIXED>Value (widget, value);
+	 setCDK<MIXED>Value (widget, (<CTYPE>) value);
 	 result = TRUE;
       }
       free (temp);

@@ -1,4 +1,4 @@
-/* $Id: raiseCDKObject_ex.c,v 1.8 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: raiseCDKObject_ex.c,v 1.9 2011/05/15 20:13:29 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -8,7 +8,7 @@ char *XCursesProgramName = "raiseCDKObject_ex";
 
 #define MY_LABEL(p) ObjOf(p)->screenIndex | 0x30 | A_UNDERLINE | A_BOLD
 
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
    char ch;
 
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr ();
@@ -84,11 +84,11 @@ int main(int argc, char **argv)
 
    mesg[0] = "</B>#<!B> - raise </U>label#<!U>, </B>r<!B> - </U>redraw<!U>, </B>q<!B> - </U>quit<!U>";
    instruct = newCDKLabel (cdkscreen,
-			   CDKparamValue(&params, 'X', CENTER),
-			   CDKparamValue(&params, 'Y', BOTTOM),
+			   CDKparamValue (&params, 'X', CENTER),
+			   CDKparamValue (&params, 'Y', BOTTOM),
 			   mesg, 1,
-			   CDKparamValue(&params, 'N', TRUE),
-			   CDKparamValue(&params, 'S', FALSE));
+			   CDKparamValue (&params, 'N', TRUE),
+			   CDKparamValue (&params, 'S', FALSE));
    setCDKLabelULChar (instruct, ' ' | A_NORMAL);
    setCDKLabelURChar (instruct, ' ' | A_NORMAL);
    setCDKLabelLLChar (instruct, ' ' | A_NORMAL);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
    setCDKLabelLRChar (instruct, MY_LABEL (instruct));
    refreshCDKScreen (cdkscreen);
 
-   while ((ch = getch ()) != 'q')
+   while ((ch = (char)getch ()) != 'q')
    {
       switch (ch)
       {

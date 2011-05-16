@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:47:20 $
- * $Revision: 1.87 $
+ * $Date: 2011/05/15 19:28:20 $
+ * $Revision: 1.89 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -101,7 +101,6 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 	    { CDK_BACKCHAR,	KEY_PPAGE },
    };
    /* *INDENT-ON* */
-
 
    if ((calendar = newCDKObject (CDKCALENDAR, &my_funcs)) == 0)
         return (0);
@@ -221,7 +220,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vCALENDAR,
 		     calendar,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -247,7 +246,7 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (calendar), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (calendar), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKCalendar (calendar, input);
@@ -541,7 +540,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    {
       sprintf (temp, "%s %d,", monthName, calendar->day);
       writeChar (calendar->labelWin, 0, 0,
-		 temp, HORIZONTAL, 0, strlen (temp));
+		 temp, HORIZONTAL, 0, (int)strlen (temp));
       wclrtoeol (calendar->labelWin);
 
       /* Draw the year in. */
@@ -776,7 +775,7 @@ void setCDKCalendarMarker (CDKCALENDAR *calendar,
 }
 chtype getCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year)
 {
-   int result = 0;
+   chtype result = 0;
 
    year = YEAR2INDEX (year);
    if (calendar->marker != 0)
@@ -858,13 +857,13 @@ static int getMonthStartWeekday (int year, int month)
 {
    struct tm Date;
 
-   /* INDENT-EQLS* Set the tm structure correctly. */
-   Date.tm_sec = 0;
-   Date.tm_min = 0;
-   Date.tm_hour = 10;
-   Date.tm_mday = 1;
-   Date.tm_mon = month - 1;
-   Date.tm_year = YEAR2INDEX (year);
+   /* *INDENT-EQLS* Set the tm structure correctly. */
+   Date.tm_sec   = 0;
+   Date.tm_min   = 0;
+   Date.tm_hour  = 10;
+   Date.tm_mday  = 1;
+   Date.tm_mon   = month - 1;
+   Date.tm_year  = YEAR2INDEX (year);
    Date.tm_isdst = 1;
 
    /* Call the mktime function to fill in the holes. */
@@ -880,12 +879,23 @@ static int getMonthStartWeekday (int year, int month)
  */
 static int isLeapYear (int year)
 {
-   if (year % 4 == 0 ||
-       year % 4 == 0)
+   int result = 0;
+
+   if ((year % 4) == 0)
    {
-      return 1;
+      if ((year % 100) == 0)
+      {
+	 if ((year % 400) == 0)
+	 {
+	    result = 1;
+	 }
+      }
+      else
+      {
+	 result = 1;
+      }
    }
-   return 0;
+   return result;
 }
 
 /*

@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Gregory.Sharp $
- * $Date: 2008/10/31 00:11:46 $
- * $Revision: 1.205 $
+ * $Author: tom $
+ * $Date: 2011/05/15 19:25:03 $
+ * $Revision: 1.206 $
  */
 
 #define L_MARKER '<'
@@ -229,7 +229,7 @@ chtype *copyChtype (chtype *original)
  */
 char **copyCharList (char **list)
 {
-   unsigned size = lenCharList (list) + 1;
+   size_t size = (size_t) lenCharList (list) + 1;
    char **result = typeMallocN (char *, size);
 
    if (result != 0)
@@ -243,7 +243,7 @@ char **copyCharList (char **list)
 
 chtype **copyChtypeList (chtype **list)
 {
-   unsigned size = lenChtypeList (list) + 1;
+   size_t size = (size_t) lenChtypeList (list) + 1;
    chtype **result = typeMallocN (chtype *, size);
 
    if (result != 0)
@@ -307,7 +307,7 @@ int CDKreadFile (char *filename, char ***array)
    }
    fclose (fd);
 
-   return (lines);
+   return (int)(lines);
 }
 
 #define DigitOf(c) ((c)-'0')
@@ -348,7 +348,7 @@ static int encodeAttribute (char *string, int from, chtype *mask)
    {
 #ifdef HAVE_START_COLOR
       pair = DigitOf (string[from + 1]) * 10 + DigitOf (string[from + 2]);
-      *mask = COLOR_PAIR (pair);
+      *mask = (chtype)COLOR_PAIR (pair);
 #else
       *mask = A_BOLD;
 #endif
@@ -358,7 +358,7 @@ static int encodeAttribute (char *string, int from, chtype *mask)
    {
 #ifdef HAVE_START_COLOR
       pair = DigitOf (string[from + 1]);
-      *mask = COLOR_PAIR (pair);
+      *mask = (chtype)COLOR_PAIR (pair);
 #else
       *mask = A_BOLD;
 #endif
@@ -392,6 +392,7 @@ static unsigned decodeAttribute (char *string,
    };
    /* *INDENT-ON* */
 
+
    char temp[80];
    char *result = (string != 0) ? string : temp;
    char *base = result;
@@ -421,7 +422,7 @@ static unsigned decodeAttribute (char *string,
 		  *result++ = '/';
 		  tmpattr |= (table[n].mask);
 	       }
-	       *result++ = table[n].code;
+	       *result++ = (char)table[n].code;
 	       break;
 	    }
 	 }
@@ -457,7 +458,7 @@ static unsigned decodeAttribute (char *string,
       }
    }
 
-   return from + (result - base);
+   return (from + (unsigned)(result - base));
 }
 
 /*
@@ -836,7 +837,7 @@ void chstrncpy (char *dest, chtype *src, int maxcount)
    int i = 0;
 
    while (i < maxcount && *src)
-      *dest++ = CharOf (*src++);
+      *dest++ = (char)(*src++);
 
    *dest = '\0';
 }
@@ -890,7 +891,7 @@ char *chtype2String (chtype *string)
 				    (x > 0) ? string[x - 1] : 0,
 				    string[x]);
 	    if (newstring != 0)
-	       newstring[need] = CharOf (string[x]);
+	       newstring[need] = (char)(string[x]);
 	    ++need;
 	 }
 	 if (pass)
@@ -994,7 +995,7 @@ char **CDKsplitString (char *string, int separator)
 	    while (*string != 0 && *string != separator)
 	       string++;
 
-	    need = string - first;
+	    need = (unsigned)(string - first);
 	    if ((temp = typeMallocN (char, need + 1)) == 0)
 	         break;
 
@@ -1106,6 +1107,7 @@ int mode2Filetype (mode_t mode)
    };
    /* *INDENT-ON* */
 
+
    int filetype = '?';
    unsigned n;
 
@@ -1159,6 +1161,7 @@ int mode2Char (char *string, mode_t mode)
    };
    /* *INDENT-ON* */
 
+
    /* Declare local variables.  */
    int permissions = 0;
    int filetype = mode2Filetype (mode);
@@ -1176,7 +1179,7 @@ int mode2Char (char *string, mode_t mode)
       if ((mode & table[n].mask) != 0)
       {
 	 string[table[n].col] = table[n].flag;
-	 permissions |= table[n].mask;
+	 permissions |= (int)table[n].mask;
       }
    }
 
@@ -1230,7 +1233,8 @@ int CDKgetDirectoryContents (char *directory, char ***list)
    while ((dirStruct = readdir (dp)) != 0)
    {
       if (strcmp (dirStruct->d_name, "."))
-	 used = CDKallocStrings (list, dirStruct->d_name, counter++, used);
+	 used = CDKallocStrings (list, dirStruct->d_name,
+				 (unsigned)counter++, used);
    }
 
    /* Close the directory.  */
@@ -1452,12 +1456,12 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
       int xpos, ypos;
 
       getbegyx (window, ypos, xpos);
-      if (setbegyx (window, ypos, xpos) != ERR)
+      if (setbegyx (window, (short)ypos, (short)xpos) != ERR)
       {
 	 xpos += xdiff;
 	 ypos += ydiff;
 	 werase (window);
-	 (void)setbegyx (window, ypos, xpos);
+	 (void)setbegyx (window, (short)ypos, (short)xpos);
       }
       else
       {

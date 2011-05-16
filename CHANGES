@@ -1,5 +1,5 @@
 -- vile:fk=8bit txtmode
--- $Id: CHANGES,v 1.157 2011/05/14 14:33:02 tom Exp $
+-- $Id: CHANGES,v 1.166 2011/05/15 18:20:09 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -7,6 +7,21 @@ Modifications copyright Thomas E. Dickey 1999-2010, 2011
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
+Changes through 4.9.8 (December 1998) are recorded by Mike Glover.
+Thereafter, changes are recorded by Thomas E. Dickey.
+
+2011/05/15
+	+ corrected example for cdk_display.3 manpage (patch by Loïc
+	  Pefferkorn).
+	+ modify install rules to allow package scripts to specify that
+	  libcdkw's header files go into /usr/include/cdkw, and its *-config
+	  file is named "cdkw-config".
+	+ autoconf'd the actual name for ctags and etags.
+	+ modify cdkshlib rule in makefile to eliminate warnings by
+	  dpkg-shlibdeps.
+	+ correct algorithm for leap year in calendar.c (report by Olaf
+	  Seibert).
+	+ minor formatting of changelog to simplify extraction of credits.
 
 2011/05/14
 	+ add dpkg scripts, for test-builds.
@@ -41,7 +56,7 @@ This file outlines all of the changes/additions from one release to another.
 	  of column titles by first erasing the cell (patch by Vincenzo Romano).
 	+ regenerate configure script with autoconf 2.52 (patched) to make this
 	  work in non-POSIX locales (report by Mart Stöör).
-	+ update configure script macros, e.g., to ensure that options are
+	+ updated configure script macros, e.g., to ensure that options are
 	  appended to $CFLAGS rather than prepended.
 	+ update config.guess, config.sub
 
@@ -71,7 +86,7 @@ This file outlines all of the changes/additions from one release to another.
 	  Brueckner's cpm program (reports by Lars Strand, Harry Brueckner).
 	+ modify Makefile.in for consistent usage of DESTDIR.
 	+ add cdk5-config script to install
-	+ update configure script, e.g., tests for curses libraries.
+	+ updated configure script, e.g., tests for curses libraries.
 	+ update config.guess, config.sub
 
 2006/05/07
@@ -183,7 +198,7 @@ This file outlines all of the changes/additions from one release to another.
 	+ review/correct some functions listed in manpages but not implemented,
 	  and the reverse (report by Rajat Das).
 	+ add setCDKMatrixCB() (report by 'zam).
-	+ update configure script (mostly fixes related to CF_XOPEN_SOURCE).
+	+ updated configure script (mostly fixes related to CF_XOPEN_SOURCE).
 	+ update config.guess, config.sub
 
 2005/04/24 - T.E.Dickey <dickey@his.com>
@@ -239,7 +254,7 @@ This file outlines all of the changes/additions from one release to another.
 	  data. 
 	+ correct initialization of traverseCDKScreen(), which required two
 	  tab keypresses to make the first traversal (report by Fu Steve X).
-	+ update configure script checks for _XOPEN_SOURCE, etc.
+	+ updated configure script checks for _XOPEN_SOURCE, etc.
 	+ updated config.guess and config.sub
 	+ correct prototype shown in manpage for setCDKScroll() (report by
 	  Stefan Heimann).
@@ -252,7 +267,7 @@ This file outlines all of the changes/additions from one release to another.
 ========================================
 	+ correct expression in CDKCalendarField from 2004/08/31 changes, which
 	  caused it to show only 6 days/week, broken by a fix for
-	  demos/appointment (reports/patches by Ryan Flannery and Greg Martin).
+	  demos/appointment (reports/patches by Ryan Flannery, Greg Martin).
 
 2004/11/07 - T.E.Dickey <dickey@his.com>
 ========================================
@@ -278,7 +293,7 @@ This file outlines all of the changes/additions from one release to another.
 	+ add a simple compatibility header (cdk_compat.h), which can be
 	  put in an application's include-path when compiling old applications
 	  against new/old Cdk.
-	+ update libtool ABI to 2.0.0 since several items are added to CDKOBJS,
+	+ updated libtool ABI to 2.0.0 since several items are added to CDKOBJS,
 	  as well as cleanup of slider- and scale-header templates.
 	+ add check for ANSI compiler, needed for example with HPUX 10.20.
 	+ ifdef'd out nonfunctional saveData and refreshData methods of entry
@@ -372,7 +387,7 @@ This file outlines all of the changes/additions from one release to another.
 	  CF_WITH_DBMALLOC, CF_WITH_DMALLOC, CF_WITH_LIBTOOL, CF_WITH_WARNINGS,
 	  CF_X_ATHENA, CF_X_TOOLKIT.
 	+ updated config.guess, config.sub
-	> patches by ewigg (Ed Wigg?) for fselect.c:
+	> fixes for fselect.c by ewigg (Ed Wigg):
 	+ add a range check to ensure that filename completion at the end of
 	  the list does not reference past the end of the list.
 	+ correct the value returned from filename completion (fixes in
@@ -798,7 +813,7 @@ This file outlines all of the changes/additions from one release to another.
 
 2000/06/28 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================
-	+ add RPM spec-file (Wai-Sun Chia <waisun.chia@msa.dec.com>).
+	+ add RPM spec-file (patch by Wai-Sun Chia <waisun.chia@msa.dec.com>).
 	+ add Linux-specific makefile rule for generating a shared library
 	  (patch by Pawel Gajda <pawelg@obop.com.pl>).
 	+ eliminate fixed-length lists assumed in getDirectoryContents() using
@@ -866,7 +881,7 @@ This file outlines all of the changes/additions from one release to another.
 
 1999/12/19 - T.E.Dickey <dickey@clark.net>
 ==========================================
-	+ update email and url for Mike Glover based on 4.9.9 version dated
+	+ updated email and url for Mike Glover based on 4.9.9 version dated
 	  1999/7/29.
 
 1999/06/26 - T.E.Dickey <dickey@clark.net>

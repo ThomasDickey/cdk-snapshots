@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 00:50:43 $
- * $Revision: 1.34 $
+ * $Date: 2011/05/15 19:27:06 $
+ * $Revision: 1.35 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -104,7 +104,7 @@ int activateCDKButton (CDKBUTTON *button, chtype *actions)
    {
       for (;;)
       {
-	 input = getchCDKObject (ObjOf (button), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (button), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKButton (button, input);
@@ -324,7 +324,7 @@ void positionCDKButton (CDKBUTTON *button)
    /* Let them move the widget around until they hit return. */
    while (key != KEY_ENTER)
    {
-      key = getchCDKObject (ObjOf (button), &functionKey);
+      key = (chtype)getchCDKObject (ObjOf (button), &functionKey);
       if (key == KEY_UP || key == '8')
       {
 	 if (getbegy (button->win) > 0)

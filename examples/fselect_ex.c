@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.22 2006/05/07 23:06:12 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.23 2011/05/15 20:15:24 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -114,7 +114,7 @@ static int do_help (CB_PARAMS)
       "F5 = undo deletion",
       0
    };
-   popupLabel (cdkscreen, message, CDKcountStrings (message));
+   popupLabel (cdkscreen, message, (int)CDKcountStrings (message));
    return TRUE;
 }
 
@@ -143,7 +143,7 @@ static int do_undo (CB_PARAMS)
       int size;
       int n;
       char **oldlist = getCDKFselectContents (widget, &size);
-      char **newlist = (char **)malloc ((++size + 1) * sizeof (char *));
+      char **newlist = (char **)malloc ((size_t) (++size + 1) * sizeof (char *));
 
       --undoSize;
       newlist[size] = 0;
@@ -168,12 +168,13 @@ static int do_undo (CB_PARAMS)
 
 int main (int argc, char **argv)
 {
-   CDKVIEWER *example	= 0;
-   CDKFSELECT *fSelect	= 0;
-   WINDOW *cursesWin	= 0;
-   char *title		= "<C>Pick\n<C>A\n<C>File";
-   char *label		= "File: ";
-   char **info		= 0;
+   /* *INDENT-EQLS* */
+   CDKVIEWER *example   = 0;
+   CDKFSELECT *fSelect  = 0;
+   WINDOW *cursesWin    = 0;
+   char *title          = "<C>Pick\n<C>A\n<C>File";
+   char *label          = "File: ";
+   char **info          = 0;
    char *button[5], *filename, vTitle[256], *mesg[4], temp[256];
    int selected, lines;
 
@@ -228,7 +229,7 @@ int main (int argc, char **argv)
    setCDKFselect (fSelect, directory, A_NORMAL, ' ', A_REVERSE,
 		  "</5>", "</48>", "</N>", "</N>", ObjOf (fSelect)->box);
    myUserList = copyCharList (getCDKFselectContents (fSelect, &userSize));
-   myUndoList = (UNDO *) malloc (userSize * sizeof (UNDO));
+   myUndoList = (UNDO *) malloc ((size_t) userSize * sizeof (UNDO));
    undoSize = 0;
 
    /* Activate the file selector. */
@@ -264,7 +265,7 @@ int main (int argc, char **argv)
       endCDK ();
 
       /* Print out a message and exit. */
-      printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
+      printf ("Can't seem to create viewer. Is the window too small?\n");
       ExitProgram (EXIT_SUCCESS);
    }
 

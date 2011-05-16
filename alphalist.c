@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:28:20 $
- * $Revision: 1.104 $
+ * $Date: 2011/05/15 19:11:12 $
+ * $Revision: 1.105 $
  */
 
 /*
@@ -53,7 +53,6 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen,
       { CDK_FORCHAR,	KEY_NPAGE },
    };
    /* *INDENT-ON* */
-
 
    if ((alphalist = newCDKObject (CDKALPHALIST, &my_funcs)) == 0
        || !createList (alphalist, list, listSize))
@@ -189,7 +188,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (vALPHALIST,
 		     alphalist,
-		     bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -594,8 +593,8 @@ void setCDKAlphalistPostProcess (CDKALPHALIST *alphalist,
 /*
  * Start of callback functions.
  */
-static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED,
-			      void *object GCC_UNUSED,
+static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void
+			      *object GCC_UNUSED,
 			      void *clientData,
 			      chtype key)
 {
@@ -624,8 +623,8 @@ static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED,
 /*
  * This is the heart-beat of the widget.
  */
-static int preProcessEntryField (EObjectType cdktype GCC_UNUSED,
-				 void *object GCC_UNUSED,
+static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void
+				 *object GCC_UNUSED,
 				 void *clientData,
 				 chtype input)
 {
@@ -656,7 +655,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED,
    {
       int Index, difference, absoluteDifference, x;
       int currPos = (entry->screenCol + entry->leftChar);
-      char *pattern = malloc (infoLen + 2);
+      char *pattern = malloc ((size_t) infoLen + 2);
 
       if (pattern != 0)
       {
@@ -689,8 +688,8 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED,
 				    pattern)) >= 0)
       {
 	 /* *INDENT-EQLS* */
-	 difference            = Index - scrollp->currentItem;
-	 absoluteDifference    = abs (difference);
+	 difference           = Index - scrollp->currentItem;
+	 absoluteDifference   = abs (difference);
 
 	 /*
 	  * If the difference is less than zero, then move up.
@@ -704,9 +703,9 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED,
 	    for (x = 0; x < absoluteDifference; x++)
 	    {
 	       injectMyScroller (alphalist,
-				 ((difference <= 0)
-				  ? KEY_UP
-				  : KEY_DOWN));
+				 (chtype)((difference <= 0)
+					  ? KEY_UP
+					  : KEY_DOWN));
 	    }
 	 }
 	 else
@@ -789,7 +788,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    }
 
    /* Ok, we found a match, is the next item similar? */
-   ret = strncmp (alphalist->list[Index + 1], entry->info, wordLength);
+   ret = strncmp (alphalist->list[Index + 1], entry->info, (size_t) wordLength);
    if (ret == 0)
    {
       /* *INDENT-EQLS* */
@@ -804,11 +803,11 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       while ((currentIndex < alphalist->listSize)
 	     && (strncmp (alphalist->list[currentIndex],
 			  entry->info,
-			  wordLength) == 0))
+			  (size_t) wordLength) == 0))
       {
 	 used = CDKallocStrings (&altWords,
 				 alphalist->list[currentIndex++],
-				 altCount++,
+				 (unsigned)altCount++,
 				 used);
       }
 
