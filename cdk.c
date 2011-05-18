@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:25:03 $
- * $Revision: 1.206 $
+ * $Date: 2011/05/16 22:38:38 $
+ * $Revision: 1.207 $
  */
 
 #define L_MARKER '<'
@@ -540,7 +540,7 @@ chtype *char2Chtype (char *string, int *to, int *align)
 	       while (string[x] != R_MARKER && string[x] != 0)
 	       {
 		  if (result != 0)
-		     result[x] = string[x] | A_BOLD;
+		     result[x] = (chtype) string[x] | A_BOLD;
 		  x++;
 	       }
 	       adjust = 1;
@@ -924,7 +924,7 @@ void sortList (char **list, int length)
 void stripWhiteSpace (EStripType stripType, char *string)
 {
    /* Declare local variables.  */
-   unsigned stringLength = 0;
+   size_t stringLength = 0;
    unsigned alphaChar = 0;
    unsigned x;
 
@@ -1253,7 +1253,7 @@ int CDKgetDirectoryContents (char *directory, char ***list)
 int searchList (char **list, int listSize, char *pattern)
 {
    /* Declare local variables.  */
-   unsigned len;
+   size_t len;
    int Index = -1;
    int x, ret;
 
@@ -1333,8 +1333,8 @@ int checkForLink (char *line, char *filename)
 char *baseName (char *pathname)
 {
    char *base = 0;
-   unsigned pathLen;
-   unsigned x;
+   size_t pathLen;
+   size_t x;
 
    if (pathname != 0
        && *pathname != '\0'
@@ -1363,8 +1363,8 @@ char *baseName (char *pathname)
 char *dirName (char *pathname)
 {
    char *dir = 0;
-   unsigned pathLen;
-   unsigned x;
+   size_t pathLen;
+   size_t x;
 
    /* Check if the string is null.  */
    if (pathname != 0

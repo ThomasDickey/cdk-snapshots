@@ -1,4 +1,4 @@
-/* $Id: cdkfselect.c,v 1.10 2005/12/27 17:52:02 tom Exp $ */
+/* $Id: cdkfselect.c,v 1.11 2011/05/16 22:53:13 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int) CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

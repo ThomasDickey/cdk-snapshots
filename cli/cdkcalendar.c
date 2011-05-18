@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.12 2008/11/04 23:36:39 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.13 2011/05/16 22:47:37 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int) CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/02 14:28:33 $
- * $Revision: 1.55 $
+ * $Date: 2011/05/16 22:36:08 $
+ * $Revision: 1.56 $
  *
  * Notes:
  *
@@ -55,7 +55,7 @@ void bindCDKObject (EObjectType cdktype,
    {
       if (key != 0 && (unsigned)key >= obj->bindingCount)
       {
-	 unsigned next = (key + 1);
+	 unsigned next = (unsigned) (key + 1);
 
 	 if (obj->bindingList != 0)
 	    obj->bindingList = typeReallocN (CDKBINDING, obj->bindingList, next);

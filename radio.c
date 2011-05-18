@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:43:38 $
- * $Revision: 1.136 $
+ * $Date: 2011/05/16 22:26:05 $
+ * $Revision: 1.137 $
  */
 
 /*
@@ -66,7 +66,6 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
 		{ '>',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if ((radio = newCDKObject (CDKRADIO, &my_funcs)) == 0)
    {
@@ -551,7 +550,7 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
 
    if (radio->scrollbar)
    {
-      radio->togglePos = floorCDK (radio->currentItem * radio->step);
+      radio->togglePos = floorCDK (radio->currentItem * (double)radio->step);
       radio->togglePos = MINIMUM (radio->togglePos,
 				  getmaxy (radio->scrollbarWin) - 1);
 

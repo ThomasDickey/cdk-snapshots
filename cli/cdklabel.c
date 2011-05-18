@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.12 2008/11/04 23:36:39 tom Exp $ */
+/* $Id: cdklabel.c,v 1.13 2011/05/16 22:53:13 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -85,7 +85,7 @@ int main (int argc, char **argv)
    {
       /* Split the message up. */
       messageList = CDKsplitString (message, '\n');
-      messageLines = CDKcountStrings (messageList);
+      messageLines = (int) CDKcountStrings (messageList);
    }
 
    /* Set up CDK. */
@@ -151,7 +151,7 @@ int main (int argc, char **argv)
    /* If they supplied a sleep time, sleep for the given length. */
    if (sleepLength > 0)
    {
-      sleep (sleepLength);
+      sleep ((unsigned)sleepLength);
    }
 
    CDKfreeStrings (messageList);

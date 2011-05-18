@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.10 2005/12/27 17:54:31 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.11 2011/05/16 22:59:03 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings (buttonList);
    }
 
    /* Set up the title of the viewer. */

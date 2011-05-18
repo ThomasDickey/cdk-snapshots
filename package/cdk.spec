@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.4 2011/05/15 12:50:33 tom Exp $
+# $Id: cdk.spec,v 1.7 2011/05/18 00:12:08 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20110515
+%define AppRelease 20110517
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -14,9 +14,9 @@ Source0:  %{name}-%{version}-%{release}.tgz
 # BuildRequires:	ncurses-devel
 
 %description
-Cdk stands for 'Curses Development Kit' and it currently contains 21 ready
-to use widgets which facilitate the speedy development of full screen
-curses programs.
+Cdk stands for "Curses Development Kit".  It contains a large number of ready
+to use widgets which facilitate the speedy development of full screen curses
+programs.
 
 %package devel
 Summary:	Curses Development Kit

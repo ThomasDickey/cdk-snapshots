@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.24 2011/05/15 20:07:33 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.25 2011/05/16 23:27:17 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -277,7 +277,7 @@ int main (int argc, char **argv)
       popupLabel (cdkscreen, mesg, 4);
    }
 
-   freeCharList (myUserList, (size_t) userSize);
+   freeCharList (myUserList, (unsigned)userSize);
    free (myUserList);
 
    destroyCDKAlphalist (alphaList);

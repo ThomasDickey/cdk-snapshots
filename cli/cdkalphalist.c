@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.12 2005/12/27 17:26:08 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.13 2011/05/16 22:47:37 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -109,7 +109,7 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = CDKcountStrings (scrollList);
+      scrollLines = (int) CDKcountStrings (scrollList);
    }
 
    /* Start curses. */
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int) CDKcountStrings (buttonList);
 
       buttonWidget = newCDKButtonbox (cdkScreen,
 					getbegx (widget->win) + 1,

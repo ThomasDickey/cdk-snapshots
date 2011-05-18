@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:33:47 $
- * $Revision: 1.149 $
+ * $Date: 2011/05/16 22:26:35 $
+ * $Revision: 1.150 $
  */
 
 /*
@@ -67,7 +67,6 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
 		{ '>',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if (choiceCount <= 0
        || (selection = newCDKObject (CDKSELECTION, &my_funcs)) == 0
@@ -574,7 +573,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* Determine where the toggle is supposed to be. */
    if (selection->scrollbar)
    {
-      selection->togglePos = floorCDK (selection->currentItem * selection->step);
+      selection->togglePos = floorCDK (selection->currentItem * (double)selection->step);
       selection->togglePos = MINIMUM (selection->togglePos,
 				      (getmaxy (selection->scrollbarWin) - 1));
 

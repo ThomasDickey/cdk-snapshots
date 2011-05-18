@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.20 2011/05/15 20:35:36 tom Exp $ */
+/* $Id: appointment.c,v 1.21 2011/05/16 23:20:05 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -166,8 +166,7 @@ int main (int argc, char **argv)
       endCDK ();
 
       /* Spit out a message. */
-      printf
-	      ("Can't seem to create the calendar. Is the window too small?\n");
+      printf ("Cannot create the calendar. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
@@ -244,12 +243,13 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
        */
       if (segments == 5)
       {
+	 int eType = atoi (temp[3]);
+
 	 /* *INDENT-EQLS* */
-	 appInfo->appointment[appointments].day        = atoi (temp[0]);
-	 appInfo->appointment[appointments].month      = atoi (temp[1]);
-	 appInfo->appointment[appointments].year       = atoi (temp[2]);
-	 appInfo->appointment[appointments].type       = (EAppointmentType)
-	    atoi (temp[3]);
+	 appInfo->appointment[appointments].day         = atoi (temp[0]);
+	 appInfo->appointment[appointments].month       = atoi (temp[1]);
+	 appInfo->appointment[appointments].year        = atoi (temp[2]);
+	 appInfo->appointment[appointments].type        = (EAppointmentType)eType;
 	 appInfo->appointment[appointments].description = copyChar (temp[4]);
 	 appointments++;
       }

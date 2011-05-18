@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.22 2005/12/28 18:35:31 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.23 2011/05/18 00:10:32 tom Exp $"
 .de XX
 ..
 .TH cdk_calendar 3
@@ -420,6 +420,11 @@ The default value is
 .RS
 "Su Mo Tu We Th Fr Sa"
 .RE
+.IP
+"Su" (Sunday) is numbered zero internally,
+making it by default the first day of the week.
+Set the \fBweekBase\fP member of the widget to select a different day.
+For example, Monday would be 1, Tuesday 2, etc.
 .TP 5
 .B setCDKCalendarHighlight
 sets the attribute of the highlight bar of the scrolling

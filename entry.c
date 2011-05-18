@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:36:38 $
- * $Revision: 1.217 $
+ * $Date: 2011/05/16 22:35:16 $
+ * $Revision: 1.218 $
  */
 
 /*
@@ -559,7 +559,7 @@ static void _moveCDKEntry (CDKOBJS *object,
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
    int plainchar = filterByDisplayType (entry->dispType, character);
-   unsigned temp;
+   size_t temp;
 
    if (plainchar == ERR ||
        ((int)strlen (entry->info) >= entry->max))
