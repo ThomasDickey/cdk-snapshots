@@ -1,4 +1,4 @@
-/* $Id: cdkmatrix.c,v 1.14 2008/11/04 23:36:39 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.15 2011/05/16 22:57:58 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -104,16 +104,16 @@ int main (int argc, char **argv)
 
    /* Convert the char * titles to a char **, offset by one */
    rowTemp = CDKsplitString (myRowTitles, '\n');
-   rows = CDKcountStrings (rowTemp);
-   rowTitles = (char **) calloc (rows + 1, sizeof(char *));
+   rows = (int)CDKcountStrings (rowTemp);
+   rowTitles = (char **) calloc ((size_t)rows + 1, sizeof(char *));
    for (x=0; x < rows; x++)
    {
       rowTitles[x+1] = rowTemp[x];
    }
 
    colTemp = CDKsplitString (myColTitles, '\n');
-   cols = CDKcountStrings (colTemp);
-   colTitles = (char **) calloc (cols + 1, sizeof(char *));
+   cols = (int)CDKcountStrings (colTemp);
+   colTitles = (char **) calloc ((size_t)cols + 1, sizeof(char *));
    for (x=0; x < cols; x++)
    {
       colTitles[x+1] = colTemp[x];
@@ -121,8 +121,8 @@ int main (int argc, char **argv)
 
    /* Convert the column widths. */
    kolTemp = CDKsplitString (myColWidths, '\n');
-   count = CDKcountStrings (kolTemp);
-   colWidths = (int *) calloc (count + 1, sizeof(int));
+   count = (int)CDKcountStrings (kolTemp);
+   colWidths = (int *) calloc ((size_t)count + 1, sizeof(int));
    for (x=0; x < count; x++)
    {
       colWidths[x+1] = atoi (kolTemp[x]);
@@ -132,8 +132,8 @@ int main (int argc, char **argv)
    if (myColTypes != 0)
    {
       char **ss = CDKsplitString (myColTypes, '\n');
-      count = CDKcountStrings (ss);
-      colTypes = (int *) calloc (MAXIMUM(cols, count) + 1, sizeof(int));
+      count = (int)CDKcountStrings (ss);
+      colTypes = (int *) calloc ((size_t)MAXIMUM(cols, count) + 1, sizeof(int));
       for (x=0; x < count; x++)
       {
 	 colTypes[x+1] = char2DisplayType (ss[x]);
@@ -143,7 +143,7 @@ int main (int argc, char **argv)
    else
    {
       /* If they didn't set default values. */
-      colTypes = (int *) calloc (cols + 1, sizeof(int));
+      colTypes = (int *) calloc ((size_t)cols + 1, sizeof(int));
       for (x=0; x < cols; x++)
       {
 	 colTypes[x+1] = vMIXED;
@@ -210,7 +210,7 @@ int main (int argc, char **argv)
     */
    if (defaultValue != 0)
    {
-      int limit = (rows + 1) * (cols + 1);
+      size_t limit = (size_t)((rows + 1) * (cols + 1));
       char **info = (char **) calloc (limit, sizeof(char *));
       char **lineTemp = 0;
 
@@ -218,13 +218,13 @@ int main (int argc, char **argv)
       infoLines = CDKreadFile (defaultValue, &lineTemp);
       if (infoLines > 0)
       {
-	 int *subSize = (int *) calloc(infoLines + 1, sizeof(int *));
+	 int *subSize = (int *) calloc((size_t)infoLines + 1, sizeof(int *));
 
 	 /* For each line, split on a CTRL-V. */
 	 for (x=0; x < infoLines; x++)
 	 {
 	    char **ss = CDKsplitString (lineTemp[x], CTRL('V'));
-	    subSize[x+1] = CDKcountStrings (ss);
+	    subSize[x+1] = (int)CDKcountStrings (ss);
 	    for (y=0; y < subSize[x+1]; y++)
 	    {
 	       MY_INFO(x, y) = ss[y];
@@ -252,7 +252,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

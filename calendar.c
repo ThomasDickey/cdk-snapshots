@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:28:20 $
- * $Revision: 1.89 $
+ * $Date: 2011/05/17 23:51:26 $
+ * $Revision: 1.93 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -90,7 +90,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    int x;
    struct tm *dateInfo;
    time_t clck;
-   char *dayname         = "Su Mo Tu We Th Fr Sa";
+   char *dayname         = "Su Mo Tu We Th Fr Sa ";
    /* *INDENT-OFF* */
    static const struct { int from; int to; } bindings[] = {
 	    { 'T',		KEY_HOME },
@@ -371,7 +371,7 @@ static int _injectCDKCalendar (CDKOBJS *object, chtype input)
 	 case KEY_TAB:
 	 case KEY_ENTER:
 	    setExitType (widget, input);
-	    ret = getCurrentTime (widget);
+	    ret = (int)getCurrentTime (widget);
 	    complete = TRUE;
 	    break;
 
@@ -459,6 +459,8 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
 {
    CDKCALENDAR *calendar = (CDKCALENDAR *)object;
    int headerLen = (int)strlen (calendar->DayName);
+   int colLen = (6 + headerLen) / 7;
+   int col;
 
    /* Is there a shadow? */
    if (calendar->shadowWin != 0)
@@ -475,9 +477,15 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
    drawCdkTitle (calendar->win, object);
 
    /* Draw in the day-of-the-week header. */
-   writeChar (calendar->win,
-	      calendar->xOffset, TitleLinesOf (calendar) + 2,
-	      calendar->DayName, HORIZONTAL, 0, headerLen);
+   for (col = 0; col < 7; ++col)
+   {
+      int src = colLen * ((col + (calendar->weekBase % 7)) % 7);
+      int dst = colLen * col;
+      writeChar (calendar->win,
+		 calendar->xOffset + dst,
+		 TitleLinesOf (calendar) + 2,
+		 calendar->DayName + src, HORIZONTAL, 0, colLen);
+   }
 
    wrefresh (calendar->win);
 
@@ -494,20 +502,24 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    int monthLength = getMonthLength (calendar->year, calendar->month);
    int yearIndex   = YEAR2INDEX (calendar->year);
    int yearLen     = 0;
-   int day         = 1;
-   int x, y;
+   int day;
+   int row, col;
    int save_y      = -1;
    int save_x      = -1;
    char temp[30];
 
-   for (x = 1; x <= 6; x++)
+   day = (1 - calendar->weekDay + (calendar->weekBase % 7));
+   if (day > 0)
+      day -= 7;
+
+   for (row = 1; row <= 6; row++)
    {
-      for (y = (x == 1) ? calendar->weekDay : 0; y < 7; y++)
+      for (col = 0; col < 7; col++)
       {
-	 if (day <= monthLength)
+	 if (day >= 1 && day <= monthLength)
 	 {
-	    int ypos = y * 3;
-	    int xpos = x;
+	    int xpos = col * 3;
+	    int ypos = row;
 
 	    chtype marker = calendar->dayAttrib;
 
@@ -516,8 +528,9 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 	    if (calendar->day == day)
 	    {
 	       marker = calendar->highlight;
-	       save_y = xpos + getbegy (calendar->fieldWin)
-		  - getbegy (InputWindowOf (calendar));
+	       save_y = (ypos
+			 + getbegy (calendar->fieldWin)
+			 - getbegy (InputWindowOf (calendar)));
 	       save_x = 1;
 	    }
 	    else
@@ -527,7 +540,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
 					       calendar->month,
 					       yearIndex);
 	    }
-	    writeCharAttrib (calendar->fieldWin, ypos, xpos,
+	    writeCharAttrib (calendar->fieldWin, xpos, ypos,
 			     temp, marker, HORIZONTAL, 0, 2);
 	 }
 	 day++;
@@ -807,7 +820,7 @@ void setCDKCalendarMonthsNames (CDKCALENDAR *calendar, char **months)
 }
 
 /*
- * This function sets the days name.
+ * This function sets the day's name.
  */
 void setCDKCalendarDaysNames (CDKCALENDAR *calendar, char *days)
 {

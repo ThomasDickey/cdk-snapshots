@@ -1,4 +1,4 @@
-/* $Id: cdkradio.c,v 1.9 2005/12/27 17:06:03 tom Exp $ */
+/* $Id: cdkradio.c,v 1.10 2011/05/16 22:58:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -116,7 +116,7 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = CDKcountStrings (scrollList);
+      scrollLines = (int)CDKcountStrings (scrollList);
    }
 
    /* Start curses. */
@@ -173,7 +173,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

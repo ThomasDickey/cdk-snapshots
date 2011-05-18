@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:37:34 $
- * $Revision: 1.72 $
+ * $Date: 2011/05/16 22:32:23 $
+ * $Revision: 1.73 $
  */
 
 /*
@@ -72,7 +72,6 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
       { CDK_FORCHAR,	KEY_NPAGE },
    };
    /* *INDENT-ON* */
-
 
    if ((fselect = newCDKObject (CDKFSELECT, &my_funcs)) == 0)
         return (0);
@@ -1101,7 +1100,7 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED, void *object,
 
 static char *make_pathname (char *directory, char *filename)
 {
-   unsigned need = strlen (filename) + 2;
+   size_t need = strlen (filename) + 2;
    bool root = (strcmp (directory, "/") == 0);
    char *result;
 
@@ -1155,7 +1154,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    char *filename       = copyChar (entry->info);
    char *mydirname      = dirName (filename);
    char *newFilename    = 0;
-   unsigned filenameLen = 0;
+   size_t filenameLen   = 0;
    int currentIndex     = 0;
    int matches          = 0;
    int baseChars        = 0;
@@ -1429,7 +1428,7 @@ static int fselectAdjustScrollCB (EObjectType objectType GCC_UNUSED, void
  */
 static char *trim1Char (char *source)
 {
-   unsigned len;
+   size_t len;
 
    if ((len = strlen (source)) != 0)
       source[--len] = '\0';

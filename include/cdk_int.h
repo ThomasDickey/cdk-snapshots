@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.24 2011/05/15 19:16:35 tom Exp $
+ * $Id: cdk_int.h,v 1.25 2011/05/16 22:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -231,7 +231,7 @@ extern "C" {
 		} \
  \
 		if ((w)->listSize > 0 && maxViewSize((w)) > 0) { \
-		   (w)->step = (maxViewSize((w)) / (float)(w)->listSize); \
+		   (w)->step = (float) (maxViewSize((w)) / (double)(w)->listSize); \
 		   (w)->toggleSize = ((w)->listSize > (maxViewSize((w))) ?  1 : ceilCDK((w)->step)); \
 		} else { \
 		   (w)->step = 1; \

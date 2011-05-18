@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:44:03 $
- * $Revision: 1.150 $
+ * $Date: 2011/05/16 22:22:03 $
+ * $Revision: 1.151 $
  */
 
 /*
@@ -70,7 +70,6 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
 		{ '>',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if ((scrollp = newCDKObject (CDKSCROLL, &my_funcs)) == 0)
    {
@@ -599,7 +598,7 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
       /* Determine where the toggle is supposed to be. */
       if (scrollp->scrollbarWin != 0)
       {
-	 scrollp->togglePos = floorCDK (scrollp->currentItem * scrollp->step);
+	 scrollp->togglePos = floorCDK (scrollp->currentItem * (double)scrollp->step);
 
 	 /* Make sure the toggle button doesn't go out of bounds. */
 
@@ -736,13 +735,13 @@ static boolean allocListArrays (CDKSCROLL *scrollp,
 static boolean allocListItem (CDKSCROLL *scrollp,
 			      int which,
 			      char **work,
-			      unsigned *used,
+			      size_t * used,
 			      int number,
 			      char *value)
 {
    if (number > 0)
    {
-      unsigned need = NUMBER_LEN (value);
+      size_t need = NUMBER_LEN (value);
       if (need > *used)
       {
 	 *used = ((need + 2) * 2);
@@ -789,7 +788,7 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp,
       /* *INDENT-EQLS* */
       int widestItem            = 0;
       int x                     = 0;
-      unsigned have             = 0;
+      size_t have               = 0;
       char *temp                = 0;
 
       if (allocListArrays (scrollp, 0, listSize))
@@ -931,7 +930,7 @@ static void resequence (CDKSCROLL *scrollp)
 	       scrollp->itemLen[j] -= 1;
 	    }
 	    target[k] &= A_ATTRIBUTES;
-	    target[k] |= source[k];
+	    target[k] |= (chtype)source[k];
 	 }
       }
    }
@@ -957,7 +956,7 @@ void addCDKScrollItem (CDKSCROLL *scrollp, char *item)
    int itemNumber = scrollp->listSize;
    int widestItem = WidestItem (scrollp);
    char *temp = 0;
-   unsigned have = 0;
+   size_t have = 0;
 
    if (allocListArrays (scrollp, scrollp->listSize, scrollp->listSize + 1) &&
        allocListItem (scrollp,
@@ -985,7 +984,7 @@ void insertCDKScrollItem (CDKSCROLL *scrollp, char *item)
 {
    int widestItem = WidestItem (scrollp);
    char *temp = 0;
-   unsigned have = 0;
+   size_t have = 0;
 
    if (allocListArrays (scrollp, scrollp->listSize, scrollp->listSize + 1) &&
        insertListItem (scrollp, scrollp->currentItem) &&

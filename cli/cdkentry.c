@@ -1,4 +1,4 @@
-/* $Id: cdkentry.c,v 1.11 2008/11/04 23:36:39 tom Exp $ */
+/* $Id: cdkentry.c,v 1.12 2011/05/16 22:53:13 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -121,14 +121,15 @@ int main (int argc, char **argv)
    {
       holder	= char2Chtype (tempFiller, &j1, &j2);
       fieldAttr	= A_ATTRIBUTES & holder[0];
-      filler	= (chtype)holder[0];
+      filler	= (char)holder[0];
       freeChtype (holder);
    }
 
    /* Create the entry widget. */
    widget = newCDKEntry (cdkScreen, xpos, ypos,
 				title, label,
-				fieldAttr, filler | fieldAttr,
+				fieldAttr,
+				(chtype) filler | fieldAttr,
 				dType, fieldWidth,
 				minValue, maxValue,
 				boxWidget, FALSE);
@@ -149,7 +150,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int) CDKcountStrings (buttonList);
 
       buttonWidget = newCDKButtonbox (cdkScreen,
 					getbegx (widget->win),

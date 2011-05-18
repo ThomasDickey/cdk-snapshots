@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:18:25 $
- * $Revision: 1.134 $
+ * $Date: 2011/05/16 22:27:59 $
+ * $Revision: 1.135 $
  */
 
 /*
@@ -433,8 +433,8 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
    boolean change = FALSE;
    boolean moveby = FALSE;
    int amount = 0;
-   unsigned mark = (unsigned)cdktemplate->infoPos;
-   unsigned have = strlen (cdktemplate->info);
+   size_t mark = (size_t) cdktemplate->infoPos;
+   size_t have = strlen (cdktemplate->info);
 
    if (input == KEY_LEFT)
    {

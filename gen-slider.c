@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 18:37:42 $
- * $Revision: 1.22 $
+ * $Date: 2011/05/16 22:40:40 $
+ * $Revision: 1.23 $
  */
 
 /*
@@ -652,8 +652,8 @@ static void drawCDK<MIXED>Field (CDK<UPPER> *widget)
 {
    int fillerCharacters, x;
    char temp[256];
-   float step = ((float)widget->fieldWidth
-		 / (float)(widget->high - widget->low));
+   double step = ((double)widget->fieldWidth
+		 / (double)(widget->high - widget->low));
 
    /* Determine how many filler characters need to be drawn. */
    fillerCharacters = (int)((widget->current - widget->low) * step);

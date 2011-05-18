@@ -1,4 +1,4 @@
-/* $Id: cdkmentry.c,v 1.10 2008/11/04 23:36:39 tom Exp $ */
+/* $Id: cdkmentry.c,v 1.11 2011/05/16 22:58:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -121,13 +121,14 @@ int main (int argc, char **argv)
    {
       holder	= char2Chtype (tempFiller, &j1, &j2);
       fieldAttr	= A_ATTRIBUTES & holder[0];
-      filler	= (chtype)holder[0];
+      filler	= (char)holder[0];
       freeChtype (holder);
    }
    /* Create the mentry widget. */
    widget = newCDKMentry (cdkScreen, xpos, ypos,
 				title, label,
-				fieldAttr, filler | fieldAttr,
+				fieldAttr,
+				(chtype)filler | fieldAttr,
 				dType, fieldWidth,
 				screenRows, virtualRows,
 				min, boxWidget, shadowWidget);
@@ -148,7 +149,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,

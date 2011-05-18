@@ -1,52 +1,90 @@
+#define NCURSES_NOMACROS
 #include <cdk_int.h>
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:14:09 $
- * $Revision: 1.78 $
+ * $Date: 2011/05/17 09:51:39 $
+ * $Revision: 1.79 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
+
+static void discardWin (WINDOW **winp)
+{
+   if (*winp != 0)
+   {
+      werase (*winp);
+      wrefresh (*winp);
+      delwin (*winp);
+      *winp = 0;
+   }
+}
+
+static void layoutWidget (CDKMARQUEE *widget,
+			  int xpos,
+			  int ypos)
+{
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkscreen = ScreenOf (widget);
+   int parentWidth      = getmaxx (cdkscreen->window);
+   WINDOW *window;
+   int boxHeight;
+   int boxWidth;
+
+   discardWin (&(widget->win));
+   discardWin (&(widget->shadowWin));
+
+   boxWidth = setWidgetDimension (parentWidth, widget->width, 0);
+   boxHeight = (BorderOf (widget) * 2) + 1;
+
+   /* Rejustify the x and y positions if we need to. */
+   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
+   window = newwin (boxHeight, boxWidth, ypos, xpos);
+
+   if (window != 0)
+   {
+      /* *INDENT-EQLS* */
+      widget->win          = window;
+      widget->boxHeight    = boxHeight;
+      widget->boxWidth     = boxWidth;
+
+      keypad (widget->win, TRUE);
+
+      /* Do we want a shadow? */
+      if (widget->shadow)
+      {
+	 widget->shadowWin = subwin (cdkscreen->window,
+				     boxHeight, boxWidth,
+				     ypos + 1, xpos + 1);
+      }
+   }
+}
 
 /*
  * This creates a marquee widget.
  */
 CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
-			   int xplace,
-			   int yplace,
+			   int xpos,
+			   int ypos,
 			   int width,
 			   boolean Box,
 			   boolean shadow)
 {
    /* *INDENT-EQLS* */
    CDKMARQUEE *widget   = 0;
-   int parentWidth      = getmaxx (cdkscreen->window);
-   int xpos             = xplace;
-   int ypos             = yplace;
-   int boxHeight;
-   int boxWidth;
 
    if ((widget = newCDKObject (CDKMARQUEE, &my_funcs)) == 0)
         return (0);
 
-   setCDKMarqueeBox (widget, Box);
-
-   boxWidth = setWidgetDimension (parentWidth, width, 0);
-   boxHeight = (BorderOf (widget) * 2) + 1;
-
-   /* Rejustify the x and y positions if we need to. */
-   alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
-
    /* *INDENT-EQLS* Create the widget pointer. */
    ScreenOf (widget)    = cdkscreen;
    widget->parent       = cdkscreen->window;
-   widget->win          = newwin (boxHeight, boxWidth, ypos, xpos);
-   widget->boxHeight    = boxHeight;
-   widget->boxWidth     = boxWidth;
-   widget->shadowWin    = 0;
+   widget->win          = newwin (1, 1, ypos, xpos);
    widget->active       = TRUE;
    widget->width        = width;
    widget->shadow       = shadow;
+
+   setCDKMarqueeBox (widget, Box);
 
    /* Is the window null??? */
    if (widget->win == 0)
@@ -54,16 +92,6 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
       destroyCDKObject (widget);
       return (0);
    }
-
-   /* Do we want a shadow? */
-   if (shadow)
-   {
-      widget->shadowWin = subwin (cdkscreen->window,
-				  boxHeight, boxWidth,
-				  ypos + 1, xpos + 1);
-   }
-
-   keypad (widget->win, TRUE);
 
    registerCDKObject (cdkscreen, vMARQUEE, widget);
 
@@ -328,8 +356,13 @@ static void _eraseCDKMarquee (CDKOBJS *object)
  */
 void setCDKMarqueeBox (CDKMARQUEE *widget, boolean Box)
 {
+   int xpos = widget->win ? getbegx (widget->win) : 0;
+   int ypos = widget->win ? getbegy (widget->win) : 0;
+
    ObjOf (widget)->box = Box;
    ObjOf (widget)->borderSize = Box ? 1 : 0;
+
+   layoutWidget (widget, xpos, ypos);
 }
 boolean getCDKMarqueeBox (CDKMARQUEE *widget)
 {

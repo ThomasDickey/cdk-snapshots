@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.29 2004/08/30 00:00:57 tom Exp $
+ * $Id: calendar.h,v 1.30 2011/05/17 23:50:16 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 2000-2002,2003 copyright Thomas E. Dickey
+ * Changes 2000-2004,2011 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -99,6 +99,7 @@ struct SCalendar {
    boolean	shadow;
    char *	DayName;
    char *	MonthName[MAX_MONTHS];
+   int		weekBase;	/* starting day of week (Sunday=0, Monday=1) */
 };
 typedef struct SCalendar CDKCALENDAR;
 

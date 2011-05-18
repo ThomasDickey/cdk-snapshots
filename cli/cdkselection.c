@@ -1,4 +1,4 @@
-/* $Id: cdkselection.c,v 1.9 2005/12/27 17:45:21 tom Exp $ */
+/* $Id: cdkselection.c,v 1.10 2011/05/16 22:58:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
 	 {
 	    /* Split the line on CTRL-V. */
 	    items = CDKsplitString (scrollList[x], CTRL('V'));
-	    fields = CDKcountStrings (items);
+	    fields = (int)CDKcountStrings (items);
 
 	    /* Check the field count. */
 	    if (fields == 1)
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = CDKcountStrings (scrollList);
+      scrollLines = (int)CDKcountStrings (scrollList);
    }
 
    /* Did they supply a chopice list. */
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
    {
       /* Split the choices up. */
       choiceList = CDKsplitString (choices, '\n');
-      choiceSize = CDKcountStrings (choiceList);
+      choiceSize = (int)CDKcountStrings (choiceList);
    }
 
    /* Start curses. */
@@ -225,7 +225,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings (buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
