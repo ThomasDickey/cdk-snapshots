@@ -1,3 +1,9 @@
+cdk (20120318) unstable; urgency=high
+
+  * Fixes for package scripts.
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Sun, 18 Mar 2012 19:38:57 -0400
+
 cdk (20110517) unstable; urgency=high
 
   * Initial package release
