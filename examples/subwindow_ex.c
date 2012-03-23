@@ -1,4 +1,4 @@
-/* $Id: subwindow_ex.c,v 1.10 2005/12/27 00:55:46 tom Exp $ */
+/* $Id: subwindow_ex.c,v 1.12 2012/03/22 09:10:45 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,25 +11,33 @@ char *XCursesProgramName = "subwindow_ex";
  */
 int main (int argc, char **argv)
 {
-   /* Declare vars. */
    CDKSCREEN *cdkscreen;
    CDKSCROLL *dowList;
    CDKLABEL *title;
-   WINDOW *mainWindow, *subWindow;
-   char *dow[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-   char *mesg[5];
+   WINDOW *subWindow;
+   const char *dow[] =
+   {
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+   };
+   const char *mesg[5];
    int pick;
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "s:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "s:" CDK_CLI_PARAMS);
 
    /* Start curses. */
-   mainWindow = initscr();
-   curs_set(0);
+   initscr ();
+   curs_set (0);
 
    /* Create a basic window. */
-   subWindow = newwin (LINES-5, COLS-10, 2, 5);
+   subWindow = newwin (LINES - 5, COLS - 10, 2, 5);
 
    /* Start Cdk. */
    cdkscreen = initCDKScreen (subWindow);
@@ -40,22 +48,28 @@ int main (int argc, char **argv)
 
    /* Create a basic scrolling list inside the window. */
    dowList = newCDKScroll (cdkscreen,
-			   CDKparamValue(&params, 'X', CENTER),
-			   CDKparamValue(&params, 'Y', CENTER),
-			   CDKparsePosition(CDKparamString2(&params, 's', "RIGHT")),
-			   CDKparamValue(&params, 'H', 10),
-			   CDKparamValue(&params, 'W', 15),
-			   "<C></U>Pick a Day", dow, 7, NONUMBERS,
+			   CDKparamValue (&params, 'X', CENTER),
+			   CDKparamValue (&params, 'Y', CENTER),
+			   CDKparsePosition (CDKparamString2 (&params,
+							      's',
+							      "RIGHT")),
+			   CDKparamValue (&params, 'H', 10),
+			   CDKparamValue (&params, 'W', 15),
+			   "<C></U>Pick a Day",
+			   (CDK_CSTRING2) dow, 7,
+			   NONUMBERS,
 			   A_REVERSE,
-			   CDKparamValue(&params, 'N', TRUE),
-			   CDKparamValue(&params, 'S', FALSE));
+			   CDKparamValue (&params, 'N', TRUE),
+			   CDKparamValue (&params, 'S', FALSE));
 
    /* Put a title within the window. */
    mesg[0] = "<C><#HL(30)>";
    mesg[1] = "<C>This is a Cdk scrolling list";
    mesg[2] = "<C>inside a curses window.";
    mesg[3] = "<C><#HL(30)>";
-   title = newCDKLabel (cdkscreen, CENTER, 0, mesg, 4, FALSE, FALSE);
+   title = newCDKLabel (cdkscreen, CENTER, 0,
+			(CDK_CSTRING2) mesg, 4,
+			FALSE, FALSE);
 
    /* Refresh the screen. */
    refreshCDKScreen (cdkscreen);
@@ -68,7 +82,7 @@ int main (int argc, char **argv)
    destroyCDKLabel (title);
    eraseCursesWindow (subWindow);
    destroyCDKScreen (cdkscreen);
-   endCDK();
+   endCDK ();
 
    /* Tell them what they picked. */
    printf ("You picked %s\n", dow[pick]);

@@ -2,11 +2,11 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:40:11 $
- * $Revision: 1.83 $
+ * $Date: 2012/03/21 08:44:22 $
+ * $Revision: 1.84 $
  */
 
-static int createList (CDKITEMLIST *itemlist, char **item, int count);
+static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count);
 static int createFieldWin (CDKITEMLIST *itemlist, int ypos, int xpos);
 static int maximumFieldWidth (CDKITEMLIST *itemlist);
 static void updateFieldWidth (CDKITEMLIST *itemlist);
@@ -19,9 +19,9 @@ DeclareCDKObjects (ITEMLIST, Itemlist, setCdk, Int);
 CDKITEMLIST *newCDKItemlist (CDKSCREEN *cdkscreen,
 			     int xplace,
 			     int yplace,
-			     char *title,
-			     char *label,
-			     char **item,
+			     const char *title,
+			     const char *label,
+			     CDK_CSTRING2 item,
 			     int count,
 			     int defaultItem,
 			     boolean Box,
@@ -533,7 +533,7 @@ static void _destroyCDKItemlist (CDKOBJS *object)
  * This sets multiple attributes of the widget.
  */
 void setCDKItemlist (CDKITEMLIST *itemlist,
-		     char **list,
+		     CDK_CSTRING2 list,
 		     int count,
 		     int current,
 		     boolean Box)
@@ -545,7 +545,7 @@ void setCDKItemlist (CDKITEMLIST *itemlist,
 /*
  * This function sets the contents of the list.
  */
-void setCDKItemlistValues (CDKITEMLIST *itemlist, char **item, int count, int defaultItem)
+void setCDKItemlistValues (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count, int defaultItem)
 {
    if (createList (itemlist, item, count))
    {
@@ -716,7 +716,7 @@ dummyRefreshData (Itemlist)
 dummySaveData (Itemlist)
 #endif
 
-     static int createList (CDKITEMLIST *itemlist, char **item, int count)
+static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count)
 {
    int status = 0;
 

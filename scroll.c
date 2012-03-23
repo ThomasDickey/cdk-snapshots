@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:22:03 $
- * $Revision: 1.151 $
+ * $Date: 2012/03/21 21:01:15 $
+ * $Revision: 1.153 $
  */
 
 /*
@@ -11,7 +11,7 @@
  */
 static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box);
 static int createCDKScrollItemList (CDKSCROLL *scrollp, boolean numbers,
-				    char **list, int listSize);
+				    CDK_CSTRING2 list, int listSize);
 static void fixCursorPosition (CDKSCROLL *widget);
 static void setViewSize (CDKSCROLL *scrollp, int listSize);
 static int maxViewSize (CDKSCROLL *scrollp);
@@ -41,8 +41,8 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
 			 int splace,
 			 int height,
 			 int width,
-			 char *title,
-			 char **list,
+			 const char *title,
+			 CDK_CSTRING2 list,
 			 int listSize,
 			 boolean numbers,
 			 chtype highlight,
@@ -737,7 +737,7 @@ static boolean allocListItem (CDKSCROLL *scrollp,
 			      char **work,
 			      size_t * used,
 			      int number,
-			      char *value)
+			      const char *value)
 {
    if (number > 0)
    {
@@ -778,7 +778,7 @@ static boolean allocListItem (CDKSCROLL *scrollp,
  */
 static int createCDKScrollItemList (CDKSCROLL *scrollp,
 				    boolean numbers,
-				    char **list,
+				    CDK_CSTRING2 list,
 				    int listSize)
 {
    int status = 0;
@@ -833,7 +833,7 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp,
  * This sets certain attributes of the scrolling list.
  */
 void setCDKScroll (CDKSCROLL *scrollp,
-		   char **list,
+		   CDK_CSTRING2 list,
 		   int listSize,
 		   boolean numbers,
 		   chtype highlight,
@@ -847,7 +847,7 @@ void setCDKScroll (CDKSCROLL *scrollp,
 /*
  * This sets the scrolling list items.
  */
-void setCDKScrollItems (CDKSCROLL *scrollp, char **list, int listSize, boolean numbers)
+void setCDKScrollItems (CDKSCROLL *scrollp, CDK_CSTRING2 list, int listSize, boolean numbers)
 {
    int x = 0;
 
@@ -951,7 +951,7 @@ static boolean insertListItem (CDKSCROLL *scrollp, int item)
 /*
  * This adds a single item to a scrolling list, at the end of the list.
  */
-void addCDKScrollItem (CDKSCROLL *scrollp, char *item)
+void addCDKScrollItem (CDKSCROLL *scrollp, const char *item)
 {
    int itemNumber = scrollp->listSize;
    int widestItem = WidestItem (scrollp);
@@ -980,7 +980,7 @@ void addCDKScrollItem (CDKSCROLL *scrollp, char *item)
 /*
  * This adds a single item to a scrolling list, before the current item.
  */
-void insertCDKScrollItem (CDKSCROLL *scrollp, char *item)
+void insertCDKScrollItem (CDKSCROLL *scrollp, const char *item)
 {
    int widestItem = WidestItem (scrollp);
    char *temp = 0;

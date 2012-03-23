@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:29:34 $
- * $Revision: 1.98 $
+ * $Date: 2012/03/21 08:44:22 $
+ * $Revision: 1.100 $
  */
 
 DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
@@ -14,9 +14,9 @@ DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
 CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen,
 			 int xplace,
 			 int yplace,
-			 char **mesg,
+			 CDK_CSTRING2 mesg,
 			 int rows,
-			 char **buttonLabel,
+			 CDK_CSTRING2 buttonLabel,
 			 int buttonCount,
 			 chtype highlight,
 			 boolean separator,

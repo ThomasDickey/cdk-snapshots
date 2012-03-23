@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:11:12 $
- * $Revision: 1.105 $
+ * $Date: 2012/03/22 09:41:38 $
+ * $Revision: 1.107 $
  */
 
 /*
@@ -12,7 +12,7 @@
 static BINDFN_PROTO (adjustAlphalistCB);
 static BINDFN_PROTO (completeWordCB);
 static int preProcessEntryField (EObjectType, void *, void *, chtype);
-static int createList (CDKALPHALIST *alphalist, char **list, int listSize);
+static int createList (CDKALPHALIST *alphalist, CDK_CSTRING2 list, int listSize);
 
 DeclareSetXXchar (static, _setMy);
 DeclareCDKObjects (ALPHALIST, Alphalist, _setMy, String);
@@ -25,9 +25,9 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen,
 			       int yplace,
 			       int height,
 			       int width,
-			       char *title,
-			       char *label,
-			       char **list,
+			       const char *title,
+			       const char *label,
+			       CDK_CSTRING2 list,
 			       int listSize,
 			       chtype fillerChar,
 			       chtype highlight,
@@ -290,7 +290,7 @@ static void drawMyScroller (CDKALPHALIST *widget)
 static void injectMyScroller (CDKALPHALIST *widget, chtype key)
 {
    SaveFocus (widget);
-   injectCDKScroll (widget->scrollField, key);
+   (void)injectCDKScroll (widget->scrollField, key);
    RestoreFocus (widget);
 }
 
@@ -367,7 +367,7 @@ static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
  * This sets multiple attributes of the widget.
  */
 void setCDKAlphalist (CDKALPHALIST *alphalist,
-		      char **list,
+		      CDK_CSTRING2 list,
 		      int listSize,
 		      chtype fillerChar,
 		      chtype highlight,
@@ -382,7 +382,7 @@ void setCDKAlphalist (CDKALPHALIST *alphalist,
 /*
  * This function sets the information inside the file selector.
  */
-void setCDKAlphalistContents (CDKALPHALIST *widget, char **list, int listSize)
+void setCDKAlphalistContents (CDKALPHALIST *widget, CDK_CSTRING2 list, int listSize)
 {
    CDKSCROLL *scrollp = widget->scrollField;
    CDKENTRY *entry = widget->entryField;
@@ -392,7 +392,7 @@ void setCDKAlphalistContents (CDKALPHALIST *widget, char **list, int listSize)
 
    /* Set the information in the scrolling list. */
    setCDKScroll (scrollp,
-		 widget->list,
+		 (CDK_CSTRING2) widget->list,
 		 widget->listSize,
 		 NONUMBERS,
 		 scrollp->highlight,
@@ -683,7 +683,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void
       {
 	 empty = TRUE;
       }
-      else if ((Index = searchList (alphalist->list,
+      else if ((Index = searchList ((CDK_CSTRING2) alphalist->list,
 				    alphalist->listSize,
 				    pattern)) >= 0)
       {
@@ -770,7 +770,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    }
 
    /* Look for a unique word match. */
-   Index = searchList (alphalist->list, alphalist->listSize, entry->info);
+   Index = searchList ((CDK_CSTRING2) alphalist->list, alphalist->listSize, entry->info);
 
    /* If the index is less than zero, return we didn't find a match. */
    if (Index < 0)
@@ -818,8 +818,8 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
       scrollp = newCDKScroll (entry->obj.screen,
 			      CENTER, CENTER, RIGHT, height, -30,
 			      "<C></B/5>Possible Matches.",
-			      altWords, altCount, NUMBERS,
-			      A_REVERSE, TRUE, FALSE);
+			      (CDK_CSTRING2) altWords, altCount,
+			      NUMBERS, A_REVERSE, TRUE, FALSE);
 
       /* Allow them to select a close match. */
       match = activateCDKScroll (scrollp, 0);
@@ -877,7 +877,7 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    return (TRUE);
 }
 
-static int createList (CDKALPHALIST *alphalist, char **list, int listSize)
+static int createList (CDKALPHALIST *alphalist, CDK_CSTRING2 list, int listSize)
 {
    int status = 0;
 
@@ -888,13 +888,6 @@ static int createList (CDKALPHALIST *alphalist, char **list, int listSize)
       if (newlist != 0)
       {
 	 int x;
-
-	 /*
-	  * We'll sort the list before we use it.  It would have been better to
-	  * declare list[] const and only modify the copy, but there may be
-	  * clients that rely on the old behavior.
-	  */
-	 sortList (list, listSize);
 
 	 /* Copy in the new information. */
 	 status = 1;
@@ -911,6 +904,7 @@ static int createList (CDKALPHALIST *alphalist, char **list, int listSize)
 	    destroyInfo (alphalist);
 	    alphalist->listSize = listSize;
 	    alphalist->list = newlist;
+	    sortList (newlist, listSize);
 	 }
 	 else
 	 {

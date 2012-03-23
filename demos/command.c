@@ -1,4 +1,4 @@
-/* $Id: command.c,v 1.17 2011/05/15 20:40:40 tom Exp $ */
+/* $Id: command.c,v 1.19 2012/03/21 22:48:56 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -8,7 +8,7 @@ char *XCursesProgramName = "command";
 
 /* Define some global variables. */
 #define MAXHISTORY	5000
-static char *introductionMessage[] =
+static const char *introductionMessage[] =
 {
    "<C></B/16>Little Command Interface", "",
    "<C>Written by Mike Glover", "",
@@ -46,8 +46,8 @@ int main (int argc, char **argv)
    chtype *convert              = 0;
    char *command                = 0;
    char *upper                  = 0;
-   char *prompt                 = "</B/24>Command >";
-   char *title                  = "<C></B/5>Command Output Window";
+   const char *prompt           = "</B/24>Command >";
+   const char *title            = "<C></B/5>Command Output Window";
    int promptLen                = 0;
    int commandFieldWidth        = 0;
    struct history_st history;
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
    /* Show them who wrote this and how to get help. */
-   popupLabel (cdkscreen, introductionMessage, 5);
+   popupLabel (cdkscreen, (CDK_CSTRING2) introductionMessage, 5);
    eraseCDKEntry (commandEntry);
 
    /* Do this forever. */
@@ -335,9 +335,12 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
    if (history->count == 0)
    {
       /* Popup a little window telling the user there are no commands. */
-      char *mesg[] =
-      {"<C></B/16>No Commands Entered", "<C>No History"};
-      popupLabel (ScreenOf (entry), mesg, 2);
+      const char *mesg[] =
+      {
+	 "<C></B/16>No Commands Entered",
+	 "<C>No History"
+      };
+      popupLabel (ScreenOf (entry), (CDK_CSTRING2) mesg, 2);
 
       /* Redraw the screen. */
       eraseCDKEntry (entry);
@@ -350,7 +353,8 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
    /* Create the scrolling list of previous commands. */
    scrollList = newCDKScroll (ScreenOf (entry), CENTER, CENTER, RIGHT,
 			      height, 20, "<C></B/29>Command History",
-			      history->command, history->count,
+			      (CDK_CSTRING2) history->command,
+			      history->count,
 			      NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
@@ -375,7 +379,7 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
  */
 void help (CDKENTRY *entry)
 {
-   char *mesg[25];
+   const char *mesg[25];
 
    /* Create the help message. */
    mesg[0] = "<C></B/29>Help";
@@ -398,7 +402,7 @@ void help (CDKENTRY *entry)
    mesg[17] = "<B=Tab/Escape> Returns to the command line.";
    mesg[18] = "";
    mesg[19] = "<C> (</B/24>Refer to the scrolling window online manual for more help<!B!24>.)";
-   popupLabel (ScreenOf (entry), mesg, 20);
+   popupLabel (ScreenOf (entry), (CDK_CSTRING2) mesg, 20);
 }
 
 /*

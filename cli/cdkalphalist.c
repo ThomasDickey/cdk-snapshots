@@ -1,9 +1,9 @@
-/* $Id: cdkalphalist.c,v 1.13 2011/05/16 22:47:37 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.16 2012/03/22 09:36:04 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkalphalist";
+char *XCursesProgramName = "cdkalphalist";
 #endif
 
 /*
@@ -14,31 +14,30 @@ int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype key);
 /*
  * Define file local variables.
  */
-static char *FPUsage = "-l List | -f filename [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static const char *FPUsage = "-l List | -f filename [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKALPHALIST *widget		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   WINDOW *cursesWindow		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *answer			= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKALPHALIST *widget         = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   WINDOW *cursesWindow         = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *answer                 = 0;
    char *buttons;
-   char *temp			= 0;
-   chtype *holder		= 0;
-   chtype filler		= A_NORMAL | '.';
-   int scrollLines		= -1;
-   int buttonCount		= 0;
-   int selection		= 0;
-   int shadowHeight		= 0;
-   FILE *fp			= stderr;
-   char **scrollList		= 0;
-   char **buttonList		= 0;
+   char *temp                   = 0;
+   chtype *holder               = 0;
+   chtype filler                = A_NORMAL | '.';
+   int scrollLines              = -1;
+   int buttonCount              = 0;
+   int shadowHeight             = 0;
+   FILE *fp                     = stderr;
+   char **scrollList            = 0;
+   char **buttonList            = 0;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -55,22 +54,22 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "f:l:B:F:L:O:T:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "f:l:B:F:L:O:T:" CDK_CLI_PARAMS);
 
-   xpos         = CDKparamValue(&params, 'X', CENTER);
-   ypos         = CDKparamValue(&params, 'Y', CENTER);
-   height       = CDKparamValue(&params, 'H', -1);
-   width        = CDKparamValue(&params, 'W', -1);
-   boxWidget    = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget = CDKparamValue(&params, 'S', FALSE);
-
-   filename     = CDKparamString(&params, 'f');
-   list         = CDKparamString(&params, 'l');
-   buttons      = CDKparamString(&params, 'B');
-   tempFiller   = CDKparamString(&params, 'F');
-   label        = CDKparamString(&params, 'L');
-   outputFile   = CDKparamString(&params, 'O');
-   title        = CDKparamString(&params, 'T');
+   /* *INDENT-EQLS* */
+   xpos         = CDKparamValue (&params, 'X', CENTER);
+   ypos         = CDKparamValue (&params, 'Y', CENTER);
+   height       = CDKparamValue (&params, 'H', -1);
+   width        = CDKparamValue (&params, 'W', -1);
+   boxWidget    = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget = CDKparamValue (&params, 'S', FALSE);
+   filename     = CDKparamString (&params, 'f');
+   list         = CDKparamString (&params, 'l');
+   buttons      = CDKparamString (&params, 'B');
+   tempFiller   = CDKparamString (&params, 'F');
+   label        = CDKparamString (&params, 'L');
+   outputFile   = CDKparamString (&params, 'O');
+   title        = CDKparamString (&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -109,17 +108,17 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = (int) CDKcountStrings (scrollList);
+      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2) scrollList);
    }
 
    /* Start curses. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
 
    /* Create the CDK screen. */
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -146,20 +145,22 @@ int main (int argc, char **argv)
 
    /* Create the widget. */
    widget = newCDKAlphalist (cdkScreen, xpos, ypos,
-				height, width,
-				title, label,
-				scrollList, scrollLines,
-				filler, A_REVERSE,
-				boxWidget, shadowWidget);
+			     height, width,
+			     title, label,
+			     (CDK_CSTRING2) scrollList, scrollLines,
+			     filler, A_REVERSE,
+			     boxWidget, shadowWidget);
 
    /* Make sure we could create the widget. */
    if (widget == 0)
    {
-      CDKfreeStrings(scrollList);
+      CDKfreeStrings (scrollList);
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the alphalist. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the alphalist. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -168,16 +169,17 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int) CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
 
       buttonWidget = newCDKButtonbox (cdkScreen,
-					getbegx (widget->win) + 1,
-					getbegy (widget->win) + widget->boxHeight - 1,
-					1, widget->boxWidth - 3,
-					0, 1, buttonCount,
-					buttonList, buttonCount,
-					A_REVERSE, boxWidget, FALSE);
-      CDKfreeStrings(buttonList);
+				      getbegx (widget->win) + 1,
+				      (getbegy (widget->win)
+				       + widget->boxHeight - 1),
+				      1, widget->boxWidth - 3,
+				      0, 1, buttonCount,
+				      (CDK_CSTRING2) buttonList, buttonCount,
+				      A_REVERSE, boxWidget, FALSE);
+      CDKfreeStrings (buttonList);
 
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
@@ -215,14 +217,14 @@ int main (int argc, char **argv)
    {
       /* Determine the height of the shadow window. */
       shadowHeight = (buttonWidget == 0 ?
-			widget->boxHeight :
-			widget->boxHeight + buttonWidget->boxHeight - 1);
+		      widget->boxHeight :
+		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
       /* Create the shadow window. */
       widget->shadowWin = newwin (shadowHeight,
-					widget->boxWidth,
-					getbegy (widget->win) + 1,
-					getbegx (widget->win) + 1);
+				  widget->boxWidth,
+				  getbegy (widget->win) + 1,
+				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
@@ -234,9 +236,9 @@ int main (int argc, char **argv)
 	  * buttonbox widget will be drawn when the widget is activated.
 	  * Otherwise the shadow window will draw over the button widget.
 	  */
-	 drawCDKAlphalist (widget, ObjOf(widget)->box);
+	 drawCDKAlphalist (widget, ObjOf (widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
-	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 drawCDKButtonbox (buttonWidget, ObjOf (buttonWidget)->box);
       }
    }
 
@@ -249,15 +251,14 @@ int main (int argc, char **argv)
    /* If there were buttons, get the button selected. */
    if (buttonWidget != 0)
    {
-      selection = buttonWidget->currentButton;
       destroyCDKButtonbox (buttonWidget);
    }
 
-   CDKfreeStrings(scrollList);
+   CDKfreeStrings (scrollList);
 
    destroyCDKAlphalist (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Print out the answer. */
    if (answer != 0)
@@ -270,9 +271,12 @@ int main (int argc, char **argv)
    ExitProgram (0);
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+int widgetCB (EObjectType cdktype GCC_UNUSED,
+	      void *object GCC_UNUSED,
+	      void *clientData,
+	      chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   injectCDKButtonbox (buttonbox, key);
+   (void) injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

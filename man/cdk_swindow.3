@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.22 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.24 2012/03/22 08:42:21 tom Exp $
 .de XX
 ..
 .TH cdk_swindow 3
@@ -53,7 +53,7 @@ cdk_swindow \- a curses scrolling window widget.
 .TP 15
 .B "void addCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "char *" "info",
+.BI "const char *" "info",
 .BI "int " "insertPosition");
 .TP 15
 .B "void cleanCDKSwindow ("
@@ -61,7 +61,7 @@ cdk_swindow \- a curses scrolling window widget.
 .TP 15
 .B "int execCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "char * " "command",
+.BI "const char * " "command",
 .BI "int " "insertPosition");
 .TP 15
 .B "void destroyCDKSwindow ("
@@ -73,7 +73,7 @@ cdk_swindow \- a curses scrolling window widget.
 .TP 15
 .B "void dumpCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "char *" "filename");
+.BI "const char *" "filename");
 .TP 15
 .B "void eraseCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow");
@@ -111,7 +111,7 @@ cdk_swindow \- a curses scrolling window widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
+.BI "const char *" "title",
 .BI "int " "saveLines",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
@@ -124,7 +124,7 @@ cdk_swindow \- a curses scrolling window widget.
 .TP 15
 .B "void setCDKSwindow ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "char **" "info",
+.BI "CDK_CONST char **" "info",
 .BI "int " "lines",
 .BI "boolean " "box");
 .TP 15
@@ -134,7 +134,8 @@ cdk_swindow \- a curses scrolling window widget.
 .TP 15
 .B "void setCDKSwindowBackgroundColor ("
 .BI "CDKSWINDOW *" "swindow",
-.BI "char * " "color");
+.BI "const char * " "color");
+.TP 15
 .B "void setCDKSwindowBox ("
 .BI "CDKSWINDOW *" "swindow,"
 .BI "boolean " "boxWidget);"

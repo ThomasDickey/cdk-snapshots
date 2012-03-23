@@ -1,4 +1,4 @@
-/* $Id: mentry_ex.c,v 1.9 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: mentry_ex.c,v 1.10 2012/03/21 23:32:57 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -8,13 +8,13 @@ char *XCursesProgramName = "mentry_ex";
 
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
+   /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
-   CDKMENTRY *widget = 0;
-   WINDOW *cursesWin = 0;
-   char *info = 0;
-   char *label = "</R>Message";
-   char *title = "<C></5>Enter a message.<!5>";
+   CDKMENTRY *widget    = 0;
+   WINDOW *cursesWin    = 0;
+   char *info           = 0;
+   const char *label    = "</R>Message";
+   const char *title    = "<C></5>Enter a message.<!5>";
 
    CDK_PARAMS params;
 
@@ -46,8 +46,7 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a message. */
-      printf ("Oops. Can not create CDK object. Is the window too small?\n");
+      printf ("Cannot create CDK object. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
@@ -66,7 +65,6 @@ int main (int argc, char **argv)
    destroyCDKScreen (cdkscreen);
    endCDK ();
 
-   /* Spit out the results. */
    printf ("\n\n\n");
    printf ("Your message was : <%s>\n", info);
    free (info);

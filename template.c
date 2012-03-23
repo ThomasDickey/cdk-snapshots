@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:27:59 $
- * $Revision: 1.135 $
+ * $Date: 2012/03/21 21:02:12 $
+ * $Revision: 1.136 $
  */
 
 /*
@@ -23,10 +23,10 @@ DeclareCDKObjects (TEMPLATE, Template, setCdk, String);
 CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
 			     int xplace,
 			     int yplace,
-			     char *title,
-			     char *label,
-			     char *plate,
-			     char *Overlay,
+			     const char *title,
+			     const char *label,
+			     const char *plate,
+			     const char *Overlay,
 			     boolean Box,
 			     boolean shadow)
 {
@@ -570,7 +570,7 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
 /*
  * Return the field-info from the mixed string.
  */
-char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, char *info)
+char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, const char *info)
 {
    /* *INDENT-EQLS* */
    int x                = 0;
@@ -805,7 +805,7 @@ static void _eraseCDKTemplate (CDKOBJS *object)
 /*
  * Set the value given to the cdktemplate.
  */
-void setCDKTemplate (CDKTEMPLATE *cdktemplate, char *newValue, boolean Box)
+void setCDKTemplate (CDKTEMPLATE *cdktemplate, const char *newValue, boolean Box)
 {
    setCDKTemplateValue (cdktemplate, newValue);
    setCDKTemplateBox (cdktemplate, Box);
@@ -814,7 +814,7 @@ void setCDKTemplate (CDKTEMPLATE *cdktemplate, char *newValue, boolean Box)
 /*
  * Set the value given to the cdktemplate.
  */
-void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, char *newValue)
+void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, const char *newValue)
 {
    /* *INDENT-EQLS* */
    int len              = 0;

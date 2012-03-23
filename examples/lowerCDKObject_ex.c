@@ -1,4 +1,4 @@
-/* $Id: lowerCDKObject_ex.c,v 1.8 2011/05/15 20:18:15 tom Exp $ */
+/* $Id: lowerCDKObject_ex.c,v 1.9 2012/03/21 23:11:37 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -10,9 +10,9 @@ int main (int argc, char **argv)
 {
    char ch;
 
-   char *mesg[1];
-   char *mesg1[10];
-   char *mesg2[10];
+   const char *mesg[1];
+   const char *mesg1[10];
+   const char *mesg2[10];
 
    WINDOW *cursesWin;
    CDKSCREEN *cdkscreen;
@@ -36,7 +36,7 @@ int main (int argc, char **argv)
    mesg1[7] = "label1 label1 label1 label1 label1 label1 label1";
    mesg1[8] = "label1 label1 label1 label1 label1 label1 label1";
    mesg1[9] = "label1 label1 label1 label1 label1 label1 label1";
-   label1 = newCDKLabel (cdkscreen, 8, 5, mesg1, 10, TRUE, FALSE);
+   label1 = newCDKLabel (cdkscreen, 8, 5, (CDK_CSTRING2) mesg1, 10, TRUE, FALSE);
 
    mesg2[0] = "label2 label2 label2 label2 label2 label2 label2";
    mesg2[1] = "label2 label2 label2 label2 label2 label2 label2";
@@ -48,13 +48,13 @@ int main (int argc, char **argv)
    mesg2[7] = "label2 label2 label2 label2 label2 label2 label2";
    mesg2[8] = "label2 label2 label2 label2 label2 label2 label2";
    mesg2[9] = "label2 label2 label2 label2 label2 label2 label2";
-   label2 = newCDKLabel (cdkscreen, 14, 9, mesg2, 10, TRUE, FALSE);
+   label2 = newCDKLabel (cdkscreen, 14, 9, (CDK_CSTRING2) mesg2, 10, TRUE, FALSE);
 
    mesg[0] = "</B>1<!B> - lower </U>label1<!U>, </B>2<!B> - lower </U>label2<!U>, </B>q<!B> - </U>quit<!U>";
    instruct = newCDKLabel (cdkscreen,
 			   CDKparamValue (&params, 'X', CENTER),
 			   CDKparamValue (&params, 'Y', BOTTOM),
-			   mesg, 1,
+			   (CDK_CSTRING2) mesg, 1,
 			   CDKparamValue (&params, 'N', FALSE),
 			   CDKparamValue (&params, 'S', FALSE));
 

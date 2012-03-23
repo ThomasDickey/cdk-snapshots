@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_params.3,v 1.3 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_params.3,v 1.4 2012/03/22 01:11:47 tom Exp $
 .de XX
 ..
 .TH cdk_params 3
@@ -38,13 +38,13 @@ cdk_params \- Cdk command-line parsing
 .B "char * CDKparamString2 ("
 .BI "CDK_PARAMS *" "params",
 .BI "int " "option",
-.BI "char *" "missing");
+.BI "const char *" "missing");
 .TP 15
 .B "void CDKparseParams ("
 .BI "int " "argc",
 .BI "char **" "argv",
 .BI "CDK_PARAMS *" "params",
-.BI "char *" "options");
+.BI "const char *" "options");
 .TP 15
 .B "int CDKparsePosition ("
 .BI "char *" "string");

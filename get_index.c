@@ -2,14 +2,18 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:54:51 $
- * $Revision: 1.2 $
+ * $Date: 2012/03/22 00:43:33 $
+ * $Revision: 1.3 $
  */
 
 /*
  * This returns a selected value in a list.
  */
-int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boolean numbers)
+int getListIndex (CDKSCREEN *screen,
+		  const char *title,
+		  CDK_CSTRING2 list,
+		  int listSize,
+		  boolean numbers)
 {
    /* *INDENT-EQLS* */
    CDKSCROLL *scrollp   = 0;
@@ -41,7 +45,7 @@ int getListIndex (CDKSCREEN *screen, char *title, char **list, int listSize, boo
    /* Create the scrolling list. */
    scrollp = newCDKScroll (screen, CENTER, CENTER, RIGHT,
 			   height, width, title,
-			   list, listSize, numbers,
+			   (CDK_CSTRING2) list, listSize, numbers,
 			   A_REVERSE, TRUE, FALSE);
 
    /* Check if we made the list. */

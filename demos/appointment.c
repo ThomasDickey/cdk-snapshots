@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.21 2011/05/16 23:20:05 tom Exp $ */
+/* $Id: appointment.c,v 1.26 2012/03/23 13:54:44 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -71,11 +71,10 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen         = 0;
    CDKCALENDAR *calendar        = 0;
    WINDOW *cursesWin            = 0;
-   char *title                  = "<C></U>CDK Appointment Book\n<C><#HL(30)>\n";
+   const char *title            = "<C></U>CDK Appointment Book\n<C><#HL(30)>\n";
    char *filename               = 0;
    struct tm *dateInfo          = 0;
    time_t clck                  = 0;
-   time_t retVal                = 0;
    struct AppointmentInfo appointmentInfo;
    int day, month, year, ret, x;
    char temp[1000];
@@ -86,7 +85,7 @@ int main (int argc, char **argv)
     */
    /* *INDENT-EQLS* */
    time (&clck);
-   dateInfo    = localtime (&clck);
+   dateInfo    = gmtime (&clck);
    day         = dateInfo->tm_mday;
    month       = dateInfo->tm_mon + 1;
    year        = dateInfo->tm_year + 1900;
@@ -195,7 +194,7 @@ int main (int argc, char **argv)
    drawCDKCalendar (calendar, ObjOf (calendar)->box);
 
    /* Let the user play with the widget. */
-   retVal = activateCDKCalendar (calendar, 0);
+   activateCDKCalendar (calendar, 0);
 
    /* Save the appointment information. */
    saveAppointmentFile (filename, &appointmentInfo);
@@ -235,7 +234,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    for (x = 0; x < linesRead; x++)
    {
       temp = CDKsplitString (lines[x], CTRL ('V'));
-      segments = (int)CDKcountStrings (temp);
+      segments = (int)CDKcountStrings ((CDK_CSTRING2) temp);
 
       /*
        * A valid line has 5 elements:
@@ -246,10 +245,10 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 	 int eType = atoi (temp[3]);
 
 	 /* *INDENT-EQLS* */
-	 appInfo->appointment[appointments].day         = atoi (temp[0]);
-	 appInfo->appointment[appointments].month       = atoi (temp[1]);
-	 appInfo->appointment[appointments].year        = atoi (temp[2]);
-	 appInfo->appointment[appointments].type        = (EAppointmentType)eType;
+	 appInfo->appointment[appointments].day       = atoi (temp[0]);
+	 appInfo->appointment[appointments].month     = atoi (temp[1]);
+	 appInfo->appointment[appointments].year      = atoi (temp[2]);
+	 appInfo->appointment[appointments].type      = (EAppointmentType) eType;
 	 appInfo->appointment[appointments].description = copyChar (temp[4]);
 	 appointments++;
       }
@@ -285,7 +284,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 		  appInfo->appointment[x].day, CTRL ('V'),
 		  appInfo->appointment[x].month, CTRL ('V'),
 		  appInfo->appointment[x].year, CTRL ('V'),
-		  appInfo->appointment[x].type, CTRL ('V'),
+		  (int) appInfo->appointment[x].type, CTRL ('V'),
 		  appInfo->appointment[x].description);
 
 	 freeChar (appInfo->appointment[x].description);
@@ -305,8 +304,13 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
    CDKCALENDAR *calendar                        = (CDKCALENDAR *)object;
    CDKENTRY *entry                              = 0;
    CDKITEMLIST *itemlist                        = 0;
-   char *items[]                                =
-   {"Birthday", "Anniversary", "Appointment", "Other"};
+   const char *items[]                          =
+   {
+      "Birthday",
+      "Anniversary",
+      "Appointment",
+      "Other"
+   };
    char *description                            = 0;
    struct AppointmentInfo *appointmentInfo      = (struct AppointmentInfo *)clientData;
    int current                                  = appointmentInfo->appointmentCount;
@@ -317,7 +321,7 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
    itemlist = newCDKItemlist (ScreenOf (calendar),
 			      CENTER, CENTER, 0,
 			      "Select Appointment Type: ",
-			      items, 4, 0,
+			      (CDK_CSTRING2) items, 4, 0,
 			      TRUE, FALSE);
 
    /* Get the appointment tye from the user. */
@@ -428,7 +432,7 @@ static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
    int month                                    = 0;
    int year                                     = 0;
    int mesgLines                                = 0;
-   char *type                                   = 0;
+   const char *type                             = 0;
    char *mesg[10], temp[256];
    int x;
 
@@ -499,7 +503,7 @@ static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
 
    /* Create the label widget. */
    label = newCDKLabel (ScreenOf (calendar), CENTER, CENTER,
-			mesg, mesgLines, TRUE, FALSE);
+			(CDK_CSTRING2) mesg, mesgLines, TRUE, FALSE);
    drawCDKLabel (label, ObjOf (label)->box);
    waitCDKLabel (label, ' ');
    destroyCDKLabel (label);

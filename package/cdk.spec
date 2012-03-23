@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.8 2012/03/18 23:37:15 tom Exp $
+# $Id: cdk.spec,v 1.12 2012/03/23 14:40:23 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20120318
+%define AppRelease 20120323
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -37,7 +37,7 @@ make cdkshlib
 %install
 rm -rf $RPM_BUILD_ROOT
 make install installCDKSHLibrary DESTDIR=$RPM_BUILD_ROOT
-rm -fr $RPM_BUILD_ROOT/usr/doc # we don't need this
+rm -fr $RPM_BUILD_ROOT%{_defaultdocdir} # we don't need this
 chmod +x $RPM_BUILD_ROOT%{_libdir}/*.so # fixes rpmlint unstripped-binary-or-object
 
 %clean
@@ -58,9 +58,13 @@ rm -rf $RPM_BUILD_ROOT
 %doc EXPANDING TODO examples demos
 %{_libdir}/*.so
 %{_bindir}/cdk5-config
+%{_includedir}/%{name}.h
 %{_includedir}/%{name}
 
 %changelog
+
+* Tue Mar 20 2012 Thomas E. Dickey
+- install cdk.h in normal location
 
 * Fri May 13 2011 Thomas E. Dickey
 - parameterize/adapt to building from unpatched sources as part of test builds

@@ -1,4 +1,4 @@
-/* $Id: bind_ex.c,v 1.17 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
+/* $Id: bind_ex.c,v 1.19 2012/03/21 23:54:26 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,8 +11,8 @@ static int dialogHelpCB (EObjectType cdktype GCC_UNUSED,
 			 void *clientData GCC_UNUSED,
 			 chtype key GCC_UNUSED)
 {
-   CDKDIALOG *dialog = (CDKDIALOG *) object;
-   char *mesg[5];
+   CDKDIALOG *dialog = (CDKDIALOG *)object;
+   const char *mesg[5];
 
    /* Check which button we are on. */
    if (dialog->currentButton == 0)
@@ -20,49 +20,49 @@ static int dialogHelpCB (EObjectType cdktype GCC_UNUSED,
       mesg[0] = "<C></U>Help for </U>Who<!U>.";
       mesg[1] = "<C>When this button is picked the name of the current";
       mesg[2] = "<C>user is displayed on the screen in a popup window.";
-      popupLabel (ScreenOf (dialog), mesg, 3);
+      popupLabel (ScreenOf (dialog), (CDK_CSTRING2) mesg, 3);
    }
    else if (dialog->currentButton == 1)
    {
       mesg[0] = "<C></U>Help for </U>Time<!U>.";
       mesg[1] = "<C>When this button is picked the current time is";
       mesg[2] = "<C>displayed on the screen in a popup window.";
-      popupLabel (ScreenOf (dialog), mesg, 3);
+      popupLabel (ScreenOf (dialog), (CDK_CSTRING2) mesg, 3);
    }
    else if (dialog->currentButton == 2)
    {
       mesg[0] = "<C></U>Help for </U>Date<!U>.";
       mesg[1] = "<C>When this button is picked the current date is";
       mesg[2] = "<C>displayed on the screen in a popup window.";
-      popupLabel (ScreenOf (dialog), mesg, 3);
+      popupLabel (ScreenOf (dialog), (CDK_CSTRING2) mesg, 3);
    }
    else if (dialog->currentButton == 3)
    {
       mesg[0] = "<C></U>Help for </U>Quit<!U>.";
       mesg[1] = "<C>When this button is picked the dialog box is exited.";
-      popupLabel (ScreenOf (dialog), mesg, 2);
+      popupLabel (ScreenOf (dialog), (CDK_CSTRING2) mesg, 2);
    }
    return (FALSE);
 }
 
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
-   /* Declare variables. */
+   /* *INDENT-OFF* */
    CDKSCREEN	*cdkscreen;
    CDKDIALOG	*question;
    WINDOW	*cursesWin;
-   char		*buttons[40];
-   char		*message[40];
-   char		*info[5];
+   const char	*buttons[40];
+   const char	*message[40];
+   const char	*info[5];
    char		*loginName = 0;
    char		temp[256];
    int		selection;
    time_t	clck;
    struct tm	*currentTime;
+   CDK_PARAMS   params;
+   /* *INDENT-ON* */
 
-   CDK_PARAMS params;
-
-   CDKparseParams(argc, argv, &params, CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
    /* Set up CDK. */
    cursesWin = initscr ();
@@ -82,23 +82,24 @@ int main(int argc, char **argv)
 
    /* Create the dialog box. */
    question = newCDKDialog (cdkscreen,
-			    CDKparamValue(&params, 'X', CENTER),
-			    CDKparamValue(&params, 'Y', CENTER),
-			    message, 3, buttons, 4, A_REVERSE,
+			    CDKparamValue (&params, 'X', CENTER),
+			    CDKparamValue (&params, 'Y', CENTER),
+			    (CDK_CSTRING2) message, 3,
+			    (CDK_CSTRING2) buttons, 4,
+			    A_REVERSE,
 			    TRUE,
-			    CDKparamValue(&params, 'N', TRUE),
-			    CDKparamValue(&params, 'S', FALSE));
+			    CDKparamValue (&params, 'N', TRUE),
+			    CDKparamValue (&params, 'S', FALSE));
 
    /* Check if we got a null value back. */
-   if (question == (CDKDIALOG *) 0)
+   if (question == (CDKDIALOG *)0)
    {
       destroyCDKScreen (cdkscreen);
 
       /* End curses... */
       endCDK ();
 
-      /* Spit out a message. */
-      printf ("Oops. Can't seem to create the dialog box. ");
+      printf ("Cannot create the dialog box. ");
       printf ("Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
@@ -111,7 +112,7 @@ int main(int argc, char **argv)
    while (selection != 3)
    {
       /* Get the users button selection. */
-      selection = activateCDKDialog (question, (chtype *) 0);
+      selection = activateCDKDialog (question, (chtype *)0);
 
       /* Check the results. */
       if (selection == 0)
@@ -127,15 +128,13 @@ int main(int argc, char **argv)
 	 }
 	 else
 	 {
-	    sprintf (temp, "<C><%.*s>", (int)(sizeof(temp) - 10), loginName);
+	    sprintf (temp, "<C><%.*s>", (int)(sizeof (temp) - 10), loginName);
 	 }
-	 info[1] = copyChar (temp);
-	 popupLabel (ScreenOf (question), info, 2);
-	 freeChar (info[1]);
+	 info[1] = temp;
+	 popupLabel (ScreenOf (question), (CDK_CSTRING2) info, 2);
       }
       else if (selection == 1)
       {
-	 /* Print out the time. */
 	 time (&clck);
 	 currentTime = localtime (&clck);
 	 sprintf (temp, "<C>%2d:%02d:%02d",
@@ -143,13 +142,11 @@ int main(int argc, char **argv)
 		  currentTime->tm_min,
 		  currentTime->tm_sec);
 	 info[0] = "<C>   </U>Current Time<!U>   ";
-	 info[1] = copyChar (temp);
-	 popupLabel (ScreenOf (question), info, 2);
-	 freeChar (info[1]);
+	 info[1] = temp;
+	 popupLabel (ScreenOf (question), (CDK_CSTRING2) info, 2);
       }
       else if (selection == 2)
       {
-	 /* Print out the date. */
 	 time (&clck);
 	 currentTime = localtime (&clck);
 	 sprintf (temp, "<C>%d/%02d/%02d",
@@ -157,9 +154,8 @@ int main(int argc, char **argv)
 		  currentTime->tm_mon + 1,
 		  currentTime->tm_year % 100);
 	 info[0] = "<C>   </U>Current Date<!U>   ";
-	 info[1] = copyChar (temp);
-	 popupLabel (ScreenOf (question), info, 2);
-	 freeChar (info[1]);
+	 info[1] = temp;
+	 popupLabel (ScreenOf (question), (CDK_CSTRING2) info, 2);
       }
    }
 

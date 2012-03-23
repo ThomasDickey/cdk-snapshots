@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.22 2011/05/15 20:30:56 tom Exp $ */
+/* $Id: rolodex.c,v 1.23 2012/03/21 22:52:57 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -16,8 +16,10 @@ int main (void)
    CDKLABEL *rolodexTitle;
    SRolodex groupList[MAXGROUPS];
    WINDOW *cursesWin;
-   char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS], *title[5];
-   char *home, temp[256], *mesg[15];
+   const char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS];
+   const char *title[5];
+   char *home, temp[256];
+   const char *mesg[15];
    int subMenuSize[10], menuLocations[10], selection;
    int group, ret, x;
    int groupCount = 0;
@@ -66,7 +68,9 @@ int main (void)
    /* Create the title. */
    title[0] = "<C></U>Cdk Rolodex";
    title[1] = "<C></B/24>Written by Mike Glover";
-   rolodexTitle = newCDKLabel (cdkscreen, CENTER, CENTER, title, 2, FALSE, FALSE);
+   rolodexTitle = newCDKLabel (cdkscreen, CENTER, CENTER,
+			       (CDK_CSTRING2) title, 2,
+			       FALSE, FALSE);
 
    /* Define the help key binding. */
    bindCDKObject (vMENU, rolodexMenu, '?', helpCB, 0);
@@ -112,18 +116,17 @@ int main (void)
    {
       /* The RC file seems to be corrupt. */
       sprintf (temp, "<C></B/16>The RC file (%s) seems to be corrupt.", GRCFile);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "<C></B/16>No rolodex groups were loaded.";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-      freeChar (mesg[0]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
       groupCount = 0;
    }
    else if (groupCount == 0)
    {
       mesg[0] = "<C></B/24>Empty rolodex RC file. No groups loaded.";
       mesg[1] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 2);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 2);
    }
    else
    {
@@ -136,10 +139,9 @@ int main (void)
 	 sprintf (temp,
 		  "<C></24>There were %d groups loaded from the RC file.", groupCount);
       }
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 2);
-      freeChar (mesg[0]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 2);
    }
 
    /* Loop until we are done. */
@@ -219,13 +221,18 @@ int main (void)
 	 /* If there are no groups, ask them if they want to create a new one. */
 	 if (groupCount == 0)
 	 {
-	    char *buttons[] =
-	    {"<Yes>", "<No>"};
+	    const char *buttons[] =
+	    {
+	       "<Yes>",
+	       "<No>"
+	    };
 	    mesg[0] = "<C>There are no groups defined.";
 	    mesg[1] = "<C>Do you want to define a new group?";
 
 	    /* Add the group if they said yes. */
-	    if (popupDialog (cdkscreen, mesg, 2, buttons, 2) == 0)
+	    if (popupDialog (cdkscreen,
+			     (CDK_CSTRING2) mesg, 2,
+			     (CDK_CSTRING2) buttons, 2) == 0)
 	    {
 	       groupCount = addRolodexGroup (cdkscreen, groupList, groupCount);
 	    }
@@ -279,8 +286,8 @@ int main (void)
  */
 int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex * groupList, int groupCount)
 {
-   /* Declare local variables. */
-   char *mesg[5], temp[256];
+   char *mesg[5];
+   char temp[256];
    time_t clck;
    FILE *fd;
    int x;
@@ -288,7 +295,6 @@ int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex * groupList, int gr
    /* Can we open the file?                                     */
    if ((fd = fopen (filename, "w")) == 0)
    {
-      /* Pop up a message. */
       sprintf (temp, "</B/16>The file <%s> could not be opened.", filename);
       mesg[0] = copyChar (temp);
 #ifdef HAVE_STRERROR
@@ -297,12 +303,11 @@ int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex * groupList, int gr
       sprintf (temp, "<C></B/16>Unknown reason.");
 #endif
       mesg[1] = copyChar (temp);
-      mesg[2] = "<C>Press any key to continue.";
+      mesg[2] = copyChar ("<C>Press any key to continue.");
 
-      popupLabel (screen, mesg, 3);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 3);
 
-      freeChar (mesg[0]);
-      freeChar (mesg[1]);
+      freeCharList (mesg, 3);
 
       return (0);
    }
@@ -339,23 +344,27 @@ int writeRCFile (CDKSCREEN *screen, char *filename, SRolodex * groupList, int gr
 
    sprintf (temp, "<C>%s", filename);
    mesg[1] = copyChar (temp);
-   mesg[2] = "<C>Press any key to continue.";
+   mesg[2] = copyChar ("<C>Press any key to continue.");
 
-   popupLabel (screen, mesg, 3);
-   freeChar (mesg[0]);
-   freeChar (mesg[1]);
+   popupLabel (screen, (CDK_CSTRING2) mesg, 3);
+
+   freeCharList (mesg, 3);
    return (1);
 }
 
 /*
  * This allows the user to pick a DBM file to open.
  */
-int pickRolodexGroup (CDKSCREEN *screen, char *title, SRolodex * groupList, int groupCount)
+int pickRolodexGroup (CDKSCREEN *screen,
+		      const char *title,
+		      SRolodex * groupList,
+		      int groupCount)
 {
    /* *INDENT-EQLS* */
    CDKSCROLL *roloList  = 0;
    int height           = groupCount;
-   char *mesg[MAXGROUPS], temp[256];
+   char *mesg[MAXGROUPS];
+   char temp[256];
    int selection, x;
 
    /* Determine the height of the scrolling list. */
@@ -374,7 +383,8 @@ int pickRolodexGroup (CDKSCREEN *screen, char *title, SRolodex * groupList, int 
 
    /* Create the scrolling list. */
    roloList = newCDKScroll (screen, CENTER, CENTER, NONE,
-			    height, 50, title, mesg, groupCount,
+			    height, 50, title,
+			    (CDK_CSTRING2) mesg, groupCount,
 			    NONUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Create a callback to the scrolling list. */
@@ -385,10 +395,7 @@ int pickRolodexGroup (CDKSCREEN *screen, char *title, SRolodex * groupList, int 
 
    /* Destroy the scrolling list. */
    destroyCDKScroll (roloList);
-   for (x = 0; x < groupCount; x++)
-   {
-      freeChar (mesg[x]);
-   }
+   freeCharList (mesg, (unsigned)groupCount);
 
    /* Return the item selected. */
    return selection;
@@ -402,7 +409,10 @@ int addRolodexGroup (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    /* *INDENT-EQLS* */
    CDKENTRY *newName = 0;
    CDKENTRY *newDesc = 0;
-   char *mesg[4], *desc, *newGroupName, temp[256];
+   const char *mesg[4];
+   char *desc;
+   char *newGroupName;
+   char temp[256];
    int x;
 
    /* Create the name widget. */
@@ -421,7 +431,7 @@ int addRolodexGroup (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    {
       mesg[0] = "<C></B/16>Add Group Canceled.";
       destroyCDKEntry (newName);
-      popupLabel (screen, mesg, 1);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 1);
       return groupCount;
    }
 
@@ -431,9 +441,8 @@ int addRolodexGroup (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
       if (strcmp (newGroupName, groupList[x].name) == 0)
       {
 	 sprintf (temp, "<C></B/16>Sorry the group (%s) already exists.", newGroupName);
-	 mesg[0] = copyChar (temp);
-	 popupLabel (screen, mesg, 1);
-	 freeChar (mesg[0]);
+	 mesg[0] = temp;
+	 popupLabel (screen, (CDK_CSTRING2) mesg, 1);
 	 destroyCDKEntry (newName);
 	 return groupCount;
       }
@@ -493,12 +502,9 @@ void displayRolodexStats (CDKSCREEN *screen, int groupCount)
    mesg[2] = copyChar (temp);
 
    /* Display the message. */
-   popupLabel (screen, mesg, 3);
+   popupLabel (screen, (CDK_CSTRING2) mesg, 3);
 
-   /* Clean up. */
-   freeChar (mesg[0]);
-   freeChar (mesg[1]);
-   freeChar (mesg[2]);
+   freeCharList (mesg, 3);
 }
 
 /*
@@ -574,8 +580,9 @@ int openNewRCFile (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    if (fileSelector->exitType == vESCAPE_HIT)
    {
       destroyCDKFselect (fileSelector);
-      mesg[0] = "Open New RC File Aborted.";
-      popupLabel (screen, mesg, 1);
+      mesg[0] = copyChar ("Open New RC File Aborted.");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 1);
+      freeCharList (mesg, 1);
       return groupCount;
    }
 
@@ -594,13 +601,13 @@ int openNewRCFile (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    if (groupCount < 0)
    {
       /* This file does not appear to be a rolodex file. */
-      mesg[0] = "<C></B/16>The file<!B!16>";
+      mesg[0] = copyChar ("<C></B/16>The file<!B!16>");
       sprintf (temp, "<C></B/16>(%s)<!B!16>", filename);
       mesg[1] = copyChar (temp);
-      mesg[2] = "<C>does not seem to be a rolodex RC file.";
-      mesg[3] = "<C>Press any key to continue.";
-      popupLabel (screen, mesg, 4);
-      freeChar (mesg[1]);
+      mesg[2] = copyChar ("<C>does not seem to be a rolodex RC file.");
+      mesg[3] = copyChar ("<C>Press any key to continue.");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 4);
+      freeCharList (mesg, 4);
       groupCount = 0;
    }
 
@@ -642,7 +649,7 @@ int readRCFile (char *filename, SRolodex * groupList)
       if (strlen (lines[x]) != 0 && lines[x][0] != '#')
       {
 	 items = CDKsplitString (lines[x], CTRL ('V'));
-	 chunks = (int)CDKcountStrings (items);
+	 chunks = (int)CDKcountStrings ((CDK_CSTRING2) items);
 
 	 /* Only take the ones which fit the format. */
 	 if (chunks == 3)
@@ -691,7 +698,10 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
    CDKLABEL *helpWindow = 0;
    SPhoneData phoneData;
    SPhoneRecord *phoneRecord;
-   char *Index[MAX_ITEMS], *title[3], *mesg[3], temp[256];
+   char *Index[MAX_ITEMS];
+   const char *title[3];
+   const char *mesg[3];
+   char temp[256];
    int phoneCount, selection, height, x;
 
    /* Set up the help window at the bottom of the screen. */
@@ -699,7 +709,9 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
    title[0]     = "<C><#HL(30)>";
    title[1]     = "<C>Press </B>?<!B> to get detailed help.";
    title[2]     = "<C><#HL(30)>";
-   helpWindow   = newCDKLabel (screen, CENTER, BOTTOM, title, 3, FALSE, FALSE);
+   helpWindow   = newCDKLabel (screen, CENTER, BOTTOM,
+			       (CDK_CSTRING2) title, 3,
+			       FALSE, FALSE);
    drawCDKLabel (helpWindow, FALSE);
 
    /* Open the DBM file and read in the contents of the file */
@@ -713,11 +725,16 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
        * They tried to open an empty group, maybe they want to
        * add a new entry to this number.
        */
-      char *buttons[] =
-      {"<Yes>", "<No>"};
+      const char *buttons[] =
+      {
+	 "<Yes>",
+	 "<No>"
+      };
       mesg[0] = "<C>There were no entries in this group.";
       mesg[1] = "<C>Do you want to add a new listng?";
-      if (popupDialog (screen, mesg, 2, buttons, 2) == 1)
+      if (popupDialog (screen,
+		       (CDK_CSTRING2) mesg, 2,
+		       (CDK_CSTRING2) buttons, 2) == 1)
       {
 	 destroyCDKLabel (helpWindow);
 	 return;
@@ -732,7 +749,7 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
    else if (phoneCount < 0)
    {
       mesg[0] = "<C>Could not open the database for this group.";
-      popupLabel (screen, mesg, 1);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 1);
       destroyCDKLabel (helpWindow);
       return;
    }
@@ -749,7 +766,8 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
 
    /* Create the scrolling list. */
    nameList = newCDKScroll (screen, CENTER, CENTER, RIGHT,
-			    height, 50, temp, Index,
+			    height, 50, temp,
+			    (CDK_CSTRING2) Index,
 			    phoneData.recordCount,
 			    NUMBERS, A_REVERSE, TRUE, FALSE);
 
@@ -786,7 +804,7 @@ void useRolodexGroup (CDKSCREEN *screen, char *groupName, char *groupDesc
       /* Something happened. */
       mesg[0] = "<C>Could not save phone data to data file.";
       mesg[1] = "<C>All changes have been lost.";
-      popupLabel (screen, mesg, 2);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 2);
    }
 
    /* Clean up. */
@@ -835,20 +853,20 @@ int readPhoneDataFile (char *dataFile, SPhoneData * phoneData)
       {
 	 /* Split the string. */
 	 items = CDKsplitString (lines[x], CTRL ('V'));
-	 chunks = (int)CDKcountStrings (items);
+	 chunks = (int)CDKcountStrings ((CDK_CSTRING2) items);
 
 	 /* Copy the chunks. */
 	 if (chunks == 8)
 	 {
 	    /* *INDENT-EQLS* */
-	    phoneData->record[linesFound].name         = items[0];
-	    phoneData->record[linesFound].lineType     = atoi (items[1]);
-	    phoneData->record[linesFound].phoneNumber  = items[2];
-	    phoneData->record[linesFound].address      = items[3];
-	    phoneData->record[linesFound].city         = items[4];
-	    phoneData->record[linesFound].province     = items[5];
-	    phoneData->record[linesFound].postalCode   = items[6];
-	    phoneData->record[linesFound].desc         = items[7];
+	    phoneData->record[linesFound].name        = items[0];
+	    phoneData->record[linesFound].lineType    = atoi (items[1]);
+	    phoneData->record[linesFound].phoneNumber = items[2];
+	    phoneData->record[linesFound].address     = items[3];
+	    phoneData->record[linesFound].city        = items[4];
+	    phoneData->record[linesFound].province    = items[5];
+	    phoneData->record[linesFound].postalCode  = items[6];
+	    phoneData->record[linesFound].desc        = items[7];
 	    freeChar (items[1]);
 	    free (items);
 	    linesFound++;
@@ -971,7 +989,7 @@ void displayPhoneInfo (CDKSCREEN *screen, SPhoneRecord record)
       mesg[7] = copyChar (temp);
 
       /* Pop the information up on the screen. */
-      popupLabel (screen, mesg, 8);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 8);
 
       /* Clean up. */
       freeChar (mesg[0]);
@@ -999,19 +1017,16 @@ void displayPhoneInfo (CDKSCREEN *screen, SPhoneRecord record)
       mesg[3] = copyChar (temp);
 
       /* Pop the information up on the screen. */
-      popupLabel (screen, mesg, 4);
+      popupLabel (screen, (CDK_CSTRING2) mesg, 4);
 
-      /* Clean up. */
-      freeChar (mesg[0]);
-      freeChar (mesg[1]);
-      freeChar (mesg[2]);
-      freeChar (mesg[3]);
+      freeCharList (mesg, 4);
    }
    else
    {
-      mesg[0] = "<C></R>Error<!R> </U>Unknown Phone Line Type";
-      mesg[1] = "<C>Can not display information.";
-      popupLabel (screen, mesg, 2);
+      mesg[0] = copyChar ("<C></R>Error<!R> </U>Unknown Phone Line Type");
+      mesg[1] = copyChar ("<C>Can not display information.");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 2);
+      freeCharList (mesg, 2);
    }
 }
 
@@ -1020,7 +1035,7 @@ void displayPhoneInfo (CDKSCREEN *screen, SPhoneRecord record)
  */
 void aboutCdkRolodex (CDKSCREEN *screen)
 {
-   char *mesg[15];
+   const char *mesg[15];
 
    mesg[0] = "<C></U>About Cdk Rolodex";
    mesg[1] = " ";
@@ -1037,7 +1052,7 @@ void aboutCdkRolodex (CDKSCREEN *screen)
    mesg[12] = "<C><#HL(35)>";
    mesg[13] = "<R></B/24>March 1996";
 
-   popupLabel (screen, mesg, 14);
+   popupLabel (screen, (CDK_CSTRING2) mesg, 14);
 }
 
 /*
@@ -1046,15 +1061,18 @@ void aboutCdkRolodex (CDKSCREEN *screen)
 int deleteRolodexGroup (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 {
    /* Declare local variables. */
-   char *mesg[10], *buttons[5], temp[256];
+   char *mesg[10];
+   const char *buttons[5];
+   char temp[256];
    int selection, choice, x;
 
    /* If there are no groups, pop up a message telling them. */
    if (groupCount == 0)
    {
-      mesg[0] = "<C>Error";
-      mesg[1] = "<C>There as no groups defined.";
-      popupLabel (screen, mesg, 2);
+      mesg[0] = copyChar ("<C>Error");
+      mesg[1] = copyChar ("<C>There as no groups defined.");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 2);
+      freeCharList (mesg, 2);
 
       /* Return the current group count. */
       return groupCount;
@@ -1068,28 +1086,32 @@ int deleteRolodexGroup (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    /* Check the results. */
    if (selection < 0)
    {
-      mesg[0] = "<C>   Delete Canceled   ";
-      mesg[1] = "<C>No Group Deleted";
-      popupLabel (screen, mesg, 2);
+      mesg[0] = copyChar ("<C>   Delete Canceled   ");
+      mesg[1] = copyChar ("<C>No Group Deleted");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 2);
+      freeCharList (mesg, 2);
       return groupCount;
    }
 
    /* Let's make sure they want to delete the group. */
-   mesg[0] = "<C></U>Confirm Delete";
-   mesg[1] = "<C>Are you sure you want to delete the group";
+   mesg[0] = copyChar ("<C></U>Confirm Delete");
+   mesg[1] = copyChar ("<C>Are you sure you want to delete the group");
    sprintf (temp, "<C></R>%s<!R>?", groupList[selection].name);
    mesg[2] = copyChar (temp);
    buttons[0] = "<No>";
    buttons[1] = "<Yes>";
-   choice = popupDialog (screen, mesg, 3, buttons, 2);
-   freeChar (mesg[2]);
+   choice = popupDialog (screen,
+			 (CDK_CSTRING2) mesg, 3,
+			 (CDK_CSTRING2) buttons, 2);
+   freeCharList (mesg, 3);
 
    /* Check the results of the confirmation. */
    if (choice == 0)
    {
-      mesg[0] = "<C>   Delete Canceled   ";
-      mesg[1] = "<C>No Group Deleted";
-      popupLabel (screen, mesg, 2);
+      mesg[0] = copyChar ("<C>   Delete Canceled   ");
+      mesg[1] = copyChar ("<C>No Group Deleted");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 2);
+      freeCharList (mesg, 2);
       return groupCount;
    }
 
@@ -1122,7 +1144,9 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData * phoneData)
    CDKLABEL *title;
    CDKITEMLIST *itemList;
    SPhoneRecord *phoneRecord;
-   char *titleMesg[3], *types[GLINETYPECOUNT], temp[256];
+   const char *titleMesg[3];
+   char *types[GLINETYPECOUNT];
+   char temp[256];
    int ret, x;
 
    /* Get the phone record pointer. */
@@ -1130,7 +1154,9 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData * phoneData)
 
    /* Create a title label to display. */
    titleMesg[0] = "<C></B/16>Add New Phone Record";
-   title = newCDKLabel (screen, CENTER, TOP, titleMesg, 1, FALSE, FALSE);
+   title = newCDKLabel (screen, CENTER, TOP,
+			(CDK_CSTRING2) titleMesg, 1,
+			FALSE, FALSE);
    drawCDKLabel (title, FALSE);
 
    /* Create the phone line type list. */
@@ -1144,7 +1170,7 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData * phoneData)
    itemList = newCDKItemlist (screen, CENTER, CENTER,
 			      "<C>What Type Of Line Is It?",
 			      "Type: ",
-			      types, GLINETYPECOUNT, 0,
+			      (CDK_CSTRING2) types, GLINETYPECOUNT, 0,
 			      TRUE, FALSE);
    phoneRecord->lineType = activateCDKItemlist (itemList, 0);
    destroyCDKItemlist (itemList);
@@ -1192,7 +1218,8 @@ int getLargePhoneRecord (CDKSCREEN *screen, SPhoneRecord * phoneRecord)
    CDKENTRY *nameEntry, *addressEntry, *cityEntry;
    CDKENTRY *provEntry, *postalEntry, *descEntry;
    CDKTEMPLATE *phoneTemplate;
-   char *buttons[5], *mesg[15];
+   const char *buttons[5];
+   const char *mesg[15];
    int ret;
 
    /* Define the widgets. */
@@ -1263,7 +1290,9 @@ int getLargePhoneRecord (CDKSCREEN *screen, SPhoneRecord * phoneRecord)
       buttons[0] = "</B/24><Add Phone Number>";
       buttons[1] = "</B/16><Cancel>";
       buttons[2] = "</B/32><Modify Information>";
-      ret = popupDialog (screen, mesg, 2, buttons, 3);
+      ret = popupDialog (screen,
+			 (CDK_CSTRING2) mesg, 2,
+			 (CDK_CSTRING2) buttons, 3);
 
       /* Check the response of the popup dialog box. */
       if (ret == 0)
@@ -1319,7 +1348,8 @@ int getSmallPhoneRecord (CDKSCREEN *screen, SPhoneRecord * phoneRecord)
    /* Declare local variables. */
    CDKENTRY *nameEntry, *descEntry;
    CDKTEMPLATE *phoneTemplate;
-   char *buttons[5], *mesg[15];
+   const char *buttons[5];
+   const char *mesg[15];
    int ret;
 
    /* Define the widgets. */
@@ -1364,7 +1394,9 @@ int getSmallPhoneRecord (CDKSCREEN *screen, SPhoneRecord * phoneRecord)
       buttons[0] = "</B/24><Add Phone Number>";
       buttons[1] = "</B/16><Cancel>";
       buttons[2] = "</B/8><Modify Information>";
-      ret = popupDialog (screen, mesg, 2, buttons, 3);
+      ret = popupDialog (screen,
+			 (CDK_CSTRING2) mesg, 2,
+			 (CDK_CSTRING2) buttons, 3);
 
       /* Check the response of the popup dialog box. */
       if (ret == 0)
@@ -1415,8 +1447,12 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    CDKENTRY *entry;
    CDKLABEL *title;
    char *itemList[MAX_ITEMS], *mesg[10], temp[256];
-   char *choices[] =
-   {"Print to Printer ", "Print to File", "Don't Print"};
+   const char *choices[] =
+   {
+      "Print to Printer ",
+      "Print to File",
+      "Don't Print"
+   };
    char *filename = 0;
    char *printer = 0;
    char *defaultPrinter = 0;
@@ -1440,8 +1476,8 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    selectionList = newCDKSelection (screen, CENTER, CENTER, RIGHT,
 				    height, 40,
 				    "<C></U>Select Which Groups To Print",
-				    itemList, groupCount,
-				    choices, 3,
+				    (CDK_CSTRING2) itemList, groupCount,
+				    (CDK_CSTRING2) choices, 3,
 				    A_REVERSE, TRUE, FALSE);
 
    /* Activate the selection list. */
@@ -1449,14 +1485,11 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
    {
       /* Tell the user they exited early. */
       destroyCDKSelection (selectionList);
-      mesg[0] = "<C>Print Canceled.";
-      popupLabel (screen, mesg, 1);
+      mesg[0] = copyChar ("<C>Print Canceled.");
+      popupLabel (screen, (CDK_CSTRING2) mesg, 1);
 
-      /* Clean up. */
-      for (x = 0; x < groupCount; x++)
-      {
-	 freeChar (itemList[x]);
-      }
+      freeCharList (mesg, 1);
+      freeCharList (itemList, (unsigned)groupCount);
       return;
    }
    eraseCDKSelection (selectionList);
@@ -1470,7 +1503,9 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 	 sprintf (temp, "<C></R>Printing Group [%s] to Printer",
 		  groupList[x].name);
 	 mesg[0] = copyChar (temp);
-	 title = newCDKLabel (screen, CENTER, TOP, mesg, 1, FALSE, FALSE);
+	 title = newCDKLabel (screen, CENTER, TOP,
+			      (CDK_CSTRING2) mesg, 1,
+			      FALSE, FALSE);
 	 drawCDKLabel (title, FALSE);
 	 freeChar (mesg[0]);
 
@@ -1493,7 +1528,7 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 	    sprintf (temp, "<C>Sorry the group '%s' could not be printed.",
 		     groupList[x].name);
 	    mesg[0] = strdup (temp);
-	    popupLabel (screen, mesg, 1);
+	    popupLabel (screen, (CDK_CSTRING2) mesg, 1);
 	    freeChar (mesg[0]);
 	 }
 
@@ -1507,7 +1542,9 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 	 /* Create a title. */
 	 sprintf (temp, "<C></R>Printing Group [%s] to File", groupList[x].name);
 	 mesg[0] = copyChar (temp);
-	 title = newCDKLabel (screen, CENTER, TOP, mesg, 1, FALSE, FALSE);
+	 title = newCDKLabel (screen, CENTER, TOP,
+			      (CDK_CSTRING2) mesg, 1,
+			      FALSE, FALSE);
 	 drawCDKLabel (title, FALSE);
 	 freeChar (mesg[0]);
 
@@ -1526,7 +1563,7 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 	    sprintf (temp, "<C>Sorry the group '%s' could not be printed.",
 		     groupList[x].name);
 	    mesg[0] = strdup (temp);
-	    popupLabel (screen, mesg, 1);
+	    popupLabel (screen, (CDK_CSTRING2) mesg, 1);
 	    freeChar (mesg[0]);
 	 }
 
@@ -1547,7 +1584,7 @@ void printGroupNumbers (CDKSCREEN *screen, SRolodex * groupList, int groupCount)
 /*
  * This actually prints the phone record.
  */
-int printGroup (SRolodex groupRecord, char *filename, char *printer)
+int printGroup (SRolodex groupRecord, const char *filename, char *printer)
 {
    /* Declare local variables. */
 #if defined (__MINGW32__)
@@ -1618,7 +1655,7 @@ int printGroup (SRolodex groupRecord, char *filename, char *printer)
       sprintf (command, "lpr -P%s %s", printer, tempFilename);
       system (command);
 
-      /* We have to unlkink the temp file. */
+      /* We have to unkink the temp file. */
       unlink (tempFilename);
    }
 
@@ -1691,9 +1728,13 @@ int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void
    /* Declare local variables. */
    CDKSCROLL *scrollp = (CDKSCROLL *)object;
    SPhoneData *phoneData = (SPhoneData *) clientData;
-   char *mesg[3], temp[256], *hold;
-   char *buttons[] =
-   {"</B/16><No>", "</B/24><Yes>"};
+   const char *mesg[3];
+   char temp[256], *hold;
+   const char *buttons[] =
+   {
+      "</B/16><No>",
+      "</B/24><Yes>"
+   };
    int position = scrollp->currentItem;
    int x;
 
@@ -1704,7 +1745,7 @@ int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void
    if (scrollp->listSize == 0)
    {
       mesg[0] = "There are no more numbers to delete.";
-      popupLabel (ScreenOf (scrollp), mesg, 1);
+      popupLabel (ScreenOf (scrollp), (CDK_CSTRING2) mesg, 1);
       return (FALSE);
    }
 
@@ -1714,27 +1755,28 @@ int deletePhoneEntryCB (EObjectType cdkType GCC_UNUSED, void *object, void
    sprintf (temp, "<C></B/16>%s", hold);
    freeChar (hold);
    mesg[1] = copyChar (temp);
-   if (popupDialog (ScreenOf (scrollp), mesg, 2, buttons, 2) == 1)
+   if (popupDialog (ScreenOf (scrollp),
+		    (CDK_CSTRING2) mesg, 2,
+		    (CDK_CSTRING2) buttons, 2) == 1)
    {
       /* Remove the item from the phone data record. */
       for (x = position; x < phoneData->recordCount - 1; x++)
       {
 	 /* *INDENT-EQLS* */
-	 phoneData->record[x].name       = phoneData->record[x + 1].name;
-	 phoneData->record[x].lineType   = phoneData->record[x + 1].lineType;
+	 phoneData->record[x].name        = phoneData->record[x + 1].name;
+	 phoneData->record[x].lineType    = phoneData->record[x + 1].lineType;
 	 phoneData->record[x].phoneNumber = phoneData->record[x + 1].phoneNumber;
-	 phoneData->record[x].address    = phoneData->record[x + 1].address;
-	 phoneData->record[x].city       = phoneData->record[x + 1].city;
-	 phoneData->record[x].province   = phoneData->record[x + 1].province;
-	 phoneData->record[x].postalCode = phoneData->record[x + 1].postalCode;
-	 phoneData->record[x].desc       = phoneData->record[x + 1].desc;
+	 phoneData->record[x].address     = phoneData->record[x + 1].address;
+	 phoneData->record[x].city        = phoneData->record[x + 1].city;
+	 phoneData->record[x].province    = phoneData->record[x + 1].province;
+	 phoneData->record[x].postalCode  = phoneData->record[x + 1].postalCode;
+	 phoneData->record[x].desc        = phoneData->record[x + 1].desc;
       }
       phoneData->recordCount--;
 
       /* Nuke the entry. */
       deleteCDKScrollItem (scrollp, position);
    }
-   freeChar (mesg[1]);
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf (scrollp)->box);
@@ -1767,15 +1809,9 @@ int phoneEntryHelpCB (EObjectType cdkType GCC_UNUSED, void *object, void
    sprintf (temp, "<B=?     > Pops up this help window.");
    mesg[4] = copyChar (temp);
 
-   /* Pop up the message. */
-   popupLabel (ScreenOf (scrollp), mesg, 5);
+   popupLabel (ScreenOf (scrollp), (CDK_CSTRING2) mesg, 5);
 
-   /* Clean up. */
-   freeChar (mesg[0]);
-   freeChar (mesg[1]);
-   freeChar (mesg[2]);
-   freeChar (mesg[3]);
-   freeChar (mesg[4]);
+   freeCharList (mesg, 5);
    return (FALSE);
 }
 
@@ -1791,13 +1827,16 @@ int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData
    int menuList    = menu->currentTitle;
    int submenuList = menu->currentSubtitle;
    int selection   = ((menuList * 100) + submenuList);
-   char *mesg[20], *name, temp[100];
+   const char *mesg[20];
+   char *msg_0;
+   char *name;
+   char temp[100];
 
    /* Create the help title. */
    name = chtype2Char (menu->sublist[menuList][submenuList]);
    stripWhiteSpace (vBOTH, name);
    sprintf (temp, "<C></R>Help<!R> </U>%s<!U>", name);
-   mesg[0] = copyChar (temp);
+   mesg[0] = msg_0 = copyChar (temp);
    freeChar (name);
 
    /* Set the default value for the message. */
@@ -1846,8 +1885,8 @@ int helpCB (EObjectType cdkType GCC_UNUSED, void *object, void *clientData
    }
 
    /* Pop up the message. */
-   popupLabel (ScreenOf (menu), mesg, 2);
-   freeChar (mesg[0]);
+   popupLabel (ScreenOf (menu), (CDK_CSTRING2) mesg, 2);
+   freeChar (msg_0);
 
    /* Redraw the submenu window. */
    drawCDKMenuSubwin (menu);
@@ -1864,10 +1903,11 @@ int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void
    CDKSCROLL *scrollp  = (CDKSCROLL *)object;
    SRolodex *groupList = (SRolodex *) clientData;
    int selection       = scrollp->currentItem;
-   char *mesg[5], temp[100];
+   char *mesg[5];
+   char temp[100];
 
    /* Create the message to be displayed. */
-   mesg[0] = "<C></U>Detailed Group Information.";
+   mesg[0] = copyChar ("<C></U>Detailed Group Information.");
 
    sprintf (temp, "</R>Group Name         <!R> %s", groupList[selection].name);
    mesg[1] = copyChar (temp);
@@ -1879,10 +1919,8 @@ int groupInfoCB (EObjectType cdkType GCC_UNUSED, void *object, void
    mesg[3] = copyChar (temp);
 
    /* Display the message. */
-   popupLabel (ScreenOf (scrollp), mesg, 4);
-   freeChar (mesg[1]);
-   freeChar (mesg[2]);
-   freeChar (mesg[3]);
+   popupLabel (ScreenOf (scrollp), (CDK_CSTRING2) mesg, 4);
+   freeCharList (mesg, 4);
 
    /* Redraw the scrolling list. */
    drawCDKScroll (scrollp, ObjOf (scrollp)->box);

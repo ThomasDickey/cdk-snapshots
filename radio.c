@@ -2,14 +2,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:26:05 $
- * $Revision: 1.137 $
+ * $Date: 2012/03/21 08:44:22 $
+ * $Revision: 1.138 $
  */
 
 /*
  * Declare file local prototypes.
  */
-static int createList (CDKRADIO *radio, char **list, int listSize, int width);
+static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int width);
 static void drawCDKRadioList (CDKRADIO *radio, boolean Box);
 static void setViewSize (CDKRADIO *scrollp, int listSize);
 static int maxViewSize (CDKRADIO *scrollp);
@@ -36,8 +36,8 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
 		       int splace,
 		       int height,
 		       int width,
-		       char *title,
-		       char **list,
+		       const char *title,
+		       CDK_CSTRING2 list,
 		       int listSize,
 		       chtype choiceChar,
 		       int defItem,
@@ -645,7 +645,7 @@ void setCDKRadio (CDKRADIO *radio, chtype highlight, chtype choiceChar, int Box)
 /*
  * This sets the radio list items.
  */
-void setCDKRadioItems (CDKRADIO *radio, char **list, int listSize)
+void setCDKRadioItems (CDKRADIO *radio, CDK_CSTRING2 list, int listSize)
 {
    int widestItem = -1;
    int j = 0;
@@ -789,7 +789,7 @@ static void _unfocusCDKRadio (CDKOBJS *object)
    drawCDKRadioList (radio, ObjOf (radio)->box);
 }
 
-static int createList (CDKRADIO *radio, char **list, int listSize, int boxWidth)
+static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int boxWidth)
 {
    int status = 0;
    int widestItem = 0;

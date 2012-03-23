@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2011/05/15 19:29:07 $
- * $Revision: 1.14 $
+ * $Date: 2012/03/22 00:43:33 $
+ * $Revision: 1.16 $
  */
 
 /*
@@ -67,7 +67,7 @@ void setCdkBXattr (CDKOBJS *obj, chtype ch)
 /*
  * This sets the background color of the widget.
  */
-void setCDKObjectBackgroundColor (CDKOBJS *obj, char *color)
+void setCDKObjectBackgroundColor (CDKOBJS *obj, const char *color)
 {
    chtype *holder = 0;
    int junk1, junk2;
@@ -91,7 +91,7 @@ void setCDKObjectBackgroundColor (CDKOBJS *obj, char *color)
 /*
  * Set the widget's title.
  */
-int setCdkTitle (CDKOBJS *obj, char *title, int boxWidth)
+int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 {
    if (obj != 0)
    {
@@ -109,7 +109,7 @@ int setCdkTitle (CDKOBJS *obj, char *title, int boxWidth)
 
 	 /* We need to split the title on \n. */
 	 temp = CDKsplitString (title, '\n');
-	 obj->titleLines = (int)CDKcountStrings (temp);
+	 obj->titleLines = (int)CDKcountStrings ((CDK_CSTRING2) temp);
 
 	 obj->title = typeCallocN (chtype *, obj->titleLines + 1);
 	 obj->titlePos = typeCallocN (int, obj->titleLines + 1);

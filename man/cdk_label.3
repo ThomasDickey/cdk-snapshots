@@ -1,4 +1,4 @@
-.\" $Id: cdk_label.3,v 1.14 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_label.3,v 1.17 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_label 3
@@ -68,7 +68,7 @@ cdk_label \- Creates a managed curses label widget.
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char **" "message",
+.BI "CDK_CONST char **" "message",
 .BI "int " "messageLines",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
@@ -78,7 +78,7 @@ cdk_label \- Creates a managed curses label widget.
 .TP 15
 .B "void setCDKLabel ("
 .BI "CDKLABEL *" "label",
-.BI "char **" "message",
+.BI "CDK_CONST char **" "message",
 .BI "int " "messageLines",
 .BI "boolean " "box");
 .TP 15
@@ -88,7 +88,7 @@ cdk_label \- Creates a managed curses label widget.
 .TP 15
 .B "void setCDKLabelBackgroundColor ("
 .BI "CDKLABEL *" "label",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKLabelBox ("
 .BI "CDKLABEL *" "label",
@@ -112,7 +112,7 @@ cdk_label \- Creates a managed curses label widget.
 .TP 15
 .B "void setCDKLabelMessage ("
 .BI "CDKLABEL *" "label",
-.BI "char **" "message",
+.BI "CDK_CONST char **" "message",
 .BI "int " "messageLines");
 .TP 15
 .B "void setCDKLabelULChar ("

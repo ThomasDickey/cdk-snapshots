@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:18:43 $
- * $Revision: 1.87 $
+ * $Date: 2012/03/22 09:10:47 $
+ * $Revision: 1.89 $
  */
 
 DeclareCDKObjects (HISTOGRAM, Histogram, setCdk, Unknown);
@@ -17,7 +17,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
 			       int height,
 			       int width,
 			       int orient,
-			       char *title,
+			       const char *title,
 			       boolean Box,
 			       boolean shadow)
 {
@@ -566,7 +566,6 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    chtype battr = 0;
    chtype bchar = 0;
    chtype fattr = widget->filler & A_ATTRIBUTES;
-   chtype fchar = CharOf (widget->filler);
    int histX    = TitleLinesOf (widget) + 1;
    int histY    = widget->barSize;
    int len, x, y;
@@ -643,7 +642,6 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       for (y = 1; y <= histY; y++)
       {
 	 battr = mvwinch (widget->win, x, y);
-	 fchar = battr & A_ATTRIBUTES;
 	 bchar = CharOf (battr);
 
 	 if (bchar == ' ')

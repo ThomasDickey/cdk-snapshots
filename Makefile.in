@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.85 2011/05/15 17:34:39 tom Exp $
+# $Id: Makefile.in,v 1.88 2012/03/20 08:52:33 tom Exp $
 #
-#  Copyright 2001-2009,2011 Thomas Dickey
+#  Copyright 2001-2011,2012 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -36,6 +36,8 @@ SHELL		= /bin/sh
 @SET_MAKE@
 MAKE_RECUR	= @cf_cv_makeflags@ prefix=$(prefix)
 
+THIS		= cdk
+
 CFG_ROOTNAME	= @CFG_ROOTNAME@
 HDR_ROOTNAME	= @HDR_ROOTNAME@
 LIB_ROOTNAME	= @LIB_ROOTNAME@
@@ -62,11 +64,13 @@ DESTDIR		=
 bindir		= @bindir@
 includedir	= @includedir@
 libdir		= @libdir@
+datadir		= @datadir@
 mandir		= @mandir@
 
-DOCUMENT_DIR	= $(DESTDIR)$(prefix)/doc/cdk
+DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(THIS)
 BIN_DIR		= $(DESTDIR)$(bindir)
-INCLUDE_DIR	= $(DESTDIR)$(includedir)/$(HDR_ROOTNAME)
+INCLUDE_DIR	= $(DESTDIR)$(includedir)
+INCLUDE_SUBDIR	= $(DESTDIR)$(includedir)/$(HDR_ROOTNAME)
 LIB_DIR		= $(DESTDIR)$(libdir)
 MAN_DIR		= $(DESTDIR)$(mandir)/man@MAN_TAG@
 MANSECT		= @MANSECT@
@@ -151,6 +155,7 @@ CDKHDR		= \
 		cdk_compat.h \
 		cdk_objs.h \
 		cdk_params.h \
+		cdk_test.h \
 		cdk_util.h \
 		cdk_version.h \
 		cdkscreen.h \
@@ -364,23 +369,31 @@ uninstallCDKManPages ::
 #
 # This installs the header files.
 #
+HDR_SUBDIR = @HDR_SUBDIR@ -h cdk.h
+HEADERS_SH = $(SHELL) $(srcdir)/headers.sh $(HDR_SUBDIR) -x "$(INSTALL_DATA)" -d $(INCLUDE_SUBDIR) -s $(srcdir)
 install \
-installCDKHeaderFiles ::  $(INCLUDE_DIR) headers.sed $(MY_HDR)
-	@echo "Installing CDK header files in $(INCLUDE_DIR)..."
-	$(SHELL) $(srcdir)/headers.sh -x "$(INSTALL_DATA)" -d $(INCLUDE_DIR) -s $(srcdir) $(MY_HDR)
+installCDKHeaderFiles :: \
+		$(INCLUDE_DIR) \
+		$(INCLUDE_SUBDIR) \
+		headers.sed \
+		$(MY_HDR)
+	@echo "Installing CDK header files in $(INCLUDE_SUBDIR)..."
+	$(HEADERS_SH) $(MY_HDR)
 	@for i in $(CDKHDR); do \
-	   $(SHELL) $(srcdir)/headers.sh -x "$(INSTALL_DATA)" -d $(INCLUDE_DIR) -s $(srcdir) include/$$i; \
+	   $(HEADERS_SH) include/$$i; \
 	done
+@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(THIS).h
 
 uninstall \
 uninstallCDKHeaderFiles ::
-	@echo "Uninstalling CDK header files from $(INCLUDE_DIR)..."
+	@echo "Uninstalling CDK header files from $(INCLUDE_SUBDIR)..."
 	@- for i in $(MY_HDR); do \
-	   $(RM) $(INCLUDE_DIR)/`basename $$i`; \
+	   $(RM) $(INCLUDE_SUBDIR)/`basename $$i`; \
 	done
 	@- for i in $(CDKHDR); do \
-	   $(RM) $(INCLUDE_DIR)/$$i; \
+	   $(RM) $(INCLUDE_SUBDIR)/$$i; \
 	done
+@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h
 
 #
 # This installs the CDK library.
@@ -427,7 +440,7 @@ uninstallCDKSHLibrary ::
 	@- $(RM) $(LIB_DIR)/$(CDKSHLIB) 
 
 headers.sed : $(srcdir)/headers.sh
-	$(SHELL) $(srcdir)/headers.sh -p CDK -c include/cdk_config.h -d $(INCLUDE_DIR) -s $(srcdir)/include -i -s include -i
+	$(SHELL) $(srcdir)/headers.sh -p CDK $(HDR_SUBDIR) -c include/cdk_config.h -d $(INCLUDE_SUBDIR) -s $(srcdir)/include -i -s include -i
 
 manpage.sed :
 	@echo "creating $@"
@@ -495,6 +508,7 @@ man \
 $(BIN_DIR) \
 $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \
+$(INCLUDE_SUBDIR) \
 $(LIB_DIR) \
 $(MAN_DIR) : ; mkdir -p $@
 

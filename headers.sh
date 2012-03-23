@@ -1,5 +1,6 @@
 #! /bin/sh
-# $Id: headers.sh,v 1.9 2005/12/31 01:59:54 tom Exp $
+# $Id: headers.sh,v 1.10 2012/03/20 08:45:21 tom Exp $
+# vi:ts=4 sw=4
 #
 # Adjust includes for header files that reside in a subdirectory of
 # /usr/include, etc.
@@ -8,6 +9,7 @@
 #	-c CFG	specify an alternate name for config.h
 #	-d DIR	target directory
 #	-e FILE	extra editing commands, e.g., for manpage references
+#	-h FILE install the given file in subdirectory DIR rather than parent
 #	-i    	create/update the headers.sed script
 #	-p PKG	specify the package name
 #	-s DIR	source directory
@@ -22,6 +24,7 @@ MYFILE=headers.tmp
 OPT_C=config.h
 OPT_D=
 OPT_E=
+OPT_H=
 OPT_I=n
 OPT_P=
 OPT_S=
@@ -43,6 +46,10 @@ do
 		shift
 		OPT_E="$OPT_E -f $1"
 		;;
+	-h)	# FILE	special-case of header in subdirectory
+		shift
+		OPT_H="$1"
+		;;
 	-i)	# create the headers.sed script
 		if test "$OPT_I" = n
 		then
@@ -50,7 +57,7 @@ do
 		fi
 		OPT_I=y
 
-		if ( test -n "$OPT_D" && test -d "$OPT_D" )
+		if ( test -n "$OPT_D" )
 		then
 			if ( test -n "$OPT_S" && test -d "$OPT_S" )
 			then
@@ -61,7 +68,10 @@ do
 					for i in $OPT_S/*.h
 					do
 						NAME=`basename $i`
-						echo "s%<$NAME>%<$END/$NAME>%g" >> $SCRIPT
+						if test -z "$OPT_H" || test "$OPT_H" != "$NAME"
+						then
+							echo "s%<$NAME>%<$END/$NAME>%g" >> $SCRIPT
+						fi
 					done
 					;;
 				*)
@@ -131,7 +141,8 @@ do
 				NAME=`echo "$NAME" | sed -e 's/\.[^.]*$//'`.$OPT_T
 			fi
 
-			# Just in case someone gzip'd manpages, remove the conflicting copy.
+			# Just in case someone gzip'd manpages,
+			# remove the conflicting copy.
 			test -f $OPT_D/$NAME.gz && rm -f $OPT_D/$NAME.gz
 
 			eval $OPT_X $TMPSRC $OPT_D/$NAME

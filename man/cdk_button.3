@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_button.3,v 1.8 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_button.3,v 1.10 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_button 3
@@ -67,14 +67,14 @@ typedef void (*tButtonCallback)(struct SButton *button);
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "message",
+.BI "const char *" "message",
 .BI "tButtonCallback " "callback",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
 .BI "void setCDKButton("
 .BI "CDKBUTTON *" "b",
-.BI "char *" "message",
+.BI "const char *" "message",
 .BI "boolean " "box");
 .TP 15
 .BI "void setCDKButtonBackgroundAttrib ("
@@ -83,7 +83,7 @@ typedef void (*tButtonCallback)(struct SButton *button);
 .TP 15
 .BI "void setCDKButtonBackgroundColor ("
 .BI "CDKBUTTON *" "b",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .BI "void setCDKButtonBox ("
 .BI "CDKBUTTON *" "button",
@@ -107,7 +107,7 @@ typedef void (*tButtonCallback)(struct SButton *button);
 .TP 15
 .BI "void setCDKButtonMessage ("
 .BI "CDKBUTTON *" "b",
-.BI "char *" "message");
+.BI "const char *" "message");
 .TP 15
 .BI "void setCDKButtonULChar ("
 .BI "CDKBUTTON *" "b",

@@ -1,4 +1,4 @@
-/* $Id: rolodex.h,v 1.9 2005/12/27 12:34:20 tom Exp $ */
+/* $Id: rolodex.h,v 1.10 2012/03/21 00:59:17 tom Exp $ */
 
 #include <cdk_test.h>
 #include <time.h>
@@ -15,7 +15,17 @@ static char *GCurrentGroup	= 0;
 static char *GRCFile		= 0;
 static char *GDBMDir		= 0;
 static int GGroupModified	= FALSE;
-static char *GLineType[]	= {"Voice", "Cell", "Pager", "First FAX", "Second FAX", "Third FAX", "First Data Line", "Second Data Line", "Third Data Line"};
+static const char *GLineType[]	= {
+   "Voice",
+   "Cell",
+   "Pager",
+   "First FAX",
+   "Second FAX",
+   "Third FAX",
+   "First Data Line",
+   "Second Data Line",
+   "Third Data Line"
+};
 
 /*
  * Create some definitions.
@@ -76,7 +86,7 @@ int writeRCFileAs (CDKSCREEN *screen, SRolodex *groups, int count);
  */
 int addRolodexGroup (CDKSCREEN *screen, SRolodex *groups, int count);
 int deleteRolodexGroup (CDKSCREEN *screen, SRolodex *groups, int count);
-int pickRolodexGroup (CDKSCREEN *screen, char *title, SRolodex *groups, int count);
+int pickRolodexGroup (CDKSCREEN *screen, const char *title, SRolodex *groups, int count);
 void useRolodexGroup (CDKSCREEN *screen, char *name, char *desc, char *dbm);
 
 /*
@@ -100,4 +110,4 @@ int getSmallPhoneRecord (CDKSCREEN *screen, SPhoneRecord *phoneRecord);
  * These functions allow us to print out phone numbers.
  */
 void printGroupNumbers (CDKSCREEN *screen, SRolodex *groups, int count);
-int printGroup (SRolodex groupRecord, char *filename, char *printer);
+int printGroup (SRolodex groupRecord, const char *filename, char *printer);

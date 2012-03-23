@@ -1,4 +1,4 @@
-.\" $Id: cdk_template.3,v 1.25 2006/04/15 14:08:31 tom Exp $
+.\" $Id: cdk_template.3,v 1.27 2012/03/22 08:43:16 tom Exp $
 .de XX
 ..
 .TH cdk_template 3
@@ -86,10 +86,10 @@ cdk_template \- a curses template widget.
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
-.BI "char *" "label",
-.BI "char *" "plate",
-.BI "char *" "overlay",
+.BI "const char *" "title",
+.BI "const char *" "label",
+.BI "const char *" "plate",
+.BI "const char *" "overlay",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
@@ -98,7 +98,7 @@ cdk_template \- a curses template widget.
 .TP 15
 .B "void setCDKTemplate ("
 .BI "CDKTEMPLATE *" "template",
-.BI "char *" "value",
+.BI "const char *" "value",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKTemplateBackgroundAttrib ("
@@ -107,7 +107,7 @@ cdk_template \- a curses template widget.
 .TP 15
 .B "void setCDKTemplateBackgroundColor ("
 .BI "CDKTEMPLATE *" "template",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKTemplateBox ("
 .BI "CDKTEMPLATE *" "template",
@@ -157,7 +157,7 @@ cdk_template \- a curses template widget.
 .TP 15
 .B "void setCDKTemplateValue ("
 .BI "CDKTEMPLATE *" "template",
-.BI "char *" "value");
+.BI "const char *" "value");
 .TP 15
 .B "void setCDKTemplateVerticalChar ("
 .BI "CDKTEMPLATE *" "template",
@@ -165,7 +165,7 @@ cdk_template \- a curses template widget.
 .TP 15
 .B "char *unmixCDKTemplate ("
 .BI "CDKTEMPLATE *" "template",
-.BI "char *" "string");
+.BI "const char *" "string");
 .fi
 .SH DESCRIPTION
 The Cdk template widget creates a template widget which allows a user to type

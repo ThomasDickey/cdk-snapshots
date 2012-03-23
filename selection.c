@@ -2,14 +2,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:26:35 $
- * $Revision: 1.150 $
+ * $Date: 2012/03/21 21:01:23 $
+ * $Revision: 1.151 $
  */
 
 /*
  * Declare file local prototypes.
  */
-static int createList (CDKSELECTION *selection, char **list, int listSize);
+static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize);
 static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box);
 static void setViewSize (CDKSELECTION *scrollp, int listSize);
 static int maxViewSize (CDKSELECTION *scrollp);
@@ -36,10 +36,10 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
 			       int splace,
 			       int height,
 			       int width,
-			       char *title,
-			       char **list,
+			       const char *title,
+			       CDK_CSTRING2 list,
 			       int listSize,
-			       char **choices,
+			       CDK_CSTRING2 choices,
 			       int choiceCount,
 			       chtype highlight,
 			       boolean Box,
@@ -678,7 +678,7 @@ void setCDKSelection (CDKSELECTION *selection,
 /*
  * This sets the selection list items.
  */
-void setCDKSelectionItems (CDKSELECTION *selection, char **list, int listSize)
+void setCDKSelectionItems (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 {
    int widestItem = -1;
    int j = 0;
@@ -718,7 +718,7 @@ int getCDKSelectionItems (CDKSELECTION *selection, char **list)
 /*
  *
  */
-void setCDKSelectionTitle (CDKSELECTION *selection, char *title)
+void setCDKSelectionTitle (CDKSELECTION *selection, const char *title)
 {
    /* Make sure the title isn't null. */
    if (title == 0)
@@ -934,7 +934,7 @@ static void _unfocusCDKSelection (CDKOBJS *object)
    drawCDKSelectionList (selection, ObjOf (selection)->box);
 }
 
-static int createList (CDKSELECTION *selection, char **list, int listSize)
+static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 {
    int status = 0;
    int widestItem = 0;

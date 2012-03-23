@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.28 2005/12/28 21:52:07 tom Exp $
+.\" $Id: cdk_radio.3,v 1.30 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_radio 3
@@ -108,8 +108,8 @@ cdk_radio \- curses radio list widget.
 .BI "int " "spos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
-.BI "char **" "radioList",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "radioList",
 .BI "int " "radioListLength",
 .BI "chtype " "choiceCharacter",
 .BI "int " "defaultItem",
@@ -132,7 +132,7 @@ cdk_radio \- curses radio list widget.
 .TP 15
 .B "void setCDKRadioBackgroundColor ("
 .BI "CDKRADIO *" "radio",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKRadioBox ("
 .BI "CDKRADIO *" "radio",
@@ -160,7 +160,7 @@ cdk_radio \- curses radio list widget.
 .TP 15
 .B "void setCDKRadioItems ("
 .BI "CDKRADIO *" "radio",
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize");
 .TP 15
 .B "void setCDKRadioLLChar ("

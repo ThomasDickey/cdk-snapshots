@@ -1,5 +1,5 @@
 -- vile:fk=8bit txtmode
--- $Id: CHANGES,v 1.172 2012/03/18 23:37:03 tom Exp $
+-- $Id: CHANGES,v 1.184 2012/03/23 14:41:06 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -9,6 +9,28 @@ Modifications copyright Thomas E. Dickey 1999-2010, 2011
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2012/03/23
+	+ use gmtime instead of localtime in a few places so that calendar
+	  results are not offset by the hour of the day (report/analysis by
+	  Alex Charis).
+	+ add configure option --enable-const, which defines, like
+	  NCURSES_CONST, the symbol CDK_CONST which can be used to address
+	  improved const checking while preserving source-compatibility.
+	+ revise copyChtypeList to correspond with copyCharList 
+	+ use const in cdk_util function prototypes, similar "string" uses
+	  to improve writable-strings warnings.  Arrays of strings are not
+	  addressed due to compatibility.
+	+ change document directory to /usr/share/doc
+	+ add configure --enable-hdr-subdir to control whether cdk.h should
+	  be in /usr/include/cdk for example, or in /usr/include.  Make the
+	  default the latter, standard layout.
+	+ simplify dpkg script, provide only one library using ncursesw 
+	+ updated configure script macros, many changes for portability.
+	+ add cdk_test.h to installed headers (Debian #500161).  Resolution
+	  of that bug report by the way did not actually install the requested
+	  header file.
+	+ update config.guess, config.sub
 
 2012/03/18
 	+ provide shlibs file in dpkg scripts.

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2010/11/08 01:24:10 $
- * $Revision: 1.83 $
+ * $Date: 2012/03/21 21:00:37 $
+ * $Revision: 1.84 $
  */
 
 DeclareCDKObjects (GRAPH, Graph, setCdk, Unknown);
@@ -18,9 +18,9 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
 		       int yplace,
 		       int height,
 		       int width,
-		       char *title,
-		       char *xtitle,
-		       char *ytitle)
+		       const char *title,
+		       const char *xtitle,
+		       const char *ytitle)
 {
    /* *INDENT-EQLS* */
    CDKGRAPH *widget     = 0;
@@ -120,7 +120,7 @@ void activateCDKGraph (CDKGRAPH *widget, chtype *actions GCC_UNUSED)
 int setCDKGraph (CDKGRAPH *widget,
 		 int *values,
 		 int count,
-		 char *graphChar,
+		 const char *graphChar,
 		 boolean startAtZero,
 		 EGraphDisplayType displayType)
 {
@@ -237,7 +237,7 @@ int getCDKGraphValue (CDKGRAPH *widget, int Index)
 /*
  * Set the characters of the graph widget.
  */
-int setCDKGraphCharacters (CDKGRAPH *widget, char *characters)
+int setCDKGraphCharacters (CDKGRAPH *widget, const char *characters)
 {
    chtype *newTokens = 0;
    int charCount, junk;
@@ -262,7 +262,7 @@ chtype *getCDKGraphCharacters (CDKGRAPH *widget)
 /*
  * Set the character of the graph widget of the given index.
  */
-int setCDKGraphCharacter (CDKGRAPH *widget, int Index, char *character)
+int setCDKGraphCharacter (CDKGRAPH *widget, int Index, const char *character)
 {
    chtype *newTokens = 0;
    int charCount, junk;

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:43:38 $
- * $Revision: 1.101 $
+ * $Date: 2012/03/21 00:05:35 $
+ * $Revision: 1.102 $
  */
 
 #define TITLELINES 1
@@ -19,7 +19,7 @@ DeclareCDKObjects (MENU, Menu, setCdk, Int);
  * This creates a new menu widget.
  */
 CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
-		     char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS],
+		     const char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS],
 		     int menuItems,
 		     int *subsize,
 		     int *menuLocation,

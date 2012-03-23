@@ -1,4 +1,4 @@
-.\" $Id: cdk_graph.3,v 1.14 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_graph.3,v 1.16 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_graph 3
@@ -91,9 +91,9 @@ cdk_graph \- curses graph widget
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
-.BI "char *" "xtitle",
-.BI "char *" "ytitle");
+.BI "const char *" "title",
+.BI "const char *" "xtitle",
+.BI "const char *" "ytitle");
 .TP 15
 .B "void positionCDKGraph ("
 .BI "CDKGRAPH *" "graph");
@@ -102,7 +102,7 @@ cdk_graph \- curses graph widget
 .BI "CDKGRAPH *" "graph",
 .BI "int *" "values",
 .BI "int " "valueCount",
-.BI "char *" "graphCharacters",
+.BI "const char *" "graphCharacters",
 .BI "boolean " "startAtZero",
 .BI "EGraphDisplayType " "displayType");
 .TP 15
@@ -112,7 +112,7 @@ cdk_graph \- curses graph widget
 .TP 15
 .B "void setCDKGraphBackgroundColor ("
 .BI "CDKGRAPH *" "graph",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKGraphBox ("
 .BI "CDKGRAPH *" "graph",
@@ -125,11 +125,11 @@ cdk_graph \- curses graph widget
 .B "int setCDKGraphCharacter ("
 .BI "CDKGRAPH *" "graph",
 .BI "int " "index",
-.BI "char *" "graphCharacter");
+.BI "const char *" "graphCharacter");
 .TP 15
 .B "int setCDKGraphCharacters ("
 .BI "CDKGRAPH *" "graph",
-.BI "char *" "graphCharacters");
+.BI "const char *" "graphCharacters");
 .TP 15
 .B "void setCDKGraphDisplayType ("
 .BI "CDKGRAPH *" "graph",

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_misc.3,v 1.16 2006/05/07 01:09:57 tom Exp $
+.\" $Id: cdk_misc.3,v 1.20 2012/03/22 09:31:32 tom Exp $
 .de XX
 ..
 .TH cdk_misc 3
@@ -55,7 +55,7 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "unsigned " "used"/);
 .TP 15
 .B "unsigned CDKcountStrings ("
-.BI "char **\fIlist");
+.BI "CDK_CONST char **\fIlist");
 .TP 15
 .B "void CDKfreeChtypes("
 .BI "chtype **" "list");
@@ -64,7 +64,7 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "char **" "list");
 .TP 15
 .B "char ** CDKsplitString ("
-.BI "char *" "string",
+.BI "const char *" "string",
 .BI "int " "splitChar);
 .TP 15
 .B "char * baseName ("
@@ -74,15 +74,15 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "double" "value");
 .TP 15
 .B "int chlen ("
-.BI "chtype *" "string");
+.BI "const chtype *" "string");
 .TP 15
 .B "void chstrncpy(
 .BI "char *" "dest",
-.BI "chtype *" "src",
+.BI "const chtype *" "src",
 .BI "int " "maxcount");
 .TP 15
 .BI "char *chtype2Char ("
-.BI "chtype *" "string");
+.BI "const chtype *" "string");
 .TP 15
 .B "void cleanChar ("
 .BI "char *" "string",
@@ -95,20 +95,20 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "chtype " "character");
 .TP 15
 .B "int cmpStrChstr("
-.BI "char *" "str",
-.BI "chtype *" "chstr");
+.BI "const char *" "str",
+.BI "const chtype *" "chstr");
 .TP 15
 .B "char *copyChar ("
-.BI "char *" "string");
+.BI "const char *" "string");
 .TP 15
 .B "char **copyCharList ("
-.BI "char **" "list");
+.BI "const char **" "list");
 .TP 15
 .B "chtype *copyChtype ("
-.BI "chtype *" "string");
+.BI "const chtype *" "string");
 .TP 15
 .B "chtype **copyChtypeList ("
-.BI "chtype **" "list");
+.BI "const chtype **" "list");
 .TP 15
 .B "char *dirName ("
 .BI "char *" "filename");
@@ -134,19 +134,19 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "int " "value");
 .TP 15
 .B "int lenCharList ("
-.BI "char **" "list");
+.BI "const char **" "list");
 .TP 15
 .B "int lenChtypeList ("
-.BI "chtype **" "list");
+.BI "const chtype **" "list");
 .TP 15
 .B "int mode2Char ("
 .BI "char *" "string",
 .BI "mode_t " "fileMode");
 .TP 15
 .B "int searchList ("
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize",
-.BI "char *" "pattern");
+.BI "const char *" "pattern");
 .TP 15
 .B "void sortList ("
 .BI "char **" "list",

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.24 2006/04/15 14:08:31 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.26 2012/03/22 08:44:05 tom Exp $
 .de XX
 ..
 .TH cdk_mentry 3
@@ -98,8 +98,8 @@ cdk_mentry \- curses multiple line entry widget.
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
-.BI "char *" "label",
+.BI "const char *" "title",
+.BI "const char *" "label",
 .BI "chtype " "fieldAttribute",
 .BI "chtype " "fillerCharacter",
 .BI "EDisplayType " "displayType",
@@ -115,7 +115,7 @@ cdk_mentry \- curses multiple line entry widget.
 .TP 15
 .B "void setCDKMentry ("
 .BI "CDKMENTRY *" "mentry",
-.BI "char *" "value",
+.BI "const char *" "value",
 .BI "int " "minimumLength",
 .BI "boolean " "box");
 .TP 15
@@ -125,7 +125,7 @@ cdk_mentry \- curses multiple line entry widget.
 .TP 15
 .B "void setCDKMentryBackgroundColor ("
 .BI "CDKMENTRY *" "mentry",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKMentryBox ("
 .BI "CDKMENTRY *" "mentry",
@@ -183,7 +183,7 @@ cdk_mentry \- curses multiple line entry widget.
 .TP 15
 .B "void setCDKMentryValue ("
 .BI "CDKMENTRY *" "mentry",
-.BI "char *" "value");
+.BI "const char *" "value");
 .TP 15
 .B "void setCDKMentryVerticalChar ("
 .BI "CDKMENTRY *" "mentry",

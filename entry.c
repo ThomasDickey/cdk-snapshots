@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:35:16 $
- * $Revision: 1.218 $
+ * $Date: 2012/03/21 20:59:06 $
+ * $Revision: 1.220 $
  */
 
 /*
@@ -20,8 +20,8 @@ DeclareCDKObjects (ENTRY, Entry, setCdk, String);
 CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 		       int xplace,
 		       int yplace,
-		       char *title,
-		       char *label,
+		       const char *title,
+		       const char *label,
 		       chtype fieldAttr,
 		       chtype filler,
 		       EDisplayType dispType,
@@ -738,7 +738,7 @@ static void _destroyCDKEntry (CDKOBJS *object)
  * This sets specific attributes of the entry field.
  */
 void setCDKEntry (CDKENTRY *entry,
-		  char *value,
+		  const char *value,
 		  int min,
 		  int max,
 		  boolean Box GCC_UNUSED)
@@ -752,7 +752,7 @@ void setCDKEntry (CDKENTRY *entry,
  * This removes the old information in the entry field and keeps the
  * new information given.
  */
-void setCDKEntryValue (CDKENTRY *entry, char *newValue)
+void setCDKEntryValue (CDKENTRY *entry, const char *newValue)
 {
    int copychars = 0;
 

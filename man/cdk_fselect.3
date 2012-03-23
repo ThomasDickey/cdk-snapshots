@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_fselect.3,v 1.24 2006/05/07 01:00:01 tom Exp $
+.\" $Id: cdk_fselect.3,v 1.27 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_fselect 3
@@ -127,15 +127,15 @@ cdk_fselect \- curses file selector widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
-.BI "char *" "label",
+.BI "const char *" "title",
+.BI "const char *" "label",
 .BI "chtype " "fieldAttribute",
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
-.BI "char *" "dirAttribute",
-.BI "char *" "fileAttribute",
-.BI "char *" "linkAttribute",
-.BI "char *" "sockAttribute",
+.BI "const char *" "dirAttribute",
+.BI "const char *" "fileAttribute",
+.BI "const char *" "linkAttribute",
+.BI "const char *" "sockAttribute",
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
@@ -144,14 +144,14 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "void setCDKFselect ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "directory",
+.BI "const char *" "directory",
 .BI "chtype " "fieldAttribute",
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
-.BI "char *" "dirAttribute",
-.BI "char *" "fileAttribute",
-.BI "char *" "linkAttribute",
-.BI "char *" "sockAttribute",
+.BI "const char *" "dirAttribute",
+.BI "const char *" "fileAttribute",
+.BI "const char *" "linkAttribute",
+.BI "const char *" "sockAttribute",
 .BI "boolean " "box");
 .TP 15
 .B "void setCDKFselectBackgroundAttrib ("
@@ -160,7 +160,7 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "void setCDKFselectBackgroundColor ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKFselectBox ("
 .BI "CDKFSELECT *" "fselect",
@@ -172,7 +172,7 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "void setCDKFselectContents ("
 .BI "CDKFSELECT *" "widget",
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize");
 .TP 15
 .B "void setCDKFselectCurrentItem ("
@@ -181,18 +181,18 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "void setCDKFselectDirAttribute ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "attribute");
+.BI "const char *" "attribute");
 .TP 15
 .B "int setCDKFselectDirContents ("
 .BI "CDKFSELECT *" "fselect");
 .TP 15
 .B "int setCDKFselectDirectory ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "directory");
+.BI "const char *" "directory");
 .TP 15
 .B "void setCDKFselectFileAttribute ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "attribute");
+.BI "const char *" "attribute");
 .TP 15
 .B "void setCDKFselectFillerChar ("
 .BI "CDKFSELECT *" "fselect",
@@ -216,11 +216,11 @@ cdk_fselect \- curses file selector widget.
 .TP 15
 .B "void setCDKFselectLinkAttribute ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "attribute");
+.BI "const char *" "attribute");
 .TP 15
 .B "void setCDKFselectSocketAttribute ("
 .BI "CDKFSELECT *" "fselect",
-.BI "char *" "attribute");
+.BI "const char *" "attribute");
 .TP 15
 .B "void setCDKFselectULChar ("
 .BI "CDKFSELECT *" "fselect",
