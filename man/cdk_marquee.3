@@ -1,4 +1,4 @@
-.\" $Id: cdk_marquee.3,v 1.15 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_marquee.3,v 1.17 2012/03/22 08:44:34 tom Exp $
 .de XX
 ..
 .TH cdk_marquee 3
@@ -35,7 +35,7 @@ cdk_marquee \- curses marquee widget
 .TP 15
 .B "int activateCDKMarquee ("
 .BI "CDKMARQUEE *" "marquee",
-.BI "char *" "message",
+.BI "const char *" "message",
 .BI "int " "delay",
 .BI "int " "repeat",
 .BI "boolean " "box");
@@ -80,7 +80,7 @@ cdk_marquee \- curses marquee widget
 .TP 15
 .B "void setCDKMarqueeBackgroundColor ("
 .BI "CDKMARQUEE *" "marquee",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKMarqueeBox ("
 .BI "CDKMENTRY *" "mentry",

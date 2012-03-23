@@ -1,9 +1,9 @@
-/* $Id: cdkviewer.c,v 1.11 2011/05/16 22:59:03 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.12 2012/03/22 00:22:03 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkviewer";
+char *XCursesProgramName = "cdkviewer";
 #endif
 
 /*
@@ -16,26 +16,26 @@ static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype
 /*
  * Define file local variables.
  */
-static char *FPUsage = "-f filename [-i Interpret] [-l Show Line Stats] [-T Title] [-B Buttons] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static const char *FPUsage = "-f filename [-i Interpret] [-l Show Line Stats] [-T Title] [-B Buttons] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKVIEWER *widget		= 0;
-   WINDOW *cursesWindow		= 0;
-   char *filename		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *temp			= 0;
-   chtype *holder		= 0;
-   int answer			= 0;
-   int messageLines		= -1;
-   int buttonCount		= 0;
-   char **messageList		= 0;
-   char **buttonList		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKVIEWER *widget            = 0;
+   WINDOW *cursesWindow         = 0;
+   char *filename               = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *temp                   = 0;
+   chtype *holder               = 0;
+   int answer                   = 0;
+   int messageLines             = -1;
+   int buttonCount              = 0;
+   char **messageList           = 0;
+   char **buttonList            = 0;
    char tempTitle[256];
    int j1, j2;
 
@@ -51,20 +51,20 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "f:il:B:T:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "f:il:B:T:" CDK_CLI_PARAMS);
 
-   xpos            = CDKparamValue(&params, 'X', CENTER);
-   ypos            = CDKparamValue(&params, 'Y', CENTER);
-   height          = CDKparamValue(&params, 'H', 20);
-   width           = CDKparamValue(&params, 'W', 60);
-   boxWidget       = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget    = CDKparamValue(&params, 'S', FALSE);
-
-   interpret       = CDKparamValue(&params, 'i', FALSE);
-   showInfoLine    = CDKparamValue(&params, 'l', FALSE);
-   filename        = CDKparamString(&params, 'f');
-   buttons         = CDKparamString(&params, 'B');
-   title           = CDKparamString(&params, 'T');
+   /* *INDENT-EQLS* */
+   xpos            = CDKparamValue (&params, 'X', CENTER);
+   ypos            = CDKparamValue (&params, 'Y', CENTER);
+   height          = CDKparamValue (&params, 'H', 20);
+   width           = CDKparamValue (&params, 'W', 60);
+   boxWidget       = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget    = CDKparamValue (&params, 'S', FALSE);
+   interpret       = CDKparamValue (&params, 'i', FALSE);
+   showInfoLine    = CDKparamValue (&params, 'l', FALSE);
+   filename        = CDKparamString (&params, 'f');
+   buttons         = CDKparamString (&params, 'B');
+   title           = CDKparamString (&params, 'T');
 
    /* Make sure they gave us a file to read. */
    if (filename == 0)
@@ -86,15 +86,16 @@ int main (int argc, char **argv)
    /* Set up the buttons of the viewer. */
    if (buttons == 0)
    {
-      buttonList[0]	= copyChar ("OK");
-      buttonList[1]	= copyChar ("Cancel");
-      buttonCount	= 2;
+      /* *INDENT-EQLS* */
+      buttonList[0]     = copyChar ("OK");
+      buttonList[1]     = copyChar ("Cancel");
+      buttonCount       = 2;
    }
    else
    {
       /* Split the button list up. */
-      buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings (buttonList);
+      buttonList        = CDKsplitString (buttons, '\n');
+      buttonCount       = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
    }
 
    /* Set up the title of the viewer. */
@@ -105,11 +106,11 @@ int main (int argc, char **argv)
    }
 
    /* Set up CDK. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -128,8 +129,8 @@ int main (int argc, char **argv)
 
    /* Create the viewer widget. */
    widget = newCDKViewer (cdkScreen, xpos, ypos, height, width,
-				buttonList, buttonCount, A_REVERSE,
-				boxWidget, shadowWidget);
+			  (CDK_CSTRING2) buttonList, buttonCount, A_REVERSE,
+			  boxWidget, shadowWidget);
 
    /* Check to make sure we created the file viewer. */
    if (widget == 0)
@@ -139,9 +140,11 @@ int main (int argc, char **argv)
 
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the file viewer. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the file viewer. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -153,8 +156,8 @@ int main (int argc, char **argv)
    bindCDKObject (vVIEWER, widget, 'S', widgetCB, 0);
 
    /* Set the information needed for the viewer. */
-   setCDKViewer (widget, title, messageList, messageLines,
-			A_REVERSE, interpret, showInfoLine, TRUE);
+   setCDKViewer (widget, title, (CDK_CSTRING2) messageList, messageLines,
+		 A_REVERSE, interpret, showInfoLine, TRUE);
 
    /* Activate the viewer. */
    answer = activateCDKViewer (widget, 0);
@@ -164,7 +167,7 @@ int main (int argc, char **argv)
 
    destroyCDKViewer (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Exit with the button number picked. */
    ExitProgram (answer);
@@ -176,19 +179,20 @@ int main (int argc, char **argv)
  */
 static void saveInformation (CDKVIEWER *widget)
 {
-   /* Declare local variables. */
-   CDKENTRY *entry	= 0;
-   char *filename	= 0;
-   char temp[256], *mesg[10];
+   /* *INDENT-EQLS* */
+   CDKENTRY *entry      = 0;
+   char *filename       = 0;
+   char temp[256];
+   const char *mesg[10];
    int linesSaved;
 
    /* Create the entry field to get the filename. */
-   entry = newCDKEntry (ScreenOf(widget), CENTER, CENTER,
-				"<C></B/5>Enter the filename of the save file.",
-				"Filename: ",
-				A_NORMAL, '_', vMIXED,
-				20, 1, 256,
-				TRUE, FALSE);
+   entry = newCDKEntry (ScreenOf (widget), CENTER, CENTER,
+			"<C></B/5>Enter the filename of the save file.",
+			"Filename: ",
+			A_NORMAL, '_', vMIXED,
+			20, 1, 256,
+			TRUE, FALSE);
 
    /* Get the filename. */
    filename = activateCDKEntry (entry, 0);
@@ -201,7 +205,7 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[1] = "<C>Escape hit. Scrolling window information not saved.";
       mesg[2] = " ";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(widget), mesg, 4);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 4);
 
       destroyCDKEntry (entry);
       return;
@@ -217,28 +221,29 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[0] = "<C></B/16>Error";
       mesg[1] = "<C>Could not save to the file.";
       sprintf (temp, "<C>(%s)", filename);
-      mesg[2] = copyChar (temp);
+      mesg[2] = temp;
       mesg[3] = " ";
       mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(widget), mesg, 5);
-      freeChar (mesg[2]);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 5);
    }
    else
    {
+      char *msg_1;
+
       mesg[0] = "<C></B/5>Save Successful";
       sprintf (temp, "<C>There were %d lines saved to the file", linesSaved);
-      mesg[1] = copyChar (temp);
+      mesg[1] = msg_1 = copyChar (temp);
       sprintf (temp, "<C>(%s)", filename);
-      mesg[2] = copyChar (temp);
+      mesg[2] = temp;
       mesg[3] = " ";
       mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf(widget), mesg, 5);
-      freeChar (mesg[1]); freeChar (mesg[2]);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 5);
+      freeChar (msg_1);
    }
 
    destroyCDKEntry (entry);
-   eraseCDKScreen (ScreenOf(widget));
-   drawCDKScreen (ScreenOf(widget));
+   eraseCDKScreen (ScreenOf (widget));
+   drawCDKScreen (ScreenOf (widget));
 }
 
 /*
@@ -246,11 +251,11 @@ static void saveInformation (CDKVIEWER *widget)
  */
 static int dumpViewer (CDKVIEWER *widget, char *filename)
 {
-   /* Declare local variables. */
-   FILE *outputFile	= 0;
-   char *rawLine	= 0;
+   /* *INDENT-EQLS* */
+   FILE *outputFile     = 0;
+   char *rawLine        = 0;
    int listSize;
-   chtype **list	= getCDKViewerInfo (widget, &listSize);
+   chtype **list        = getCDKViewerInfo (widget, &listSize);
    int x;
 
    /* Try to open the file. */
@@ -260,7 +265,7 @@ static int dumpViewer (CDKVIEWER *widget, char *filename)
    }
 
    /* Start writing out the file. */
-   for (x=0; x < listSize; x++)
+   for (x = 0; x < listSize; x++)
    {
       rawLine = chtype2Char (list[x]);
       fprintf (outputFile, "%s\n", rawLine);
@@ -272,7 +277,10 @@ static int dumpViewer (CDKVIEWER *widget, char *filename)
    return listSize;
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object, void *clientData GCC_UNUSED, chtype key GCC_UNUSED)
+static int widgetCB (EObjectType cdktype GCC_UNUSED,
+		     void *object,
+		     void *clientData GCC_UNUSED,
+		     chtype key GCC_UNUSED)
 {
    CDKVIEWER *widget = (CDKVIEWER *)object;
    saveInformation (widget);

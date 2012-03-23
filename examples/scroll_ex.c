@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.22 2005/12/28 02:01:48 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.24 2012/03/21 23:42:48 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -6,7 +6,7 @@
 char *XCursesProgramName = "scroll_ex";
 #endif
 
-static char *newLabel (char *prefix)
+static char *newLabel (const char *prefix)
 {
    static int count;
    static char result[80];
@@ -14,7 +14,8 @@ static char *newLabel (char *prefix)
    return result;
 }
 
-static int addItemCB (EObjectType cdktype GCC_UNUSED, void *object,
+static int addItemCB (EObjectType cdktype GCC_UNUSED,
+		      void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -27,7 +28,8 @@ static int addItemCB (EObjectType cdktype GCC_UNUSED, void *object,
    return (TRUE);
 }
 
-static int insItemCB (EObjectType cdktype GCC_UNUSED, void *object,
+static int insItemCB (EObjectType cdktype GCC_UNUSED,
+		      void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -40,7 +42,8 @@ static int insItemCB (EObjectType cdktype GCC_UNUSED, void *object,
    return (TRUE);
 }
 
-static int delItemCB (EObjectType cdktype GCC_UNUSED, void *object,
+static int delItemCB (EObjectType cdktype GCC_UNUSED,
+		      void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -67,9 +70,10 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen = 0;
    CDKSCROLL *scrollList = 0;
    WINDOW *cursesWin = 0;
-   char *title = "<C></5>Pick a file";
+   const char *title = "<C></5>Pick a file";
    char **item = 0;
-   char *mesg[5], temp[256];
+   const char *mesg[5];
+   char temp[256];
    int selection, count;
 
    CDK_PARAMS params;
@@ -90,12 +94,18 @@ int main (int argc, char **argv)
    scrollList = newCDKScroll (cdkscreen,
 			      CDKparamValue (&params, 'X', CENTER),
 			      CDKparamValue (&params, 'Y', CENTER),
-			      CDKparsePosition(CDKparamString2(&params, 's', "RIGHT")),
+			      CDKparsePosition (CDKparamString2 (&params,
+								 's',
+								 "RIGHT")),
 			      CDKparamValue (&params, 'H', 10),
 			      CDKparamValue (&params, 'W', 50),
-			      CDKparamString2(&params, 't', title),
-			      CDKparamNumber(&params, 'c') ? 0 : item,
-			      CDKparamNumber(&params, 'c') ? 0 : count,
+			      CDKparamString2 (&params, 't', title),
+			      (CDKparamNumber (&params, 'c')
+			       ? 0
+			       : (CDK_CSTRING2) item),
+			      (CDKparamNumber (&params, 'c')
+			       ? 0
+			       : count),
 			      TRUE,
 			      A_REVERSE,
 			      CDKparamValue (&params, 'N', TRUE),
@@ -108,15 +118,13 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a message and exit. */
-      printf
-	      ("Oops. Could not make scrolling list. Is the window too small?\n");
+      printf ("Cannot make scrolling list. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
-   if (CDKparamNumber(&params, 'c'))
+   if (CDKparamNumber (&params, 'c'))
    {
-      setCDKScrollItems (scrollList, item, count, TRUE);
+      setCDKScrollItems (scrollList, (CDK_CSTRING2) item, count, TRUE);
    }
 #if 0
    drawCDKScroll (scrollList, 1);
@@ -149,9 +157,9 @@ int main (int argc, char **argv)
    if (scrollList->exitType == vESCAPE_HIT)
    {
       mesg[0] = "<C>You hit escape. No file selected.";
-      mesg[1] = "",
-	 mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      mesg[1] = "";
+      mesg[2] = "<C>Press any key to continue.";
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (scrollList->exitType == vNORMAL)
    {
@@ -160,7 +168,7 @@ int main (int argc, char **argv)
       sprintf (temp, "<C>%.*s", (int)(sizeof (temp) - 20), theItem);
       mesg[1] = temp;
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
       freeChar (theItem);
    }
 

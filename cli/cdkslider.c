@@ -1,9 +1,9 @@
-/* $Id: cdkslider.c,v 1.11 2011/05/16 22:59:03 tom Exp $ */
+/* $Id: cdkslider.c,v 1.13 2012/03/22 09:36:03 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkslider";
+char *XCursesProgramName = "cdkslider";
 #endif
 
 /*
@@ -14,28 +14,28 @@ static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype
 /*
  * Define file local variables.
  */
-static char *FPUsage = "-f Field Width -l Low Value -h High Value [-s Initial Value]] [-i Increment Value] [-a Accelerated Increment Value] [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-N] [-S]";
+static const char *FPUsage = "-f Field Width -l Low Value -h High Value [-s Initial Value]] [-i Increment Value] [-a Accelerated Increment Value] [-F Field Character] [-T Title] [-L Label] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-N] [-S]";
 
 /*
  *
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKSLIDER *widget		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   WINDOW *cursesWindow		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *temp			= 0;
-   chtype *holder		= 0;
-   chtype fieldAttr		= A_REVERSE | ' ';
-   int answer			= 0;
-   int buttonCount		= 0;
-   int selection		= 0;
-   int shadowHeight		= 0;
-   FILE *fp			= stderr;
-   char **buttonList		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKSLIDER *widget            = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   WINDOW *cursesWindow         = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *temp                   = 0;
+   chtype *holder               = 0;
+   chtype fieldAttr             = A_REVERSE | ' ';
+   int answer                   = 0;
+   int buttonCount              = 0;
+   int selection                = 0;
+   int shadowHeight             = 0;
+   FILE *fp                     = stderr;
+   char **buttonList            = 0;
    int j1, j2, tmp;
 
    CDK_PARAMS params;
@@ -55,26 +55,25 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "a:f:h:i:l:s:B:F:L:O:T:" CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, "a:f:h:i:l:s:B:F:L:O:T:" CDK_MIN_PARAMS);
 
-   xpos            = CDKparamValue(&params, 'X', CENTER);
-   ypos            = CDKparamValue(&params, 'Y', CENTER);
-   boxWidget       = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget    = CDKparamValue(&params, 'S', FALSE);
-
-   acceleratedStep = CDKparamValue(&params, 'a', -1);
-   fieldWidth      = CDKparamValue(&params, 'f', 0);
-   highValue       = CDKparamValue(&params, 'h', INT_MIN);
-   incrementStep   = CDKparamValue(&params, 'i', 1);
-   lowValue        = CDKparamValue(&params, 'l', INT_MAX);
-   initValue       = CDKparamValue(&params, 's', INT_MIN);
-   buttons         = CDKparamString(&params, 'B');
-   barAttribute    = CDKparamString(&params, 'F');
-   label           = CDKparamString(&params, 'L');
-   outputFile      = CDKparamString(&params, 'O');
-   title           = CDKparamString(&params, 'T');
-
-   incrementStep   = abs(incrementStep);
+   /* *INDENT-EQLS* */
+   xpos            = CDKparamValue (&params, 'X', CENTER);
+   ypos            = CDKparamValue (&params, 'Y', CENTER);
+   boxWidget       = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget    = CDKparamValue (&params, 'S', FALSE);
+   acceleratedStep = CDKparamValue (&params, 'a', -1);
+   fieldWidth      = CDKparamValue (&params, 'f', 0);
+   highValue       = CDKparamValue (&params, 'h', INT_MIN);
+   incrementStep   = CDKparamValue (&params, 'i', 1);
+   lowValue        = CDKparamValue (&params, 'l', INT_MAX);
+   initValue       = CDKparamValue (&params, 's', INT_MIN);
+   buttons         = CDKparamString (&params, 'B');
+   barAttribute    = CDKparamString (&params, 'F');
+   label           = CDKparamString (&params, 'L');
+   outputFile      = CDKparamString (&params, 'O');
+   title           = CDKparamString (&params, 'T');
+   incrementStep   = abs (incrementStep);
 
    /* Make sure all the command line parameters were provided. */
    if (fieldWidth <= 0)
@@ -103,9 +102,9 @@ int main (int argc, char **argv)
    /* Make sure the low is lower than the high (and vice versa). */
    if (lowValue > highValue)
    {
-      tmp	= lowValue;
-      lowValue	= highValue;
-      highValue	= tmp;
+      tmp = lowValue;
+      lowValue = highValue;
+      highValue = tmp;
    }
 
    /* Make sure the starting value is in range. */
@@ -126,11 +125,11 @@ int main (int argc, char **argv)
    }
 
    /* Set up CDK. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -157,20 +156,22 @@ int main (int argc, char **argv)
 
    /* Create the entry widget. */
    widget = newCDKSlider (cdkScreen, xpos, ypos,
-				title, label,
-				fieldAttr, fieldWidth,
-				initValue, lowValue, highValue,
-				incrementStep, acceleratedStep,
-				boxWidget, shadowWidget);
+			  title, label,
+			  fieldAttr, fieldWidth,
+			  initValue, lowValue, highValue,
+			  incrementStep, acceleratedStep,
+			  boxWidget, shadowWidget);
 
    /* Check to make sure we created the dialog box. */
    if (widget == 0)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the numeric slider field. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the numeric slider field. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -180,16 +181,17 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
-					getbegx (widget->win),
-					getbegy (widget->win) + widget->boxHeight - 1,
-					1, widget->boxWidth - 1,
-					0, 1, buttonCount,
-					buttonList, buttonCount,
-					A_REVERSE, boxWidget, FALSE);
+				      getbegx (widget->win),
+				      (getbegy (widget->win)
+				       + widget->boxHeight - 1),
+				      1, widget->boxWidth - 1,
+				      0, 1, buttonCount,
+				      (CDK_CSTRING2) buttonList, buttonCount,
+				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
@@ -229,14 +231,14 @@ int main (int argc, char **argv)
    {
       /* Determine the height of the shadow window. */
       shadowHeight = (buttonWidget == 0 ?
-			widget->boxHeight :
-			widget->boxHeight + buttonWidget->boxHeight - 1);
+		      widget->boxHeight :
+		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
       /* Create the shadow window. */
       widget->shadowWin = newwin (shadowHeight,
-					widget->boxWidth,
-					getbegy (widget->win) + 1,
-					getbegx (widget->win) + 1);
+				  widget->boxWidth,
+				  getbegy (widget->win) + 1,
+				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
@@ -248,9 +250,9 @@ int main (int argc, char **argv)
 	  * buttonbox widget will be drawn when the widget is activated.
 	  * Otherwise the shadow window will draw over the button widget.
 	  */
-	 drawCDKSlider (widget, ObjOf(widget)->box);
+	 drawCDKSlider (widget, ObjOf (widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
-	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 drawCDKButtonbox (buttonWidget, ObjOf (buttonWidget)->box);
       }
    }
 
@@ -270,7 +272,7 @@ int main (int argc, char **argv)
    /* End CDK. */
    destroyCDKSlider (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Print the value from the widget. */
    fprintf (fp, "%d\n", answer);
@@ -280,9 +282,12 @@ int main (int argc, char **argv)
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED,
+		     void *object GCC_UNUSED,
+		     void *clientData,
+		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   injectCDKButtonbox (buttonbox, key);
+   (void) injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

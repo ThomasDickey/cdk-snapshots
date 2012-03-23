@@ -1,4 +1,4 @@
-/* $Id: calendar_ex.c,v 1.14 2011/05/17 23:56:10 tom Exp $ */
+/* $Id: calendar_ex.c,v 1.16 2012/03/23 13:54:44 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -18,7 +18,8 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen		= 0;
    CDKCALENDAR *calendar	= 0;
    WINDOW *cursesWin		= 0;
-   char *mesg[5], temp[256];
+   const char *mesg[5];
+   char temp[256];
    struct tm *dateInfo;
    time_t clck, retVal;
 
@@ -33,7 +34,7 @@ int main (int argc, char **argv)
     * the day/month/year values for the calendar.
     */
    time (&clck);
-   dateInfo	= localtime (&clck);
+   dateInfo	= gmtime (&clck);
 
    /* *INDENT-EQLS* */
    CDKparseParams (argc, argv, &params, "d:m:y:t:w:" CDK_MIN_PARAMS);
@@ -70,7 +71,6 @@ int main (int argc, char **argv)
       /* End curses... */
       endCDK ();
 
-      /* Spit out a message. */
       printf ("Cannot create the calendar. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No date selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (calendar->exitType == vNORMAL)
    {
@@ -104,10 +104,9 @@ int main (int argc, char **argv)
 	       calendar->day,
 	       calendar->month,
 	       calendar->year);
-      mesg[1] = copyChar (temp);
+      mesg[1] = temp;
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-      freeChar (mesg[1]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
 
    /* Clean up and exit. */

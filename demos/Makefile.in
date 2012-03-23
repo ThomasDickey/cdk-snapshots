@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.17 2011/05/13 22:59:35 tom Exp $
+# $Id: Makefile.in,v 1.18 2012/03/20 09:22:43 tom Exp $
 #
-# Makefile for the examples directory.
+# Makefile for the demos directory.
 #
 SHELL		= /bin/sh
 

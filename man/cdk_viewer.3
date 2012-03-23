@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_viewer.3,v 1.25 2005/12/29 01:31:04 tom Exp $
+.\" $Id: cdk_viewer.3,v 1.27 2012/03/22 08:46:48 tom Exp $
 .de XX
 ..
 .TH cdk_viewer 3
@@ -88,7 +88,7 @@ cdk_viewer \- curses viewer list widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char **" "buttonList",
+.BI "CDK_CONST char **" "buttonList",
 .BI "int " "buttonCount",
 .BI "chtype " "buttonHighlight",
 .BI "boolean " "box",
@@ -99,8 +99,8 @@ cdk_viewer \- curses viewer list widget.
 .TP 15
 .B "void setCDKViewer ("
 .BI "CDKVIEWER *" "viewer",
-.BI "char *" "title",
-.BI "char **" "list",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize",
 .BI "chtype " "buttonAttribute",
 .BI "boolean " "interpret",
@@ -113,7 +113,7 @@ cdk_viewer \- curses viewer list widget.
 .TP 15
 .B "void setCDKViewerBackgroundColor ("
 .BI "CDKVIEWER *" "viewer",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKViewerBox ("
 .BI "CDKVIEWER *" "viewer",
@@ -133,13 +133,9 @@ cdk_viewer \- curses viewer list widget.
 .TP 15
 .B "void setCDKViewerInfo ("
 .BI "CDKVIEWER *" "viewer",
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize",
 .BI "boolean " "interpret");
-.TP 15
-.B "void setCDKViewerTitle ("
-.BI "CDKVIEWER *" "viewer",
-.BI "char *" "title");
 .TP 15
 .B "void setCDKViewerInfoLine ("
 .BI "CDKVIEWER *" "viewer",
@@ -155,7 +151,7 @@ cdk_viewer \- curses viewer list widget.
 .TP 15
 .B "void setCDKViewerTitle ("
 .BI "CDKVIEWER *" "viewer",
-.BI "char *" "title");
+.BI "const char *" "title");
 .TP 15
 .B "void setCDKViewerULChar ("
 .BI "CDKVIEWER *" "viewer",

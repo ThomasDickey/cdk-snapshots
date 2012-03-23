@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.h,v 1.36 2009/02/15 23:46:08 tom Exp $
+ * $Id: cdk.h,v 1.37 2012/03/20 22:01:57 tom Exp $
  */
 
 #ifndef CDK_H
@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 2000-2008,2009 copyright Thomas E. Dickey
+ * Changes 2000-2009,2012 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -272,8 +272,8 @@ extern  FILE	*CDKDEBUG;
 #define START_DEBUG(a)		(CDKDEBUG=startCDKDebug(a))
 #define WRITE_DEBUGMESG(a,b)	(writeCDKDebugMessage (CDKDEBUG,__FILE__,a,__LINE__,b))
 #define	END_DEBUG		(stopCDKDebug(CDKDEBUG)
-FILE *startCDKDebug(char *filename);
-void writeCDKDebugMessage (FILE *fd, char *filename, char *function, int line, char *message);
+FILE *startCDKDebug(const char *filename);
+void writeCDKDebugMessage (FILE *fd, const char *filename, const char *function, int line, const char *message);
 void stopCDKDebug (FILE *fd);
 
 /*

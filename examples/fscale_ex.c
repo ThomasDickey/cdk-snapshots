@@ -1,4 +1,4 @@
-/* $Id: fscale_ex.c,v 1.7 2011/05/15 20:12:12 tom Exp $ */
+/* $Id: fscale_ex.c,v 1.8 2012/03/21 23:11:37 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,9 +25,10 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen = 0;
    CDKFSCALE *scale     = 0;
    WINDOW *cursesWin    = 0;
-   char *title          = "<C>Select a value";
-   char *label          = "</5>Current value";
-   char temp[256], *mesg[5];
+   const char *title    = "<C>Select a value";
+   const char *label    = "</5>Current value";
+   char temp[256];
+   const char *mesg[5];
    float selection;
 
    CDK_PARAMS params;
@@ -66,7 +67,6 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a message. */
       printf ("Can't make the scale widget. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
@@ -80,16 +80,15 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No value selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (scale->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected %f", selection);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-      freeChar (mesg[0]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
 
    /* Clean up. */

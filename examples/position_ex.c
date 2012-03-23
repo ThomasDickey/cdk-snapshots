@@ -1,4 +1,4 @@
-/* $Id: position_ex.c,v 1.13 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: position_ex.c,v 1.14 2012/03/21 23:18:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,52 +9,51 @@ char *XCursesProgramName = "position_ex";
 /*
  * This demonstrates the positioning of a Cdk entry field widget.
  */
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
-   /* Declare local variables.*/
+   /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
-   CDKENTRY *directory	= 0;
-   WINDOW *cursesWin	= 0;
-   char *label		= "</U/5>Directory:<!U!5> ";
-   char *info		= 0;
-   char *mesg[10];
+   CDKENTRY *directory  = 0;
+   WINDOW *cursesWin    = 0;
+   const char *label    = "</U/5>Directory:<!U!5> ";
+   char *info           = 0;
+   const char *mesg[10];
    char temp[256];
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, "w:" CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, "w:" CDK_MIN_PARAMS);
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start CDK colors. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Create the entry field widget. */
    directory = newCDKEntry (cdkscreen,
-			    CDKparamValue(&params, 'X', CENTER),
-			    CDKparamValue(&params, 'Y', CENTER),
+			    CDKparamValue (&params, 'X', CENTER),
+			    CDKparamValue (&params, 'Y', CENTER),
 			    0, label, A_NORMAL, '.', vMIXED,
-			    CDKparamValue(&params, 'w', 40),
+			    CDKparamValue (&params, 'w', 40),
 			    0, 256,
-			    CDKparamValue(&params, 'N', TRUE),
-			    CDKparamValue(&params, 'S', FALSE));
+			    CDKparamValue (&params, 'N', TRUE),
+			    CDKparamValue (&params, 'S', FALSE));
 
    /* Is the widget null? */
    if (directory == 0)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
-      /* Print out a little message. */
-      printf ("Oops. Can't seem to create the entry box. Is the window too small?\n");
+      printf ("Cannot create the entry box. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
    /* Let the user move the widget around the window. */
-   drawCDKEntry (directory, ObjOf(directory)->box);
+   drawCDKEntry (directory, ObjOf (directory)->box);
    positionCDKEntry (directory);
 
    /* Activate the entry field. */
@@ -65,23 +64,22 @@ int main(int argc, char **argv)
    {
       mesg[0] = "<C>You hit escape. No information passed back.";
       mesg[1] = "",
-      mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+	 mesg[2] = "<C>Press any key to continue.";
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (directory->exitType == vNORMAL)
    {
       mesg[0] = "<C>You typed in the following";
-      sprintf (temp, "<C>(%.*s)", (int)(sizeof(temp) - 20), info);
-      mesg[1] = copyChar (temp);
+      sprintf (temp, "<C>(%.*s)", (int)(sizeof (temp) - 20), info);
+      mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 4);
-      freeChar (mesg[1]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
    }
 
    /* Clean up and exit. */
    destroyCDKEntry (directory);
    destroyCDKScreen (cdkscreen);
-   endCDK();
+   endCDK ();
    ExitProgram (EXIT_SUCCESS);
 }

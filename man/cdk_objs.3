@@ -1,4 +1,4 @@
-.\" $Id: cdk_objs.3,v 1.2 2005/12/28 20:54:41 tom Exp $
+.\" $Id: cdk_objs.3,v 1.4 2012/03/22 00:50:06 tom Exp $
 .de XX
 ..
 .TH cdk_objs 3
@@ -35,7 +35,7 @@ cdk_objs \- Cdk object-support functions
 .TP 15
 .B "void setCDKObjectBackgroundColor ("
 .BI "CDKOBJS *" "object",
-.BI "char *" "color");
+.BI "const 3char *" "color");
 .TP 15
 .B "void setCDKObjectPostProcess ("
 .BI "CDKOBJS *" "object",
@@ -54,7 +54,7 @@ cdk_objs \- Cdk object-support functions
 .TP 15
 .B "int setCdkTitle ("
 .BI "CDKOBJS *" "obj",
-.BI "char *" "title",
+.BI "const char *" "title",
 .BI "int " "boxWidth");
 .TP 15
 .B "bool validCDKObject ("

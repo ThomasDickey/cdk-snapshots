@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: gen-scale.3,v 1.6 2005/12/28 20:52:05 tom Exp $"
+.\" $Id: gen-scale.3,v 1.8 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_<MODEL>scale 3
@@ -94,8 +94,8 @@ cdk_<MODEL>scale \- curses scale widget (type <CTYPE>).
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
-.BI "char *" "label",
+.BI "const char *" "title",
+.BI "const char *" "label",
 .BI "chtype " "fieldAttribute",
 .BI "int " "fieldWidth",
 .BI "<CTYPE> " "currentValue",
@@ -125,7 +125,7 @@ cdk_<MODEL>scale \- curses scale widget (type <CTYPE>).
 .TP 15
 .B "void setCDK<MIXED>BackgroundColor ("
 .BI "CDK<UPPER> *" "scale",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDK<MIXED>Box ("
 .BI "CDK<UPPER> *" "scale",

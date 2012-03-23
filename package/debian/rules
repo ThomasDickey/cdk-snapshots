@@ -13,13 +13,12 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 # packages
 PACKAGES.indep = libcdk5-doc
-PACKAGES.arch  = libcdk5-dev libcdkw5-dev libcdk5 libcdkw5
+PACKAGES.arch  = libcdk5-dev libcdk5
 
 CFLAGS =
 
 TARGET = $(CURDIR)/debian
 P_NORM = $(CURDIR)/t/libcdk5
-P_WIDE = $(CURDIR)/t/libcdkw5
 
 verbose = # -v
 
@@ -112,7 +111,7 @@ config-libcdk5-stamp       :
 	mkdir -p $(P_NORM)
 
 	cd $(P_NORM); CFLAGS="$(CFLAGS)" \
-	$(configure) --with-ncurses
+	$(configure) --with-ncursesw --with-libname=cdk
 
 	touch $@
 
@@ -172,54 +171,3 @@ install-libcdk5-doc-stamp  : install-libcdk5-stamp
 
 	touch $@
 
-#------------------------------------------------------------------------------
-config-libcdkw5-stamp      :
-	$(LOG) "configuring libcdkw5"
-	dh_testdir
-
-	rm -rf $(P_WIDE)
-	mkdir -p $(P_WIDE)
-
-	cd $(P_WIDE); CFLAGS="$(CFLAGS)" \
-	$(configure) --with-ncursesw --with-hdrname=cdkw --with-cfgname=cdkw
-
-	touch $@
-
-build-libcdkw5-stamp       : config-libcdkw5-stamp
-	$(LOG) "building libcdkw5"
-	dh_testdir
-
-	$(MAKE) -C $(P_WIDE) cdklib cdkshlib
-
-	touch $@
-
-install-libcdkw5-stamp     : build-libcdkw5-stamp
-	$(LOG) "installing libcdkw5"
-	dh_testdir
-	dh_testroot
-	dh_prep $(verbose) -plibcdkw5
-	dh_installdirs $(verbose) -plibcdkw5
-
-	$(MAKE) -C $(P_WIDE) DESTDIR=$(TARGET)/libcdkw5 installCDKSHLibrary
-
-	touch $@
-
-#------------------------------------------------------------------------------
-config-libcdkw5-dev-stamp  : config-libcdkw5-stamp
-	touch $@
-
-build-libcdkw5-dev-stamp   : build-libcdkw5-stamp
-	touch $@
-
-install-libcdkw5-dev-stamp : install-libcdkw5-stamp
-	$(LOG) "installing libcdkw5-dev"
-	dh_testdir
-	dh_testroot
-	dh_prep $(verbose) -plibcdkw5-dev
-	dh_installdirs $(verbose) -plibcdkw5-dev
-
-	$(MAKE) -C $(P_WIDE) DESTDIR=$(TARGET)/libcdkw5-dev installCDKHeaderFiles installCDKLibrary
-
-	touch $@
-
-#------------------------------------------------------------------------------

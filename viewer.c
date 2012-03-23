@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:14:26 $
- * $Revision: 1.160 $
+ * $Date: 2012/03/22 00:43:33 $
+ * $Revision: 1.162 $
  */
 
 /*
@@ -18,7 +18,7 @@
 static int createList (CDKVIEWER *swindow, int listSize);
 static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction);
 static int jumpToLine (CDKVIEWER *viewer);
-static void popUpLabel (CDKVIEWER *viewer, char **mesg);
+static void popUpLabel (CDKVIEWER *viewer, CDK_CSTRING2 mesg);
 static void getAndStorePattern (CDKSCREEN *screen);
 static void drawCDKViewerButtons (CDKVIEWER *viewer);
 static void drawCDKViewerInfo (CDKVIEWER *viewer);
@@ -39,7 +39,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
 			 int yplace,
 			 int height,
 			 int width,
-			 char **buttons,
+			 CDK_CSTRING2 buttons,
 			 int buttonCount,
 			 chtype buttonHighlight,
 			 boolean Box,
@@ -70,7 +70,6 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
 	    { '$',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if ((viewer = newCDKObject (CDKVIEWER, &my_funcs)) == 0)
         return (0);
@@ -169,8 +168,8 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
  * This function sets various attributes of the widget.
  */
 int setCDKViewer (CDKVIEWER *viewer,
-		  char *title,
-		  char **list,
+		  const char *title,
+		  CDK_CSTRING2 list,
 		  int listSize,
 		  chtype buttonHighlight,
 		  boolean attrInterp,
@@ -188,7 +187,7 @@ int setCDKViewer (CDKVIEWER *viewer,
  * This sets the title of the viewer. (A null title is allowed.
  * It just means that the viewer will not have a title when drawn.)
  */
-void setCDKViewerTitle (CDKVIEWER *viewer, char *title)
+void setCDKViewerTitle (CDKVIEWER *viewer, const char *title)
 {
    (void)setCdkTitle (ObjOf (viewer), title, -(viewer->boxWidth + 1));
    viewer->titleAdj = TitleLinesOf (viewer);
@@ -201,7 +200,7 @@ chtype **getCDKViewerTitle (CDKVIEWER *viewer)
    return TitleOf (viewer);
 }
 
-static void setupLine (CDKVIEWER *viewer, boolean interpret, char *list, int x)
+static void setupLine (CDKVIEWER *viewer, boolean interpret, const char *list, int x)
 {
    /* Did they ask for attribute interpretation? */
    if (interpret)
@@ -285,7 +284,7 @@ static void freeLine (CDKVIEWER *viewer, int x)
 /*
  * This function sets the contents of the viewer.
  */
-int setCDKViewerInfo (CDKVIEWER *viewer, char **list, int listSize, boolean interpret)
+int setCDKViewerInfo (CDKVIEWER *viewer, CDK_CSTRING2 list, int listSize, boolean interpret)
 {
    /* *INDENT-EQLS* */
    char filename[CDK_PATHMAX + 2];
@@ -486,7 +485,7 @@ void cleanCDKViewer (CDKVIEWER *viewer)
 
 static void PatternNotFound (CDKVIEWER *viewer, char *pattern)
 {
-   char *tempInfo[2];
+   CDK_CSTRING tempInfo[2];
    char *temp = (char *)malloc (80 + strlen (pattern));
    tempInfo[0] = temp;
    tempInfo[1] = 0;
@@ -501,7 +500,8 @@ static void PatternNotFound (CDKVIEWER *viewer, char *pattern)
 int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
 {
    char *fileInfo[10];
-   char *tempInfo[2], temp[500];
+   CDK_CSTRING tempInfo[2];
+   char temp[500];
    chtype input;
    boolean functionKey;
    int x, REFRESH;
@@ -759,7 +759,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
 	 case 'i':
 	 case 's':
 	 case 'S':
-	    popUpLabel (widget, fileInfo);
+	    popUpLabel (widget, (CDK_CSTRING2) fileInfo);
 	    REFRESH = TRUE;
 	    break;
 
@@ -804,7 +804,7 @@ static void getAndStorePattern (CDKSCREEN *screen)
 {
    /* *INDENT-EQLS* */
    CDKENTRY *getPattern = 0;
-   char *temp           = 0;
+   const char *temp     = 0;
    char *list           = 0;
 
    /* Check the direction. */
@@ -936,14 +936,16 @@ static int jumpToLine (CDKVIEWER *viewer)
 /*
  * This pops a little message up on the screen.
  */
-static void popUpLabel (CDKVIEWER *viewer, char **mesg)
+static void popUpLabel (CDKVIEWER *viewer, CDK_CSTRING2 mesg)
 {
    CDKLABEL *label;
    boolean functionKey;
 
    /* Set up variables. */
-   label = newCDKLabel (ScreenOf (viewer), CENTER, CENTER, mesg,
-			(int)CDKcountStrings (mesg), TRUE, FALSE);
+   label = newCDKLabel (ScreenOf (viewer), CENTER, CENTER,
+			(CDK_CSTRING2) mesg,
+			(int)CDKcountStrings (mesg),
+			TRUE, FALSE);
 
    /* Draw the label and wait. */
    drawCDKLabel (label, TRUE);

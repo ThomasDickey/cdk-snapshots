@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.22 2005/12/28 21:52:07 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.24 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_selection 3
@@ -115,10 +115,10 @@ cdk_selection \- curses selection list widget.
 .BI "int " "spos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
-.BI "char **" "selectionList",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "selectionList",
 .BI "int " "selectionListLength",
-.BI "char **" "choiceList",
+.BI "CDK_CONST char **" "choiceList",
 .BI "int " "choiceListLength",
 .BI "chtype " "highlight",
 .BI "boolean " "box",
@@ -139,7 +139,7 @@ cdk_selection \- curses selection list widget.
 .TP 15
 .B "void setCDKSelectionBackgroundColor ("
 .BI "CDKSELECTION *" "selection",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKSelectionBox ("
 .BI "CDKSELECTION *" "selection",
@@ -172,7 +172,7 @@ cdk_selection \- curses selection list widget.
 .TP 15
 .B "void setCDKSelectionItems ("
 .BI "CDKSELECTION *" "selection",
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize");
 .TP 15
 .B "void setCDKSelectionLLChar ("
@@ -204,7 +204,7 @@ cdk_selection \- curses selection list widget.
 .TP 15
 .B "void setCDKSelectionTitle ("
 .BI "CDKSELECTION *" "selection",
-.BI "char *" "title");
+.BI "const char *" "title");
 .TP 15
 .B "void setCDKSelectionULChar ("
 .BI "CDKSELECTION *" "selection",

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:27:11 $
- * $Revision: 1.65 $
+ * $Date: 2012/03/21 08:44:22 $
+ * $Revision: 1.66 $
  */
 
 DeclareCDKObjects (BUTTONBOX, Buttonbox, setCdk, Int);
@@ -16,10 +16,10 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen,
 			       int yPos,
 			       int height,
 			       int width,
-			       char *title,
+			       const char *title,
 			       int rows,
 			       int cols,
-			       char **buttons,
+			       CDK_CSTRING2 buttons,
 			       int buttonCount,
 			       chtype highlight,
 			       boolean Box,

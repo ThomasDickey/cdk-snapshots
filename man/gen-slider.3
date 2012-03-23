@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: gen-slider.3,v 1.4 2005/12/28 20:51:59 tom Exp $"
+.\" $Id: gen-slider.3,v 1.6 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_<MODEL>slider 3
@@ -94,8 +94,8 @@ cdk_<MODEL>slider \- curses slider widget (type <CTYPE>)
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
-.BI "char *" "label",
+.BI "const char *" "title",
+.BI "const char *" "label",
 .BI "chtype " "fillerCharacter",
 .BI "int " "fieldWidth",
 .BI "int " "currentValue",
@@ -125,7 +125,7 @@ cdk_<MODEL>slider \- curses slider widget (type <CTYPE>)
 .TP 15
 .B "void setCDK<MIXED>BackgroundColor ("
 .BI "CDK<UPPER> *" "slider",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDK<MIXED>Box ("
 .BI "CDK<UPPER> *" "slider",

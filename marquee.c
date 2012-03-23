@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/17 09:51:39 $
- * $Revision: 1.79 $
+ * $Date: 2012/03/21 00:04:52 $
+ * $Revision: 1.80 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
@@ -102,7 +102,7 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
  * This activates the widget.
  */
 int activateCDKMarquee (CDKMARQUEE *widget,
-			char *mesg,
+			const char *mesg,
 			int delay,
 			int repeat,
 			boolean Box)

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.23 2006/04/15 14:07:13 tom Exp $
+.\" $Id: cdk_entry.3,v 1.26 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_entry 3
@@ -100,8 +100,8 @@ cdk_entry \- curses text-entry widget.
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
-.BI "char *" "label",
+.BI "const char *" "title",
+.BI "const char *" "label",
 .BI "chtype " "fieldAttribute",
 .BI "chtype " "fillerCharacter",
 .BI "EDisplayType " "displayType",
@@ -116,7 +116,7 @@ cdk_entry \- curses text-entry widget.
 .TP 15
 .B "void setCDKEntry ("
 .BI "CDKENTRY *" "entry",
-.BI "char *" "value",
+.BI "const char *" "value",
 .BI "int " "minimumLength",
 .BI "int " "maximumLength",
 .BI "boolean " "box");
@@ -127,7 +127,7 @@ cdk_entry \- curses text-entry widget.
 .TP 15
 .B "void setCDKEntryBackgroundColor ("
 .BI "CDKENTRY *" "entry",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKEntryBox ("
 .BI "CDKENTRY *" "entry",
@@ -194,7 +194,7 @@ cdk_entry \- curses text-entry widget.
 .TP 15
 .B "void setCDKEntryValue ("
 .BI "CDKENTRY *" "entry",
-.BI "char *" "value");
+.BI "const char *" "value");
 .TP 15
 .B "void setCDKEntryVerticalChar ("
 .BI "CDKENTRY *" "entry",

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_buttonbox.3,v 1.20 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_buttonbox.3,v 1.22 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_buttonbox 3
@@ -89,10 +89,10 @@ cdk_buttonbox \- Creates a managed curses buttonbox widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char * " "title" ,
+.BI "const char * " "title" ,
 .BI "int " "rows",
 .BI "int " "cols",
-.BI "char ** " "buttons" ,
+.BI "CDK_CONST char ** " "buttons" ,
 .BI "int " "buttonCount",
 .BI "chtype " "highlight" ,
 .BI "boolean " "box",
@@ -112,7 +112,7 @@ cdk_buttonbox \- Creates a managed curses buttonbox widget.
 .TP 15
 .B "void setCDKButtonboxBackgroundColor ("
 .BI "CDKBUTTONBOX *" "buttonbox",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKButtonboxBox ("
 .BI "CDKBUTTONBOX *" "buttonbox",

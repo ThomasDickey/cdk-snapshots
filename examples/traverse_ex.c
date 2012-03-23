@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.22 2011/05/15 20:05:13 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.23 2012/03/21 23:56:27 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,16 +12,16 @@ char *XCursesProgramName = "entry_ex";
 
 static CDKOBJS *all_objects[MY_MAX];
 
-static char *yes_no[] =
+static const char *yes_no[] =
 {
    "Yes", "NO"
 };
-static char *months[] =
+static const char *months[] =
 {
    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
-static char *choices[] =
+static const char *choices[] =
 {
    "[ ]", "[*]"
 };
@@ -37,7 +37,7 @@ static char *choices[] =
 /* *INDENT-OFF* */
 static const struct
 {
-   char *name;
+   const char *name;
    EObjectType type;
 }
 menu_table[] =
@@ -78,7 +78,8 @@ static CDKOBJS *make_alphalist (CDKSCREEN *cdkscreen, int x, int y)
 					   x, y, 10, 15,
 					   "AlphaList",
 					   "->",
-					   months, NumElements (months),
+					   (CDK_CSTRING2) months,
+					   NumElements (months),
 					   '_', A_REVERSE,
 					   TRUE, FALSE);
    return ObjPtr (widget);
@@ -97,7 +98,8 @@ static CDKOBJS *make_buttonbox (CDKSCREEN *cdkscreen, int x, int y)
    CDKBUTTONBOX *widget = newCDKButtonbox (cdkscreen, x, y,
 					   10, 16,
 					   "ButtonBox", 6, 2,
-					   months, NumElements (months),
+					   (CDK_CSTRING2) months,
+					   NumElements (months),
 					   A_REVERSE,
 					   TRUE, FALSE);
    return ObjPtr (widget);
@@ -118,15 +120,15 @@ static CDKOBJS *make_calendar (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_dialog (CDKSCREEN *cdkscreen, int x, int y)
 {
-   static char *message[] =
+   static const char *message[] =
    {
       "This is a simple dialog box"
       ,"Is it simple enough?"
    };
 
    CDKDIALOG *widget = newCDKDialog (cdkscreen, x, y,
-				     message, NumElements (message),
-				     yes_no, NumElements (yes_no),
+				     (CDK_CSTRING2) message, NumElements (message),
+				     (CDK_CSTRING2) yes_no, NumElements (yes_no),
 				     COLOR_PAIR (2) | A_REVERSE,
 				     TRUE,
 				     TRUE, FALSE);
@@ -201,8 +203,10 @@ static CDKOBJS *make_fselect (CDKSCREEN *cdkscreen, int x, int y)
 static CDKOBJS *make_graph (CDKSCREEN *cdkscreen, int x, int y)
 {
    static int values[] =
-   {10, 15, 20, 25, 30, 35, 40, 45, 50, 55};
-   static char *graphChars = "0123456789";
+   {
+      10, 15, 20, 25, 30, 35, 40, 45, 50, 55
+   };
+   static const char *graphChars = "0123456789";
    CDKGRAPH *widget = newCDKGraph (cdkscreen, x, y,
 				   10, 25,
 				   "title", "X-axis", "Y-axis");
@@ -229,7 +233,7 @@ static CDKOBJS *make_itemlist (CDKSCREEN *cdkscreen, int x, int y)
 {
    CDKITEMLIST *widget = newCDKItemlist (cdkscreen, x, y,
 					 NULL, "Month ",
-					 months,
+					 (CDK_CSTRING2) months,
 					 NumElements (months),
 					 1, TRUE, FALSE);
    return ObjPtr (widget);
@@ -237,7 +241,7 @@ static CDKOBJS *make_itemlist (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_label (CDKSCREEN *cdkscreen, int x, int y)
 {
-   static char *message[] =
+   static const char *message[] =
    {
       "This is a simple label."
       ,"Is it simple enough?"
@@ -245,7 +249,7 @@ static CDKOBJS *make_label (CDKSCREEN *cdkscreen, int x, int y)
    CDKLABEL *widget = newCDKLabel (cdkscreen,
 				   x,
 				   y,
-				   message, NumElements (message),
+				   (CDK_CSTRING2) message, NumElements (message),
 				   TRUE,
 				   TRUE);
    return ObjPtr (widget);
@@ -270,8 +274,8 @@ static CDKOBJS *make_matrix (CDKSCREEN *cdkscreen, int x, int y)
 #define NUMCOLS 5
 
    CDKMATRIX *widget;
-   char *coltitle[NUMCOLS + 1];
-   char *rowtitle[NUMROWS + 1];
+   const char *coltitle[NUMCOLS + 1];
+   const char *rowtitle[NUMROWS + 1];
    char temp[80];
    int cols = NUMCOLS;
    int colwidth[NUMCOLS + 1];
@@ -301,7 +305,7 @@ static CDKOBJS *make_matrix (CDKSCREEN *cdkscreen, int x, int y)
 			  x,
 			  y,
 			  rows, cols, vrows, vcols,
-			  "Matrix", rowtitle, coltitle,
+			  "Matrix", (CDK_CSTRING2) rowtitle, (CDK_CSTRING2) coltitle,
 			  colwidth, coltypes,
 			  -1, -1, '.',
 			  COL, TRUE,
@@ -334,7 +338,7 @@ static CDKOBJS *make_radio (CDKSCREEN *cdkscreen, int x, int y)
 				   10,
 				   20,
 				   "Radio",
-				   months, NumElements (months),
+				   (CDK_CSTRING2) months, NumElements (months),
 				   '#' | A_REVERSE, 1,
 				   A_REVERSE,
 				   TRUE,
@@ -368,7 +372,7 @@ static CDKOBJS *make_scroll (CDKSCREEN *cdkscreen, int x, int y)
 				     10,
 				     20,
 				     "Scroll",
-				     months, NumElements (months),
+				     (CDK_CSTRING2) months, NumElements (months),
 				     TRUE,
 				     A_REVERSE,
 				     TRUE,
@@ -398,8 +402,10 @@ static CDKOBJS *make_selection (CDKSCREEN *cdkscreen, int x, int y)
 {
    CDKSELECTION *widget = newCDKSelection (cdkscreen, x, y,
 					   NONE, 8, 20, "Selection",
-					   months, NumElements (months),
-					   choices, NumElements (choices),
+					   (CDK_CSTRING2) months,
+					   NumElements (months),
+					   (CDK_CSTRING2) choices,
+					   NumElements (choices),
 					   A_REVERSE, TRUE, FALSE);
    return ObjPtr (widget);
 }
@@ -427,8 +433,8 @@ static CDKOBJS *make_swindow (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_template (CDKSCREEN *cdkscreen, int x, int y)
 {
-   char *Overlay = "</B/6>(___)<!6> </5>___-____";
-   char *plate = "(###) ###-####";
+   const char *Overlay = "</B/6>(___)<!6> </5>___-____";
+   const char *plate = "(###) ###-####";
    CDKTEMPLATE *widget = newCDKTemplate (cdkscreen,
 					 x,
 					 y,
@@ -477,18 +483,20 @@ static CDKOBJS *make_uslider (CDKSCREEN *cdkscreen, int x, int y)
 
 static CDKOBJS *make_viewer (CDKSCREEN *cdkscreen, int x, int y)
 {
-   static char *button[1] =
-   {"Ok"};
+   static const char *button[1] =
+   {
+      "Ok"
+   };
    CDKVIEWER *widget = newCDKViewer (cdkscreen,
 				     x,
 				     y,
 				     10,
 				     20,
-				     button, 1, A_REVERSE,
+				     (CDK_CSTRING2) button, 1, A_REVERSE,
 				     TRUE,
 				     FALSE);
    setCDKViewer (widget, "Viewer",
-		 months, NumElements (months),
+		 (CDK_CSTRING2) months, NumElements (months),
 		 A_REVERSE, FALSE, TRUE, TRUE);
    activateCDKViewer (widget, 0);
    return ObjPtr (widget);
@@ -683,8 +691,8 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    CDKSCREEN *cdkscreen = NULL;
    CDKMENU *menu = NULL;
    WINDOW *cursesWin = NULL;
-   char *mesg[3];
-   static char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS] =
+   const char *mesg[3];
+   static const char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS] =
    {
       {"Left"},
       {"Center"},
@@ -747,7 +755,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    mesg[0] = "Done";
    mesg[1] = "";
    mesg[2] = "<C>Press any key to continue.";
-   popupLabel (cdkscreen, mesg, 3);
+   popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
 
    /* Clean up and exit. */
    for (j = 0; j < MY_MAX; ++j)

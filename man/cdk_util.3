@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.6 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_util.3,v 1.9 2012/03/22 00:54:17 tom Exp $
 .de XX
 ..
 .TH cdk_util 3
@@ -38,11 +38,11 @@ cdk_util \- Cdk utility functions
 .nf
 .TP 15
 .B "int CDKgetDirectoryContents ("
-.BI "char *" "directory",
+.BI "const char *" "directory",
 .BI "char ***" "list");
 .TP 15
 .B "int CDKreadFile ("
-.BI "char *" "filename",
+.BI "const char *" "filename",
 .BI "char ***" "info");
 .TP 15
 .B "void alignxy ("
@@ -53,19 +53,19 @@ cdk_util \- Cdk utility functions
 .BI "int " "boxHeight");
 .TP 15
 .B "chtype *char2Chtype ("
-.BI "char *" "string",
+.BI "const char *" "string",
 .BI "int *" "length",
 .BI "int *" "align");
 .TP 15
 .B "EDisplayType char2DisplayType ("
-.BI "char *" "string");
+.BI "const char *" "string");
 .TP 15
 .B "int checkForLink ("
-.BI "char *" "line",
+.BI "const char *" "line",
 .BI "char *" "filename");
 .TP 15
 .B "char *chtype2String (
-.BI "chtype *" "string");
+.BI "const chtype *" "string");
 .TP 15
 .B "void deleteCursesWindow ("
 .BI "WINDOW *" "window");
@@ -75,16 +75,16 @@ cdk_util \- Cdk utility functions
 .TP 15
 .B "int getListIndex ("
 .BI "CDKSCREEN *" "screen",
-.BI "char *" "title",
-.BI "char **" "list",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "list",
 .BI "int " "listSize",
 .BI "boolean " "numbers");
 .TP 15
 .B char *getString ("
 .BI "CDKSCREEN *" "screen",
-.BI "char *" "title",
-.BI "char *" "label",
-.BI "char *" "init");
+.BI "const char *" "title",
+.BI "const char *" "label",
+.BI "const char *" "init");
 .TP 15
 .B "int justifyString ("
 .BI "int " "fieldWidth",
@@ -101,25 +101,25 @@ cdk_util \- Cdk utility functions
 .TP 15
 .B "int popupDialog ("
 .BI "CDKSCREEN *" "screen",
-.BI "char **" "mesg",
+.BI "CDK_CONST char **" "mesg",
 .BI "int " "mesgCount",
-.BI "char **" "buttons",
+.BI "CDK_CONST char **" "buttons",
 .BI "int " "buttonCount");
 .TP 15
 .B "void popupLabel ("
 .BI "CDKSCREEN *" "win",
-.BI "char **" "mesg",
+.BI "CDK_CONST char **" "mesg",
 .BI "int " "count");
 .TP 15
 .B "void popupLabelAttrib ("
 .BI "CDKSCREEN *" "win",
-.BI "char **" "mesg",
+.BI "CDK_CONST char **" "mesg",
 .BI "int " "count",
 .BI "chtype " "attribute");
 .TP 15
 .B "char *selectFile ("
 .BI "CDKSCREEN *" "screen",
-.BI "char *" "title");
+.BI "const char *" "title");
 .TP 15
 .B "int setWidgetDimension ("
 .BI "int " "parentDim",
@@ -132,17 +132,17 @@ cdk_util \- Cdk utility functions
 .TP 15
 .B "int viewFile ("
 .BI "CDKSCREEN *" "screen",
-.BI "char *" "title",
-.BI "char *" "filename",
-.BI "char **" "buttons",
+.BI "const char *" "title",
+.BI "const char *" "filename",
+.BI "CDK_CONST char **" "buttons",
 .BI "int " "buttonCount");
 .TP 15
 .B "int viewInfo ("
 .BI "CDKSCREEN *" "screen",
-.BI "char *" "title",
-.BI "char **" "info",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "info",
 .BI "int " "size",
-.BI "char **" "buttons",
+.BI "CDK_CONST char **" "buttons",
 .BI "int " "buttonCount",
 .BI "boolean " "interpret");
 .fi

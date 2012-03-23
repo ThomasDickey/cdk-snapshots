@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.26 2006/05/07 00:49:10 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.29 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_scroll 3
@@ -57,7 +57,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B "void addCDKScrollItem ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char *" "item");
+.BI "const char *" "item");
 .TP 15
 .B "void deleteCDKScrollItem ("
 .BI "CDKSCROLL *" "scroll",
@@ -99,7 +99,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B void insertCDKScrollItem (
 .BI "CDKSCROLL *" "scroll",
-.BI "char *" "item");
+.BI "const char *" "item");
 .TP 15
 .B "void moveCDKScroll ("
 .BI "CDKSCROLL *" "scroll",
@@ -115,8 +115,8 @@ cdk_scroll \- curses scrolling list widget.
 .BI "int " "spos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char *" "title",
-.BI "char **" "itemList",
+.BI "const char *" "title",
+.BI "CDK_CONST char **" "itemList",
 .BI "int " "items",
 .BI "boolean " "numbers",
 .BI "chtype " "highlight",
@@ -128,7 +128,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B "void setCDKScroll ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char **" "itemList",
+.BI "CDK_CONST char **" "itemList",
 .BI "int " "items",
 .BI "boolean " "numbers",
 .BI "chtype " "highlight",
@@ -140,7 +140,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B "void setCDKScrollBackgroundColor ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKScrollBox ("
 .BI "CDKSCROLL *" "scroll",
@@ -171,7 +171,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B "void setCDKScrollItems ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char **" "itemList",
+.BI "CDK_CONST char **" "itemList",
 .BI "int " "listSize",
 .BI "boolean " "numbers");
 .TP 15

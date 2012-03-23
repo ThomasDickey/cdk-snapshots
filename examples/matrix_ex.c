@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.16 2008/11/06 01:40:14 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.17 2012/03/21 23:55:33 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,22 +13,22 @@ char *XCursesProgramName = "matrix_ex";
  */
 int main (int argc, char **argv)
 {
-   /* Declare local variables. */
+   /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKMATRIX *courseList = 0;
-   WINDOW *cursesWin = 0;
-   char *title = 0;
-   int rows = 8;
-   int cols = 5;
-   int vrows = 3;
-   int vcols = 5;
+   WINDOW *cursesWin    = 0;
+   const char *title    = 0;
+   int rows             = 8;
+   int cols             = 5;
+   int vrows            = 3;
+   int vcols            = 5;
 
    bool use_coltitles;
    bool use_rowtitles;
 
-   char *coltitle[MY_COLS];
-   char *rowtitle[MY_COLS];
-   char *mesg[MY_COLS];
+   const char *coltitle[MY_COLS];
+   const char *rowtitle[MY_COLS];
+   const char *mesg[MY_COLS];
 
    int colwidth[MY_COLS];
    int colvalue[MY_COLS];
@@ -90,7 +90,9 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'X', CENTER),
 			      CDKparamValue (&params, 'Y', CENTER),
 			      rows, cols, vrows, vcols,
-			      title, rowtitle, coltitle,
+			      title,
+			      (CDK_CSTRING2) rowtitle,
+			      (CDK_CSTRING2) coltitle,
 			      colwidth, colvalue,
 			      -1, -1, '.',
 			      COL, params.Box,
@@ -104,8 +106,7 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a little message. */
-      printf ("Oops. Can't seem to create the matrix widget.\n");
+      printf ("Cannot create the matrix widget.\n");
       printf ("Is the window too small ?\n");
       ExitProgram (EXIT_FAILURE);
    }
@@ -119,7 +120,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No information passed back.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (courseList->exitType == vNORMAL)
    {
@@ -133,7 +134,7 @@ int main (int argc, char **argv)
       mesg[4] = getCDKMatrixCell (courseList, courseList->crow, courseList->ccol);
       mesg[5] = "";
       mesg[6] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 7);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 7);
    }
 
    /* Clean up. */

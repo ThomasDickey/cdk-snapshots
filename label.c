@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:31:39 $
- * $Revision: 1.87 $
+ * $Date: 2012/03/21 08:44:22 $
+ * $Revision: 1.89 $
  */
 
 DeclareCDKObjects (LABEL, Label, setCdk, Unknown);
@@ -14,7 +14,7 @@ DeclareCDKObjects (LABEL, Label, setCdk, Unknown);
 CDKLABEL *newCDKLabel (CDKSCREEN *cdkscreen,
 		       int xplace,
 		       int yplace,
-		       char **mesg,
+		       CDK_CSTRING2 mesg,
 		       int rows,
 		       boolean Box,
 		       boolean shadow)
@@ -116,7 +116,7 @@ void activateCDKLabel (CDKLABEL *label, chtype *actions GCC_UNUSED)
 /*
  * This sets multiple attributes of the widget.
  */
-void setCDKLabel (CDKLABEL *label, char **mesg, int lines, boolean Box)
+void setCDKLabel (CDKLABEL *label, CDK_CSTRING2 mesg, int lines, boolean Box)
 {
    setCDKLabelMessage (label, mesg, lines);
    setCDKLabelBox (label, Box);
@@ -125,7 +125,7 @@ void setCDKLabel (CDKLABEL *label, char **mesg, int lines, boolean Box)
 /*
  * This sets the information within the label.
  */
-void setCDKLabelMessage (CDKLABEL *label, char **info, int infoSize)
+void setCDKLabelMessage (CDKLABEL *label, CDK_CSTRING2 info, int infoSize)
 {
    int x;
 

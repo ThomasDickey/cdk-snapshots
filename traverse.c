@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:19:37 $
- * $Revision: 1.22 $
+ * $Date: 2012/03/22 09:42:50 $
+ * $Revision: 1.23 $
  */
 
 #define limitFocusIndex(screen, value) \
@@ -81,7 +81,7 @@ static CDKOBJS *handleMenu (CDKSCREEN *screen, CDKOBJS *menu, CDKOBJS *oldobj)
 
       case KEY_ESC:
 	 /* cleanup the menu */
-	 injectCDKMenu ((CDKMENU *)menu, (chtype)key);
+	 (void)injectCDKMenu ((CDKMENU *)menu, (chtype)key);
 	 done = TRUE;
 	 break;
 

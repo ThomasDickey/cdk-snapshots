@@ -1,9 +1,9 @@
-/* $Id: fileview.c,v 1.10 2005/12/27 18:13:14 tom Exp $ */
+/* $Id: fileview.c,v 1.11 2012/03/21 22:59:31 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef HAVE_XCURSES
-char *XCursesProgramName="codeViewer";
+char *XCursesProgramName = "codeViewer";
 #endif
 
 /*
@@ -11,17 +11,20 @@ char *XCursesProgramName="codeViewer";
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkscreen = 0;
-   CDKVIEWER *example	= 0;
-   CDKFSELECT *fSelect	= 0;
-   WINDOW *cursesWin	= 0;
-   char *title		= "<C>Pick a file.";
-   char *label		= "File: ";
-   char *directory	= ".";
-   char *filename	= 0;
-   char **info		= 0;
-   char *button[5], vtitle[256], *mesg[4], temp[256];
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkscreen  = 0;
+   CDKVIEWER *example    = 0;
+   CDKFSELECT *fSelect   = 0;
+   WINDOW *cursesWin     = 0;
+   const char *title     = "<C>Pick a file.";
+   const char *label     = "File: ";
+   const char *directory = ".";
+   char *filename        = 0;
+   char **info           = 0;
+   const char *button[5];
+   const char *mesg[4];
+   char vtitle[256];
+   char temp[256];
    int selected, lines, ret;
 
    /* Parse up the command line. */
@@ -34,40 +37,40 @@ int main (int argc, char **argv)
       }
       switch (ret)
       {
-	 case 'd' :
-	      directory = strdup (optarg);
-	      break;
+      case 'd':
+	 directory = strdup (optarg);
+	 break;
 
-	 case 'f' :
-	      filename = strdup (optarg);
-	      break;
+      case 'f':
+	 filename = strdup (optarg);
+	 break;
       }
    }
 
    /* Create the viewer buttons. */
-   button[0]	= "</5><OK><!5>";
-   button[1]	= "</5><Cancel><!5>";
+   button[0] = "</5><OK><!5>";
+   button[1] = "</5><Cancel><!5>";
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Get the filename. */
    if (filename == 0)
    {
       fSelect = newCDKFselect (cdkscreen, CENTER, CENTER, 20, 65,
-				title, label, A_NORMAL, '_', A_REVERSE,
-				"</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
+			       title, label, A_NORMAL, '_', A_REVERSE,
+			       "</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
 
       /*
        * Set the starting directory. This is not neccessary because when
        * the file selector starts it uses the present directory as a default.
        */
       setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,
-			"</5>", "</48>", "</N>", "</N>", ObjOf(fSelect)->box);
+		     "</5>", "</48>", "</N>", "</N>", ObjOf (fSelect)->box);
 
       /* Activate the file selector. */
       filename = copyChar (activateCDKFselect (fSelect, 0));
@@ -79,14 +82,14 @@ int main (int argc, char **argv)
 	 mesg[0] = "<C>Escape hit. No file selected.";
 	 mesg[1] = "";
 	 mesg[2] = "<C>Press any key to continue.";
-	 popupLabel (cdkscreen, mesg, 3);
+	 popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
 
 	 /* Destroy the file selector. */
 	 destroyCDKFselect (fSelect);
 
 	 /* Exit CDK. */
 	 destroyCDKScreen (cdkscreen);
-	 endCDK();
+	 endCDK ();
 
 	 ExitProgram (EXIT_SUCCESS);
       }
@@ -95,19 +98,20 @@ int main (int argc, char **argv)
    /* Destroy the file selector. */
    destroyCDKFselect (fSelect);
 
-   /* Create the file viewer to view the file selected.*/
+   /* Create the file viewer to view the file selected. */
    example = newCDKViewer (cdkscreen, CENTER, CENTER, 20, -2,
-				button, 2, A_REVERSE, TRUE, FALSE);
+			   (CDK_CSTRING2) button, 2,
+			   A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
    if (example == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
       /* Print out a message and exit. */
-      printf ("Oops. Can't seem to create viewer. Is the window too small?\n");
+      printf ("Cannot create viewer. Is the window too small?\n");
       ExitProgram (EXIT_SUCCESS);
    }
 
@@ -121,27 +125,28 @@ int main (int argc, char **argv)
 
    /* Set up the viewer title, and the contents to the widget. */
    sprintf (vtitle, "<C></B/22>%20s<!22!B>", filename);
-   setCDKViewer (example, vtitle, info, lines, A_REVERSE, TRUE, TRUE, TRUE);
+   setCDKViewer (example, vtitle,
+		 (CDK_CSTRING2) info, lines,
+		 A_REVERSE, TRUE, TRUE, TRUE);
 
    /* Activate the viewer widget. */
    selected = activateCDKViewer (example, 0);
 
-   /* Check how the person exited from the widget.*/
+   /* Check how the person exited from the widget. */
    if (example->exitType == vESCAPE_HIT)
    {
       mesg[0] = "<C>Escape hit. No Button selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (example->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected button %d", selected);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-      free (mesg[0]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
 
    /* Clean up. */
@@ -150,7 +155,7 @@ int main (int argc, char **argv)
    CDKfreeStrings (info);
    freeChar (filename);
 
-   endCDK();
+   endCDK ();
 
    ExitProgram (EXIT_SUCCESS);
 }

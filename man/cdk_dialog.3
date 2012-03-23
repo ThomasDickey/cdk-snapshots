@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.18 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.20 2012/03/22 08:39:04 tom Exp $
 .de XX
 ..
 .TH cdk_dialog 3
@@ -88,9 +88,9 @@ cdk_dialog \- curses dialog widget
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char ** " "message" ,
+.BI "CDK_CONST char ** " "message" ,
 .BI "int " "rows",
-.BI "char ** " "buttons" ,
+.BI "CDK_CONST char ** " "buttons" ,
 .BI "int " "buttonCount",
 .BI "chtype " "highlight" ,
 .BI "boolean " "separator",
@@ -116,7 +116,7 @@ cdk_dialog \- curses dialog widget
 .TP 15
 .B "void setCDKDialogBackgroundColor ("
 .BI "CDKDIALOG *" "dialog",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKDialogBox ("
 .BI "CDKDIALOG *" "dialog",

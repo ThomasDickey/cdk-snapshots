@@ -1,35 +1,35 @@
-/* $Id: cdkdialog.c,v 1.11 2011/05/16 22:47:37 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.12 2012/03/22 00:27:31 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkdialog";
+char *XCursesProgramName = "cdkdialog";
 #endif
 
 /*
  * Define file local variables.
  */
-static char *FPUsage = "-m Message String | -f filename [-B Buttons] [-O Output file] [-X X Position] [-Y Y Position] [-N] [-S]";
+static const char *FPUsage = "-m Message String | -f filename [-B Buttons] [-O Output file] [-X X Position] [-Y Y Position] [-N] [-S]";
 
 /*
  *
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKDIALOG *widget		= 0;
-   WINDOW *cursesWindow		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *button			= 0;
-   char *temp			= 0;
-   chtype *holder		= 0;
-   int answer			= 0;
-   int messageLines		= -1;
-   int buttonCount		= 0;
-   FILE *fp			= stderr;
-   char **messageList		= 0;
-   char **buttonList		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKDIALOG *widget            = 0;
+   WINDOW *cursesWindow         = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *button                 = 0;
+   char *temp                   = 0;
+   chtype *holder               = 0;
+   int answer                   = 0;
+   int messageLines             = -1;
+   int buttonCount              = 0;
+   FILE *fp                     = stderr;
+   char **messageList           = 0;
+   char **buttonList            = 0;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -42,17 +42,17 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "f:m:B:O:" CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, "f:m:B:O:" CDK_MIN_PARAMS);
 
-   xpos         = CDKparamValue(&params, 'X', CENTER);
-   ypos         = CDKparamValue(&params, 'Y', CENTER);
-   boxWidget    = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget = CDKparamValue(&params, 'S', FALSE);
-
-   filename     = CDKparamString(&params, 'f');
-   message      = CDKparamString(&params, 'm');
-   buttons      = CDKparamString(&params, 'B');
-   outputFile   = CDKparamString(&params, 'O');
+   /* *INDENT-EQLS* */
+   xpos         = CDKparamValue (&params, 'X', CENTER);
+   ypos         = CDKparamValue (&params, 'Y', CENTER);
+   boxWidget    = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget = CDKparamValue (&params, 'S', FALSE);
+   filename     = CDKparamString (&params, 'f');
+   message      = CDKparamString (&params, 'm');
+   buttons      = CDKparamString (&params, 'B');
+   outputFile   = CDKparamString (&params, 'O');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -91,29 +91,29 @@ int main (int argc, char **argv)
    {
       /* Split the message up. */
       messageList = CDKsplitString (message, '\n');
-      messageLines = (int) CDKcountStrings (messageList);
+      messageLines = (int)CDKcountStrings ((CDK_CSTRING2) messageList);
    }
 
    /* Set up the buttons for the dialog box. */
    if (buttons == 0)
    {
-      buttonList[0]	= copyChar ("OK");
-      buttonList[1]	= copyChar ("Cancel");
-      buttonCount	= 2;
+      buttonList[0] = copyChar ("OK");
+      buttonList[1] = copyChar ("Cancel");
+      buttonCount = 2;
    }
    else
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int) CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
    }
 
    /* Set up CDK. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -132,10 +132,10 @@ int main (int argc, char **argv)
 
    /* Create the dialog box. */
    widget = newCDKDialog (cdkScreen, xpos, ypos,
-				messageList, messageLines,
-				buttonList, buttonCount,
-				A_REVERSE,
-				boxWidget, boxWidget, shadowWidget);
+			  (CDK_CSTRING2) messageList, messageLines,
+			  (CDK_CSTRING2) buttonList, buttonCount,
+			  A_REVERSE,
+			  boxWidget, boxWidget, shadowWidget);
 
    /* Check to make sure we created the dialog box. */
    if (widget == 0)
@@ -144,9 +144,11 @@ int main (int argc, char **argv)
       CDKfreeStrings (buttonList);
 
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the dialog box. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the dialog box. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -160,7 +162,7 @@ int main (int argc, char **argv)
    /* End CDK. */
    destroyCDKDialog (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Print the name of the button selected. */
    if (answer >= 0)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:40:40 $
- * $Revision: 1.23 $
+ * $Date: 2012/03/20 21:46:36 $
+ * $Revision: 1.24 $
  */
 
 /*
@@ -20,8 +20,8 @@ DeclareCDKObjects (<UPPER>, <MIXED>, setCdk, <DTYPE>);
 CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 				 int xplace,
 				 int yplace,
-				 char *title,
-				 char *label,
+				 const char *title,
+				 const char *label,
 				 chtype filler,
 				 int fieldWidth,
 				 <CTYPE> start,

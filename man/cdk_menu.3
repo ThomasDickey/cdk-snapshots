@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.18 2005/12/28 18:35:31 tom Exp $
+.\" $Id: cdk_menu.3,v 1.19 2012/03/22 08:36:55 tom Exp $
 .de XX
 ..
 .TH cdk_menu 3
@@ -71,7 +71,7 @@ cdk_menu \- curses menu widget
 .TP 15
 .B "CDKMENU *newCDKMenu ("
 .BI "CDKSCREEN *" "cdkscreen",
-.BI "char *" "menulist"[MAX_MENU_ITEMS][MAX_SUB_ITEMS],
+.BI "const char *" "menulist"[MAX_MENU_ITEMS][MAX_SUB_ITEMS],
 .BI "int " "menuListLength",
 .BI "int *" "submenuListLength",
 .BI "int *" "menuLocation",
@@ -92,7 +92,7 @@ cdk_menu \- curses menu widget
 .TP 15
 .B "void setCDKMenuBackgroundColor ("
 .BI "CDKMENU *" "menu",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKMenuCurrentItem ("
 .BI "CDKMENU *" "menu",

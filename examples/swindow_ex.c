@@ -1,4 +1,4 @@
-/* $Id: swindow_ex.c,v 1.12 2008/10/31 00:11:46 Gregory.Sharp Exp $ */
+/* $Id: swindow_ex.c,v 1.13 2012/03/21 23:52:34 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -6,7 +6,7 @@
 char *XCursesProgramName = "swindow_ex";
 #endif
 
-#if !defined (HAVE_SLEEP) && defined (_WIN32)  /* Mingw */
+#if !defined (HAVE_SLEEP) && defined (_WIN32)	/* Mingw */
 #define sleep(x) _sleep(x*1000)
 #endif
 
@@ -15,48 +15,48 @@ char *XCursesProgramName = "swindow_ex";
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
+   /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
-   CDKSWINDOW *swindow	= 0;
-   WINDOW *cursesWin	= 0;
-   char *title		= "<C></5>Error Log";
-   char *mesg[5];
+   CDKSWINDOW *swindow  = 0;
+   WINDOW *cursesWin    = 0;
+   const char *title    = "<C></5>Error Log";
+   const char *mesg[5];
 
    CDK_PARAMS params;
 
-   CDKparseParams(argc, argv, &params, CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, CDK_CLI_PARAMS);
 
    /* Set up CDK. */
-   cursesWin = initscr();
+   cursesWin = initscr ();
    cdkscreen = initCDKScreen (cursesWin);
 
    /* Start CDK colors. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Create the scrolling window. */
    swindow = newCDKSwindow (cdkscreen,
-			   CDKparamValue(&params, 'X', CENTER),
-			   CDKparamValue(&params, 'Y', CENTER),
-			   CDKparamValue(&params, 'H', 6),
-			   CDKparamValue(&params, 'W', 65),
-			   title, 100,
-			   CDKparamValue(&params, 'N', TRUE),
-			   CDKparamValue(&params, 'S', FALSE));
+			    CDKparamValue (&params, 'X', CENTER),
+			    CDKparamValue (&params, 'Y', CENTER),
+			    CDKparamValue (&params, 'H', 6),
+			    CDKparamValue (&params, 'W', 65),
+			    title, 100,
+			    CDKparamValue (&params, 'N', TRUE),
+			    CDKparamValue (&params, 'S', FALSE));
 
    /* Is the window null. */
    if (swindow == 0)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
-      /* Print out a message and exit. */
-      printf ("Oops. Can not seem to create the scrolling window. Is the window too small??\n");
+      printf ("Cannot create the scrolling window. ");
+      printf ("Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
    /* Draw the scrolling window. */
-   drawCDKSwindow (swindow, ObjOf(swindow)->box);
+   drawCDKSwindow (swindow, ObjOf (swindow)->box);
 
    /* Load up the scrolling window. */
    addCDKSwindow (swindow, "<C></11>TOP: This is the first line.", BOTTOM);
@@ -100,19 +100,19 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape to leave this widget.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (swindow->exitType == vNORMAL)
    {
       mesg[0] = "<C>You hit return to exit this widget.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
 
    /* Clean up. */
    destroyCDKSwindow (swindow);
    destroyCDKScreen (cdkscreen);
-   endCDK();
+   endCDK ();
    ExitProgram (EXIT_SUCCESS);
 }

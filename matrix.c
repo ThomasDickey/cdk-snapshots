@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 20:01:03 $
- * $Revision: 1.191 $
+ * $Date: 2012/03/22 00:43:33 $
+ * $Revision: 1.192 $
  */
 
 /*
@@ -44,9 +44,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 			 int cols,
 			 int vrows,
 			 int vcols,
-			 char *title,
-			 char **rowtitles,
-			 char **coltitles,
+			 const char *title,
+			 CDK_CSTRING2 rowtitles,
+			 CDK_CSTRING2 coltitles,
 			 int *colwidths,
 			 int *colvalues,
 			 int rspace,
@@ -131,7 +131,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
     * Count the number of lines in the title (see setCdkTitle).
     */
    temp = CDKsplitString (title, '\n');
-   TitleLinesOf (matrix) = (int)CDKcountStrings (temp);
+   TitleLinesOf (matrix) = (int)CDKcountStrings ((CDK_CSTRING2) temp);
    CDKfreeStrings (temp);
 
    /* Determine the height of the box. */
@@ -1490,7 +1490,7 @@ void setCDKMatrixCB (CDKMATRIX *widget, MATRIXCB callback)
  * This function sets the values of the matrix widget.
  */
 void setCDKMatrixCells (CDKMATRIX *matrix,
-			char **info,
+			CDK_CSTRING2 info,
 			int rows,
 			int maxcols,
 			int *subSize)
@@ -1508,7 +1508,7 @@ void setCDKMatrixCells (CDKMATRIX *matrix,
       {
 	 if (x <= rows && y <= subSize[x])
 	 {
-	    char *source = info[(x * maxcols) + y];
+	    const char *source = info[(x * maxcols) + y];
 
 	    /* Copy in the new information. */
 	    if (source != 0)
@@ -1783,7 +1783,7 @@ static void redrawTitles (CDKMATRIX *matrix, int rowTitles, int colTitles)
 /*
  * This sets the value of a matrix cell.
  */
-int setCDKMatrixCell (CDKMATRIX *matrix, int row, int col, char *value)
+int setCDKMatrixCell (CDKMATRIX *matrix, int row, int col, const char *value)
 {
    /* Make sure the row/col combination is within the matrix. */
    if (row > matrix->rows || col > matrix->cols || row <= 0 || col <= 0)

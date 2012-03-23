@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/17 23:51:26 $
- * $Revision: 1.93 $
+ * $Date: 2012/03/23 13:54:44 $
+ * $Revision: 1.98 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -11,7 +11,7 @@
 /*
  * Declare file local variables.
  */
-static char *monthsOfTheYear[] =
+static const char *monthsOfTheYear[] =
 {
    "NULL",
    "January",
@@ -68,7 +68,7 @@ DeclareCDKObjects (CALENDAR, Calendar, setCdk, Int);
 CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 			     int xplace,
 			     int yplace,
-			     char *title,
+			     const char *title,
 			     int day,
 			     int month,
 			     int year,
@@ -90,7 +90,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    int x;
    struct tm *dateInfo;
    time_t clck;
-   char *dayname         = "Su Mo Tu We Th Fr Sa ";
+   const char *dayname   = "Su Mo Tu We Th Fr Sa ";
    /* *INDENT-OFF* */
    static const struct { int from; int to; } bindings[] = {
 	    { 'T',		KEY_HOME },
@@ -196,7 +196,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    if ((calendar->day == 0) && (calendar->month == 0) && (calendar->year == 0))
    {
       time (&clck);
-      dateInfo = localtime (&clck);
+      dateInfo = gmtime (&clck);
 
       /* *INDENT-EQLS* */
       calendar->day    = dateInfo->tm_mday;
@@ -608,7 +608,7 @@ void setCDKCalendarDate (CDKCALENDAR *calendar, int day, int month, int year)
     * the day/month/year values for the calendar.
     */
    time (&clck);
-   dateInfo = localtime (&clck);
+   dateInfo = gmtime (&clck);
 
    /* Set the date elements if we need too. */
    /* *INDENT-EQLS* */
@@ -808,7 +808,7 @@ void removeCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int yea
 /*
  * This function sets the month name.
  */
-void setCDKCalendarMonthsNames (CDKCALENDAR *calendar, char **months)
+void setCDKCalendarMonthsNames (CDKCALENDAR *calendar, CDK_CSTRING2 months)
 {
    int x;
 
@@ -822,7 +822,7 @@ void setCDKCalendarMonthsNames (CDKCALENDAR *calendar, char **months)
 /*
  * This function sets the day's name.
  */
-void setCDKCalendarDaysNames (CDKCALENDAR *calendar, char *days)
+void setCDKCalendarDaysNames (CDKCALENDAR *calendar, const char *days)
 {
    freeChar (calendar->DayName);
    calendar->DayName = copyChar (days);
@@ -948,10 +948,13 @@ static void decrementCalendarDay (CDKCALENDAR *calendar, int adjust)
 	 /* Make sure we aren't going past the year limit. */
 	 if (calendar->year == 1900)
 	 {
-	    char *mesg[] =
-	    {"<C></U>Error", "Can not go past the year 1900"};
+	    const char *mesg[] =
+	    {
+	       "<C></U>Error",
+	       "Can not go past the year 1900"
+	    };
 	    Beep ();
-	    popupLabel (ScreenOf (calendar), mesg, 2);
+	    popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
 	    return;
 	 }
 	 monthLength = getMonthLength (calendar->year - 1, 12);
@@ -1018,10 +1021,13 @@ static void decrementCalendarMonth (CDKCALENDAR *calendar, int adjust)
    {
       if (calendar->year == 1900)
       {
-	 char *mesg[] =
-	 {"<C></U>Error", "Can not go past the year 1900"};
+	 const char *mesg[] =
+	 {
+	    "<C></U>Error",
+	    "Can not go past the year 1900"
+	 };
 	 Beep ();
-	 popupLabel (ScreenOf (calendar), mesg, 2);
+	 popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
 	 return;
       }
       else
@@ -1084,10 +1090,13 @@ static void decrementCalendarYear (CDKCALENDAR *calendar, int adjust)
    /* Make sure we don't go out of bounds. */
    if (calendar->year - adjust < 1900)
    {
-      char *mesg[] =
-      {"<C></U>Error", "Can not go past the year 1900"};
+      const char *mesg[] =
+      {
+	 "<C></U>Error",
+	 "Can not go past the year 1900"
+      };
       Beep ();
-      popupLabel (ScreenOf (calendar), mesg, 2);
+      popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
       return;
    }
 
@@ -1136,7 +1145,7 @@ static time_t getCurrentTime (CDKCALENDAR *calendar)
 
    /* Determine the current time and determine if we are in DST. */
    time (&clck);
-   dateInfo = localtime (&clck);
+   dateInfo = gmtime (&clck);
 
    /* *INDENT-EQLS* Set the tm structure correctly. */
    Date.tm_sec   = 0;

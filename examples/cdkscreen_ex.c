@@ -1,4 +1,4 @@
-/* $Id: cdkscreen_ex.c,v 1.6 2005/12/26 22:04:35 tom Exp $ */
+/* $Id: cdkscreen_ex.c,v 1.7 2012/03/21 23:32:27 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,22 +13,27 @@ char *XCursesProgramName = "cdkscreen_ex";
 
 int main (void)
 {
-   /* Declare vars. */
-   WINDOW	*cursesWindow;
-   CDKSCREEN	*cdkScreen1, *cdkScreen2;
-   CDKSCREEN	*cdkScreen3, *cdkScreen4;
-   CDKSCREEN	*cdkScreen5;
-   CDKLABEL	*label1, *label2;
-   CDKLABEL	*label3, *label4;
-   CDKDIALOG	*dialog;
-   char *title1Mesg[4], *title2Mesg[4];
-   char *title3Mesg[4], *title4Mesg[4];
-   char *dialogMesg[10];
-   char *buttons[] = {"Continue", "Exit"};
+   WINDOW *cursesWindow;
+   CDKSCREEN *cdkScreen1, *cdkScreen2;
+   CDKSCREEN *cdkScreen3, *cdkScreen4;
+   CDKSCREEN *cdkScreen5;
+   CDKLABEL *label1, *label2;
+   CDKLABEL *label3, *label4;
+   CDKDIALOG *dialog;
+   const char *title1Mesg[4];
+   const char *title2Mesg[4];
+   const char *title3Mesg[4];
+   const char *title4Mesg[4];
+   const char *dialogMesg[10];
+   const char *buttons[] =
+   {
+      "Continue",
+      "Exit"
+   };
    int answer;
 
    /* Create the curses window. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
 
    /* Create the two screens. */
    cdkScreen1 = initCDKScreen (cursesWindow);
@@ -42,28 +47,36 @@ int main (void)
    title1Mesg[1] = "<C></R>This is the first screen.";
    title1Mesg[2] = "<C>Hit space to go to the next screen";
    title1Mesg[3] = "<C><#HL(30)>";
-   label1 = newCDKLabel (cdkScreen1, CENTER, TOP, title1Mesg, 4, FALSE, FALSE);
+   label1 = newCDKLabel (cdkScreen1, CENTER, TOP,
+			 (CDK_CSTRING2) title1Mesg, 4,
+			 FALSE, FALSE);
 
    /* Create the second screen. */
    title2Mesg[0] = "<C><#HL(30)>";
    title2Mesg[1] = "<C></R>This is the second screen.";
    title2Mesg[2] = "<C>Hit space to go to the next screen";
    title2Mesg[3] = "<C><#HL(30)>";
-   label2 = newCDKLabel (cdkScreen2, RIGHT, CENTER, title2Mesg, 4, FALSE, FALSE);
+   label2 = newCDKLabel (cdkScreen2, RIGHT, CENTER,
+			 (CDK_CSTRING2) title2Mesg, 4,
+			 FALSE, FALSE);
 
    /* Create the third screen. */
    title3Mesg[0] = "<C><#HL(30)>";
    title3Mesg[1] = "<C></R>This is the third screen.";
    title3Mesg[2] = "<C>Hit space to go to the next screen";
    title3Mesg[3] = "<C><#HL(30)>";
-   label3 = newCDKLabel (cdkScreen3, CENTER, BOTTOM, title3Mesg, 4, FALSE, FALSE);
+   label3 = newCDKLabel (cdkScreen3, CENTER, BOTTOM,
+			 (CDK_CSTRING2) title3Mesg, 4,
+			 FALSE, FALSE);
 
    /* Create the fourth screen. */
    title4Mesg[0] = "<C><#HL(30)>";
    title4Mesg[1] = "<C></R>This is the fourth screen.";
    title4Mesg[2] = "<C>Hit space to go to the next screen";
    title4Mesg[3] = "<C><#HL(30)>";
-   label4 = newCDKLabel (cdkScreen4, LEFT, CENTER, title4Mesg, 4, FALSE, FALSE);
+   label4 = newCDKLabel (cdkScreen4, LEFT, CENTER,
+			 (CDK_CSTRING2) title4Mesg, 4,
+			 FALSE, FALSE);
 
    /* Create the fifth screen. */
    dialogMesg[0] = "<C><#HL(30)>";
@@ -73,8 +86,9 @@ int main (void)
    dialogMesg[4] = "<C>Otherwise press the 'Exit' button";
    dialogMesg[5] = "<C><#HL(30)>";
    dialog = newCDKDialog (cdkScreen5, CENTER, CENTER,
-				dialogMesg, 6, buttons, 2,
-				A_REVERSE, TRUE, TRUE, FALSE);
+			  (CDK_CSTRING2) dialogMesg, 6,
+			  (CDK_CSTRING2) buttons, 2,
+			  A_REVERSE, TRUE, TRUE, FALSE);
 
    /* Do this for ever... (almost) */
    for (;;)
@@ -116,7 +130,7 @@ int main (void)
 	 destroyCDKScreen (cdkScreen3);
 	 destroyCDKScreen (cdkScreen4);
 	 destroyCDKScreen (cdkScreen5);
-	 endCDK();
+	 endCDK ();
 	 ExitProgram (EXIT_SUCCESS);
       }
    }

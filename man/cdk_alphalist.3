@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.23 2006/05/07 01:04:30 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.25 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_alphalist 3
@@ -92,9 +92,9 @@ cdk_alphalist \- curses sorted list widget.
 .BI "int " "ypos",
 .BI "int " "height",
 .BI "int " "width",
-.BI "char * " "title",
-.BI "char * " "label",
-.BI "char ** " "list",
+.BI "const char * " "title",
+.BI "const char * " "label",
+.BI "CDK_CONST char ** " "list",
 .BI "int " "listSize",
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
@@ -106,7 +106,7 @@ cdk_alphalist \- curses sorted list widget.
 .TP 15
 .B "void setCDKAlphalist ("
 .BI "CDKALPHALIST *" "alphalist",
-.BI "char ** " "list",
+.BI "CDK_CONST char ** " "list",
 .BI "int " "listSize",
 .BI "chtype " "fillerCharacter",
 .BI "chtype " "highlight",
@@ -118,7 +118,7 @@ cdk_alphalist \- curses sorted list widget.
 .TP 15
 .B "void setCDKAlphalistBackgroundColor ("
 .BI "CDKALPHALIST *" "alphalist",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKAlphalistBox ("
 .BI "CDKALPHALIST *" "alphalist",
@@ -130,7 +130,7 @@ cdk_alphalist \- curses sorted list widget.
 .TP 15
 .B "void setCDKAlphalistContents ("
 .BI "CDKALPHALIST *" "alphalist",
-.BI "char ** " "list",
+.BI "CDK_CONST char ** " "list",
 .BI "int " "listSize");
 .TP 15
 .B "void setCDKAlphalistCurrentItem ("

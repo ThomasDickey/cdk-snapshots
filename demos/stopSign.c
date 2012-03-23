@@ -1,4 +1,4 @@
-/* $Id: stopSign.c,v 1.10 2011/05/15 20:37:01 tom Exp $ */
+/* $Id: stopSign.c,v 1.12 2012/03/22 09:10:45 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,8 +13,8 @@ int main (void)
    CDKLABEL *stopSign   = 0;
    CDKLABEL *title      = 0;
    WINDOW *cursesWin    = 0;
-   int currentLight     = 0;
-   char *mesg[5], *sign[4];
+   const char *mesg[5];
+   const char *sign[4];
    chtype key;
    boolean functionKey;
 
@@ -36,8 +36,12 @@ int main (void)
    sign[2] = " <#DI> ";
 
    /* Declare the labels. */
-   title = newCDKLabel (cdkscreen, CENTER, TOP, mesg, 5, FALSE, FALSE);
-   stopSign = newCDKLabel (cdkscreen, CENTER, CENTER, sign, 3, TRUE, TRUE);
+   title = newCDKLabel (cdkscreen, CENTER, TOP,
+			(CDK_CSTRING2) mesg, 5,
+			FALSE, FALSE);
+   stopSign = newCDKLabel (cdkscreen, CENTER, CENTER,
+			   (CDK_CSTRING2) sign, 3,
+			   TRUE, TRUE);
 
    /* Do this until they hit q or escape. */
    for (;;)
@@ -55,25 +59,22 @@ int main (void)
 	 sign[0] = " </B/16><#DI> ";
 	 sign[1] = " o ";
 	 sign[2] = " o ";
-	 currentLight = 0;
       }
       else if (key == 'y' || key == 'Y')
       {
 	 sign[0] = " o ";
 	 sign[1] = " </B/32><#DI> ";
 	 sign[2] = " o ";
-	 currentLight = 1;
       }
       else if (key == 'g' || key == 'G')
       {
 	 sign[0] = " o ";
 	 sign[1] = " o ";
 	 sign[2] = " </B/24><#DI> ";
-	 currentLight = 2;
       }
 
       /* Set the contents of the label and re-draw it. */
-      setCDKLabel (stopSign, sign, 3, TRUE);
+      setCDKLabel (stopSign, (CDK_CSTRING2) sign, 3, TRUE);
    }
 
    /* Clean up. */

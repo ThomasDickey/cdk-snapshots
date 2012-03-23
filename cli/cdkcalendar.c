@@ -1,9 +1,9 @@
-/* $Id: cdkcalendar.c,v 1.13 2011/05/16 22:47:37 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.16 2012/03/23 13:54:44 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkcalendar";
+char *XCursesProgramName = "cdkcalendar";
 #endif
 
 /*
@@ -18,25 +18,25 @@ static void getTodaysDate (int *day, int *month, int *year);
 
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKCALENDAR *widget		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   WINDOW *cursesWindow		= 0;
-   struct tm *dateInfo		= 0;
-   time_t selected		= 0;
-   chtype dayAttrib		= A_NORMAL;
-   chtype monthAttrib		= A_NORMAL;
-   chtype yearAttrib		= A_NORMAL;
-   chtype highlight		= A_REVERSE;
-   chtype *holder		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *temp			= 0;
-   int buttonCount		= 0;
-   int selection		= 0;
-   int shadowHeight		= 0;
-   FILE *fp			= stderr;
-   char **buttonList		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKCALENDAR *widget          = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   WINDOW *cursesWindow         = 0;
+   struct tm *dateInfo          = 0;
+   time_t selected              = 0;
+   chtype dayAttrib             = A_NORMAL;
+   chtype monthAttrib           = A_NORMAL;
+   chtype yearAttrib            = A_NORMAL;
+   chtype highlight             = A_REVERSE;
+   chtype *holder               = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *temp                   = 0;
+   int buttonCount              = 0;
+   int selection                = 0;
+   int shadowHeight             = 0;
+   FILE *fp                     = stderr;
+   char **buttonList            = 0;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -53,19 +53,19 @@ int main (int argc, char **argv)
 
    getTodaysDate (&day, &month, &year);
 
-   CDKparseParams(argc, argv, &params, "d:m:y:B:O:T:" CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, "d:m:y:B:O:T:" CDK_MIN_PARAMS);
 
-   xpos         = CDKparamValue(&params, 'X', CENTER);
-   ypos         = CDKparamValue(&params, 'Y', CENTER);
-   boxWidget    = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget = CDKparamValue(&params, 'S', FALSE);
-
-   day          = CDKparamValue(&params, 'd', day);
-   month        = CDKparamValue(&params, 'm', month);
-   year         = CDKparamValue(&params, 'y', year);
-   buttons      = CDKparamString(&params, 'B');
-   outputFile   = CDKparamString(&params, 'O');
-   title        = CDKparamString(&params, 'T');
+   /* *INDENT-EQLS* */
+   xpos         = CDKparamValue (&params, 'X', CENTER);
+   ypos         = CDKparamValue (&params, 'Y', CENTER);
+   boxWidget    = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget = CDKparamValue (&params, 'S', FALSE);
+   day          = CDKparamValue (&params, 'd', day);
+   month        = CDKparamValue (&params, 'm', month);
+   year         = CDKparamValue (&params, 'y', year);
+   buttons      = CDKparamString (&params, 'B');
+   outputFile   = CDKparamString (&params, 'O');
+   title        = CDKparamString (&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -78,11 +78,11 @@ int main (int argc, char **argv)
    }
 
    /* Set up CDK. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -101,17 +101,19 @@ int main (int argc, char **argv)
 
    /* Create the calendar width. */
    widget = newCDKCalendar (cdkScreen, xpos, ypos, title,
-				day, month, year,
-				dayAttrib, monthAttrib,
-				yearAttrib, highlight,
-				boxWidget, shadowWidget);
+			    day, month, year,
+			    dayAttrib, monthAttrib,
+			    yearAttrib, highlight,
+			    boxWidget, shadowWidget);
    /* Check to make sure we created the dialog box. */
    if (widget == 0)
    {
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the calendar. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the calendar. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -121,30 +123,31 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int) CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
-					getbegx (widget->win),
-					getbegy (widget->win) + widget->boxHeight - 1,
-					1, widget->boxWidth - 1,
-					0, 1, buttonCount,
-					buttonList, buttonCount,
-					A_REVERSE, boxWidget, FALSE);
+				      getbegx (widget->win),
+				      (getbegy (widget->win)
+				       + widget->boxHeight - 1),
+				      1, widget->boxWidth - 1,
+				      0, 1, buttonCount,
+				      (CDK_CSTRING2) buttonList, buttonCount,
+				      A_REVERSE, boxWidget, FALSE);
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
       setCDKButtonboxURChar (buttonWidget, ACS_RTEE);
 
-     /*
-      * We need to set the lower left and right
-      * characters of the widget.
-      */
+      /*
+       * We need to set the lower left and right
+       * characters of the widget.
+       */
       setCDKCalendarLLChar (widget, ACS_LTEE);
       setCDKCalendarLRChar (widget, ACS_RTEE);
 
-     /*
-      * Bind the Tab key in the widget to send a
-      * Tab key to the button box widget.
-      */
+      /*
+       * Bind the Tab key in the widget to send a
+       * Tab key to the button box widget.
+       */
       bindCDKObject (vCALENDAR, widget, KEY_TAB, widgetCB, buttonWidget);
       bindCDKObject (vCALENDAR, widget, CDK_PREV, widgetCB, buttonWidget);
       bindCDKObject (vCALENDAR, widget, CDK_NEXT, widgetCB, buttonWidget);
@@ -168,28 +171,28 @@ int main (int argc, char **argv)
    {
       /* Determine the height of the shadow window. */
       shadowHeight = (buttonWidget == 0 ?
-			widget->boxHeight :
-			widget->boxHeight + buttonWidget->boxHeight - 1);
+		      widget->boxHeight :
+		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
       /* Create the shadow window. */
       widget->shadowWin = newwin (shadowHeight,
-					widget->boxWidth,
-					getbegy (widget->win) + 1,
-					getbegx (widget->win) + 1);
+				  widget->boxWidth,
+				  getbegy (widget->win) + 1,
+				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
       {
 	 widget->shadow = TRUE;
 
-	/*
-	 * We force the widget and buttonWidget to be drawn so the
-	 * buttonbox widget will be drawn when the widget is activated.
-	 * Otherwise the shadow window will draw over the button widget.
-	 */
-	 drawCDKCalendar (widget, ObjOf(widget)->box);
+	 /*
+	  * We force the widget and buttonWidget to be drawn so the
+	  * buttonbox widget will be drawn when the widget is activated.
+	  * Otherwise the shadow window will draw over the button widget.
+	  */
+	 drawCDKCalendar (widget, ObjOf (widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
-	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 drawCDKButtonbox (buttonWidget, ObjOf (buttonWidget)->box);
       }
    }
 
@@ -206,15 +209,18 @@ int main (int argc, char **argv)
       destroyCDKButtonbox (buttonWidget);
    }
 
-   CDKfreeStrings(buttonList);
+   CDKfreeStrings (buttonList);
 
    destroyCDKCalendar (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Print out the date selected. D/M/Y format. */
-   dateInfo = localtime (&selected);
-   fprintf (fp, "%02d/%02d/%d\n", dateInfo->tm_mday, (dateInfo->tm_mon+1), (dateInfo->tm_year+1900));
+   dateInfo = gmtime (&selected);
+   fprintf (fp, "%02d/%02d/%d\n",
+	    dateInfo->tm_mday,
+	    (dateInfo->tm_mon + 1),
+	    (dateInfo->tm_year + 1900));
    fclose (fp);
 
    ExitProgram (selection);
@@ -230,17 +236,20 @@ static void getTodaysDate (int *day, int *month, int *year)
 
    /* Determine the current time and determine if we are in DST. */
    time (&clck);
-   dateInfo = localtime (&clck);
+   dateInfo = gmtime (&clck);
 
    /* Set the pointers accordingly. */
-   (*day)   = dateInfo->tm_mday;
+   (*day) = dateInfo->tm_mday;
    (*month) = dateInfo->tm_mon + 1;
-   (*year)  = dateInfo->tm_year + 1900;
+   (*year) = dateInfo->tm_year + 1900;
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED,
+		     void *object GCC_UNUSED,
+		     void *clientData,
+		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   injectCDKButtonbox (buttonbox, key);
+   (void) injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

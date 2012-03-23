@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.52 2011/05/15 16:13:26 tom Exp $
+dnl $Id: configure.in,v 1.56 2012/03/22 09:28:59 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl
 AC_INIT(include/cdk.h)
@@ -141,6 +141,20 @@ AC_ARG_WITH(cfgname,
 AC_MSG_RESULT($CFG_ROOTNAME)
 AC_SUBST(CFG_ROOTNAME)
 
+AC_MSG_CHECKING(if cdk.h should be in header subdirectory)
+AC_ARG_WITH(hdrname,
+	[  --enable-hdr-subdir     install cdk.h in the header subdirectory],
+	[HDR_ROOTNAME=no])
+AC_MSG_RESULT($HDR_SUBDIR)
+AC_SUBST(HDR_SUBDIR)
+
+if test "$HDR_SUBDIR" = yes
+then
+	HDR_SUBDIR="#"
+else
+	HDR_SUBDIR=
+fi
+
 AC_MSG_CHECKING(for header subdirectory)
 AC_ARG_WITH(hdrname,
 	[  --with-hdrname=XXX      override the header subdirectory],
@@ -154,6 +168,23 @@ AC_ARG_WITH(libname,
 	[LIB_ROOTNAME=$withval])
 AC_MSG_RESULT($LIB_ROOTNAME)
 AC_SUBST(LIB_ROOTNAME)
+
+AC_MSG_CHECKING(if improved const-typing should be used)
+AC_ARG_ENABLE(const,
+	[  --enable-const          use improved const-typing],
+	[CDK_CONST=$enableval],
+	[CDK_CONST=no])
+AC_MSG_RESULT($CDK_CONST)
+if test "$CDK_CONST" = yes
+then
+	AC_DEFINE(CDK_CONST,const)
+else
+	AC_DEFINE(CDK_CONST,/*nothing*/)
+fi
+
+# define these for casting convenience
+AC_DEFINE(CDK_CSTRING,CDK_CONST char *)
+AC_DEFINE(CDK_CSTRING2,CDK_CONST char * CDK_CONST *)
 
 CF_CURSES_FUNCS(\
 	Xinitscr\

@@ -1,4 +1,4 @@
-/* $Id: buttonbox_ex.c,v 1.18 2005/12/30 09:50:48 tom Exp $ */
+/* $Id: buttonbox_ex.c,v 1.20 2012/03/22 09:45:11 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,13 +13,17 @@ static BINDFN_PROTO (entryCB);
  */
 int main (void)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkscreen		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   CDKENTRY *entry		= 0;
-   WINDOW *cursesWin		= 0;
-   char *buttons[]		= {" OK ", " Cancel "};
-   char *info			= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkscreen         = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   CDKENTRY *entry              = 0;
+   WINDOW *cursesWin            = 0;
+   const char *buttons[]        =
+   {
+      " OK ",
+      " Cancel "
+   };
+   char *info                   = 0;
    int selection;
 
    /* Set up CDK. */
@@ -36,9 +40,9 @@ int main (void)
    if (entry == 0)
    {
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
-      fprintf(stderr, "Cannot create entry-widget\n");
+      fprintf (stderr, "Cannot create entry-widget\n");
       ExitProgram (EXIT_FAILURE);
    }
 
@@ -49,14 +53,14 @@ int main (void)
 				   getbegy (entry->win) + entry->boxHeight - 1,
 				   1, entry->boxWidth - 1,
 				   0, 1, 2,
-				   buttons, 2, A_REVERSE,
+				   (CDK_CSTRING2) buttons, 2, A_REVERSE,
 				   TRUE, FALSE);
    if (buttonWidget == 0)
    {
       destroyCDKScreen (cdkscreen);
-      endCDK();
+      endCDK ();
 
-      fprintf(stderr, "Cannot create buttonbox-widget\n");
+      fprintf (stderr, "Cannot create buttonbox-widget\n");
       ExitProgram (EXIT_FAILURE);
    }
 
@@ -83,7 +87,6 @@ int main (void)
    destroyCDKScreen (cdkscreen);
    endCDK ();
 
-   /* Spit out some info. */
    printf ("You typed in (%s) and selected button (%s)\n",
 	   (info != 0) ? info : "<null>",
 	   buttons[selection]);
@@ -96,7 +99,7 @@ static int entryCB (EObjectType cdktype GCC_UNUSED,
 		    void *object GCC_UNUSED,
 		    void *clientData, chtype key)
 {
-   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *) clientData;
-   injectCDKButtonbox (buttonbox, key);
+   CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
+   (void)injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

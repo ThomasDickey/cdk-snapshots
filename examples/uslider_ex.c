@@ -1,4 +1,4 @@
-/* $Id: uslider_ex.c,v 1.3 2011/05/15 20:21:25 tom Exp $ */
+/* $Id: uslider_ex.c,v 1.4 2012/03/21 23:57:50 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -16,8 +16,9 @@ int main (int argc, char **argv)
    CDKUSLIDER *widget   = 0;
    WINDOW *cursesWin    = 0;
    char title[256];
-   char *label          = "</B>Current Value:";
-   char temp[256], *mesg[5];
+   const char *label    = "</B>Current Value:";
+   const char *mesg[5];
+   char temp[256];
    unsigned selection;
 
    CDK_PARAMS params;
@@ -59,8 +60,7 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a message. */
-      printf ("Oops. Can't make the widget. Is the window too small?\n");
+      printf ("Cannot make the widget. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
@@ -73,16 +73,15 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No value selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (widget->exitType == vNORMAL)
    {
       sprintf (temp, "<C>You selected %u", selection);
-      mesg[0] = copyChar (temp);
+      mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
-      freeChar (mesg[0]);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
 
    /* Clean up. */

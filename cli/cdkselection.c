@@ -1,9 +1,9 @@
-/* $Id: cdkselection.c,v 1.10 2011/05/16 22:58:54 tom Exp $ */
+/* $Id: cdkselection.c,v 1.12 2012/03/22 09:36:03 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkselection";
+char *XCursesProgramName = "cdkselection";
 #endif
 
 /*
@@ -14,32 +14,32 @@ static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype
 /*
  * Define file local variables.
  */
-static char *FPUsage = "-l List | -f filename [-c Choices ] [-s Selection Bar Position] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
+static const char *FPUsage = "-l List | -f filename [-c Choices ] [-s Selection Bar Position] [-T Title] [-B Buttons] [-O Output File] [-X X Position] [-Y Y Position] [-H Height] [-W Width] [-N] [-S]";
 
 /*
  *
  */
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKSELECTION *widget		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   WINDOW *cursesWindow		= 0;
-   chtype *holder		= 0;
-   char *item			= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *temp			= 0;
-   int scrollLines		= -1;
-   int choiceSize		= -1;
-   int buttonCount		= 0;
-   int selection		= 0;
-   int shadowHeight		= 0;
-   FILE *fp			= stderr;
-   char **scrollList		= 0;
-   char **choiceList		= 0;
-   char **buttonList		= 0;
-   char **items			= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKSELECTION *widget         = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   WINDOW *cursesWindow         = 0;
+   chtype *holder               = 0;
+   char *item                   = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *temp                   = 0;
+   int scrollLines              = -1;
+   int choiceSize               = -1;
+   int buttonCount              = 0;
+   int selection                = 0;
+   int shadowHeight             = 0;
+   FILE *fp                     = stderr;
+   char **scrollList            = 0;
+   char **choiceList            = 0;
+   char **buttonList            = 0;
+   char **items                 = 0;
    int choiceValues[MAX_ITEMS];
    int editModes[MAX_ITEMS];
    int x, fields, j1, j2;
@@ -60,25 +60,23 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "c:f:ln:s:B:O:T:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "c:f:ln:s:B:O:T:" CDK_CLI_PARAMS);
 
-   xpos         = CDKparamValue(&params, 'X', CENTER);
-   ypos         = CDKparamValue(&params, 'Y', CENTER);
-   height       = CDKparamValue(&params, 'H', 10);
-   width        = CDKparamValue(&params, 'W', 10);
-   boxWidget    = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget = CDKparamValue(&params, 'S', FALSE);
-
-   choices      = CDKparamString(&params, 'c');
-   filename     = CDKparamString(&params, 'f');
-   list         = CDKparamString(&params, 'l');
-   buttons      = CDKparamString(&params, 'B');
-   outputFile   = CDKparamString(&params, 'O');
-   title        = CDKparamString(&params, 'T');
-
-   numbers      = CDKparamValue(&params, 'n', FALSE);
-
-   spos         = CDKparsePosition(CDKparamString(&params, 's'));
+   /* *INDENT-EQLS* */
+   xpos         = CDKparamValue (&params, 'X', CENTER);
+   ypos         = CDKparamValue (&params, 'Y', CENTER);
+   height       = CDKparamValue (&params, 'H', 10);
+   width        = CDKparamValue (&params, 'W', 10);
+   boxWidget    = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget = CDKparamValue (&params, 'S', FALSE);
+   choices      = CDKparamString (&params, 'c');
+   filename     = CDKparamString (&params, 'f');
+   list         = CDKparamString (&params, 'l');
+   buttons      = CDKparamString (&params, 'B');
+   outputFile   = CDKparamString (&params, 'O');
+   title        = CDKparamString (&params, 'T');
+   numbers      = CDKparamValue (&params, 'n', FALSE);
+   spos         = CDKparsePosition (CDKparamString (&params, 's'));
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -106,16 +104,16 @@ int main (int argc, char **argv)
 	    ExitProgram (CLI_ERROR);
 	 }
 
-	/*
-	 * For each line, we will split on a CTRL-V and look for a selection
-	 * value/edit mode. The format of the input file can be the following:
-	 * Index value [choice value] [edit flag]
-	 */
-	 for (x=0; x < scrollLines; x++)
+	 /*
+	  * For each line, we will split on a CTRL-V and look for a selection
+	  * value/edit mode. The format of the input file can be the following:
+	  * Index value [choice value] [edit flag]
+	  */
+	 for (x = 0; x < scrollLines; x++)
 	 {
 	    /* Split the line on CTRL-V. */
-	    items = CDKsplitString (scrollList[x], CTRL('V'));
-	    fields = (int)CDKcountStrings (items);
+	    items = CDKsplitString (scrollList[x], CTRL ('V'));
+	    fields = (int)CDKcountStrings ((CDK_CSTRING2) items);
 
 	    /* Check the field count. */
 	    if (fields == 1)
@@ -154,7 +152,7 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = (int)CDKcountStrings (scrollList);
+      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2) scrollList);
    }
 
    /* Did they supply a chopice list. */
@@ -168,17 +166,17 @@ int main (int argc, char **argv)
    {
       /* Split the choices up. */
       choiceList = CDKsplitString (choices, '\n');
-      choiceSize = (int)CDKcountStrings (choiceList);
+      choiceSize = (int)CDKcountStrings ((CDK_CSTRING2) choiceList);
    }
 
    /* Start curses. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
 
    /* Create the CDK screen. */
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -197,11 +195,11 @@ int main (int argc, char **argv)
 
    /* Create the scrolling list. */
    widget = newCDKSelection (cdkScreen, xpos, ypos, spos,
-				height, width, title,
-				scrollList, scrollLines,
-				choiceList, choiceSize,
-				A_REVERSE,
-				boxWidget, shadowWidget);
+			     height, width, title,
+			     (CDK_CSTRING2) scrollList, scrollLines,
+			     (CDK_CSTRING2) choiceList, choiceSize,
+			     A_REVERSE,
+			     boxWidget, shadowWidget);
    CDKfreeStrings (choiceList);
 
    /* Make sure we could create the widget. */
@@ -210,9 +208,11 @@ int main (int argc, char **argv)
       CDKfreeStrings (scrollList);
 
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the selection list. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the selection list. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -225,16 +225,17 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
-					getbegx (widget->win),
-					getbegy (widget->win) + widget->boxHeight - 1,
-					1, widget->boxWidth - 1,
-					0, 1, buttonCount,
-					buttonList, buttonCount,
-					A_REVERSE, boxWidget, FALSE);
+				      getbegx (widget->win),
+				      (getbegy (widget->win)
+				       + widget->boxHeight - 1),
+				      1, widget->boxWidth - 1,
+				      0, 1, buttonCount,
+				      (CDK_CSTRING2) buttonList, buttonCount,
+				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
@@ -274,14 +275,14 @@ int main (int argc, char **argv)
    {
       /* Determine the height of the shadow window. */
       shadowHeight = (buttonWidget == 0 ?
-			widget->boxHeight :
-			widget->boxHeight + buttonWidget->boxHeight - 1);
+		      widget->boxHeight :
+		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
       /* Create the shadow window. */
       widget->shadowWin = newwin (shadowHeight,
-					widget->boxWidth,
-					getbegy (widget->win) + 1,
-					getbegx (widget->win) + 1);
+				  widget->boxWidth,
+				  getbegy (widget->win) + 1,
+				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
@@ -293,9 +294,9 @@ int main (int argc, char **argv)
 	  * buttonbox widget will be drawn when the widget is activated.
 	  * Otherwise the shadow window will draw over the button widget.
 	  */
-	 drawCDKSelection (widget, ObjOf(widget)->box);
+	 drawCDKSelection (widget, ObjOf (widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
-	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 drawCDKButtonbox (buttonWidget, ObjOf (buttonWidget)->box);
       }
    }
 
@@ -316,7 +317,7 @@ int main (int argc, char **argv)
    }
 
    /* Print out the answer. */
-   for (x=0; x < scrollLines; x++)
+   for (x = 0; x < scrollLines; x++)
    {
       holder = char2Chtype (scrollList[x], &j1, &j2);
       item = chtype2Char (holder);
@@ -330,13 +331,16 @@ int main (int argc, char **argv)
    /* Shut down curses. */
    destroyCDKSelection (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED,
+		     void *object GCC_UNUSED,
+		     void *clientData,
+		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   injectCDKButtonbox (buttonbox, key);
+   (void) injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

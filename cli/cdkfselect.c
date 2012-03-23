@@ -1,9 +1,9 @@
-/* $Id: cdkfselect.c,v 1.11 2011/05/16 22:53:13 tom Exp $ */
+/* $Id: cdkfselect.c,v 1.13 2012/03/22 09:36:04 tom Exp $ */
 
 #include <cdk_test.h>
 
 #ifdef XCURSES
-char *XCursesProgramName="cdkfselect";
+char *XCursesProgramName = "cdkfselect";
 #endif
 
 /*
@@ -13,20 +13,20 @@ static int widgetCB (EObjectType cdktype, void *object, void *clientData, chtype
 
 int main (int argc, char **argv)
 {
-   /* Declare variables. */
-   CDKSCREEN *cdkScreen		= 0;
-   CDKFSELECT *widget		= 0;
-   CDKBUTTONBOX *buttonWidget	= 0;
-   WINDOW *cursesWindow		= 0;
-   char *filename		= 0;
-   char *CDK_WIDGET_COLOR	= 0;
-   char *temp			= 0;
-   chtype *holder		= 0;
-   int selection		= 0;
-   int shadowHeight		= 0;
-   int buttonCount		= 0;
-   FILE *fp			= stderr;
-   char **buttonList		= 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkScreen         = 0;
+   CDKFSELECT *widget           = 0;
+   CDKBUTTONBOX *buttonWidget   = 0;
+   WINDOW *cursesWindow         = 0;
+   char *filename               = 0;
+   char *CDK_WIDGET_COLOR       = 0;
+   char *temp                   = 0;
+   chtype *holder               = 0;
+   int selection                = 0;
+   int shadowHeight             = 0;
+   int buttonCount              = 0;
+   FILE *fp                     = stderr;
+   char **buttonList            = 0;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -42,20 +42,20 @@ int main (int argc, char **argv)
    int xpos;
    int ypos;
 
-   CDKparseParams(argc, argv, &params, "d:B:L:O:T:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "d:B:L:O:T:" CDK_CLI_PARAMS);
 
-   xpos         = CDKparamValue(&params, 'X', CENTER);
-   ypos         = CDKparamValue(&params, 'Y', CENTER);
-   height       = CDKparamValue(&params, 'H', 0);
-   width        = CDKparamValue(&params, 'W', 0);
-   boxWidget    = CDKparamValue(&params, 'N', TRUE);
-   shadowWidget = CDKparamValue(&params, 'S', FALSE);
-
-   directory    = CDKparamString(&params, 'd');
-   buttons      = CDKparamString(&params, 'B');
-   label        = CDKparamString(&params, 'L');
-   outputFile   = CDKparamString(&params, 'O');
-   title        = CDKparamString(&params, 'T');
+   /* *INDENT-EQLS* */
+   xpos         = CDKparamValue (&params, 'X', CENTER);
+   ypos         = CDKparamValue (&params, 'Y', CENTER);
+   height       = CDKparamValue (&params, 'H', 0);
+   width        = CDKparamValue (&params, 'W', 0);
+   boxWidget    = CDKparamValue (&params, 'N', TRUE);
+   shadowWidget = CDKparamValue (&params, 'S', FALSE);
+   directory    = CDKparamString (&params, 'd');
+   buttons      = CDKparamString (&params, 'B');
+   label        = CDKparamString (&params, 'L');
+   outputFile   = CDKparamString (&params, 'O');
+   title        = CDKparamString (&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -80,11 +80,11 @@ int main (int argc, char **argv)
    }
 
    /* Set up CDK. */
-   cursesWindow = initscr();
+   cursesWindow = initscr ();
    cdkScreen = initCDKScreen (cursesWindow);
 
    /* Start color. */
-   initCDKColor();
+   initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
    if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
@@ -103,9 +103,9 @@ int main (int argc, char **argv)
 
    /* Create the file selector widget. */
    widget = newCDKFselect (cdkScreen, xpos, ypos, height, width,
-				title, label, A_NORMAL, '.', A_REVERSE,
-				"", "", "", "",
-				boxWidget, shadowWidget);
+			   title, label, A_NORMAL, '.', A_REVERSE,
+			   "", "", "", "",
+			   boxWidget, shadowWidget);
    freeChar (label);
 
    /* Check to make sure we created the file selector. */
@@ -114,9 +114,11 @@ int main (int argc, char **argv)
       CDKfreeStrings (buttonList);
 
       destroyCDKScreen (cdkScreen);
-      endCDK();
+      endCDK ();
 
-      fprintf (stderr, "Error: Could not create the file selector. Is the window too small?\n");
+      fprintf (stderr,
+	       "Error: Could not create the file selector. "
+	       "Is the window too small?\n");
 
       ExitProgram (CLI_ERROR);
    }
@@ -125,16 +127,17 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int) CDKcountStrings (buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
-					getbegx (widget->win),
-					getbegy (widget->win) + widget->boxHeight - 2,
-					1, widget->boxWidth - 2,
-					0, 1, buttonCount,
-					buttonList, buttonCount,
-					A_REVERSE, boxWidget, FALSE);
+				      getbegx (widget->win),
+				      (getbegy (widget->win)
+				       + widget->boxHeight - 2),
+				      1, widget->boxWidth - 2,
+				      0, 1, buttonCount,
+				      (CDK_CSTRING2) buttonList, buttonCount,
+				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
@@ -174,14 +177,14 @@ int main (int argc, char **argv)
    {
       /* Determine the height of the shadow window. */
       shadowHeight = (buttonWidget == 0 ?
-			widget->boxHeight :
-			widget->boxHeight + buttonWidget->boxHeight - 1);
+		      widget->boxHeight :
+		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
       /* Create the shadow window. */
       widget->shadowWin = newwin (shadowHeight,
-					widget->boxWidth,
-					getbegy (widget->win) + 1,
-					getbegx (widget->win) + 1);
+				  widget->boxWidth,
+				  getbegy (widget->win) + 1,
+				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
       if (widget->shadowWin != 0)
@@ -193,9 +196,9 @@ int main (int argc, char **argv)
 	  * buttonbox widget will be drawn when the widget is activated.
 	  * Otherwise the shadow window will draw over the button widget.
 	  */
-	 drawCDKFselect (widget, ObjOf(widget)->box);
+	 drawCDKFselect (widget, ObjOf (widget)->box);
 	 eraseCDKButtonbox (buttonWidget);
-	 drawCDKButtonbox (buttonWidget, ObjOf(buttonWidget)->box);
+	 drawCDKButtonbox (buttonWidget, ObjOf (buttonWidget)->box);
       }
    }
 
@@ -206,7 +209,7 @@ int main (int argc, char **argv)
    setCDKFselectDirectory (widget, directory);
 
    /* Activate the file selector. */
-   filename = copyChar(activateCDKFselect (widget, 0));
+   filename = copyChar (activateCDKFselect (widget, 0));
 
    /* If there were buttons, get the button selected. */
    if (buttonWidget != 0)
@@ -217,7 +220,7 @@ int main (int argc, char **argv)
 
    destroyCDKFselect (widget);
    destroyCDKScreen (cdkScreen);
-   endCDK();
+   endCDK ();
 
    /* Print the filename selected. */
    fprintf (fp, "%s\n", filename);
@@ -227,9 +230,12 @@ int main (int argc, char **argv)
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED, void *clientData, chtype key)
+static int widgetCB (EObjectType cdktype GCC_UNUSED,
+		     void *object GCC_UNUSED,
+		     void *clientData,
+		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   injectCDKButtonbox (buttonbox, key);
+   (void) injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

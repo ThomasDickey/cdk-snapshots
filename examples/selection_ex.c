@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.18 2011/05/15 20:19:43 tom Exp $ */
+/* $Id: selection_ex.c,v 1.19 2012/03/22 00:01:42 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -19,28 +19,28 @@ char *XCursesProgramName = "selection_ex";
  */
 int main (int argc, char **argv)
 {
-   static char *choices[] =
+   static const char *choices[] =
    {
       "   ",
       "-->"
    };
-   /* Declare variables. */
-   CDKSCREEN *cdkscreen = 0;
+   /* *INDENT-EQLS* */
+   CDKSCREEN *cdkscreen    = 0;
    CDKSELECTION *selection = 0;
-   WINDOW *cursesWin = 0;
-   CDKLABEL *header = 0;
-   CDKLABEL *footer = 0;
-   char *title = "<C></5>Pick one or more accounts.";
-   char *title_string = 0;
-   char **item = 0;
+   WINDOW *cursesWin       = 0;
+   CDKLABEL *header        = 0;
+   CDKLABEL *footer        = 0;
+   const char *title       = "<C></5>Pick one or more accounts.";
+   char *title_string      = 0;
+   char **item             = 0;
    char temp[256];
-   char *mesg[200];
+   const char *mesg[200];
 #if defined (HAVE_PWD_H)
    struct passwd *ent;
 #endif
    unsigned x, y;
-   unsigned used = 0;
-   unsigned count = 0;
+   unsigned used           = 0;
+   unsigned count          = 0;
 
    CDK_PARAMS params;
 
@@ -66,27 +66,30 @@ int main (int argc, char **argv)
 
    if ((title_string = CDKparamString2 (&params, 'h', 0)) != 0)
    {
-      char *list[2];
+      const char *list[2];
+
       list[0] = title_string;
       list[1] = 0;
       header = newCDKLabel (cdkscreen,
 			    CDKparamValue (&params, 'X', CENTER),
 			    CDKparamValue (&params, 'Y', TOP),
-			    list, 1,
+			    (CDK_CSTRING2) list, 1,
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', TRUE));
       if (header != 0)
 	 activateCDKLabel (header, 0);
    }
+
    if ((title_string = CDKparamString2 (&params, 'f', 0)) != 0)
    {
-      char *list[2];
+      const char *list[2];
+
       list[0] = title_string;
       list[1] = 0;
       footer = newCDKLabel (cdkscreen,
 			    CDKparamValue (&params, 'X', CENTER),
 			    CDKparamValue (&params, 'Y', BOTTOM),
-			    list, 1,
+			    (CDK_CSTRING2) list, 1,
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', TRUE));
       if (footer != 0)
@@ -101,9 +104,13 @@ int main (int argc, char **argv)
 				CDKparamValue (&params, 'H', 10),
 				CDKparamValue (&params, 'W', 50),
 				CDKparamString2 (&params, 't', title),
-				CDKparamNumber (&params, 'c') ? 0 : item,
-				CDKparamNumber (&params, 'c') ? 0 : (int)count,
-				choices, 2,
+				(CDKparamNumber (&params, 'c')
+				 ? 0
+				 : (CDK_CSTRING2) item),
+				(CDKparamNumber (&params, 'c')
+				 ? 0
+				 : (int)count),
+				(CDK_CSTRING2) choices, 2,
 				A_REVERSE,
 				CDKparamValue (&params, 'N', TRUE),
 				CDKparamValue (&params, 'S', FALSE));
@@ -115,15 +122,14 @@ int main (int argc, char **argv)
       destroyCDKScreen (cdkscreen);
       endCDK ();
 
-      /* Print out a message and exit. */
-      printf ("Oops. Cannot seem to create the selection list.\n");
+      printf ("Cannot to create the selection list.\n");
       printf ("Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
 
    if (CDKparamNumber (&params, 'c'))
    {
-      setCDKSelectionItems (selection, item, (int)count);
+      setCDKSelectionItems (selection, (CDK_CSTRING2) item, (int)count);
    }
 
    /* Activate the selection list. */
@@ -135,7 +141,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No items selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
    }
    else if (selection->exitType == vNORMAL)
    {
@@ -149,13 +155,7 @@ int main (int argc, char **argv)
 	    mesg[y++] = copyChar (temp);
 	 }
       }
-      popupLabel (cdkscreen, mesg, (int)y);
-
-      /* Clean up. */
-      for (x = 1; x < y; x++)
-      {
-	 freeChar (mesg[x]);
-      }
+      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, (int)y);
    }
 
    /* Clean up. */

@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_calendar.3,v 1.23 2011/05/18 00:10:32 tom Exp $"
+.\" $Id: cdk_calendar.3,v 1.25 2012/03/22 08:39:04 tom Exp $"
 .de XX
 ..
 .TH cdk_calendar 3
@@ -104,7 +104,7 @@ cdk_calendar \- curses calendar widget.
 .B "CDKCALENDAR *newCDKCalendar (CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
-.BI "char *" "title",
+.BI "const char *" "title",
 .BI "int " "day",
 .BI "int " "month",
 .BI "int " "year",
@@ -141,7 +141,7 @@ cdk_calendar \- curses calendar widget.
 .TP 15
 .B "void setCDKCalendarBackgroundColor ("
 .BI "CDKCALENDAR *" "calendar",
-.BI "char * " "color");
+.BI "const char * " "color");
 .TP 15
 .B "void setCDKCalendarBox ("
 .BI "CDKCALENDAR *" "calendar",
@@ -163,7 +163,7 @@ cdk_calendar \- curses calendar widget.
 .TP
 .B "void setCDKCalendarDaysNames ("
 .BI "CDKCALENDAR *" "calendar",
-.BI "char *" "days");
+.BI "const char *" "days");
 .TP 15
 .B "void setCDKCalendarHighlight ("
 .BI "CDKCALENDAR *" "calendar",
@@ -194,7 +194,7 @@ cdk_calendar \- curses calendar widget.
 .TP
 .B "void setCDKCalendarMonthsNames ("
 .BI "CDKCALENDAR *" "calendar",
-.BI "char **" "months");
+.BI "CDK_CONST char **" "months");
 .TP 15
 .B "void setCDKCalendarPostProcess ("
 .BI "CDKCALENDAR *" "calendar",
