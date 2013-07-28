@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.19 2008/10/30 23:34:32 tom Exp $
+# $Id: Makefile.in,v 1.21 2013/07/19 23:55:03 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -12,6 +12,10 @@ VPATH		= $(srcdir)
 
 CC		= @CC@
 RM		= rm -f
+CTAGS		= @CTAGS@
+ETAGS		= @ETAGS@
+LINT		= @LINT@
+LINT_OPTS	= @LINT_OPTS@
 
 LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 
@@ -22,10 +26,11 @@ LINK		= $(LIBTOOL_LINK)
 
 x		= @EXEEXT@
 o		= .@OBJEXT@
+LOCAL_LIBDIR	= @top_builddir@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include -I. @CPPFLAGS@
-LDFLAGS		= -L.. @LDFLAGS@
+LDFLAGS		= -L.. @LDFLAGS@ @LOCAL_LDFLAGS@
 
 BINS	= \
 	alphalist_ex$x \
@@ -64,6 +69,44 @@ BINS	= \
 	uslider_ex$x \
 	viewer_ex$x \
 	viewer_ex2$x
+
+CKDKSRC	= \
+	alphalist_ex.c \
+	bind_ex.c \
+	buttonbox_ex.c \
+	calendar_ex.c \
+	cdkscreen_ex.c \
+	dialog_ex.c \
+	entry_ex.c \
+	fscale_ex.c \
+	fselect_ex.c \
+	fslider_ex.c \
+	graph_ex.c \
+	hello_ex.c \
+	histogram_ex.c \
+	itemlist_ex.c \
+	label_ex.c \
+	lowerCDKObject_ex.c \
+	marquee_ex.c \
+	matrix_ex.c \
+	mentry_ex.c \
+	menu_ex.c \
+	position_ex.c \
+	preprocess_ex.c \
+	radio1_ex.c \
+	radio_ex.c \
+	raiseCDKObject_ex.c \
+	scale_ex.c \
+	scroll_ex.c \
+	selection_ex.c \
+	slider_ex.c \
+	subwindow_ex.c \
+	swindow_ex.c \
+	template_ex.c \
+	traverse_ex.c \
+	uslider_ex.c \
+	viewer_ex.c \
+	viewer_ex2.c
 
 LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
 
@@ -113,3 +156,12 @@ clean::
 
 distclean:: clean
 	$(RM) Makefile
+
+@MAKE_LOWER_TAGS@tags :
+@MAKE_LOWER_TAGS@	$(CTAGS) *.[ch] */*.[ch]
+
+@MAKE_LOWER_TAGS@TAGS :
+@MAKE_LOWER_TAGS@	$(ETAGS) *.[ch] */*.[ch]
+
+lint: $(CDKSRC)
+	$(LINT) $(LINT_OPTS) $(CPPFLAGS) $(CDKSRC)

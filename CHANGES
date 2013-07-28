@@ -1,14 +1,32 @@
--- vile:fk=8bit txtmode
--- $Id: CHANGES,v 1.184 2012/03/23 14:41:06 tom Exp $
+-- $Id: CHANGES,v 1.196 2013/07/27 16:54:14 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2010, 2011
+Modifications copyright Thomas E. Dickey 1999-2012, 2013
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2013/07/27
+	+ add --enable-rpath and --disable-rpath-hack options to configure
+	  script.
+	+ deprecate the cdkshlib makefile target; it is not available if either
+	  --with-libtool or --with-shared is given.
+	+ corrected Makefile.in permissions of cdk5-config script, which was
+	  not executable; this did not affect packages (cf: 2011/05/17).
+	+ enable the configure --disable-libtool-version option by defining
+	  LIBTOOL_VERSION in Makefile.in, so that the soname can be set or left
+	  to libtool to manage.
+	+ add configure options for manipulating linker rpath feature.
+	+ improve configure options for curses variants by reusing macro
+	  from ncurses-examples
+	+ add lint rule to makefiles
+	+ fix warnings from clang
+	+ adapt configure --with-shared option from ncurses.
+	+ updated configure script (mostly minor changes for autoheader).
+	+ update config.guess, config.sub
 
 2012/03/23
 	+ use gmtime instead of localtime in a few places so that calendar
@@ -287,7 +305,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ correct initialization of traverseCDKScreen(), which required two
 	  tab keypresses to make the first traversal (report by Fu Steve X).
 	+ updated configure script checks for _XOPEN_SOURCE, etc.
-	+ updated config.guess and config.sub
+	+ update config.guess and config.sub
 	+ correct prototype shown in manpage for setCDKScroll() (report by
 	  Stefan Heimann).
 	+ correct equivalent expressions in setCDKRadioItems() and
@@ -418,7 +436,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  CF_CHECK_CACHE, CF_GCC_WARNINGS, CF_NCURSES_LIBS, CF_PROG_EXT,
 	  CF_WITH_DBMALLOC, CF_WITH_DMALLOC, CF_WITH_LIBTOOL, CF_WITH_WARNINGS,
 	  CF_X_ATHENA, CF_X_TOOLKIT.
-	+ updated config.guess, config.sub
+	+ update config.guess, config.sub
 	> fixes for fselect.c by ewigg (Ed Wigg):
 	+ add a range check to ensure that filename completion at the end of
 	  the list does not reference past the end of the list.
@@ -499,7 +517,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ eliminate static MAX_LINES limit from graph-widget values.
 	+ eliminate static MAX_LINES limit from widget titles.
 	+ updated configure script, improved checks for curses functions.
-	+ updated config.guess, config.sub
+	+ update config.guess, config.sub
 
 2003/11/24 - T.E.Dickey <dickey@his.com>
 ========================================
@@ -859,7 +877,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ updates to configure script macros:
 	  CF_CURSES_FUNCS, CF_FIND_LIBRARY, CF_HEADER_PATH, CF_LIBRARY_PATH,
 	  CF_NCURSES_LIBS and CF_XOPEN_CURSES
-	+ updated config.guess, config.sub
+	+ update config.guess, config.sub
 
 2000/04/09 - T.E.Dickey <dickey@clark.net>
 ==========================================
@@ -1179,3 +1197,5 @@ ttfn,
 
 PS: There is also a Perl5 extension of this library for you Perl5 fans.
     Look under any CPAN site under the directory CPAN/authors/id/GLOVER.
+
+-- vile:fk=8bit txtmode

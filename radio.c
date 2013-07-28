@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.138 $
+ * $Date: 2013/06/16 15:05:27 $
+ * $Revision: 1.140 $
  */
 
 /*
@@ -49,8 +49,8 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    CDKRADIO *radio      = 0;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
-   int boxWidth         = width;
-   int boxHeight        = height;
+   int boxWidth;
+   int boxHeight;
    int xpos             = xplace;
    int ypos             = yplace;
    int widestItem       = 0;
@@ -520,11 +520,11 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
 
 	 /* Draw the selected choice... */
 	 xpos += scrollbarAdj;
-	 mvwaddch (radio->win, ypos, xpos++, radio->leftBoxChar);
-	 mvwaddch (radio->win, ypos, xpos++, ((k == radio->selectedItem)
-					      ? radio->choiceChar
-					      : ' '));
-	 mvwaddch (radio->win, ypos, xpos++, radio->rightBoxChar);
+	 (void)mvwaddch (radio->win, ypos, xpos++, radio->leftBoxChar);
+	 (void)mvwaddch (radio->win, ypos, xpos++, ((k == radio->selectedItem)
+						    ? radio->choiceChar
+						    : ' '));
+	 (void)mvwaddch (radio->win, ypos, xpos++, radio->rightBoxChar);
       }
    }
 
@@ -554,8 +554,10 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
       radio->togglePos = MINIMUM (radio->togglePos,
 				  getmaxy (radio->scrollbarWin) - 1);
 
-      mvwvline (radio->scrollbarWin, 0, 0, ACS_CKBOARD, getmaxy (radio->scrollbarWin));
-      mvwvline (radio->scrollbarWin, radio->togglePos, 0, ' ' | A_REVERSE, radio->toggleSize);
+      (void)mvwvline (radio->scrollbarWin, 0, 0,
+		      ACS_CKBOARD, getmaxy (radio->scrollbarWin));
+      (void)mvwvline (radio->scrollbarWin, radio->togglePos, 0,
+		      ' ' | A_REVERSE, radio->toggleSize);
    }
 
    /* Box it if needed. */

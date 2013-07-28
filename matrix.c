@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:43:33 $
- * $Revision: 1.192 $
+ * $Date: 2013/06/16 13:17:18 $
+ * $Revision: 1.193 $
  */
 
 /*
@@ -83,8 +83,6 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
       { CDK_BACKCHAR,	KEY_PPAGE },
    };
    /* *INDENT-ON* */
-
-
 
    if ((matrix = newCDKObject (CDKMATRIX, &my_funcs)) == 0)
    {
@@ -486,8 +484,8 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    else
 	    {
 	       charcount--;
-	       mvwdelch (CurMatrixCell (widget), 1, charcount + 1);
-	       mvwinsch (CurMatrixCell (widget), 1, charcount + 1, widget->filler);
+	       (void)mvwdelch (CurMatrixCell (widget), 1, charcount + 1);
+	       (void)mvwinsch (CurMatrixCell (widget), 1, charcount + 1, widget->filler);
 	       wrefresh (CurMatrixCell (widget));
 	       MATRIX_INFO (widget, widget->row, widget->col)[charcount] = '\0';
 	    }
@@ -959,7 +957,7 @@ static void highlightCDKMatrixCell (CDKMATRIX *matrix)
 					  matrix->col)[x - 1])
 		   : matrix->filler);
 
-      mvwaddch (CurMatrixCell (matrix), 1, x, ch | highlight);
+      (void)mvwaddch (CurMatrixCell (matrix), 1, x, ch | highlight);
    }
    wmove (CurMatrixCell (matrix), 1, infolen + 1);
    wrefresh (CurMatrixCell (matrix));
@@ -1064,7 +1062,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
 		   ? (CharOf (MATRIX_INFO (matrix, vrow, vcol)[x - 1]) | highlight)
 		   : matrix->filler);
 
-      mvwaddch (cell, 1, x, ch | highlight);
+      (void)mvwaddch (cell, 1, x, ch | highlight);
    }
    wmove (cell, 1, infolen + 1);
    wrefresh (cell);

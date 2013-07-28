@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 21:01:15 $
- * $Revision: 1.153 $
+ * $Date: 2013/06/16 15:05:27 $
+ * $Revision: 1.155 $
  */
 
 /*
@@ -53,8 +53,8 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
    CDKSCROLL *scrollp           = 0;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
-   int boxWidth                 = width;
-   int boxHeight                = height;
+   int boxWidth;
+   int boxHeight;
    int xpos                     = xplace;
    int ypos                     = yplace;
    int scrollAdjust             = 0;
@@ -606,14 +606,14 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 	    scrollp->togglePos = getmaxy (scrollp->scrollbarWin) - 1;
 
 	 /* Draw the scrollbar. */
-	 mvwvline (scrollp->scrollbarWin,
-		   0, 0,
-		   ACS_CKBOARD,
-		   getmaxy (scrollp->scrollbarWin));
-	 mvwvline (scrollp->scrollbarWin,
-		   scrollp->togglePos, 0,
-		   ' ' | A_REVERSE,
-		   scrollp->toggleSize);
+	 (void)mvwvline (scrollp->scrollbarWin,
+			 0, 0,
+			 ACS_CKBOARD,
+			 getmaxy (scrollp->scrollbarWin));
+	 (void)mvwvline (scrollp->scrollbarWin,
+			 scrollp->togglePos, 0,
+			 ' ' | A_REVERSE,
+			 scrollp->toggleSize);
       }
    }
 

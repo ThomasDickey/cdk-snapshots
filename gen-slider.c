@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/20 21:46:36 $
- * $Revision: 1.24 $
+ * $Date: 2013/06/16 13:19:15 $
+ * $Revision: 1.25 $
  */
 
 /*
@@ -663,7 +663,7 @@ static void drawCDK<MIXED>Field (CDK<UPPER> *widget)
    /* Add the character to the window. */
    for (x = 0; x < fillerCharacters; x++)
    {
-      mvwaddch (widget->fieldWin, 0, x, widget->filler);
+      (void)mvwaddch (widget->fieldWin, 0, x, widget->filler);
    }
 
    /* Draw the value in the field. */

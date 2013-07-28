@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 09:10:47 $
- * $Revision: 1.89 $
+ * $Date: 2013/06/16 15:05:27 $
+ * $Revision: 1.91 $
  */
 
 DeclareCDKObjects (HISTOGRAM, Histogram, setCdk, Unknown);
@@ -25,8 +25,8 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
    CDKHISTOGRAM *widget = 0;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
-   int boxWidth         = width;
-   int boxHeight        = height;
+   int boxWidth;
+   int boxHeight;
    int xpos             = xplace;
    int ypos             = yplace;
    int oldWidth         = 0;
@@ -646,11 +646,11 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
 
 	 if (bchar == ' ')
 	 {
-	    mvwaddch (widget->win, x, y, widget->filler);
+	    (void)mvwaddch (widget->win, x, y, widget->filler);
 	 }
 	 else
 	 {
-	    mvwaddch (widget->win, x, y, battr | fattr);
+	    (void)mvwaddch (widget->win, x, y, battr | fattr);
 	 }
       }
    }

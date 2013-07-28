@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 09:44:27 $
- * $Revision: 1.122 $
+ * $Date: 2013/06/16 15:07:42 $
+ * $Revision: 1.123 $
  */
 
 /*
@@ -31,8 +31,8 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
    CDKSWINDOW *swindow          = 0;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
-   int boxWidth                 = width;
-   int boxHeight                = height;
+   int boxWidth;
+   int boxHeight;
    int xpos                     = xplace;
    int ypos                     = yplace;
    int x;
@@ -1015,7 +1015,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 			    TRUE, FALSE);
 
    /* Get the filename to load. */
-   filename = activateCDKFselect (fselect, 0);
+   (void)activateCDKFselect (fselect, 0);
 
    /* Make sure they selected a file. */
    if (fselect->exitType == vESCAPE_HIT)

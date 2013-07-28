@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/15 19:58:29 $
- * $Revision: 1.59 $
+ * $Date: 2013/06/16 13:20:30 $
+ * $Revision: 1.60 $
  */
 
 /*
@@ -53,19 +53,19 @@ void boxWindow (WINDOW *window, chtype attr)
    int bry      = getmaxy (window) - 1;
 
    /* Draw horizontal lines. */
-   mvwhline (window, tly, 0, ACS_HLINE | attr, getmaxx (window));
-   mvwhline (window, bry, 0, ACS_HLINE | attr, getmaxx (window));
+   (void)mvwhline (window, tly, 0, ACS_HLINE | attr, getmaxx (window));
+   (void)mvwhline (window, bry, 0, ACS_HLINE | attr, getmaxx (window));
 
    /* Draw vertical lines. */
-   mvwvline (window, 0, tlx, ACS_VLINE | attr, getmaxy (window));
-   mvwvline (window, 0, brx, ACS_VLINE | attr, getmaxy (window));
+   (void)mvwvline (window, 0, tlx, ACS_VLINE | attr, getmaxy (window));
+   (void)mvwvline (window, 0, brx, ACS_VLINE | attr, getmaxy (window));
 
    /* Draw in the corners. */
-   mvwaddch (window, tly, tlx, ACS_ULCORNER | attr);
-   mvwaddch (window, tly, brx, ACS_URCORNER | attr);
-   mvwaddch (window, bry, tlx, ACS_LLCORNER | attr);
-   mvwaddch (window, bry, brx, ACS_LRCORNER | attr);
-   wrefresh (window);
+   (void)mvwaddch (window, tly, tlx, ACS_ULCORNER | attr);
+   (void)mvwaddch (window, tly, brx, ACS_URCORNER | attr);
+   (void)mvwaddch (window, bry, tlx, ACS_LLCORNER | attr);
+   (void)mvwaddch (window, bry, brx, ACS_LRCORNER | attr);
+   (void)wrefresh (window);
 }
 
 /*
@@ -91,38 +91,38 @@ void attrbox (WINDOW *win,
    /* Draw horizontal lines. */
    if (horz != 0)
    {
-      mvwhline (win, y1, 0, horz | attr, getmaxx (win));
-      mvwhline (win, y2, 0, horz | attr, getmaxx (win));
+      (void)mvwhline (win, y1, 0, horz | attr, getmaxx (win));
+      (void)mvwhline (win, y2, 0, horz | attr, getmaxx (win));
       count++;
    }
 
    /* Draw vertical lines. */
    if (vert != 0)
    {
-      mvwvline (win, 0, x1, vert | attr, getmaxy (win));
-      mvwvline (win, 0, x2, vert | attr, getmaxy (win));
+      (void)mvwvline (win, 0, x1, vert | attr, getmaxy (win));
+      (void)mvwvline (win, 0, x2, vert | attr, getmaxy (win));
       count++;
    }
 
    /* Draw in the corners. */
    if (tlc != 0)
    {
-      mvwaddch (win, y1, x1, tlc | attr);
+      (void)mvwaddch (win, y1, x1, tlc | attr);
       count++;
    }
    if (trc != 0)
    {
-      mvwaddch (win, y1, x2, trc | attr);
+      (void)mvwaddch (win, y1, x2, trc | attr);
       count++;
    }
    if (blc != 0)
    {
-      mvwaddch (win, y2, x1, blc | attr);
+      (void)mvwaddch (win, y2, x1, blc | attr);
       count++;
    }
    if (brc != 0)
    {
-      mvwaddch (win, y2, x2, brc | attr);
+      (void)mvwaddch (win, y2, x2, brc | attr);
       count++;
    }
    if (count != 0)
@@ -162,12 +162,12 @@ void drawLine (WINDOW *window, int startx, int starty, int endx, int endy, chtyp
    if (ydiff == 0)
    {
       if (xdiff > 0)
-	 mvwhline (window, starty, startx, line, xdiff);
+	 (void)mvwhline (window, starty, startx, line, xdiff);
    }
    else if (xdiff == 0)
    {
       if (ydiff > 0)
-	 mvwvline (window, starty, startx, line, ydiff);
+	 (void)mvwvline (window, starty, startx, line, ydiff);
    }
    else
    {
@@ -186,7 +186,7 @@ void drawLine (WINDOW *window, int startx, int starty, int endx, int endy, chtyp
       while (x != endx && y != endy)
       {
 	 /* Add the char to the window. */
-	 mvwaddch (window, y, x, line);
+	 (void)mvwaddch (window, y, x, line);
 
 	 /* Make the x and y adjustments. */
 	 if (xadj != xratio)
@@ -222,14 +222,14 @@ void drawShadow (WINDOW *shadowWin)
       int y_hi = getmaxy (shadowWin) - 1;
 
       /* Draw the line on the bottom. */
-      mvwhline (shadowWin, y_hi, 1, ACS_HLINE | A_DIM, x_hi);
+      (void)mvwhline (shadowWin, y_hi, 1, ACS_HLINE | A_DIM, x_hi);
 
       /* Draw the line on the right. */
-      mvwvline (shadowWin, 0, x_hi, ACS_VLINE | A_DIM, y_hi);
+      (void)mvwvline (shadowWin, 0, x_hi, ACS_VLINE | A_DIM, y_hi);
 
-      mvwaddch (shadowWin, 0, x_hi, ACS_URCORNER | A_DIM);
-      mvwaddch (shadowWin, y_hi, 0, ACS_LLCORNER | A_DIM);
-      mvwaddch (shadowWin, y_hi, x_hi, ACS_LRCORNER | A_DIM);
+      (void)mvwaddch (shadowWin, 0, x_hi, ACS_URCORNER | A_DIM);
+      (void)mvwaddch (shadowWin, y_hi, 0, ACS_LLCORNER | A_DIM);
+      (void)mvwaddch (shadowWin, y_hi, x_hi, ACS_LRCORNER | A_DIM);
       wrefresh (shadowWin);
    }
 }
@@ -288,7 +288,10 @@ void writeCharAttrib (WINDOW *window,
       display = MINIMUM (display, getmaxx (window) - 1);
       for (x = 0; x < display; x++)
       {
-	 mvwaddch (window, ypos, xpos + x, CharOf (string[x + start]) | attr);
+	 (void)mvwaddch (window,
+			 ypos,
+			 xpos + x,
+			 CharOf (string[x + start]) | attr);
       }
    }
    else
@@ -297,7 +300,10 @@ void writeCharAttrib (WINDOW *window,
       display = MINIMUM (display, getmaxy (window) - 1);
       for (x = 0; x < display; x++)
       {
-	 mvwaddch (window, ypos + x, xpos, CharOf (string[x + start]) | attr);
+	 (void)mvwaddch (window,
+			 ypos + x,
+			 xpos,
+			 CharOf (string[x + start]) | attr);
       }
    }
 }
@@ -339,7 +345,7 @@ void writeChtypeAttrib (WINDOW *window,
       display = MINIMUM (diff, getmaxx (window) - xpos);
       for (x = 0; x < display; x++)
       {
-	 mvwaddch (window, ypos, xpos + x, string[x + start] | attr);
+	 (void)mvwaddch (window, ypos, xpos + x, string[x + start] | attr);
       }
    }
    else
@@ -348,7 +354,7 @@ void writeChtypeAttrib (WINDOW *window,
       display = MINIMUM (diff, getmaxy (window) - ypos);
       for (x = 0; x < display; x++)
       {
-	 mvwaddch (window, ypos + x, xpos, string[x + start] | attr);
+	 (void)mvwaddch (window, ypos + x, xpos, string[x + start] | attr);
       }
    }
 }
