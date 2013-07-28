@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 21:00:37 $
- * $Revision: 1.84 $
+ * $Date: 2013/06/16 15:05:27 $
+ * $Revision: 1.86 $
  */
 
 DeclareCDKObjects (GRAPH, Graph, setCdk, Unknown);
@@ -26,8 +26,8 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
    CDKGRAPH *widget     = 0;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
-   int boxWidth         = width;
-   int boxHeight        = height;
+   int boxWidth;
+   int boxHeight;
    int xpos             = xplace;
    int ypos             = yplace;
 
@@ -506,14 +506,17 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    {
       int colheight = (widget->values[y] / widget->xscale) - 1;
       /* Add the marker on the Y axis. */
-      mvwaddch (widget->win, widget->boxHeight - 3, (y + 1) * spacing + adj, ACS_TTEE);
+      (void)mvwaddch (widget->win,
+		      widget->boxHeight - 3,
+		      (y + 1) * spacing + adj,
+		      ACS_TTEE);
 
       /* If this is a plot graph, all we do is draw a dot. */
       if (widget->displayType == vPLOT)
       {
 	 xpos = widget->boxHeight - 4 - colheight;
 	 ypos = (y + 1) * spacing + adj;
-	 mvwaddch (widget->win, xpos, ypos, widget->graphChar[y]);
+	 (void)mvwaddch (widget->win, xpos, ypos, widget->graphChar[y]);
       }
       else
       {
@@ -532,9 +535,9 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    }
 
    /* Draw in the axis corners. */
-   mvwaddch (widget->win, TitleLinesOf (widget), 2, ACS_URCORNER);
-   mvwaddch (widget->win, widget->boxHeight - 3, 2, ACS_LLCORNER);
-   mvwaddch (widget->win, widget->boxHeight - 3, widget->boxWidth, ACS_URCORNER);
+   (void)mvwaddch (widget->win, TitleLinesOf (widget), 2, ACS_URCORNER);
+   (void)mvwaddch (widget->win, widget->boxHeight - 3, 2, ACS_LLCORNER);
+   (void)mvwaddch (widget->win, widget->boxHeight - 3, widget->boxWidth, ACS_URCORNER);
 
    /* Refresh and lets see 'er. */
    wrefresh (widget->win);

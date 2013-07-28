@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.100 $
+ * $Date: 2013/06/16 13:21:40 $
+ * $Revision: 1.101 $
  */
 
 DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
@@ -519,19 +519,19 @@ void drawCDKDialogButtons (CDKDIALOG *dialog)
 
       for (x = 1; x < dialog->boxWidth - 1; x++)
       {
-	 mvwaddch (dialog->win,
-		   dialog->boxHeight - 2 - BorderOf (dialog),
-		   x,
-		   ACS_HLINE | boxattr);
+	 (void)mvwaddch (dialog->win,
+			 dialog->boxHeight - 2 - BorderOf (dialog),
+			 x,
+			 ACS_HLINE | boxattr);
       }
-      mvwaddch (dialog->win,
-		dialog->boxHeight - 2 - BorderOf (dialog),
-		0,
-		ACS_LTEE | boxattr);
-      mvwaddch (dialog->win,
-		dialog->boxHeight - 2 - BorderOf (dialog),
-		getmaxx (dialog->win) - 1,
-		ACS_RTEE | boxattr);
+      (void)mvwaddch (dialog->win,
+		      dialog->boxHeight - 2 - BorderOf (dialog),
+		      0,
+		      ACS_LTEE | boxattr);
+      (void)mvwaddch (dialog->win,
+		      dialog->boxHeight - 2 - BorderOf (dialog),
+		      getmaxx (dialog->win) - 1,
+		      ACS_RTEE | boxattr);
    }
    writeChtypeAttrib (dialog->win,
 		      dialog->buttonPos[dialog->currentButton],

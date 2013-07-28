@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 09:21:35 $
- * $Revision: 1.212 $
+ * $Date: 2013/06/16 15:00:10 $
+ * $Revision: 1.213 $
  */
 
 #define L_MARKER '<'
@@ -496,7 +496,6 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	 }
 	 adjust = 0;
 	 attrib = A_NORMAL;
-	 lastChar = 0;
 	 start = 0;
 	 used = 0;
 	 x = 3;

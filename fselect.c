@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 09:43:24 $
- * $Revision: 1.79 $
+ * $Date: 2013/06/16 15:00:10 $
+ * $Revision: 1.80 $
  */
 
 /*
@@ -52,8 +52,8 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    CDKFSELECT *fselect  = 0;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
-   int boxWidth         = width;
-   int boxHeight        = height;
+   int boxWidth;
+   int boxHeight;
    int xpos             = xplace;
    int ypos             = yplace;
    int tempWidth        = 0;

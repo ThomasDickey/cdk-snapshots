@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.5 2008/10/30 23:34:49 tom Exp $
+# $Id: Makefile.in,v 1.7 2013/07/19 23:55:03 tom Exp $
 #
 # Makefile for the cli directory.
 #
@@ -12,6 +12,10 @@ VPATH		= $(srcdir)
 
 CC		= @CC@
 RM		= rm -f
+CTAGS		= @CTAGS@
+ETAGS		= @ETAGS@
+LINT		= @LINT@
+LINT_OPTS	= @LINT_OPTS@
 
 LIBS		= -l@LIB_ROOTNAME@ @LIBS@
 
@@ -22,10 +26,11 @@ LINK		= $(LIBTOOL_LINK)
 
 x		= @EXEEXT@
 o		= .@OBJEXT@
+LOCAL_LIBDIR	= @top_builddir@
 
 CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I../include -I$(srcdir)/../include -I. @CPPFLAGS@
-LDFLAGS		= -L.. @LDFLAGS@
+LDFLAGS		= -L.. @LDFLAGS@ @LOCAL_LDFLAGS@
 
 BINS	= \
 	cdkalphalist$x \
@@ -44,6 +49,24 @@ BINS	= \
 	cdkslider$x \
 	cdktemplate$x \
 	cdkviewer$x
+
+CDKSRC	= \
+	cdkalphalist.c \
+	cdkcalendar.c \
+	cdkdialog.c \
+	cdkentry.c \
+	cdkfselect.c \
+	cdkitemlist.c \
+	cdklabel.c \
+	cdkmatrix.c \
+	cdkmentry.c \
+	cdkradio.c \
+	cdkscale.c \
+	cdkscroll.c \
+	cdkselection.c \
+	cdkslider.c \
+	cdktemplate.c \
+	cdkviewer.c
 
 LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
 
@@ -73,3 +96,12 @@ clean::
 
 distclean:: clean
 	$(RM) Makefile
+
+@MAKE_LOWER_TAGS@tags :
+@MAKE_LOWER_TAGS@	$(CTAGS) *.[ch] */*.[ch]
+
+@MAKE_LOWER_TAGS@TAGS :
+@MAKE_LOWER_TAGS@	$(ETAGS) *.[ch] */*.[ch]
+
+lint: $(CDKSRC)
+	$(LINT) $(LINT_OPTS) $(CPPFLAGS) $(CDKSRC)

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 21:01:00 $
- * $Revision: 1.164 $
+ * $Date: 2013/06/16 13:11:58 $
+ * $Revision: 1.165 $
  */
 
 /*
@@ -664,17 +664,17 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 {
 	    if (isHiddenDisplayType (mentry->dispType))
 	    {
-	       mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	       (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
 	    }
 	    else
 	    {
-	       mvwaddch (mentry->fieldWin, x, y,
-			 CharOf (mentry->info[currchar++]) | mentry->fieldAttr);
+	       (void)mvwaddch (mentry->fieldWin, x, y,
+			       CharOf (mentry->info[currchar++]) | mentry->fieldAttr);
 	    }
 	 }
 	 else
 	 {
-	    mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	    (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
 	 }
       }
    }

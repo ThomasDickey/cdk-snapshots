@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 21:01:23 $
- * $Revision: 1.151 $
+ * $Date: 2013/06/16 15:06:42 $
+ * $Revision: 1.153 $
  */
 
 /*
@@ -50,8 +50,8 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    int widestItem               = -1;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
-   int boxWidth                 = width;
-   int boxHeight                = height;
+   int boxWidth;
+   int boxHeight;
    int xpos                     = xplace;
    int ypos                     = yplace;
    int j                        = 0;
@@ -577,11 +577,11 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       selection->togglePos = MINIMUM (selection->togglePos,
 				      (getmaxy (selection->scrollbarWin) - 1));
 
-      mvwvline (selection->scrollbarWin, 0, 0, ACS_CKBOARD, getmaxy (selection->scrollbarWin));
-      mvwvline (selection->scrollbarWin,
-		selection->togglePos,
-		0,
-		' ' | A_REVERSE, selection->toggleSize);
+      (void)mvwvline (selection->scrollbarWin, 0, 0, ACS_CKBOARD, getmaxy (selection->scrollbarWin));
+      (void)mvwvline (selection->scrollbarWin,
+		      selection->togglePos,
+		      0,
+		      ' ' | A_REVERSE, selection->toggleSize);
    }
 
    /* Box it if needed */
@@ -795,13 +795,13 @@ void setCDKSelectionChoice (CDKSELECTION *selection, int Index, int choice)
    }
 
    /* Make sure the index isn't out of range. */
-   if (Index < 0)
+   if (correctIndex < 0)
    {
-      Index = 0;
+      correctIndex = 0;
    }
-   else if (Index > selection->listSize)
+   else if (correctIndex > selection->listSize)
    {
-      Index = selection->listSize - 1;
+      correctIndex = selection->listSize - 1;
    }
 
    /* Set the choice value. */

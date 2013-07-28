@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.66 $
+ * $Date: 2013/06/16 15:00:10 $
+ * $Revision: 1.67 $
  */
 
 DeclareCDKObjects (BUTTONBOX, Buttonbox, setCdk, Int);
@@ -421,7 +421,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
 void drawCDKButtonboxButtons (CDKBUTTONBOX *buttonbox)
 {
    /* *INDENT-EQLS* */
-   int row              = TitleLinesOf (buttonbox) + 1;
+   int row;
    int col              = (int)(buttonbox->colAdjust / 2);
    int currentButton    = 0;
    int x, y;

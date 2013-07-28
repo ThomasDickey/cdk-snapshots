@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 20:59:06 $
- * $Revision: 1.220 $
+ * $Date: 2013/06/16 13:12:32 $
+ * $Revision: 1.221 $
  */
 
 /*
@@ -610,7 +610,7 @@ void cleanCDKEntry (CDKENTRY *entry)
    cleanChar (entry->info, entry->infoWidth, '\0');
 
    /* Clean the entry screen field. */
-   mvwhline (entry->fieldWin, 0, 0, entry->filler, width);
+   (void)mvwhline (entry->fieldWin, 0, 0, entry->filler, width);
 
    /* Reset some variables. */
    entry->screenCol = 0;
@@ -662,7 +662,7 @@ static void drawCDKEntryField (CDKENTRY *entry)
    int x = 0;
 
    /* Draw in the filler characters. */
-   mvwhline (entry->fieldWin, 0, x, entry->filler, entry->fieldWidth);
+   (void)mvwhline (entry->fieldWin, 0, x, entry->filler, entry->fieldWidth);
 
    /* If there is information in the field. Then draw it in. */
    if (entry->info != 0)
@@ -674,15 +674,15 @@ static void drawCDKEntryField (CDKENTRY *entry)
       {
 	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden);
+	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden);
 	 }
       }
       else
       {
 	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
-	    mvwaddch (entry->fieldWin, 0, x - entry->leftChar,
-		      CharOf (entry->info[x]) | entry->fieldAttr);
+	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar,
+			    CharOf (entry->info[x]) | entry->fieldAttr);
 	 }
       }
       wmove (entry->fieldWin, 0, entry->screenCol);

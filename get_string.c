@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:38:47 $
- * $Revision: 1.2 $
+ * $Date: 2013/06/16 15:07:05 $
+ * $Revision: 1.3 $
  */
 
 /*
@@ -27,7 +27,7 @@ char *getString (CDKSCREEN *screen,
    setCDKEntryValue (widget, initValue);
 
    /* Get the string. */
-   value = activateCDKEntry (widget, 0);
+   (void)activateCDKEntry (widget, 0);
 
    /* Make sure they exited normally. */
    if (widget->exitType != vNORMAL)

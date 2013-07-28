@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 00:05:35 $
- * $Revision: 1.102 $
+ * $Date: 2013/06/16 15:05:27 $
+ * $Revision: 1.104 $
  */
 
 #define TITLELINES 1
@@ -29,7 +29,7 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
 {
    /* *INDENT-EQLS* */
    CDKMENU *menu        = 0;
-   int rightcount       = menuItems - 1;
+   int rightcount;
    int rightloc         = getmaxx (cdkscreen->window);
    int leftloc          = 0;
    int x, y, max, junk;
@@ -400,12 +400,12 @@ void drawCDKMenuSubwin (CDKMENU *menu)
 
    if (menu->menuPos == BOTTOM)
    {
-      mvwaddch (menu->pullWin[menu->currentTitle],
-		menu->subsize[menu->currentTitle] + 1, 0, ACS_LTEE);
+      (void)mvwaddch (menu->pullWin[menu->currentTitle],
+		      menu->subsize[menu->currentTitle] + 1, 0, ACS_LTEE);
    }
    else
    {
-      mvwaddch (menu->pullWin[menu->currentTitle], 0, 0, ACS_LTEE);
+      (void)mvwaddch (menu->pullWin[menu->currentTitle], 0, 0, ACS_LTEE);
    }
 
    /* Draw the items. */

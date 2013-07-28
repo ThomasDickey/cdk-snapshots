@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/20 21:46:08 $
- * $Revision: 1.23 $
+ * $Date: 2013/06/16 15:03:13 $
+ * $Revision: 1.24 $
  */
 
 /*
@@ -64,7 +64,6 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    setCDK<MIXED>Box (widget, Box);
 
    boxHeight = (BorderOf (widget) * 2) + 1;
-   boxWidth = fieldWidth + 2 * BorderOf (widget);
 
    /* Set some basic values of the widget's data field. */
    widget->label = 0;

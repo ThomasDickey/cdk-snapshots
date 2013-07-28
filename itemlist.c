@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.84 $
+ * $Date: 2013/06/16 13:16:15 $
+ * $Revision: 1.85 $
  */
 
 static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count);
@@ -466,9 +466,9 @@ void drawCDKItemlistField (CDKITEMLIST *itemlist, boolean highlight)
 	 c = CharOf (c) | A_REVERSE;
       }
 
-      mvwaddch (itemlist->fieldWin, 0,
-		x + itemlist->itemPos[currentItem],
-		c);
+      (void)mvwaddch (itemlist->fieldWin, 0,
+		      x + itemlist->itemPos[currentItem],
+		      c);
    }
 
    /* Redraw the field window. */

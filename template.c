@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 21:02:12 $
- * $Revision: 1.136 $
+ * $Date: 2013/06/16 13:15:32 $
+ * $Revision: 1.137 $
  */
 
 /*
@@ -711,9 +711,9 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 	 if (isPlateChar (cdktemplate->plate[x]) && pos < infolen)
 	 {
 	    fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
-	    mvwaddch (cdktemplate->fieldWin,
-		      0, x,
-		      CharOf (cdktemplate->info[pos++]) | fieldColor);
+	    (void)mvwaddch (cdktemplate->fieldWin,
+			    0, x,
+			    CharOf (cdktemplate->info[pos++]) | fieldColor);
 	 }
       }
       wmove (cdktemplate->fieldWin, 0, cdktemplate->screenPos);

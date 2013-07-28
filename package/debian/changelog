@@ -1,3 +1,10 @@
+cdk (20130727) unstable; urgency=low
+
+  * improvements to configure script
+  * minor fixes
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Sat, 15 Jun 2013 10:55:30 -0400
+
 cdk (20120323) unstable; urgency=low
 
   * bug-report for gmtime/localtime usage.

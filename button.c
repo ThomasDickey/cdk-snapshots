@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 20:57:44 $
- * $Revision: 1.36 $
+ * $Date: 2013/06/16 13:20:52 $
+ * $Revision: 1.37 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -220,7 +220,7 @@ static void drawCDKButtonText (CDKBUTTON *button)
 	 c = A_REVERSE | CharOf (c);
       }
 
-      mvwaddch (button->win, BorderOf (button), i + BorderOf (button), c);
+      (void)mvwaddch (button->win, BorderOf (button), i + BorderOf (button), c);
    }
 }
 

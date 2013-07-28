@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.12 2012/03/23 14:40:23 tom Exp $
+# $Id: cdk.spec,v 1.15 2013/07/27 16:54:32 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20120323
+%define AppRelease 20130727
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -27,6 +27,7 @@ Requires:	%{name} = %{version}-%{release}
 Development headers for cdk (Curses Development Kit)
 
 %prep
+%define debug_package %{nil}
 %setup -q -n %{name}-%{version}-%{release}
 
 %build

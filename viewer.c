@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:43:33 $
- * $Revision: 1.162 $
+ * $Date: 2013/06/16 14:58:52 $
+ * $Revision: 1.164 $
  */
 
 /*
@@ -49,8 +49,8 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
    CDKVIEWER *viewer = 0;
    int parentWidth   = getmaxx (cdkscreen->window);
    int parentHeight  = getmaxy (cdkscreen->window);
-   int boxWidth      = width;
-   int boxHeight     = height;
+   int boxWidth;
+   int boxHeight;
    int xpos          = xplace;
    int ypos          = yplace;
    int buttonWidth   = 0;
@@ -290,7 +290,7 @@ int setCDKViewerInfo (CDKVIEWER *viewer, CDK_CSTRING2 list, int listSize, boolea
    char filename[CDK_PATHMAX + 2];
    int currentLine      = 0;
    int x                = 0;
-   int viewerSize       = listSize;
+   int viewerSize;
 
    /*
     * If the list-size is negative, count the length of the null-terminated
@@ -1058,10 +1058,10 @@ static void drawCDKViewerButtons (CDKVIEWER *viewer)
       character = CharOf (viewer->button[viewer->currentButton][x]);
 
       /* Add the character into the window. */
-      mvwaddch (viewer->win,
-		viewer->boxHeight - 2,
-		viewer->buttonPos[viewer->currentButton] + x,
-		character | viewer->buttonHighlight);
+      (void)mvwaddch (viewer->win,
+		      viewer->boxHeight - 2,
+		      viewer->buttonPos[viewer->currentButton] + x,
+		      character | viewer->buttonHighlight);
    }
 
    /* Refresh the window. */
@@ -1230,14 +1230,14 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
 
       for (x = 1; x <= viewer->boxWidth; x++)
       {
-	 mvwaddch (viewer->win, viewer->boxHeight - 3, x,
-		   HZCharOf (viewer) | boxattr);
+	 (void)mvwaddch (viewer->win, viewer->boxHeight - 3, x,
+			 HZCharOf (viewer) | boxattr);
       }
-      mvwaddch (viewer->win, viewer->boxHeight - 3, 0,
-		ACS_LTEE | boxattr);
-      mvwaddch (viewer->win, viewer->boxHeight - 3,
-		getmaxx (viewer->win) - 1,
-		ACS_RTEE | boxattr);
+      (void)mvwaddch (viewer->win, viewer->boxHeight - 3, 0,
+		      ACS_LTEE | boxattr);
+      (void)mvwaddch (viewer->win, viewer->boxHeight - 3,
+		      getmaxx (viewer->win) - 1,
+		      ACS_RTEE | boxattr);
    }
 
    /* Draw the buttons. This will call refresh on the viewer win. */
