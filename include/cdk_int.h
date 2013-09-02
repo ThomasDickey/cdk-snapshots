@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.25 2011/05/16 22:20:21 tom Exp $
+ * $Id: cdk_int.h,v 1.26 2013/09/01 18:06:41 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2009,2011 Thomas E. Dickey
+ * Copyright 2003-2011,2013 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,161 +82,6 @@ extern "C" {
  */
 #define checkEarlyExit(w)	if (EarlyExitOf(w) != vNEVER_ACTIVATED) \
 				    storeExitType(w) = EarlyExitOf(w)
-
-/*
- * Simplify case-statements for scrollers
- */
-#define scroller_KEY_UP(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->currentItem > 0) { \
-		      if ((w)->currentHigh == 0) { \
-			 if ((w)->currentTop != 0) { \
-			    (w)->currentTop--; \
-			    (w)->currentItem--; \
-			 } else { \
-			    Beep(); \
-			 } \
-		      } else { \
-			 (w)->currentItem--; \
-			 (w)->currentHigh--; \
-		      } \
-		   } else { \
-		      Beep(); \
-		   } \
-		} else { \
-		    Beep(); \
-		}
-
-#define scroller_KEY_DOWN(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->currentItem < (w)->listSize-1) { \
-		      if ((w)->currentHigh == (w)->viewSize - 1) { \
-			 if ((w)->currentTop < (w)->maxTopItem) { \
-			    (w)->currentTop++; \
-			    (w)->currentItem++; \
-			 } else { \
-			    Beep(); \
-			 } \
-		      } else { \
-			 (w)->currentItem++; \
-			 (w)->currentHigh++; \
-		      } \
-		   } else { \
-		      Beep(); \
-		   } \
-		} else { \
-		   Beep(); \
-		}
-
-#define scroller_KEY_LEFT(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->leftChar == 0) { \
-		      Beep(); \
-		   } else { \
-		      (w)->leftChar --; \
-		   } \
-		} else { \
-		   Beep(); \
-		}
-
-#define scroller_KEY_RIGHT(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->leftChar >= (w)->maxLeftChar) { \
-		      Beep(); \
-		   } else { \
-		      (w)->leftChar ++; \
-		   } \
-		} else { \
-		   Beep(); \
-		}
-
-#define scroller_KEY_PPAGE(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->currentTop > 0) { \
-		      if ((w)->currentTop >= ((w)->viewSize -1)) { \
-			 (w)->currentTop -= ((w)->viewSize - 1); \
-			 (w)->currentItem -= ((w)->viewSize - 1); \
-		      } else { \
-			 scroller_KEY_HOME(w); \
-		      } \
-		   } else { \
-		      Beep(); \
-		   } \
-		} else { \
-		   Beep(); \
-		}
-
-#define scroller_KEY_NPAGE(w) \
-		if ((w)->listSize > 0) { \
-		   if ((w)->currentTop < (w)->maxTopItem) { \
-		      if (((w)->currentTop + (w)->viewSize - 1) <= (w)->maxTopItem) { \
-			 (w)->currentTop += ((w)->viewSize - 1); \
-			 (w)->currentItem += ((w)->viewSize - 1); \
-		      } else { \
-			 (w)->currentTop = (w)->maxTopItem; \
-			 (w)->currentItem = (w)->lastItem; \
-			 (w)->currentHigh = (w)->viewSize-1; \
-		      } \
-		   } else { \
-		      Beep(); \
-		   } \
-		} else { \
-		   Beep(); \
-		}
-
-#define scroller_KEY_HOME(w) \
-		(w)->currentTop	= 0; \
-		(w)->currentItem = 0; \
-		(w)->currentHigh = 0
-
-#define scroller_KEY_END(w) \
-		if ((w)->maxTopItem == -1) { \
-		   (w)->currentTop = 0; \
-		   (w)->currentItem = (w)->lastItem - 1; \
-		} else { \
-		   (w)->currentTop = (w)->maxTopItem; \
-		   (w)->currentItem = (w)->lastItem; \
-		} \
-		(w)->currentHigh = (w)->viewSize - 1
-
-#define scroller_SetPosition(w, item) \
-		if (item <= 0) { \
-		   scroller_KEY_HOME((w)); \
-		} else if (item > (w)->listSize-1) { \
-		   (w)->currentTop = (w)->maxTopItem; \
-		   (w)->currentItem = (w)->listSize - 1; \
-		   (w)->currentHigh = (w)->viewSize - 1; \
-		} else if (item >= (w)->currentTop \
-			&& item < (w)->currentTop + (w)->viewSize) { \
-		   (w)->currentItem = item; \
-		   (w)->currentHigh = item - (w)->currentTop; \
-		} else { \
-		   (w)->currentTop = item - ((w)->viewSize - 1); \
-		   (w)->currentItem = item; \
-		   (w)->currentHigh = (w)->viewSize - 1; \
-		}
-
-#define scroller_MaxViewSize(w) \
-		((w)->boxHeight - (2*BorderOf(w) + TitleLinesOf(w)))
-
-#define scroller_SetViewSize(w, size) \
-		(w)->viewSize = maxViewSize(w); \
-		(w)->listSize = listSize; \
-		(w)->lastItem = listSize - 1; \
-		(w)->maxTopItem = listSize - (w)->viewSize; \
- \
-		if (listSize < (w)->viewSize) { \
-		   (w)->viewSize = listSize; \
-		   (w)->maxTopItem = 0; \
-		} \
- \
-		if ((w)->listSize > 0 && maxViewSize((w)) > 0) { \
-		   (w)->step = (float) (maxViewSize((w)) / (double)(w)->listSize); \
-		   (w)->toggleSize = ((w)->listSize > (maxViewSize((w))) ?  1 : ceilCDK((w)->step)); \
-		} else { \
-		   (w)->step = 1; \
-		   (w)->toggleSize = 1; \
-		}
 
 /*
  * Position within the data area of a widget, accounting for border and title.

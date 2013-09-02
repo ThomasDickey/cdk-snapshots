@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.32 2012/03/21 21:15:30 tom Exp $
+ * $Id: scroll.h,v 1.33 2013/09/01 18:06:41 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,8 +19,10 @@ extern "C" {
 #include <cdk_objs.h>
 #endif
 
+#include <scroller.h>
+
 /*
- * Changes 1999-2006,2012 copyright Thomas E. Dickey
+ * Changes 1999-2012,2013 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -64,39 +66,12 @@ extern "C" {
  * Declare scrolling list definitions.
  */
 struct SScroll {
-   CDKOBJS	obj;
-   WINDOW	*parent;
-   WINDOW	*win;
-   WINDOW	*scrollbarWin;
-   WINDOW       *listWin;
-   WINDOW	*shadowWin;
-   int		titleAdj;	/* unused */
-   chtype **	item;		/* */
-   int *	itemPos;	/* */
-   int *	itemLen;	/* */
-   int		maxTopItem;	/* */
-   int		maxLeftChar;	/* */
-   int		leftChar;	/* */
-   int		lastItem;	/* */
-   int		currentTop;	/* */
-   int		currentItem;	/* */
-   int		currentHigh;	/* */
-   int		listSize;	/* */
-   int		boxWidth;	/* */
-   int		boxHeight;	/* */
-   int		viewSize;	/* */
+   /* This field must stay on top */
+   SCROLLER_FIELDS;
 
-   int		scrollbarPlacement; /* UNUSED */
-   boolean	scrollbar;	/* UNUSED */
-   int		toggleSize;	/* size of scrollbar thumb/toggle */
-   int		togglePos;	/* position of scrollbar thumb/toggle */
-   float	step;		/* increment for scrollbar */
-
-   EExitType	exitType;	/* */
-   boolean	shadow;		/* */
    boolean	numbers;	/* */
    chtype	titlehighlight;	/* */
-   chtype	highlight;	/* */
+   WINDOW	*listWin;
 };
 typedef struct SScroll CDKSCROLL;
 

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.110 2013/07/27 21:53:31 tom Exp $
+# $Id: Makefile.in,v 1.115 2013/09/01 20:14:29 tom Exp $
 #
 #  Copyright 2001-2012,2013 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
@@ -97,6 +97,7 @@ CFLAGS		= @CFLAGS@ @EXTRA_CFLAGS@
 CPPFLAGS	= @DEFS@ -I./include -I$(srcdir)/include @CPPFLAGS@
 
 LDFLAGS		= @LDFLAGS@
+RPATH_LIST	= @RPATH_LIST@
 
 LIBTOOL		= @LIBTOOL@ @ECHO_LT@
 LIBTOOL_CLEAN	= @LIB_CLEAN@
@@ -219,6 +220,7 @@ CDKSRC		= \
 		position.c \
 		radio.c \
 		scroll.c \
+		scroller.c \
 		selection.c \
 		swindow.c \
 		select_file.c \
@@ -350,7 +352,7 @@ installCDKManPages ::  headers.sed $(MAN_DIR) manpage.sed $(AUTO_MAN)
 	done
 	@for i in $(CDKMAN); do \
 	   $(SHELL) $(srcdir)/headers.sh \
-	   		-x "$(INSTALL_DATA)" \
+			-x "$(INSTALL_DATA)" \
 			-d $(MAN_DIR) \
 			-s . \
 			-t $(MANSECT) \
@@ -408,7 +410,7 @@ installCDKLibrary :: $(LIB_DIR) $(CDKLIB)
 uninstall \
 uninstallCDKLibrary ::
 	@echo "Uninstalling CDK library"
-	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(CDKLIB) 
+	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(CDKLIB)
 
 #
 # This installs the CDK package-config script.
@@ -431,15 +433,15 @@ uninstallCDKLibrary :: cdk-config
 #
 @MAKE_NORMAL@installCDKSHLibrary :: $(LIB_DIR) $(OLD_SHLIB_FILE)
 @MAKE_NORMAL@	@echo "Installing CDK library"
-@MAKE_NORMAL@	@echo "	$(INSTALL_DATA) $(OLD_SHLIB_FILE) $(LIB_DIR)"
-@MAKE_NORMAL@	@$(INSTALL_DATA) $(OLD_SHLIB_FILE) $(LIB_DIR)
-@MAKE_NORMAL@	@echo " $(LN_S) $(OLD_SHLIB_FILE) $(LIB_DIR)/$(OLD_SHLIB_LINK)"
-@MAKE_NORMAL@	@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SHLIB_LINK)"
+@MAKE_NORMAL@	@ECHO_CC@$(INSTALL_DATA) $(OLD_SHLIB_FILE) $(LIB_DIR)
+@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SONAME)"
+@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SHLIB_LINK)"
 @MAKE_NORMAL@
 @MAKE_NORMAL@uninstall \
 @MAKE_NORMAL@uninstallCDKSHLibrary ::
-@MAKE_NORMAL@	@- $(RM) $(LIB_DIR)/$(LIB_BASENAME)
-@MAKE_NORMAL@	@- $(RM) $(LIB_DIR)/$(OLD_SHLIB_FILE) 
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(LIB_BASENAME)
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(OLD_SONAME)
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(OLD_SHLIB_FILE)
 
 headers.sed : $(srcdir)/headers.sh
 	$(SHELL) $(srcdir)/headers.sh -p CDK $(HDR_SUBDIR) -c include/cdk_config.h -d $(INCLUDE_SUBDIR) -s $(srcdir)/include -i -s include -i
@@ -492,6 +494,7 @@ distclean :: realclean
 	$(RM) include/cdk_version.h
 	$(RM) Makefile
 	$(RM) cdk-config
+	$(RM) mk_shared_lib.sh     
 	@- $(SHELL) -c 'if test "$(srcdir)" != . ; then \
 			rmdir examples; \
 			rmdir demos; \
@@ -516,7 +519,7 @@ distclean :: realclean
 
 .c.os:
 	@RULE_CC@
-	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@	
+	@ECHO_CC@$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC $< -o $@
 
 man \
 $(BIN_DIR) \
