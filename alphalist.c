@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:00:10 $
- * $Revision: 1.108 $
+ * $Date: 2013/09/01 22:04:37 $
+ * $Revision: 1.109 $
  */
 
 /*
@@ -655,7 +655,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void
    {
       int Index, difference, absoluteDifference, x;
       int currPos = (entry->screenCol + entry->leftChar);
-      char *pattern = malloc ((size_t) infoLen + 2);
+      char *pattern = (char *)malloc ((size_t) infoLen + 2);
 
       if (pattern != 0)
       {

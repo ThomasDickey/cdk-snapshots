@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.23 2012/03/21 22:52:57 tom Exp $ */
+/* $Id: rolodex.c,v 1.24 2013/09/01 22:03:44 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -858,9 +858,10 @@ int readPhoneDataFile (char *dataFile, SPhoneData * phoneData)
 	 /* Copy the chunks. */
 	 if (chunks == 8)
 	 {
+	    int myType = atoi (items[1]);
 	    /* *INDENT-EQLS* */
 	    phoneData->record[linesFound].name        = items[0];
-	    phoneData->record[linesFound].lineType    = atoi (items[1]);
+	    phoneData->record[linesFound].lineType    = (ELineType) myType;
 	    phoneData->record[linesFound].phoneNumber = items[2];
 	    phoneData->record[linesFound].address     = items[3];
 	    phoneData->record[linesFound].city        = items[4];
@@ -1148,6 +1149,7 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData * phoneData)
    char *types[GLINETYPECOUNT];
    char temp[256];
    int ret, x;
+   int myType;
 
    /* Get the phone record pointer. */
    phoneRecord = &phoneData->record[phoneData->recordCount];
@@ -1172,7 +1174,8 @@ int addPhoneRecord (CDKSCREEN *screen, SPhoneData * phoneData)
 			      "Type: ",
 			      (CDK_CSTRING2) types, GLINETYPECOUNT, 0,
 			      TRUE, FALSE);
-   phoneRecord->lineType = activateCDKItemlist (itemList, 0);
+   myType = activateCDKItemlist (itemList, 0);
+   phoneRecord->lineType = (ELineType) myType;
    destroyCDKItemlist (itemList);
 
    /* Clean up. */

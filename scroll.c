@@ -1,9 +1,10 @@
 #include <cdk_int.h>
+#include <scroller.h>
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:05:27 $
- * $Revision: 1.155 $
+ * $Date: 2013/09/01 18:03:03 $
+ * $Revision: 1.157 $
  */
 
 /*
@@ -223,12 +224,7 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
  */
 static void fixCursorPosition (CDKSCROLL *widget)
 {
-   int scrollbarAdj = (widget->scrollbarPlacement == LEFT) ? 1 : 0;
-   int ypos = SCREEN_YPOS (widget, widget->currentItem - widget->currentTop);
-   int xpos = SCREEN_XPOS (widget, 0) + scrollbarAdj;
-
-   wmove (InputWindowOf (widget), ypos, xpos);
-   wrefresh (InputWindowOf (widget));
+   scroller_FixCursorPosition ((CDKSCROLLER *)widget);
 }
 
 /*
@@ -283,7 +279,8 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
  */
 static int _injectCDKScroll (CDKOBJS *object, chtype input)
 {
-   CDKSCROLL *widget = (CDKSCROLL *)object;
+   CDKSCROLL *myself = (CDKSCROLL *)object;
+   CDKSCROLLER *widget = (CDKSCROLLER *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -292,7 +289,7 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Draw the scrolling list */
-   drawCDKScrollList (widget, ObjOf (widget)->box);
+   drawCDKScrollList (myself, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
    if (PreProcessFuncOf (widget) != 0)
@@ -396,11 +393,11 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
 
    if (!complete)
    {
-      drawCDKScrollList (widget, ObjOf (widget)->box);
+      drawCDKScrollList (myself, ObjOf (widget)->box);
       setExitType (widget, 0);
    }
 
-   fixCursorPosition (widget);
+   fixCursorPosition (myself);
    ResultOf (widget).valueInt = ret;
    return (ret != unknownInt);
 }
@@ -410,7 +407,7 @@ static int _injectCDKScroll (CDKOBJS *object, chtype input)
  */
 void setCDKScrollPosition (CDKSCROLL *scrollp, int item)
 {
-   scroller_SetPosition (scrollp, item);
+   scroller_SetPosition ((CDKSCROLLER *)scrollp, item);
 }
 
 /* obsolete (because the name is inconsistent) */
@@ -421,7 +418,7 @@ int getCDKScrollCurrent (CDKSCROLL *scrollp)
 
 void setCDKScrollCurrent (CDKSCROLL *scrollp, int item)
 {
-   scroller_SetPosition (scrollp, item);
+   scroller_SetPosition ((CDKSCROLLER *)scrollp, item);
 }
 
 /*
@@ -434,7 +431,7 @@ int getCDKScrollCurrentItem (CDKSCROLL *widget)
 
 void setCDKScrollCurrentItem (CDKSCROLL *widget, int item)
 {
-   scroller_SetPosition (widget, item);
+   scroller_SetPosition ((CDKSCROLLER *)widget, item);
 }
 
 /*
@@ -453,7 +450,7 @@ void setCDKScrollCurrentTop (CDKSCROLL *widget, int item)
       item = widget->maxTopItem;
    widget->currentTop = item;
 
-   scroller_SetPosition (widget, item);
+   scroller_SetPosition ((CDKSCROLLER *)widget, item);
 }
 
 /*
@@ -542,7 +539,7 @@ static void drawCDKScrollCurrent (CDKSCROLL *s)
 
 static int maxViewSize (CDKSCROLL *scrollp)
 {
-   return scroller_MaxViewSize (scrollp);
+   return scroller_MaxViewSize ((CDKSCROLLER *)scrollp);
 }
 
 /*
@@ -550,7 +547,7 @@ static int maxViewSize (CDKSCROLL *scrollp)
  */
 static void setViewSize (CDKSCROLL *scrollp, int listSize)
 {
-   scroller_SetViewSize (scrollp, listSize);
+   scroller_SetViewSize ((CDKSCROLLER *)scrollp, listSize);
 }
 
 #undef  SCREEN_YPOS		/* because listWin is separate */
@@ -561,7 +558,9 @@ static void setViewSize (CDKSCROLL *scrollp, int listSize)
  */
 static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 {
-   int j;
+   int screenPos;
+   int xpos, ypos;
+   int j, k;
 
    /* If the list is empty, don't draw anything. */
    if (scrollp->listSize > 0)
@@ -569,18 +568,18 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
       /* Redraw the list */
       for (j = 0; j < scrollp->viewSize; j++)
       {
-	 int k = j + scrollp->currentTop;
+	 xpos = SCREEN_YPOS (scrollp, 0);
+	 ypos = SCREEN_YPOS (scrollp, j);
 
-	 writeBlanks (scrollp->listWin,
-		      0, j,
-		      HORIZONTAL, 0,
-		      scrollp->boxWidth - 2 * BorderOf (scrollp));
+	 writeBlanks (scrollp->listWin, xpos, ypos,
+		      HORIZONTAL, 0, scrollp->boxWidth - 2 * BorderOf (scrollp));
 
-	 /* Draw the elements in the scrolling list. */
+	 k = j + scrollp->currentTop;
+
+	 /* Draw the elements in the scroll list. */
 	 if (k < scrollp->listSize)
 	 {
-	    int screenPos = SCREENPOS (scrollp, k);
-	    int ypos = SCREEN_YPOS (scrollp, j);
+	    screenPos = SCREENPOS (scrollp, k);
 
 	    /* Write in the correct line. */
 	    writeChtype (scrollp->listWin,

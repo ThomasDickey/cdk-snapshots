@@ -1,9 +1,10 @@
 #include <cdk_int.h>
+#include <scroller.h>
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:05:27 $
- * $Revision: 1.140 $
+ * $Date: 2013/09/01 18:04:47 $
+ * $Revision: 1.142 $
  */
 
 /*
@@ -213,12 +214,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
  */
 static void fixCursorPosition (CDKRADIO *widget)
 {
-   int scrollbarAdj = (widget->scrollbarPlacement == LEFT) ? 1 : 0;
-   int ypos = SCREEN_YPOS (widget, widget->currentItem - widget->currentTop);
-   int xpos = SCREEN_XPOS (widget, 0) + scrollbarAdj;
-
-   wmove (InputWindowOf (widget), ypos, xpos);
-   wrefresh (InputWindowOf (widget));
+   scroller_FixCursorPosition ((CDKSCROLLER *)widget);
 }
 
 /*
@@ -274,7 +270,8 @@ int activateCDKRadio (CDKRADIO *radio, chtype *actions)
  */
 static int _injectCDKRadio (CDKOBJS *object, chtype input)
 {
-   CDKRADIO *widget = (CDKRADIO *)object;
+   CDKRADIO *radio = (CDKRADIO *)object;
+   CDKSCROLLER *widget = (CDKSCROLLER *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -283,7 +280,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Draw the widget list */
-   drawCDKRadioList (widget, ObjOf (widget)->box);
+   drawCDKRadioList (radio, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
    if (PreProcessFuncOf (widget) != 0)
@@ -349,7 +346,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 	    break;
 
 	 case SPACE:
-	    widget->selectedItem = widget->currentItem;
+	    radio->selectedItem = widget->currentItem;
 	    break;
 
 	 case KEY_ESC:
@@ -366,7 +363,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 	 case KEY_TAB:
 	 case KEY_ENTER:
 	    setExitType (widget, input);
-	    ret = widget->selectedItem;
+	    ret = radio->selectedItem;
 	    complete = TRUE;
 	    break;
 
@@ -392,11 +389,11 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
 
    if (!complete)
    {
-      drawCDKRadioList (widget, ObjOf (widget)->box);
+      drawCDKRadioList (radio, ObjOf (widget)->box);
       setExitType (widget, 0);
    }
 
-   fixCursorPosition (widget);
+   fixCursorPosition (radio);
    ResultOf (widget).valueInt = ret;
    return (ret != unknownInt);
 }
@@ -453,7 +450,7 @@ static void _moveCDKRadio (CDKOBJS *object,
 
 static int maxViewSize (CDKRADIO *widget)
 {
-   return scroller_MaxViewSize (widget);
+   return scroller_MaxViewSize ((CDKSCROLLER *)widget);
 }
 
 /*
@@ -461,7 +458,7 @@ static int maxViewSize (CDKRADIO *widget)
  */
 static void setViewSize (CDKRADIO *widget, int listSize)
 {
-   scroller_SetViewSize (widget, listSize);
+   scroller_SetViewSize ((CDKSCROLLER *)widget, listSize);
 }
 
 /*
@@ -491,23 +488,25 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    /* *INDENT-EQLS* */
    int scrollbarAdj     = (radio->scrollbarPlacement == LEFT) ? 1 : 0;
    int screenPos        = 0;
-   int j;
    int xpos, ypos;
+   int j, k;
 
    /* draw the list */
    for (j = 0; j < radio->viewSize; j++)
    {
-      int k = j + radio->currentTop;
+      xpos = SCREEN_XPOS (radio, 0);
+      ypos = SCREEN_YPOS (radio, j);
+
+      /* Draw the empty string. */
+      writeBlanks (radio->win, xpos, ypos,
+		   HORIZONTAL, 0, radio->boxWidth - BorderOf (radio));
+
+      k = j + radio->currentTop;
+
+      /* Draw the element in the radio list. */
       if (k < radio->listSize)
       {
-	 xpos = SCREEN_XPOS (radio, 0);
-	 ypos = SCREEN_YPOS (radio, j);
-
 	 screenPos = SCREENPOS (radio, k);
-
-	 /* Draw the empty string. */
-	 writeBlanks (radio->win, xpos, ypos,
-		      HORIZONTAL, 0, radio->boxWidth - BorderOf (radio));
 
 	 /* Draw the line. */
 	 writeChtype (radio->win,
@@ -531,7 +530,7 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
    /* Highlight the current item. */
    if (ObjPtr (radio)->hasFocus)
    {
-      int k = radio->currentItem;
+      k = radio->currentItem;
       if (k < radio->listSize)
       {
 	 screenPos = SCREENPOS (radio, k);
@@ -757,7 +756,7 @@ boolean getCDKRadioBox (CDKRADIO *radio)
  */
 void setCDKRadioCurrentItem (CDKRADIO *radio, int item)
 {
-   scroller_SetPosition (radio, item);
+   scroller_SetPosition ((CDKSCROLLER *)radio, item);
    radio->selectedItem = item;
 }
 int getCDKRadioCurrentItem (CDKRADIO *radio)

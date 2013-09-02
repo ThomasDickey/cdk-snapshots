@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.196 2013/07/27 16:54:14 tom Exp $
+-- $Id: CHANGES,v 1.203 2013/09/01 21:48:15 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -9,7 +9,14 @@ This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
-2013/07/27
+2013/09/01
+	+ add a limit-check in drawCDKSwindowList() (patch by Wang Weber).
+	+ refactor scrolling support from radio.c, scroll.c, selection.c as new
+	  file scroll.c, making functions from macros which were in cdk_int.h.
+	  This change also modifies header files to move common fields to a new
+	  SCROLLER_FIELDS macro - this is a source-compatible change, but not
+	  binary-compatible (patch by Corentin Delorme).
+	+ add FreeBSD port-files, for test-builds.
 	+ add --enable-rpath and --disable-rpath-hack options to configure
 	  script.
 	+ deprecate the cdkshlib makefile target; it is not available if either
@@ -35,7 +42,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ add configure option --enable-const, which defines, like
 	  NCURSES_CONST, the symbol CDK_CONST which can be used to address
 	  improved const checking while preserving source-compatibility.
-	+ revise copyChtypeList to correspond with copyCharList 
+	+ revise copyChtypeList to correspond with copyCharList
 	+ use const in cdk_util function prototypes, similar "string" uses
 	  to improve writable-strings warnings.  Arrays of strings are not
 	  addressed due to compatibility.
@@ -43,7 +50,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ add configure --enable-hdr-subdir to control whether cdk.h should
 	  be in /usr/include/cdk for example, or in /usr/include.  Make the
 	  default the latter, standard layout.
-	+ simplify dpkg script, provide only one library using ncursesw 
+	+ simplify dpkg script, provide only one library using ncursesw
 	+ updated configure script macros, many changes for portability.
 	+ add cdk_test.h to installed headers (Debian #500161).  Resolution
 	  of that bug report by the way did not actually install the requested
@@ -182,7 +189,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ add some redundant pointer checks, e.g., to entry.c, to avoid core
 	  dump if one tries building Cdk with NetBSD curses (see lib/32417).
 	+ split up traverseCDKScreen() to allow customized flavors of that to
-	  be written in a calling application using the pieces: 
+	  be written in a calling application using the pieces:
 	  traverseCDKOnce(), setCDKFocusFirst() (request by Jorgen Lundman).
 	+ restore assignment of selectedItem in setCDKRadioCurrentItem() which
 	  was dropped in 2005/04/24 (report by Fu Steve X).
@@ -301,7 +308,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  for mapping the given object to the bindable object, e.g., the entry
 	  widget for alphalist and fselect composite widgets.  In particular,
 	  checkCDKObjectBind() and getcCDKObject() did not use the same binding
-	  data. 
+	  data.
 	+ correct initialization of traverseCDKScreen(), which required two
 	  tab keypresses to make the first traversal (report by Fu Steve X).
 	+ updated configure script checks for _XOPEN_SOURCE, etc.
@@ -334,7 +341,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ simplify draw.c a little by using writeCharAttrib() and
 	  writeChtypeAttrib() to implement writeChar() and writeChtype().
 	+ revert 2002/07/27 change that used waddchnstr() in writeChtype(),
-	  since it does not render control characters (report by Mike Leib). 
+	  since it does not render control characters (report by Mike Leib).
 	+ fix an infinite loop in viewer.c when displaying control characters
 	  such as form-feed.
 
@@ -464,7 +471,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	    boundary at the end of the scroll bar.  Does not happen in ncurses.
 	  + On solaris curses, press 'G' will coredump.
 	    Does not happen in ncurses.
-	+ make wording in COPYING consistent with other fixes from 1999/05/15 
+	+ make wording in COPYING consistent with other fixes from 1999/05/15
 	  (report by Ahmad Attia).
 
 2003/12/10 - T.E.Dickey <dickey@his.com>
@@ -488,7 +495,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ correct one of the attrbox() calls in drawCDKMatrixCell(), which used
 	  a left-tee where a right-tee was needed (report by William L Davis).
 	+ add setCDKMatrixCells(), redefining setCDKMatrix() as a macro to
-	  call it. 
+	  call it.
 	+ add cleanCDKMatrixCell().
 	+ correct position for right-aligned menus, which was off by one from
 	  2003/11/30 changes (report/patch by William L Davis).

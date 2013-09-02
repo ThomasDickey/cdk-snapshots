@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 13:15:32 $
- * $Revision: 1.137 $
+ * $Date: 2013/09/01 22:05:19 $
+ * $Revision: 1.138 $
  */
 
 /*
@@ -462,7 +462,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
    }
    else
    {
-      char *test = malloc (have + 2);
+      char *test = (char *)malloc (have + 2);
 
       if (test != 0)
       {

@@ -1,9 +1,10 @@
 #include <cdk_int.h>
+#include <scroller.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 15:06:42 $
- * $Revision: 1.153 $
+ * $Author: Corentin.Delorme $
+ * $Date: 2013/09/01 17:45:00 $
+ * $Revision: 1.154 $
  */
 
 /*
@@ -226,12 +227,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
  */
 static void fixCursorPosition (CDKSELECTION *selection)
 {
-   int scrollbarAdj = (selection->scrollbarPlacement == LEFT) ? 1 : 0;
-   int ypos = SCREEN_YPOS (selection, selection->currentItem - selection->currentTop);
-   int xpos = SCREEN_XPOS (selection, 0) + scrollbarAdj;
-
-   wmove (InputWindowOf (selection), ypos, xpos);
-   wrefresh (InputWindowOf (selection));
+   scroller_FixCursorPosition((CDKSCROLLER *)selection);
 }
 
 /*
@@ -288,7 +284,8 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
  */
 static int _injectCDKSelection (CDKOBJS *object, chtype input)
 {
-   CDKSELECTION *widget = (CDKSELECTION *)object;
+   CDKSELECTION *selection = (CDKSELECTION *)object;
+   CDKSCROLLER *widget = (CDKSCROLLER *)object;
    int ppReturn = 1;
    int ret = unknownInt;
    bool complete = FALSE;
@@ -297,7 +294,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Draw the widget list */
-   drawCDKSelectionList (widget, ObjOf (widget)->box);
+   drawCDKSelectionList (selection, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
    if (PreProcessFuncOf (widget) != 0)
@@ -363,16 +360,16 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 	    break;
 
 	 case SPACE:
-	    if (widget->mode[widget->currentItem] == 0)
+	    if (selection->mode[widget->currentItem] == 0)
 	    {
-	       if (widget->selections[widget->currentItem]
-		   == (widget->choiceCount - 1))
+	       if (selection->selections[widget->currentItem]
+		   == (selection->choiceCount - 1))
 	       {
-		  widget->selections[widget->currentItem] = 0;
+		  selection->selections[widget->currentItem] = 0;
 	       }
 	       else
 	       {
-		  widget->selections[widget->currentItem]++;
+		  selection->selections[widget->currentItem]++;
 	       }
 	    }
 	    else
@@ -420,12 +417,12 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
 
    if (!complete)
    {
-      drawCDKSelectionList (widget, ObjOf (widget)->box);
+      drawCDKSelectionList (selection, ObjOf (widget)->box);
       setExitType (widget, 0);
    }
 
    ResultOf (widget).valueInt = ret;
-   fixCursorPosition (widget);
+   fixCursorPosition (selection);
    return (ret != unknownInt);
 }
 
@@ -500,7 +497,7 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
 
 static int maxViewSize (CDKSELECTION *widget)
 {
-   return scroller_MaxViewSize (widget);
+   return scroller_MaxViewSize ((CDKSCROLLER *)widget);
 }
 
 /*
@@ -508,7 +505,7 @@ static int maxViewSize (CDKSELECTION *widget)
  */
 static void setViewSize (CDKSELECTION *widget, int listSize)
 {
-   scroller_SetViewSize (widget, listSize);
+   scroller_SetViewSize ((CDKSCROLLER *)widget, listSize);
 }
 
 /*
@@ -520,7 +517,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    int scrollbarAdj     = (selection->scrollbarPlacement == LEFT) ? 1 : 0;
    int screenPos        = 0;
    int xpos, ypos;
-   int j;
+   int j, k;
    int selItem          = -1;
 
    /* If there is to be a highlight, assign it now */
@@ -528,24 +525,21 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       selItem = selection->currentItem;
 
    /* draw the list... */
-   for (j = 0;
-	j < selection->viewSize
-	&& (j + selection->currentTop) < selection->listSize;
-	j++)
+   for (j = 0; j < selection->viewSize; j++)
    {
-      int k = j + selection->currentTop;
+      xpos = SCREEN_XPOS (selection, 0);
+      ypos = SCREEN_YPOS (selection, j);
+
+      /* Draw the empty line. */
+      writeBlanks (selection->win, xpos, ypos,
+		   HORIZONTAL, 0, getmaxx (selection->win));
+
+      k = j + selection->currentTop;
+
+      /* Draw the element in the selection list. */
       if (k < selection->listSize)
       {
 	 screenPos = SCREENPOS (selection, k);
-	 ypos = SCREEN_YPOS (selection, j);
-	 xpos = SCREEN_XPOS (selection, 0);
-
-	 /* Draw the empty line. */
-	 writeBlanks (selection->win,
-		      xpos,
-		      ypos,
-		      HORIZONTAL, 0,
-		      getmaxx (selection->win));
 
 	 /* Draw the selection item. */
 	 writeChtypeAttrib (selection->win,
@@ -909,7 +903,7 @@ boolean getCDKSelectionBox (CDKSELECTION *selection)
  */
 void setCDKSelectionCurrent (CDKSELECTION *selection, int item)
 {
-   scroller_SetPosition (selection, item);
+   scroller_SetPosition ((CDKSCROLLER *)selection, item);
 }
 
 int getCDKSelectionCurrent (CDKSELECTION *selection)

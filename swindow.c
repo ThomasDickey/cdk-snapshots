@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 15:07:42 $
- * $Revision: 1.123 $
+ * $Author: Wang.Weber $
+ * $Date: 2013/09/01 21:46:30 $
+ * $Revision: 1.124 $
  */
 
 /*
@@ -49,6 +49,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
 	    { '$',		KEY_END },
    };
    /* *INDENT-ON* */
+
 
    if ((swindow = newCDKObject (CDKSWINDOW, &my_funcs)) == 0)
         return (0);
@@ -243,7 +244,7 @@ void addCDKSwindow (CDKSWINDOW *swindow, const char *list, int insertPos)
       for (x = 0; x < swindow->listSize; x++)
       {
 	 /* *INDENT-EQLS* */
-	 swindow->list[x]   = swindow->list[x + 1];
+	 swindow->list[x]  = swindow->list[x + 1];
 	 swindow->listPos[x] = swindow->listPos[x + 1];
 	 swindow->listLen[x] = swindow->listLen[x + 1];
       }
@@ -262,7 +263,7 @@ void addCDKSwindow (CDKSWINDOW *swindow, const char *list, int insertPos)
       for (x = swindow->listSize; x > 0; x--)
       {
 	 /* *INDENT-EQLS* Copy in the new row. */
-	 swindow->list[x]   = swindow->list[x - 1];
+	 swindow->list[x]  = swindow->list[x - 1];
 	 swindow->listPos[x] = swindow->listPos[x - 1];
 	 swindow->listLen[x] = swindow->listLen[x - 1];
       }
@@ -783,6 +784,9 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
    /* Start drawing in each line. */
    for (x = 0; x < lastLine; x++)
    {
+      if ((x + swindow->currentTop) >= swindow->listSize)
+	 break;
+
       screenPos = swindow->listPos[x + swindow->currentTop] - swindow->leftChar;
 
       /* Write in the correct line. */
@@ -1002,7 +1006,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
    char *filename       = 0;
    const char *mesg[15];
    const char *button[5];
-   char **fileInfo = 0;
+   char **fileInfo      = 0;
    int lines, answer;
 
    /* Create the file selector to choose the file. */
@@ -1153,7 +1157,7 @@ static int createList (CDKSWINDOW *swindow, int listSize)
 	 destroyInfo (swindow);
 
 	 /* *INDENT-EQLS* */
-	 swindow->list   = newList;
+	 swindow->list  = newList;
 	 swindow->listPos = newPos;
 	 swindow->listLen = newLen;
       }
@@ -1167,7 +1171,7 @@ static int createList (CDKSWINDOW *swindow, int listSize)
    else
    {
       destroyInfo (swindow);
-      status          = 1;
+      status         = 1;
    }
    return status;
 }
