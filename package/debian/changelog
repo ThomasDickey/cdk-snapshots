@@ -1,11 +1,17 @@
-cdk (20130901) unstable; urgency=low
+cdk (5.0.20131107) unstable; urgency=low
+
+  * maintenance updates
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Sat, 02 Nov 2013 11:36:50 -0400
+
+cdk (5.0-20130901) unstable; urgency=low
 
   * improvements to configure script
   * minor fixes
 
  -- Thomas E. Dickey <dickey@invisible-island.net>  Sat, 15 Jun 2013 10:55:30 -0400
 
-cdk (20120323) unstable; urgency=low
+cdk (5.0-20120323) unstable; urgency=low
 
   * bug-report for gmtime/localtime usage.
   * Fixes for package scripts.
@@ -13,7 +19,7 @@ cdk (20120323) unstable; urgency=low
 
  -- Thomas E. Dickey <dickey@invisible-island.net>  Sun, 18 Mar 2012 19:38:57 -0400
 
-cdk (20110517) unstable; urgency=high
+cdk (5.0-20110517) unstable; urgency=high
 
   * Initial package release
 

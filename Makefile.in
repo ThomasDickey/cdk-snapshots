@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.115 2013/09/01 20:14:29 tom Exp $
+# $Id: Makefile.in,v 1.118 2013/11/03 11:49:46 tom Exp $
 #
 #  Copyright 2001-2012,2013 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
@@ -50,6 +50,7 @@ REL_VERSION	= @REL_VERSION@
 ABI_VERSION	= @ABI_VERSION@
 @SET_SHLIB_VARS@
 CDKLIB		= @LIB_TARGET@
+IMPORT_LIB	= lib$(LIB_ROOTNAME).dll.a
 @MAKE_NORMAL@OLD_SHLIB_LINK	= @LIB_PREFIX@$(LIB_ROOTNAME).so
 @MAKE_NORMAL@OLD_SONAME	= $(OLD_SHLIB_LINK).$(VERSION_MAJOR)
 @MAKE_NORMAL@OLD_SHLIB_FILE	= $(OLD_SONAME).$(VERSION_MINOR)
@@ -68,6 +69,7 @@ DESTDIR		=
 bindir		= @bindir@
 includedir	= @includedir@
 libdir		= @libdir@
+shlibdir	= @shlibdir@
 datarootdir	= @datarootdir@
 datadir		= @datadir@
 mandir		= @mandir@
@@ -76,6 +78,7 @@ DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(THIS)
 BIN_DIR		= $(DESTDIR)$(bindir)
 INCLUDE_DIR	= $(DESTDIR)$(includedir)
 INCLUDE_SUBDIR	= $(DESTDIR)$(includedir)/$(HDR_ROOTNAME)
+SHLIB_DIR	= $(DESTDIR)$(shlibdir)
 LIB_DIR		= $(DESTDIR)$(libdir)
 MAN_DIR		= $(DESTDIR)$(mandir)/man@MAN_TAG@
 MANSECT		= @MANSECT@
@@ -181,6 +184,7 @@ CDKHDR		= \
 		menu.h \
 		radio.h \
 		scroll.h \
+		scroller.h \
 		selection.h \
 		swindow.h \
 		template.h \
@@ -403,14 +407,24 @@ uninstallCDKHeaderFiles ::
 # This installs the CDK library.
 #
 install \
-installCDKLibrary :: $(LIB_DIR) $(CDKLIB)
+installCDKLibrary :: $(SHLIB_DIR) $(CDKLIB)
 	@echo "Installing CDK library"
-	@$(INSTALL_LIB) $(CDKLIB) $(LIB_DIR)/$(CDKLIB)
+	@$(INSTALL_LIB) $(CDKLIB) $(SHLIB_DIR)/$(CDKLIB)
 
 uninstall \
 uninstallCDKLibrary ::
 	@echo "Uninstalling CDK library"
-	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(CDKLIB)
+	@- $(UNINSTALL_LIB) $(SHLIB_DIR)/$(CDKLIB)
+
+@MAKE_DLLS@install \
+@MAKE_DLLS@installImportLibrary :: $(LIB_DIR) $(IMPORT_LIB)
+@MAKE_DLLS@	@echo "Installing Import library"
+@MAKE_DLLS@	@$(INSTALL_LIB) $(IMPORT_LIB) $(LIB_DIR)/$(IMPORT_LIB)
+
+@MAKE_DLLS@uninstall \
+@MAKE_DLLS@uninstallImportLibrary ::
+@MAKE_DLLS@	@echo "Uninstalling Import library"
+@MAKE_DLLS@	@- $(UNINSTALL_LIB) $(LIB_DIR)/$(IMPORT_LIB)
 
 #
 # This installs the CDK package-config script.
@@ -431,17 +445,17 @@ uninstallCDKLibrary :: cdk-config
 # This installs the CDK shared library.  The rules are for an RPM spec, and
 # not of general interest.
 #
-@MAKE_NORMAL@installCDKSHLibrary :: $(LIB_DIR) $(OLD_SHLIB_FILE)
+@MAKE_NORMAL@installCDKSHLibrary :: $(SHLIB_DIR) $(OLD_SHLIB_FILE)
 @MAKE_NORMAL@	@echo "Installing CDK library"
-@MAKE_NORMAL@	@ECHO_CC@$(INSTALL_DATA) $(OLD_SHLIB_FILE) $(LIB_DIR)
-@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SONAME)"
-@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(LIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SHLIB_LINK)"
+@MAKE_NORMAL@	@ECHO_CC@$(INSTALL_DATA) $(OLD_SHLIB_FILE) $(SHLIB_DIR)
+@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(SHLIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SONAME)"
+@MAKE_NORMAL@	@ECHO_CC@$(SHELL) -c "cd $(SHLIB_DIR) && $(LN_S) $(OLD_SHLIB_FILE) $(OLD_SHLIB_LINK)"
 @MAKE_NORMAL@
 @MAKE_NORMAL@uninstall \
 @MAKE_NORMAL@uninstallCDKSHLibrary ::
-@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(LIB_BASENAME)
-@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(OLD_SONAME)
-@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(LIB_DIR)/$(OLD_SHLIB_FILE)
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(SHLIB_DIR)/$(LIB_BASENAME)
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(SHLIB_DIR)/$(OLD_SONAME)
+@MAKE_NORMAL@	@ECHO_CC@- $(RM) $(SHLIB_DIR)/$(OLD_SHLIB_FILE)
 
 headers.sed : $(srcdir)/headers.sh
 	$(SHELL) $(srcdir)/headers.sh -p CDK $(HDR_SUBDIR) -c include/cdk_config.h -d $(INCLUDE_SUBDIR) -s $(srcdir)/include -i -s include -i

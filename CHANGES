@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.203 2013/09/01 21:48:15 tom Exp $
+-- $Id: CHANGES,v 1.210 2013/11/08 00:01:29 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -8,6 +8,14 @@ Modifications copyright Thomas E. Dickey 1999-2012, 2013
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2013/11/07
+	+ add scripts for testing cross-compiles to MinGW.
+	+ add new scroller.h to CDKHDR variable in Makefile.in, so it will be
+	  installed (report by Aitor Atuin).
+	+ updated configure script (further improvments for shared libraries,
+	  and MinGW).
+	+ update config.guess, config.sub
 
 2013/09/01
 	+ add a limit-check in drawCDKSwindowList() (patch by Wang Weber).
