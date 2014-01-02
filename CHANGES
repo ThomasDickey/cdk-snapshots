@@ -1,13 +1,19 @@
--- $Id: CHANGES,v 1.211 2013/11/17 14:11:12 tom Exp $
+-- $Id: CHANGES,v 1.215 2014/01/02 01:03:04 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2012, 2013
+Modifications copyright Thomas E. Dickey 1999-2013, 2014
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2014/01/01
+	+ improve limit-checks in trimCDKWindow() (patch by Tyson Nottingham).
+	+ updated configure script (further improvments for shared libraries,
+	  and clang).
+	+ update config.guess
 
 2013/11/17
 	+ fix dependencies of Debian MinGW packages.
