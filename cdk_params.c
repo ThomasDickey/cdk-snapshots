@@ -4,8 +4,8 @@
  * Useful functions for command-line parsing.
  *
  * $Author: tom $
- * $Date: 2013/09/01 22:01:33 $
- * $Revision: 1.9 $
+ * $Date: 2014/01/01 22:53:30 $
+ * $Revision: 1.10 $
  */
 
 #define OPTION_ON	((char *)1)
@@ -23,7 +23,7 @@ static void usage (char **argv,
    for (n = 1; n < MAX_CDK_PARAMS; ++n)
    {
       if (n != ':'
-	  && (str = strchr (options, n)) != 0)
+	  && (str = (strchr) (options, n)) != 0)
       {
 	 int value = (str[1] == ':');
 	 fprintf (stderr, "  -%c", n);
@@ -116,7 +116,7 @@ void CDKparseParams (int argc,
 
    while ((code = getopt (argc, argv, options)) != EOF)
    {
-      if (code == '?' || (str = strchr (options, code)) == 0)
+      if (code == '?' || (str = (strchr) (options, code)) == 0)
       {
 	 usage (argv, params, options);
       }
