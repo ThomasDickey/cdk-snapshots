@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: Wang.Weber $
- * $Date: 2013/09/01 21:46:30 $
- * $Revision: 1.124 $
+ * $Author: tom $
+ * $Date: 2014/01/02 01:03:04 $
+ * $Revision: 1.125 $
  */
 
 /*
@@ -49,7 +49,6 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
 	    { '$',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if ((swindow = newCDKObject (CDKSWINDOW, &my_funcs)) == 0)
         return (0);
@@ -385,7 +384,19 @@ void cleanCDKSwindow (CDKSWINDOW *swindow)
  */
 void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
 {
-   int start, finish, x;
+   int start, finish, lines, x;
+
+   /* 
+    * Do nothing if the list is empty, the interval is empty,
+    * or the entire interval lies outside of the list.
+    */
+   if ((swindow->listSize == 0) ||
+       (begin > end) ||
+       (begin < 0 && end < 0) ||
+       (begin >= swindow->listSize && end >= swindow->listSize))
+   {
+      return;
+   }
 
    /* Check the value of begin. */
    if (begin < 0)
@@ -415,30 +426,49 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
       finish = end;
    }
 
-   /* Make sure the start is lower than the end. */
-   if (start > finish)
-   {
-      return;
-   }
+   lines = finish - start + 1;
 
    /* Start nuking elements from the window. */
    for (x = start; x <= finish; x++)
    {
       freeLine (swindow, x);
+   }
 
-      if (x < swindow->listSize - 1)
-      {
-	 swindow->list[x] = copyChtype (swindow->list[x + 1]);
-	 swindow->listPos[x] = swindow->listPos[x + 1];
-	 swindow->listLen[x] = swindow->listLen[x + 1];
-      }
+   /* Move the lines after the trimmed lines up. */
+   for (x = start; x < swindow->listSize - lines; x++)
+   {
+      /* Move the line up. */
+      swindow->list[x] = swindow->list[x + lines];
+      swindow->listPos[x] = swindow->listPos[x + lines];
+      swindow->listLen[x] = swindow->listLen[x + lines];
+
+      /* Zero out the moved line's original entries. */
+      swindow->list[x + lines] = 0;
+      swindow->listPos[x + lines] = 0;
+      swindow->listLen[x + lines] = 0;
    }
 
    /* Adjust the item count correctly. */
-   swindow->listSize = swindow->listSize - (end - begin) - 1;
+   swindow->listSize = swindow->listSize - lines;
 
-   /* Redraw the window. */
-   drawCDKSwindow (swindow, ObjOf (swindow)->box);
+   /* Set the maximum top line. */
+   if (swindow->listSize <= swindow->viewSize)
+   {
+      swindow->maxTopLine = 0;
+   }
+   else
+   {
+      swindow->maxTopLine = (swindow->listSize - swindow->viewSize);
+   }
+
+   /* Set the current top line, but only if it is no longer valid. */
+   if (swindow->currentTop > swindow->maxTopLine)
+   {
+      swindow->currentTop = swindow->maxTopLine;
+   }
+
+   /* Redraw the list. */
+   drawCDKSwindowList (swindow, ObjOf (swindow)->box);
 }
 
 /*

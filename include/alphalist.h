@@ -1,5 +1,5 @@
 /*
- * $Id: alphalist.h,v 1.24 2012/03/21 21:15:30 tom Exp $
+ * $Id: alphalist.h,v 1.25 2014/01/19 01:58:40 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2006,2012 copyright Thomas E. Dickey
+ * Changes 1999-2012,2014 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -93,7 +93,7 @@ CDKALPHALIST *newCDKAlphalist (
 		int		/* width */,
 		const char *	/* title */,
 		const char *	/* label */,
-		CDK_CSTRING2	/* list */,
+		CDK_CSTRING *	/* list */,
 		int		/* listSize */,
 		chtype		/* fillerChar */,
 		chtype		/* highlight */,
@@ -117,7 +117,7 @@ char *activateCDKAlphalist (
  */
 void setCDKAlphalist (
 		CDKALPHALIST *	/* alphalist */,
-		CDK_CSTRING2	/* list */,
+		CDK_CSTRING *	/* list */,
 		int		/* listSize */,
 		chtype		/* fillerChar */,
 		chtype		/* highlight */,
@@ -128,7 +128,7 @@ void setCDKAlphalist (
  */
 void setCDKAlphalistContents (
 		CDKALPHALIST *	/* alphalist */,
-		CDK_CSTRING2	/* list */,
+		CDK_CSTRING *	/* list */,
 		int		/* listSize */);
 
 char **getCDKAlphalistContents (

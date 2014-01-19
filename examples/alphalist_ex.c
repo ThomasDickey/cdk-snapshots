@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.27 2012/03/22 09:25:51 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.28 2014/01/19 02:05:27 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -87,7 +87,7 @@ static int do_delete (CB_PARAMS)
       fill_undo (widget, first, list[first]);
       for (n = first; n < size; ++n)
 	 list[n] = list[n + 1];
-      setCDKAlphalistContents (widget, (CDK_CSTRING2) list, size - 1);
+      setCDKAlphalistContents (widget, (CDK_CSTRING *)list, size - 1);
       setCDKScrollCurrentTop (widget->scrollField, save);
       setCDKAlphalistCurrentItem (widget, first);
       drawCDKAlphalist (widget, BorderOf (widget));
@@ -115,7 +115,7 @@ static int do_delete1 (CB_PARAMS)
 	 fill_undo (widget, first, list[first]);
 	 for (n = first; n < size; ++n)
 	    list[n] = list[n + 1];
-	 setCDKAlphalistContents (widget, (CDK_CSTRING2) list, size - 1);
+	 setCDKAlphalistContents (widget, (CDK_CSTRING *)list, size - 1);
 	 setCDKScrollCurrentTop (widget->scrollField, save);
 	 setCDKAlphalistCurrentItem (widget, first);
 	 drawCDKAlphalist (widget, BorderOf (widget));
@@ -139,8 +139,8 @@ static int do_help (CB_PARAMS)
       0
    };
    popupLabel (cdkscreen,
-	       (CDK_CSTRING2) message,
-	       (int)CDKcountStrings ((CDK_CSTRING2) message));
+	       (CDK_CSTRING2)message,
+	       (int)CDKcountStrings ((CDK_CSTRING2)message));
    return TRUE;
 }
 
@@ -151,7 +151,7 @@ static int do_reload (CB_PARAMS)
    if (userSize)
    {
       CDKALPHALIST *widget = (CDKALPHALIST *)clientdata;
-      setCDKAlphalistContents (widget, (CDK_CSTRING2) myUserList, userSize);
+      setCDKAlphalistContents (widget, (CDK_CSTRING *)myUserList, userSize);
       setCDKAlphalistCurrentItem (widget, 0);
       drawCDKAlphalist (widget, BorderOf (widget));
       result = TRUE;
@@ -183,7 +183,7 @@ static int do_undo (CB_PARAMS)
 	 newlist[n] = copyChar (oldlist[n]);
 	 --n;
       }
-      setCDKAlphalistContents (widget, (CDK_CSTRING2) newlist, size);
+      setCDKAlphalistContents (widget, (CDK_CSTRING *)newlist, size);
       setCDKScrollCurrentTop (widget->scrollField, myUndoList[undoSize].topline);
       setCDKAlphalistCurrentItem (widget, myUndoList[undoSize].position);
       drawCDKAlphalist (widget, BorderOf (widget));
@@ -235,7 +235,7 @@ int main (int argc, char **argv)
 				title, label,
 				(CDKparamNumber (&params, 'c')
 				 ? 0
-				 : (CDK_CSTRING2) userList),
+				 : (CDK_CSTRING *)userList),
 				(CDKparamNumber (&params, 'c')
 				 ? 0
 				 : userSize),
@@ -260,7 +260,7 @@ int main (int argc, char **argv)
 
    if (CDKparamNumber (&params, 'c'))
    {
-      setCDKAlphalistContents (alphaList, (CDK_CSTRING2) userList, userSize);
+      setCDKAlphalistContents (alphaList, (CDK_CSTRING *)userList, userSize);
    }
 
    /* Let them play with the alpha list. */
@@ -272,7 +272,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No word was selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (alphaList->exitType == vNORMAL)
    {
@@ -281,7 +281,7 @@ int main (int argc, char **argv)
       mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 4);
    }
 
    freeCharList (myUserList, (unsigned)userSize);

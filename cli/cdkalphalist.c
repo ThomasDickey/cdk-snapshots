@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.16 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.17 2014/01/19 02:27:01 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -108,7 +108,7 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2) scrollList);
+      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2)scrollList);
    }
 
    /* Start curses. */
@@ -147,7 +147,7 @@ int main (int argc, char **argv)
    widget = newCDKAlphalist (cdkScreen, xpos, ypos,
 			     height, width,
 			     title, label,
-			     (CDK_CSTRING2) scrollList, scrollLines,
+			     (CDK_CSTRING *)scrollList, scrollLines,
 			     filler, A_REVERSE,
 			     boxWidget, shadowWidget);
 
@@ -169,7 +169,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
 
       buttonWidget = newCDKButtonbox (cdkScreen,
 				      getbegx (widget->win) + 1,
@@ -177,7 +177,7 @@ int main (int argc, char **argv)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 3,
 				      0, 1, buttonCount,
-				      (CDK_CSTRING2) buttonList, buttonCount,
+				      (CDK_CSTRING2)buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
@@ -271,12 +271,11 @@ int main (int argc, char **argv)
    ExitProgram (0);
 }
 
-int widgetCB (EObjectType cdktype GCC_UNUSED,
-	      void *object GCC_UNUSED,
+int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED,
 	      void *clientData,
 	      chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   (void) injectCDKButtonbox (buttonbox, key);
+   (void)injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

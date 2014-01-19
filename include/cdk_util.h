@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.34 2012/03/22 09:21:59 tom Exp $
+ * $Id: cdk_util.h,v 1.35 2014/01/19 01:58:31 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2006,2012 copyright Thomas E. Dickey
+ * Changes 1999-2012,2014 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.
@@ -159,7 +159,7 @@ int viewInfo (
  * This is a wrapper for qsort.
  */
 void sortList (
-		char **		/* list */,
+		CDK_CSTRING *	/* list */,
 		int		/* length */);
 
 /*

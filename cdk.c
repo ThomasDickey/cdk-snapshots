@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:00:10 $
- * $Revision: 1.213 $
+ * $Date: 2014/01/19 01:57:17 $
+ * $Revision: 1.214 $
  */
 
 #define L_MARKER '<'
@@ -903,7 +903,7 @@ static int comparSort (const void *a, const void *b)
    return strcmp (*(const char *const *)a, (*(const char *const *)b));
 }
 
-void sortList (char **list, int length)
+void sortList (CDK_CSTRING *list, int length)
 {
    if (length > 1)
       qsort (list, (unsigned)length, sizeof (list[0]), comparSort);
@@ -1230,7 +1230,7 @@ int CDKgetDirectoryContents (const char *directory, char ***list)
    closedir (dp);
 
    /* Sort the info.  */
-   sortList (*list, counter);
+   sortList ((CDK_CSTRING *)*list, counter);
 
    /* Return the number of files in the directory.  */
    return counter;
