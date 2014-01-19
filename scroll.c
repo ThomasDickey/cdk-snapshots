@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/09/01 18:03:03 $
- * $Revision: 1.157 $
+ * $Date: 2014/01/19 02:25:59 $
+ * $Revision: 1.158 $
  */
 
 /*
@@ -709,12 +709,9 @@ static boolean allocListArrays (CDKSCROLL *scrollp,
 	 newPos[n] = scrollp->itemPos[n];
       }
 
-      if (oldSize == 0)
-      {
-	 CDKfreeChtypes (scrollp->item);
-	 freeChecked (scrollp->itemPos);
-	 freeChecked (scrollp->itemLen);
-      }
+      freeChecked (scrollp->item);
+      freeChecked (scrollp->itemPos);
+      freeChecked (scrollp->itemLen);
 
       scrollp->item = newList;
       scrollp->itemLen = newLen;
@@ -929,7 +926,7 @@ static void resequence (CDKSCROLL *scrollp)
 	       scrollp->itemLen[j] -= 1;
 	    }
 	    target[k] &= A_ATTRIBUTES;
-	    target[k] |= (chtype)source[k];
+	    target[k] |= (chtype)(unsigned char)source[k];
 	 }
       }
    }

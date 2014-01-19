@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.23 2012/03/21 23:56:27 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.24 2014/01/19 02:06:35 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -78,7 +78,7 @@ static CDKOBJS *make_alphalist (CDKSCREEN *cdkscreen, int x, int y)
 					   x, y, 10, 15,
 					   "AlphaList",
 					   "->",
-					   (CDK_CSTRING2) months,
+					   (CDK_CSTRING *)months,
 					   NumElements (months),
 					   '_', A_REVERSE,
 					   TRUE, FALSE);
@@ -98,7 +98,7 @@ static CDKOBJS *make_buttonbox (CDKSCREEN *cdkscreen, int x, int y)
    CDKBUTTONBOX *widget = newCDKButtonbox (cdkscreen, x, y,
 					   10, 16,
 					   "ButtonBox", 6, 2,
-					   (CDK_CSTRING2) months,
+					   months,
 					   NumElements (months),
 					   A_REVERSE,
 					   TRUE, FALSE);
@@ -127,8 +127,8 @@ static CDKOBJS *make_dialog (CDKSCREEN *cdkscreen, int x, int y)
    };
 
    CDKDIALOG *widget = newCDKDialog (cdkscreen, x, y,
-				     (CDK_CSTRING2) message, NumElements (message),
-				     (CDK_CSTRING2) yes_no, NumElements (yes_no),
+				     (CDK_CSTRING2)message, NumElements (message),
+				     (CDK_CSTRING2)yes_no, NumElements (yes_no),
 				     COLOR_PAIR (2) | A_REVERSE,
 				     TRUE,
 				     TRUE, FALSE);
@@ -233,7 +233,7 @@ static CDKOBJS *make_itemlist (CDKSCREEN *cdkscreen, int x, int y)
 {
    CDKITEMLIST *widget = newCDKItemlist (cdkscreen, x, y,
 					 NULL, "Month ",
-					 (CDK_CSTRING2) months,
+					 (CDK_CSTRING2)months,
 					 NumElements (months),
 					 1, TRUE, FALSE);
    return ObjPtr (widget);
@@ -249,7 +249,7 @@ static CDKOBJS *make_label (CDKSCREEN *cdkscreen, int x, int y)
    CDKLABEL *widget = newCDKLabel (cdkscreen,
 				   x,
 				   y,
-				   (CDK_CSTRING2) message, NumElements (message),
+				   (CDK_CSTRING2)message, NumElements (message),
 				   TRUE,
 				   TRUE);
    return ObjPtr (widget);
@@ -305,7 +305,7 @@ static CDKOBJS *make_matrix (CDKSCREEN *cdkscreen, int x, int y)
 			  x,
 			  y,
 			  rows, cols, vrows, vcols,
-			  "Matrix", (CDK_CSTRING2) rowtitle, (CDK_CSTRING2) coltitle,
+			  "Matrix", (CDK_CSTRING2)rowtitle, (CDK_CSTRING2)coltitle,
 			  colwidth, coltypes,
 			  -1, -1, '.',
 			  COL, TRUE,
@@ -338,7 +338,7 @@ static CDKOBJS *make_radio (CDKSCREEN *cdkscreen, int x, int y)
 				   10,
 				   20,
 				   "Radio",
-				   (CDK_CSTRING2) months, NumElements (months),
+				   (CDK_CSTRING2)months, NumElements (months),
 				   '#' | A_REVERSE, 1,
 				   A_REVERSE,
 				   TRUE,
@@ -372,7 +372,7 @@ static CDKOBJS *make_scroll (CDKSCREEN *cdkscreen, int x, int y)
 				     10,
 				     20,
 				     "Scroll",
-				     (CDK_CSTRING2) months, NumElements (months),
+				     (CDK_CSTRING2)months, NumElements (months),
 				     TRUE,
 				     A_REVERSE,
 				     TRUE,
@@ -402,9 +402,9 @@ static CDKOBJS *make_selection (CDKSCREEN *cdkscreen, int x, int y)
 {
    CDKSELECTION *widget = newCDKSelection (cdkscreen, x, y,
 					   NONE, 8, 20, "Selection",
-					   (CDK_CSTRING2) months,
+					   (CDK_CSTRING2)months,
 					   NumElements (months),
-					   (CDK_CSTRING2) choices,
+					   (CDK_CSTRING2)choices,
 					   NumElements (choices),
 					   A_REVERSE, TRUE, FALSE);
    return ObjPtr (widget);
@@ -492,11 +492,11 @@ static CDKOBJS *make_viewer (CDKSCREEN *cdkscreen, int x, int y)
 				     y,
 				     10,
 				     20,
-				     (CDK_CSTRING2) button, 1, A_REVERSE,
+				     (CDK_CSTRING2)button, 1, A_REVERSE,
 				     TRUE,
 				     FALSE);
    setCDKViewer (widget, "Viewer",
-		 (CDK_CSTRING2) months, NumElements (months),
+		 (CDK_CSTRING2)months, NumElements (months),
 		 A_REVERSE, FALSE, TRUE, TRUE);
    activateCDKViewer (widget, 0);
    return ObjPtr (widget);
@@ -755,7 +755,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    mesg[0] = "Done";
    mesg[1] = "";
    mesg[2] = "<C>Press any key to continue.";
-   popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+   popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
 
    /* Clean up and exit. */
    for (j = 0; j < MY_MAX; ++j)

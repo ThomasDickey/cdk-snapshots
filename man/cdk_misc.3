@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_misc.3,v 1.20 2012/03/22 09:31:32 tom Exp $
+.\" $Id: cdk_misc.3,v 1.21 2014/01/19 02:02:03 tom Exp $
 .de XX
 ..
 .TH cdk_misc 3
@@ -144,12 +144,12 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .BI "mode_t " "fileMode");
 .TP 15
 .B "int searchList ("
-.BI "CDK_CONST char **" "list",
+.BI "CDK_CONST char * CDK_CONST *" "list",
 .BI "int " "listSize",
 .BI "const char *" "pattern");
 .TP 15
 .B "void sortList ("
-.BI "char **" "list",
+.BI "CDK_CONST char **" "list",
 .BI "int " "length");
 .fi
 .SH DESCRIPTION

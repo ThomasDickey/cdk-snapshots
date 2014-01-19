@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.215 2014/01/02 01:03:04 tom Exp $
+-- $Id: CHANGES,v 1.219 2014/01/19 02:43:38 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -8,6 +8,15 @@ Modifications copyright Thomas E. Dickey 1999-2013, 2014
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2014/01/18
+	+ fix memory leak in allocListArrays() in scroll.c (patch by Alexander
+	  Gozman).
+	+ amend changes for alphalist in 2012/03/23, to make its "list"
+	  parameter read/write so that the caller's copy can be sorted as
+	  before.
+	+ add man/man2html.ignore, used when generating
+	  http://invisible-island.net/cdk/manpage/
 
 2014/01/01
 	+ improve limit-checks in trimCDKWindow() (patch by Tyson Nottingham).
