@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.24 2014/01/18 14:01:14 tom Exp $
+# $Id: cdk.spec,v 1.30 2014/11/03 01:17:49 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20140118
+%define AppRelease 20141102
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -10,7 +10,7 @@ License:  BSD (4-clause)
 Group:  Development/Libraries
 URL:  http://invisible-island.net/%{name}/
 Source0:  %{name}-%{version}-%{release}.tgz
-# BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # BuildRequires:	ncurses-devel
 
 %description
@@ -32,14 +32,19 @@ Development headers for cdk (Curses Development Kit)
 
 %build
 %configure
+make all
+
+%configure --with-shared --with-versioned-syms
 #make %{?_smp_mflags} cdkshlib
-make cdkshlib
+make all
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install installCDKSHLibrary DESTDIR=$RPM_BUILD_ROOT
-rm -fr $RPM_BUILD_ROOT%{_defaultdocdir} # we don't need this
+make install installCDKLibrary \
+	DESTDIR=$RPM_BUILD_ROOT \
+	DOCUMENT_DIR=$RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
 chmod +x $RPM_BUILD_ROOT%{_libdir}/*.so # fixes rpmlint unstripped-binary-or-object
+install -m 644 libcdk.a $RPM_BUILD_ROOT%{_libdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -53,6 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.so.*
 %exclude %{_libdir}/*.a
 %{_mandir}/man3/*
+%{_defaultdocdir}/%{name}/*
 
 %files devel
 %defattr(-,root,root,-)
@@ -63,6 +69,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/%{name}
 
 %changelog
+
+* Sun Nov 02 2014 Thomas E. Dickey
+- change shared library configuration to use --with-shared option
 
 * Tue Mar 20 2012 Thomas E. Dickey
 - install cdk.h in normal location
