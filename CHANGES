@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.219 2014/01/19 02:43:38 tom Exp $
+-- $Id: CHANGES,v 1.226 2014/11/03 01:00:29 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -8,6 +8,56 @@ Modifications copyright Thomas E. Dickey 1999-2013, 2014
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2014/11/02
+	+ change test-packages to use --with-shared rather than cdkshlib hack.
+	+ add configure options to implement symbol versioning/hiding:
+	  --with-versioned-syms=X markup versioned symbols using ld
+	  --with-export-syms=XXX  limit exported symbols using libtool
+	+ updated configure macros:
+	  + CF_ACVERSION_CHECK -
+	    + work around another gratuitous incompatibility introduced in 2.69
+	    (reported by Ross Burton, openembedded.org)
+	  + CF_ADD_CFLAGS - workaround for ash-shell with Minix 3.2
+	  + CF_ADD_LIBS -
+	    + workaround in CF_X_TOOLKIT uses pkgconfig, whose files generally
+	      are using incomplete dependencies - in turn introducing lots of
+	      duplication.  filter out the duplicates.
+	  + CF_CHECK_CFLAGS - workaround for ash-shell with Minix 3.2
+	  + CF_CURSES_FUNCS -
+	    + improve workaround for weak-linkage, seems to fix tests with
+	      NetBSD 6.1
+	  + CF_GETOPT_HEADER - 
+	    + add NEED_GETOPT_H definition, since that's the only interesting
+	      special case
+	  + CF_INTEL_COMPILER - 
+	    + cleanup the -no-gcc option which was leftover from testing - prcs
+	      does not build with this option.
+	  + CF_LIB_SUFFIX -
+	    + it is not necessary or even a good idea to make AIX's shared-library suffixes ".a" -- make it ".so" like everyone else (including the system's shared libraries).
+	  + CF_MAKEFLAGS -
+	    + workaround for GNU make 4.0 incompatibility with previous
+	      releases.
+	  + CF_X_ATHENA - add --with-Xaw3dxft option.
+	  + CF_XOPEN_SOURCE -
+	    + add case for UnixWare (report/discussion with Mark Ryan).
+	    + Minix3.2 ifdef's the POSIX.1-2001 functions inside
+	      _NETBSD_SOURCE, even though it was released 2012-02-29 - appease
+	      it.  At the same time, turn on the verbose flag to show that most
+	      platforms need platform-specific define's to get POSIX (sic).
+	    + for Solaris (tested with gcc/g++ 3.4.3 on Solaris 10 and gcc/g++
+	      4.5.2 on Solaris 11), suppress the followup check for defining
+	      _XOPEN_SOURCE because it is not needed, as well as because g++
+	      4.7.3 (no package, used in Sage for Solaris 10) has some
+	      unspecified header breakage which is triggered by the duplicate
+	      definition.
+	  + CF_X_TOOLKIT -
+	    + add workaround for breakage in XQuartz upgrades. 
+	    + add 3rd parameter to AC_DEFINE for autoheader.
+	+ modify spec-file to work with OpenSUSE's customization of
+	  _defaultdocdir, which puts documentation for most packages in
+	  /usr/share/doc/packages/
+	+ update config.guess, config.sub
 
 2014/01/18
 	+ fix memory leak in allocListArrays() in scroll.c (patch by Alexander
