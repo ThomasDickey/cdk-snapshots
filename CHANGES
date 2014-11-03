@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.226 2014/11/03 01:00:29 tom Exp $
+-- $Id: CHANGES,v 1.227 2014/11/03 10:32:30 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -9,7 +9,9 @@ This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
-2014/11/02
+2014/11/03
+	+ correct dependency of dpkg/mingw test packages; only "ncurses6" is
+	  used rather than "libncurses6".
 	+ change test-packages to use --with-shared rather than cdkshlib hack.
 	+ add configure options to implement symbol versioning/hiding:
 	  --with-versioned-syms=X markup versioned symbols using ld
