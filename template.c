@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/09/01 22:05:19 $
- * $Revision: 1.138 $
+ * $Date: 2014/11/05 10:06:58 $
+ * $Revision: 1.139 $
  */
 
 /*
@@ -700,29 +700,29 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 		   cdktemplate->overlay,
 		   HORIZONTAL, 0,
 		   cdktemplate->overlayLen);
-   }
 
-   /* Adjust the cursor. */
-   if (infolen != 0)
-   {
-      int pos = 0;
-      for (x = 0; x < cdktemplate->fieldWidth; x++)
+      /* Adjust the cursor. */
+      if (infolen != 0)
       {
-	 if (isPlateChar (cdktemplate->plate[x]) && pos < infolen)
+	 int pos = 0;
+	 for (x = 0; x < cdktemplate->fieldWidth; x++)
 	 {
-	    fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
-	    (void)mvwaddch (cdktemplate->fieldWin,
-			    0, x,
-			    CharOf (cdktemplate->info[pos++]) | fieldColor);
+	    if (isPlateChar (cdktemplate->plate[x]) && pos < infolen)
+	    {
+	       fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
+	       (void)mvwaddch (cdktemplate->fieldWin,
+			       0, x,
+			       CharOf (cdktemplate->info[pos++]) | fieldColor);
+	    }
 	 }
+	 wmove (cdktemplate->fieldWin, 0, cdktemplate->screenPos);
       }
-      wmove (cdktemplate->fieldWin, 0, cdktemplate->screenPos);
+      else
+      {
+	 adjustCDKTemplateCursor (cdktemplate, +1);
+      }
+      wrefresh (cdktemplate->fieldWin);
    }
-   else
-   {
-      adjustCDKTemplateCursor (cdktemplate, +1);
-   }
-   wrefresh (cdktemplate->fieldWin);
 }
 
 /*

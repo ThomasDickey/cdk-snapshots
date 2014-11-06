@@ -1,4 +1,4 @@
-/* $Id: cdkdialog.c,v 1.12 2012/03/22 00:27:31 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.14 2014/11/05 10:33:55 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -91,12 +91,13 @@ int main (int argc, char **argv)
    {
       /* Split the message up. */
       messageList = CDKsplitString (message, '\n');
-      messageLines = (int)CDKcountStrings ((CDK_CSTRING2) messageList);
+      messageLines = (int)CDKcountStrings ((CDK_CSTRING2)messageList);
    }
 
    /* Set up the buttons for the dialog box. */
    if (buttons == 0)
    {
+      buttonList = calloc(sizeof(char *), 3);
       buttonList[0] = copyChar ("OK");
       buttonList[1] = copyChar ("Cancel");
       buttonCount = 2;
@@ -105,7 +106,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
    }
 
    /* Set up CDK. */
@@ -132,8 +133,8 @@ int main (int argc, char **argv)
 
    /* Create the dialog box. */
    widget = newCDKDialog (cdkScreen, xpos, ypos,
-			  (CDK_CSTRING2) messageList, messageLines,
-			  (CDK_CSTRING2) buttonList, buttonCount,
+			  (CDK_CSTRING2)messageList, messageLines,
+			  (CDK_CSTRING2)buttonList, buttonCount,
 			  A_REVERSE,
 			  boxWidget, boxWidget, shadowWidget);
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/01/19 01:57:17 $
- * $Revision: 1.214 $
+ * $Date: 2014/11/05 10:20:13 $
+ * $Revision: 1.215 $
  */
 
 #define L_MARKER '<'
@@ -1445,17 +1445,11 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
       int xpos, ypos;
 
       getbegyx (window, ypos, xpos);
-      if (setbegyx (window, (short)ypos, (short)xpos) != ERR)
-      {
-	 xpos += xdiff;
-	 ypos += ydiff;
-	 werase (window);
-	 (void)setbegyx (window, (short)ypos, (short)xpos);
-      }
-      else
-      {
-	 Beep ();
-      }
+      (void)setbegyx (window, (short)ypos, (short)xpos);
+      xpos += xdiff;
+      ypos += ydiff;
+      werase (window);
+      (void)setbegyx (window, (short)ypos, (short)xpos);
    }
 }
 

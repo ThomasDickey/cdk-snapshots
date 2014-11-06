@@ -1,4 +1,4 @@
-/* $Id: cdkselection.c,v 1.12 2012/03/22 09:36:03 tom Exp $ */
+/* $Id: cdkselection.c,v 1.14 2014/11/05 10:33:55 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
 	 {
 	    /* Split the line on CTRL-V. */
 	    items = CDKsplitString (scrollList[x], CTRL ('V'));
-	    fields = (int)CDKcountStrings ((CDK_CSTRING2) items);
+	    fields = (int)CDKcountStrings ((CDK_CSTRING2)items);
 
 	    /* Check the field count. */
 	    if (fields == 1)
@@ -152,12 +152,13 @@ int main (int argc, char **argv)
    {
       /* Split the scroll lines up. */
       scrollList = CDKsplitString (list, '\n');
-      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2) scrollList);
+      scrollLines = (int)CDKcountStrings ((CDK_CSTRING2)scrollList);
    }
 
    /* Did they supply a chopice list. */
    if (choices == 0)
    {
+      choiceList = calloc(sizeof(char *), 3);
       choiceList[0] = copyChar ("Yes ");
       choiceList[1] = copyChar ("No ");
       choiceSize = 2;
@@ -166,7 +167,7 @@ int main (int argc, char **argv)
    {
       /* Split the choices up. */
       choiceList = CDKsplitString (choices, '\n');
-      choiceSize = (int)CDKcountStrings ((CDK_CSTRING2) choiceList);
+      choiceSize = (int)CDKcountStrings ((CDK_CSTRING2)choiceList);
    }
 
    /* Start curses. */
@@ -196,8 +197,8 @@ int main (int argc, char **argv)
    /* Create the scrolling list. */
    widget = newCDKSelection (cdkScreen, xpos, ypos, spos,
 			     height, width, title,
-			     (CDK_CSTRING2) scrollList, scrollLines,
-			     (CDK_CSTRING2) choiceList, choiceSize,
+			     (CDK_CSTRING2)scrollList, scrollLines,
+			     (CDK_CSTRING2)choiceList, choiceSize,
 			     A_REVERSE,
 			     boxWidget, shadowWidget);
    CDKfreeStrings (choiceList);
@@ -225,7 +226,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
@@ -234,7 +235,7 @@ int main (int argc, char **argv)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 1,
 				      0, 1, buttonCount,
-				      (CDK_CSTRING2) buttonList, buttonCount,
+				      (CDK_CSTRING2)buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
@@ -335,12 +336,11 @@ int main (int argc, char **argv)
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED,
-		     void *object GCC_UNUSED,
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED,
 		     void *clientData,
 		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   (void) injectCDKButtonbox (buttonbox, key);
+   (void)injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

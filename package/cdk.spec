@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.31 2014/11/03 10:18:16 tom Exp $
+# $Id: cdk.spec,v 1.33 2014/11/05 09:50:40 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20141103
+%define AppRelease 20141105
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -33,6 +33,7 @@ Development headers for cdk (Curses Development Kit)
 %build
 %configure
 make all
+find . -name '*.o' -exec rm -f {} \;
 
 %configure --with-shared --with-versioned-syms
 #make %{?_smp_mflags} cdkshlib
@@ -40,9 +41,10 @@ make all
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make install installCDKLibrary \
+make install.libs install \
 	DESTDIR=$RPM_BUILD_ROOT \
 	DOCUMENT_DIR=$RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
+ls -l $RPM_BUILD_ROOT%{_libdir}
 chmod +x $RPM_BUILD_ROOT%{_libdir}/*.so # fixes rpmlint unstripped-binary-or-object
 install -m 644 libcdk.a $RPM_BUILD_ROOT%{_libdir}
 
@@ -57,18 +59,23 @@ rm -rf $RPM_BUILD_ROOT
 %doc CHANGES COPYING INSTALL NOTES README VERSION
 %{_libdir}/*.so.*
 %exclude %{_libdir}/*.a
-%{_mandir}/man3/*
+%exclude %{_mandir}/man3/*
 %{_defaultdocdir}/%{name}/*
 
 %files devel
 %defattr(-,root,root,-)
 %doc EXPANDING TODO examples demos
+%{_libdir}/*.a
 %{_libdir}/*.so
 %{_bindir}/cdk5-config
+%{_mandir}/man3/*
 %{_includedir}/%{name}.h
 %{_includedir}/%{name}
 
 %changelog
+
+* Wed Nov 05 2014 Thomas E. Dickey
+- move manpages to -devel package
 
 * Sun Nov 02 2014 Thomas E. Dickey
 - change shared library configuration to use --with-shared option

@@ -2,9 +2,9 @@
 #include <scroller.h>
 
 /*
- * $Author: Corentin.Delorme $
- * $Date: 2013/09/01 17:45:00 $
- * $Revision: 1.154 $
+ * $Author: tom $
+ * $Date: 2014/11/06 00:29:59 $
+ * $Revision: 1.155 $
  */
 
 /*
@@ -227,7 +227,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
  */
 static void fixCursorPosition (CDKSELECTION *selection)
 {
-   scroller_FixCursorPosition((CDKSCROLLER *)selection);
+   scroller_FixCursorPosition ((CDKSCROLLER *)selection);
 }
 
 /*
@@ -984,6 +984,14 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 	    freeChecked (newSel);
 	    freeChecked (newMode);
 	 }
+      }
+      else
+      {
+	 CDKfreeChtypes (newList);
+	 freeChecked (newPos);
+	 freeChecked (newLen);
+	 freeChecked (newSel);
+	 freeChecked (newMode);
       }
    }
    else

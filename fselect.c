@@ -3,13 +3,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:00:10 $
- * $Revision: 1.80 $
+ * $Date: 2014/11/06 01:32:50 $
+ * $Revision: 1.84 $
  */
 
 /*
  * Declare file local prototypes.
  */
+/* *INDENT-OFF* */
 static BINDFN_PROTO (completeFilenameCB);
 static BINDFN_PROTO (displayFileInfoCB);
 static BINDFN_PROTO (fselectAdjustScrollCB);
@@ -24,6 +25,7 @@ static char *format1StrVal (const char *format, const char *string, int value);
 static char *trim1Char (char *source);
 static int createList (CDKFSELECT *widget, CDK_CSTRING2 list, int listSize);
 static void setPWD (CDKFSELECT *fselect);
+/* *INDENT-ON* */
 
 DeclareSetXXchar (static, _setMy);
 DeclareCDKObjects (FSELECT, Fselect, _setMy, String);
@@ -207,7 +209,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
 					boxHeight - tempHeight,
 					tempWidth,
 					0,
-					(CDK_CSTRING2) fselect->dirContents,
+					(CDK_CSTRING2)fselect->dirContents,
 					fselect->fileCounter,
 					NONUMBERS, fselect->highlight,
 					Box, FALSE);
@@ -512,7 +514,7 @@ void setCDKFselect (CDKFSELECT *fselect,
 	 mesg[3] = copyChar ("<C>Press Any Key To Continue.");
 
 	 /* Pop Up a message. */
-	 popupLabel (ScreenOf (fselect), (CDK_CSTRING2) mesg, 4);
+	 popupLabel (ScreenOf (fselect), (CDK_CSTRING2)mesg, 4);
 
 	 /* Clean up some memory. */
 	 freeCharList (mesg, 4);
@@ -572,7 +574,7 @@ void setCDKFselect (CDKFSELECT *fselect,
 
    /* Set the values in the scrolling list. */
    setCDKScrollItems (fscroll,
-		      (CDK_CSTRING2) fselect->dirContents,
+		      (CDK_CSTRING2)fselect->dirContents,
 		      fselect->fileCounter,
 		      FALSE);
 }
@@ -696,7 +698,7 @@ int setCDKFselectDirectory (CDKFSELECT *fselect, const char *directory)
 	 {
 	    /* Set the values in the scrolling list. */
 	    setCDKScrollItems (fscroll,
-			       (CDK_CSTRING2) fselect->dirContents,
+			       (CDK_CSTRING2)fselect->dirContents,
 			       fselect->fileCounter,
 			       FALSE);
 	 }
@@ -847,7 +849,7 @@ void setCDKFselectContents (CDKFSELECT *widget,
 
    /* Set the information in the scrolling list. */
    setCDKScroll (scrollp,
-		 (CDK_CSTRING2) widget->dirContents,
+		 (CDK_CSTRING2)widget->dirContents,
 		 widget->fileCounter,
 		 NONUMBERS,
 		 scrollp->highlight,
@@ -1021,39 +1023,41 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED,
    int intMode;
    boolean functionKey;
 
-   /* Get the file name. */
    filename = fselect->entryField->info;
 
-   /* Get specific information about the files. */
-   lstat (filename, &fileStat);
-
-   /* Determine the file type. */
-   switch (mode2Filetype (fileStat.st_mode))
+   if (lstat (filename, &fileStat) == 0)
    {
-   case 'l':
-      filetype = "Symbolic Link";
-      break;
-   case '@':
-      filetype = "Socket";
-      break;
-   case '-':
-      filetype = "Regular File";
-      break;
-   case 'd':
-      filetype = "Directory";
-      break;
-   case 'c':
-      filetype = "Character Device";
-      break;
-   case 'b':
-      filetype = "Block Device";
-      break;
-   case '&':
-      filetype = "FIFO Device";
-      break;
-   default:
+      switch (mode2Filetype (fileStat.st_mode))
+      {
+      case 'l':
+	 filetype = "Symbolic Link";
+	 break;
+      case '@':
+	 filetype = "Socket";
+	 break;
+      case '-':
+	 filetype = "Regular File";
+	 break;
+      case 'd':
+	 filetype = "Directory";
+	 break;
+      case 'c':
+	 filetype = "Character Device";
+	 break;
+      case 'b':
+	 filetype = "Block Device";
+	 break;
+      case '&':
+	 filetype = "FIFO Device";
+	 break;
+      default:
+	 filetype = "Unknown";
+	 break;
+      }
+   }
+   else
+   {
       filetype = "Unknown";
-      break;
    }
 
    /* Get the user name and group name. */
@@ -1088,7 +1092,7 @@ static int displayFileInfoCB (EObjectType objectType GCC_UNUSED,
    /* Create the pop up label. */
    infoLabel = newCDKLabel (entry->obj.screen,
 			    CENTER, CENTER,
-			    (CDK_CSTRING2) mesg, 9,
+			    (CDK_CSTRING2)mesg, 9,
 			    TRUE, FALSE);
    drawCDKLabel (infoLabel, TRUE);
    getchCDKObject (ObjOf (infoLabel), &functionKey);
@@ -1174,6 +1178,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    {
       Beep ();
       freeChar (filename);
+      freeChar (mydirname);
       return (TRUE);
    }
 
@@ -1189,7 +1194,11 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    /* Make sure we can change into the directory. */
    isDirectory = chdir (filename);
    if (chdir (fselect->pwd) != 0)
+   {
+      freeChar (filename);
+      freeChar (mydirname);
       return FALSE;
+   }
 
    setCDKFselect (fselect,
 		  isDirectory ? mydirname : filename,
@@ -1223,7 +1232,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
       }
 
       /* Look for a unique filename match. */
-      Index = searchList ((CDK_CSTRING2) list, fselect->fileCounter, filename);
+      Index = searchList ((CDK_CSTRING2)list, fselect->fileCounter, filename);
 
       /* If the index is less than zero, return we didn't find a match. */
       if (Index < 0)
@@ -1336,8 +1345,8 @@ void deleteFileCB (EObjectType objectType GCC_UNUSED, void *object, void *client
 
    /* Create the dialog box. */
    question = newCDKDialog (ScreenOf (fselect), CENTER, CENTER,
-			    (CDK_CSTRING2) mesg, 2,
-			    (CDK_CSTRING2) buttons, 2,
+			    (CDK_CSTRING2)mesg, 2,
+			    (CDK_CSTRING2)buttons, 2,
 			    A_REVERSE, TRUE, TRUE, FALSE);
    freeCharList (mesg, 2);
 
@@ -1364,7 +1373,7 @@ void deleteFileCB (EObjectType objectType GCC_UNUSED, void *object, void *client
 	 mesg[0] = copyChar (errorMessage ("<C>Cannot delete file: %s"));
 	 mesg[1] = copyChar (" ");
 	 mesg[2] = copyChar ("<C>Press any key to continue.");
-	 popupLabel (ScreenOf (fselect), (CDK_CSTRING2) mesg, 3);
+	 popupLabel (ScreenOf (fselect), (CDK_CSTRING2)mesg, 3);
 	 freeCharList (mesg, 3);
       }
    }
@@ -1449,7 +1458,7 @@ static char *format1Date (const char *format, time_t value)
    char *result;
    char *temp = ctime (&value);
 
-   if ((result = (char *)malloc (strlen (format) + strlen (temp))) != 0)
+   if ((result = (char *)malloc (strlen (format) + strlen (temp) + 1)) != 0)
    {
       sprintf (result, format, trim1Char (temp));
    }

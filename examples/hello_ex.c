@@ -1,4 +1,4 @@
-/* $Id: hello_ex.c,v 1.10 2012/03/21 23:31:05 tom Exp $ */
+/* $Id: hello_ex.c,v 1.11 2014/11/05 10:08:32 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -37,8 +37,6 @@ int main (int argc, char **argv)
 		       CDKparamValue (&params, 'N', TRUE),
 		       CDKparamValue (&params, 'S', TRUE));
 
-   setCDKLabelBackgroundAttrib (demo, COLOR_PAIR (2));
-
    /* Is the label null? */
    if (demo == 0)
    {
@@ -51,6 +49,8 @@ int main (int argc, char **argv)
       printf ("Cannot create the label. Is the window too small?\n");
       ExitProgram (EXIT_FAILURE);
    }
+
+   setCDKLabelBackgroundAttrib (demo, COLOR_PAIR (2));
 
    /* Draw the CDK screen. */
    refreshCDKScreen (cdkscreen);
