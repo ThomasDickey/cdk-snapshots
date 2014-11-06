@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.89 $
+ * $Date: 2014/11/06 10:06:46 $
+ * $Revision: 1.91 $
  */
 
 DeclareCDKObjects (LABEL, Label, setCdk, Unknown);
@@ -128,15 +128,22 @@ void setCDKLabel (CDKLABEL *label, CDK_CSTRING2 mesg, int lines, boolean Box)
 void setCDKLabelMessage (CDKLABEL *label, CDK_CSTRING2 info, int infoSize)
 {
    int x;
+   int limit;
 
    /* Clean out the old message. */
    for (x = 0; x < label->rows; x++)
    {
       freeChtype (label->info[x]);
+      label->info[x] = 0;
       label->infoPos[x] = 0;
       label->infoLen[x] = 0;
    }
-   label->rows = (infoSize < label->rows ? infoSize : label->rows);
+
+   /* update the label's length - but taking into account its window size */
+   limit = label->boxHeight - (2 * BorderOf (label));
+   if (infoSize > limit)
+      infoSize = limit;
+   label->rows = infoSize;
 
    /* Copy in the new message. */
    for (x = 0; x < label->rows; x++)
