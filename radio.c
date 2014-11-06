@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/09/01 18:04:47 $
- * $Revision: 1.142 $
+ * $Date: 2014/11/06 01:31:50 $
+ * $Revision: 1.143 $
  */
 
 /*
@@ -835,6 +835,12 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
 	    freeChecked (newLen);
 	    freeChecked (newPos);
 	 }
+      }
+      else
+      {
+	 CDKfreeChtypes (newList);
+	 freeChecked (newLen);
+	 freeChecked (newPos);
       }
    }
    else

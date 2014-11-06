@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.12 2012/03/22 00:22:03 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.14 2014/11/05 10:37:52 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -87,6 +87,7 @@ int main (int argc, char **argv)
    if (buttons == 0)
    {
       /* *INDENT-EQLS* */
+      buttonList        = calloc(sizeof(char *), 3);
       buttonList[0]     = copyChar ("OK");
       buttonList[1]     = copyChar ("Cancel");
       buttonCount       = 2;
@@ -95,7 +96,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList        = CDKsplitString (buttons, '\n');
-      buttonCount       = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount       = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
    }
 
    /* Set up the title of the viewer. */
@@ -129,7 +130,7 @@ int main (int argc, char **argv)
 
    /* Create the viewer widget. */
    widget = newCDKViewer (cdkScreen, xpos, ypos, height, width,
-			  (CDK_CSTRING2) buttonList, buttonCount, A_REVERSE,
+			  (CDK_CSTRING2)buttonList, buttonCount, A_REVERSE,
 			  boxWidget, shadowWidget);
 
    /* Check to make sure we created the file viewer. */
@@ -156,7 +157,7 @@ int main (int argc, char **argv)
    bindCDKObject (vVIEWER, widget, 'S', widgetCB, 0);
 
    /* Set the information needed for the viewer. */
-   setCDKViewer (widget, title, (CDK_CSTRING2) messageList, messageLines,
+   setCDKViewer (widget, title, (CDK_CSTRING2)messageList, messageLines,
 		 A_REVERSE, interpret, showInfoLine, TRUE);
 
    /* Activate the viewer. */
@@ -205,7 +206,7 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[1] = "<C>Escape hit. Scrolling window information not saved.";
       mesg[2] = " ";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 4);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2)mesg, 4);
 
       destroyCDKEntry (entry);
       return;
@@ -224,7 +225,7 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[2] = temp;
       mesg[3] = " ";
       mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 5);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2)mesg, 5);
    }
    else
    {
@@ -237,7 +238,7 @@ static void saveInformation (CDKVIEWER *widget)
       mesg[2] = temp;
       mesg[3] = " ";
       mesg[4] = "<C>Press any key to continue.";
-      popupLabel (ScreenOf (widget), (CDK_CSTRING2) mesg, 5);
+      popupLabel (ScreenOf (widget), (CDK_CSTRING2)mesg, 5);
       freeChar (msg_1);
    }
 
@@ -277,8 +278,7 @@ static int dumpViewer (CDKVIEWER *widget, char *filename)
    return listSize;
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED,
-		     void *object,
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object,
 		     void *clientData GCC_UNUSED,
 		     chtype key GCC_UNUSED)
 {

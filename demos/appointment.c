@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.26 2012/03/23 13:54:44 tom Exp $ */
+/* $Id: appointment.c,v 1.27 2014/11/06 01:05:14 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -129,7 +129,7 @@ int main (int argc, char **argv)
       char *home = getenv ("HOME");
       if (home != 0)
       {
-	 sprintf (temp, "%s/.appointment", home);
+	 sprintf (temp, "%.*s/.appointment", (int)sizeof (temp) - 20, home);
       }
       else
       {
@@ -234,7 +234,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    for (x = 0; x < linesRead; x++)
    {
       temp = CDKsplitString (lines[x], CTRL ('V'));
-      segments = (int)CDKcountStrings ((CDK_CSTRING2) temp);
+      segments = (int)CDKcountStrings ((CDK_CSTRING2)temp);
 
       /*
        * A valid line has 5 elements:
@@ -284,7 +284,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
 		  appInfo->appointment[x].day, CTRL ('V'),
 		  appInfo->appointment[x].month, CTRL ('V'),
 		  appInfo->appointment[x].year, CTRL ('V'),
-		  (int) appInfo->appointment[x].type, CTRL ('V'),
+		  (int)appInfo->appointment[x].type, CTRL ('V'),
 		  appInfo->appointment[x].description);
 
 	 freeChar (appInfo->appointment[x].description);
@@ -321,7 +321,7 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
    itemlist = newCDKItemlist (ScreenOf (calendar),
 			      CENTER, CENTER, 0,
 			      "Select Appointment Type: ",
-			      (CDK_CSTRING2) items, 4, 0,
+			      (CDK_CSTRING2)items, 4, 0,
 			      TRUE, FALSE);
 
    /* Get the appointment tye from the user. */
@@ -503,7 +503,7 @@ static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
 
    /* Create the label widget. */
    label = newCDKLabel (ScreenOf (calendar), CENTER, CENTER,
-			(CDK_CSTRING2) mesg, mesgLines, TRUE, FALSE);
+			(CDK_CSTRING2)mesg, mesgLines, TRUE, FALSE);
    drawCDKLabel (label, ObjOf (label)->box);
    waitCDKLabel (label, ' ');
    destroyCDKLabel (label);

@@ -4,8 +4,8 @@
  * Useful functions for command-line parsing.
  *
  * $Author: tom $
- * $Date: 2014/01/01 22:53:30 $
- * $Revision: 1.10 $
+ * $Date: 2014/11/06 00:56:26 $
+ * $Revision: 1.11 $
  */
 
 #define OPTION_ON	((char *)1)
@@ -17,8 +17,9 @@ static void usage (char **argv,
 {
    int n;
    const char *str;
+   char *base = baseName (argv[0]);
 
-   fprintf (stderr, "Usage: %s [options]\n\nOptions:\n", baseName (argv[0]));
+   fprintf (stderr, "Usage: %s [options]\n\nOptions:\n", base);
 
    for (n = 1; n < MAX_CDK_PARAMS; ++n)
    {
@@ -43,6 +44,7 @@ static void usage (char **argv,
 	 }
       }
    }
+   free (base);
    exit (EXIT_FAILURE);
 }
 

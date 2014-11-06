@@ -1,4 +1,4 @@
-/* $Id: cdkmatrix.c,v 1.17 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.18 2014/11/06 00:19:48 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -104,7 +104,7 @@ int main (int argc, char **argv)
 
    /* Convert the char * titles to a char **, offset by one */
    rowTemp = CDKsplitString (myRowTitles, '\n');
-   rows = (int)CDKcountStrings ((CDK_CSTRING2) rowTemp);
+   rows = (int)CDKcountStrings ((CDK_CSTRING2)rowTemp);
    rowTitles = (char **)calloc ((size_t) rows + 1, sizeof (char *));
    for (x = 0; x < rows; x++)
    {
@@ -112,7 +112,7 @@ int main (int argc, char **argv)
    }
 
    colTemp = CDKsplitString (myColTitles, '\n');
-   cols = (int)CDKcountStrings ((CDK_CSTRING2) colTemp);
+   cols = (int)CDKcountStrings ((CDK_CSTRING2)colTemp);
    colTitles = (char **)calloc ((size_t) cols + 1, sizeof (char *));
    for (x = 0; x < cols; x++)
    {
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
 
    /* Convert the column widths. */
    kolTemp = CDKsplitString (myColWidths, '\n');
-   count = (int)CDKcountStrings ((CDK_CSTRING2) kolTemp);
+   count = (int)CDKcountStrings ((CDK_CSTRING2)kolTemp);
    colWidths = (int *)calloc ((size_t) count + 1, sizeof (int));
    for (x = 0; x < count; x++)
    {
@@ -132,7 +132,7 @@ int main (int argc, char **argv)
    if (myColTypes != 0)
    {
       char **ss = CDKsplitString (myColTypes, '\n');
-      count = (int)CDKcountStrings ((CDK_CSTRING2) ss);
+      count = (int)CDKcountStrings ((CDK_CSTRING2)ss);
       colTypes = (int *)calloc ((size_t) MAXIMUM (cols, count) + 1, sizeof (int));
       for (x = 0; x < count; x++)
       {
@@ -185,7 +185,7 @@ int main (int argc, char **argv)
    /* Create the matrix widget. */
    widget = newCDKMatrix (cdkScreen, xpos, ypos,
 			  rows, cols, vrows, cols,
-			  title, (CDK_CSTRING2) rowTitles, (CDK_CSTRING2) colTitles,
+			  title, (CDK_CSTRING2)rowTitles, (CDK_CSTRING2)colTitles,
 			  colWidths, colTypes, 1, 1,
 			  filler, COL,
 			  boxWidget, TRUE, shadowWidget);
@@ -220,13 +220,13 @@ int main (int argc, char **argv)
       infoLines = CDKreadFile (defaultValue, &lineTemp);
       if (infoLines > 0)
       {
-	 int *subSize = (int *)calloc ((size_t) infoLines + 1, sizeof (int *));
+	 int *subSize = (int *)calloc ((size_t) infoLines + 1, sizeof (int));
 
 	 /* For each line, split on a CTRL-V. */
 	 for (x = 0; x < infoLines; x++)
 	 {
 	    char **ss = CDKsplitString (lineTemp[x], CTRL ('V'));
-	    subSize[x + 1] = (int)CDKcountStrings ((CDK_CSTRING2) ss);
+	    subSize[x + 1] = (int)CDKcountStrings ((CDK_CSTRING2)ss);
 	    for (y = 0; y < subSize[x + 1]; y++)
 	    {
 	       MY_INFO (x, y) = ss[y];
@@ -235,7 +235,7 @@ int main (int argc, char **argv)
 	 }
 	 CDKfreeStrings (lineTemp);
 
-	 setCDKMatrixCells (widget, (CDK_CSTRING2) info, rows, cols, subSize);
+	 setCDKMatrixCells (widget, (CDK_CSTRING2)info, rows, cols, subSize);
 
 	 for (x = 0; x < infoLines; x++)
 	 {
@@ -254,7 +254,7 @@ int main (int argc, char **argv)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
 
       /* We need to create a buttonbox widget. */
       buttonWidget = newCDKButtonbox (cdkScreen,
@@ -263,7 +263,7 @@ int main (int argc, char **argv)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 1,
 				      NULL, 1, buttonCount,
-				      (CDK_CSTRING2) buttonList, buttonCount,
+				      (CDK_CSTRING2)buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
 
       setCDKButtonboxULChar (buttonWidget, ACS_LTEE);
@@ -381,12 +381,11 @@ int main (int argc, char **argv)
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED,
-		     void *object GCC_UNUSED,
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED,
 		     void *clientData,
 		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   (void) injectCDKButtonbox (buttonbox, key);
+   (void)injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

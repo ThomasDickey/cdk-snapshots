@@ -1,4 +1,4 @@
-/* $Id: cdkentry.c,v 1.14 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkentry.c,v 1.15 2014/11/06 00:21:24 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -44,7 +44,6 @@ int main (int argc, char **argv)
    boolean boxWidget;
    boolean shadowWidget;
    char *buttons;
-   char *filename;
    char *outputFile;
    char *initValue;
    char *title;
@@ -66,7 +65,6 @@ int main (int argc, char **argv)
    minValue     = CDKparamValue (&params, 'm', 0);
    fieldWidth   = CDKparamValue (&params, 'f', 0);
    maxValue     = CDKparamValue (&params, 'M', 256);
-   filename     = CDKparamString (&params, 'f');
    initValue    = CDKparamString (&params, 'i');
    buttons      = CDKparamString (&params, 'B');
    tempFiller   = CDKparamString (&params, 'F');
@@ -152,7 +150,7 @@ int main (int argc, char **argv)
    if (buttons != 0)
    {
       buttonList = CDKsplitString (buttons, '\n');
-      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2) buttonList);
+      buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
 
       buttonWidget = newCDKButtonbox (cdkScreen,
 				      getbegx (widget->win),
@@ -160,7 +158,7 @@ int main (int argc, char **argv)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 1,
 				      0, 1, buttonCount,
-				      (CDK_CSTRING2) buttonList, buttonCount,
+				      (CDK_CSTRING2)buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
 
@@ -262,12 +260,11 @@ int main (int argc, char **argv)
    ExitProgram (selection);
 }
 
-static int widgetCB (EObjectType cdktype GCC_UNUSED,
-		     void *object GCC_UNUSED,
+static int widgetCB (EObjectType cdktype GCC_UNUSED, void *object GCC_UNUSED,
 		     void *clientData,
 		     chtype key)
 {
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)clientData;
-   (void) injectCDKButtonbox (buttonbox, key);
+   (void)injectCDKButtonbox (buttonbox, key);
    return (TRUE);
 }

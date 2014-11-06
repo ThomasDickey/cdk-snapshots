@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.28 2014/01/19 02:05:27 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.29 2014/11/06 01:34:20 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -187,6 +187,7 @@ static int do_undo (CB_PARAMS)
       setCDKScrollCurrentTop (widget->scrollField, myUndoList[undoSize].topline);
       setCDKAlphalistCurrentItem (widget, myUndoList[undoSize].position);
       drawCDKAlphalist (widget, BorderOf (widget));
+      free (newlist);
       result = TRUE;
    }
    return result;

@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.25 2012/03/22 09:25:40 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.26 2014/11/06 00:50:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -63,7 +63,7 @@ static int do_delete (CB_PARAMS)
       fill_undo (widget, first, list[first]);
       for (n = first; n < size; ++n)
 	 list[n] = list[n + 1];
-      setCDKFselectContents (widget, (CDK_CSTRING2) list, size - 1);
+      setCDKFselectContents (widget, (CDK_CSTRING2)list, size - 1);
       setCDKScrollCurrentTop (widget->scrollField, save);
       setCDKFselectCurrentItem (widget, first);
       drawCDKFselect (widget, BorderOf (widget));
@@ -91,7 +91,7 @@ static int do_delete1 (CB_PARAMS)
 	 fill_undo (widget, first, list[first]);
 	 for (n = first; n < size; ++n)
 	    list[n] = list[n + 1];
-	 setCDKFselectContents (widget, (CDK_CSTRING2) list, size - 1);
+	 setCDKFselectContents (widget, (CDK_CSTRING2)list, size - 1);
 	 setCDKScrollCurrentTop (widget->scrollField, save);
 	 setCDKFselectCurrentItem (widget, first);
 	 drawCDKFselect (widget, BorderOf (widget));
@@ -115,8 +115,8 @@ static int do_help (CB_PARAMS)
       0
    };
    popupLabel (cdkscreen,
-	       (CDK_CSTRING2) message,
-	       (int)CDKcountStrings ((CDK_CSTRING2) message));
+	       (CDK_CSTRING2)message,
+	       (int)CDKcountStrings ((CDK_CSTRING2)message));
    return TRUE;
 }
 
@@ -127,7 +127,7 @@ static int do_reload (CB_PARAMS)
    if (userSize)
    {
       CDKFSELECT *widget = (CDKFSELECT *)clientdata;
-      setCDKFselectContents (widget, (CDK_CSTRING2) myUserList, userSize);
+      setCDKFselectContents (widget, (CDK_CSTRING2)myUserList, userSize);
       setCDKFselectCurrentItem (widget, 0);
       drawCDKFselect (widget, BorderOf (widget));
       result = TRUE;
@@ -159,10 +159,11 @@ static int do_undo (CB_PARAMS)
 	 newlist[n] = copyChar (oldlist[n]);
 	 --n;
       }
-      setCDKFselectContents (widget, (CDK_CSTRING2) newlist, size);
+      setCDKFselectContents (widget, (CDK_CSTRING2)newlist, size);
       setCDKScrollCurrentTop (widget->scrollField, myUndoList[undoSize].topline);
       setCDKFselectCurrentItem (widget, myUndoList[undoSize].position);
       drawCDKFselect (widget, BorderOf (widget));
+      free (newlist);
       result = TRUE;
    }
    return result;
@@ -248,7 +249,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>Escape hit. No file selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
 
       /* Exit CDK. */
       destroyCDKFselect (fSelect);
@@ -260,7 +261,7 @@ int main (int argc, char **argv)
 
    /* Create the file viewer to view the file selected. */
    example = newCDKViewer (cdkscreen, CENTER, CENTER, 20, -2,
-			   (CDK_CSTRING2) button, 2, A_REVERSE, TRUE, FALSE);
+			   (CDK_CSTRING2)button, 2, A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
    if (example == 0)
@@ -292,7 +293,7 @@ int main (int argc, char **argv)
    /* Set up the viewer title, and the contents to the widget. */
    sprintf (vTitle, "<C></B/21>Filename:<!21></22>%20s<!22!B>", filename);
    setCDKViewer (example, vTitle,
-		 (CDK_CSTRING2) info, lines,
+		 (CDK_CSTRING2)info, lines,
 		 A_REVERSE, TRUE, TRUE, TRUE);
 
    CDKfreeStrings (info);
@@ -309,7 +310,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>Escape hit. No Button selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (example->exitType == vNORMAL)
    {
@@ -317,7 +318,7 @@ int main (int argc, char **argv)
       mesg[0] = temp;
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
 
    /* Clean up. */

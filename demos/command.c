@@ -1,4 +1,4 @@
-/* $Id: command.c,v 1.19 2012/03/21 22:48:56 tom Exp $ */
+/* $Id: command.c,v 1.20 2014/11/06 00:17:41 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
    /* Show them who wrote this and how to get help. */
-   popupLabel (cdkscreen, (CDK_CSTRING2) introductionMessage, 5);
+   popupLabel (cdkscreen, (CDK_CSTRING2)introductionMessage, 5);
    eraseCDKEntry (commandEntry);
 
    /* Do this forever. */
@@ -340,7 +340,7 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
 	 "<C></B/16>No Commands Entered",
 	 "<C>No History"
       };
-      popupLabel (ScreenOf (entry), (CDK_CSTRING2) mesg, 2);
+      popupLabel (ScreenOf (entry), (CDK_CSTRING2)mesg, 2);
 
       /* Redraw the screen. */
       eraseCDKEntry (entry);
@@ -353,7 +353,7 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
    /* Create the scrolling list of previous commands. */
    scrollList = newCDKScroll (ScreenOf (entry), CENTER, CENTER, RIGHT,
 			      height, 20, "<C></B/29>Command History",
-			      (CDK_CSTRING2) history->command,
+			      (CDK_CSTRING2)history->command,
 			      history->count,
 			      NUMBERS, A_REVERSE, TRUE, FALSE);
 
@@ -402,7 +402,7 @@ void help (CDKENTRY *entry)
    mesg[17] = "<B=Tab/Escape> Returns to the command line.";
    mesg[18] = "";
    mesg[19] = "<C> (</B/24>Refer to the scrolling window online manual for more help<!B!24>.)";
-   popupLabel (ScreenOf (entry), (CDK_CSTRING2) mesg, 20);
+   popupLabel (ScreenOf (entry), (CDK_CSTRING2)mesg, 20);
 }
 
 /*
@@ -422,7 +422,7 @@ char *uc (char *word)
    length = (int)strlen (word);
 
    /* Get the memory for the new word. */
-   upper = (char *)malloc (sizeof (char *) * (size_t) (length + 2));
+   upper = (char *)malloc (sizeof (char) * (size_t) (length + 2));
    if (upper == 0)
    {
       return (word);
