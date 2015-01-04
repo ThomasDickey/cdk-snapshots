@@ -1,7 +1,7 @@
--- $Id: README,v 1.8 2014/01/01 22:24:05 tom Exp $
+-- $Id: README,v 1.9 2015/01/04 01:48:00 tom Exp $
 -------------------------------------------------------------------------------
 
-Copyright Thomas Dickey 1999-2013,2014
+Copyright Thomas Dickey 1999-2014,2015
 
 This is a modified/enhanced version of Cdk.  The original README contents are
 given below.
