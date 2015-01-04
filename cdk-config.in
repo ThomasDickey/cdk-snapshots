@@ -1,7 +1,7 @@
 #!@SHELL@
-# $Id: cdk-config.in,v 1.4 2013/06/15 15:38:16 tom Exp $
+# $Id: cdk-config.in,v 1.5 2015/01/04 01:45:59 tom Exp $
 ##############################################################################
-# Copyright (c) 2007-2011,2013 Thomas E. Dickey                              #
+# Copyright (c) 2007-2013,2015 Thomas E. Dickey                              #
 #                                                                            #
 # Permission is hereby granted, free of charge, to any person obtaining a    #
 # copy of this software and associated documentation files (the "Software"), #
@@ -78,7 +78,7 @@ ENDECHO
 		;;
 	--libs)
 		sed -e 's,^[ ]*,,' -e 's, [ ]*, ,g' -e 's,[ ]*$,,' <<-ENDECHO
-			-L${exec_prefix}/lib -l${XLIB} @LIBS@
+			-L${libdir} -l${XLIB} @LIBS@
 ENDECHO
 		;;
 	# identification
