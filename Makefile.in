@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.120 2014/11/02 23:27:13 tom Exp $
+# $Id: Makefile.in,v 1.123 2015/09/28 23:37:35 tom Exp $
 #
-#  Copyright 2001-2013,2014 Thomas E. Dickey
+#  Copyright 2001-2014,2015 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -41,6 +41,7 @@ PACKAGE		= @PACKAGE@
 CFG_ROOTNAME	= @CFG_ROOTNAME@
 HDR_ROOTNAME	= @HDR_ROOTNAME@
 LIB_ROOTNAME	= @LIB_ROOTNAME@
+LIB_PREFIX	= @LIB_PREFIX@
 LIB_SUFFIX	= @DFT_LIB_SUFFIX@
 
 VERSION_MAJOR	= @VERSION_MAJOR@
@@ -48,6 +49,10 @@ VERSION_MINOR	= @VERSION_MINOR@
 VERSION		= $(VERSION_MAJOR).$(VERSION_MINOR)
 REL_VERSION	= @REL_VERSION@
 ABI_VERSION	= @ABI_VERSION@
+
+RESULTING_SYMS	= @RESULTING_SYMS@
+VERSIONED_SYMS	= @VERSIONED_SYMS@
+
 @SET_SHLIB_VARS@
 CDKLIB		= @LIB_TARGET@
 IMPORT_LIB	= lib$(LIB_ROOTNAME).dll.a
@@ -58,6 +63,7 @@ IMPORT_LIB	= lib$(LIB_ROOTNAME).dll.a
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
 
+top_srcdir	= @top_srcdir@
 srcdir		= @srcdir@
 VPATH		= $(srcdir)
 

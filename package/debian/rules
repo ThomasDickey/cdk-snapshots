@@ -31,7 +31,8 @@ configure = ../../configure \
 		--build=$(DEB_BUILD_GNU_TYPE) \
 		--prefix=/usr \
 		--mandir=\$${prefix}/share/man \
-		--with-ncursesw \
+		--with-screen=ncursesw6 \
+		--with-versioned-syms \
 		--with-libname=cdk \
 		--disable-rpath-hack
 
