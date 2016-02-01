@@ -14,7 +14,7 @@ There are two cases:
 Here is an sample copyright for the first case (permissions for the latter
 are identical, though the copyright owner differs of course):
 
-    Changes 1999-2014,2015 copyright Thomas E. Dickey
+    Changes 1999-2015,2016 copyright Thomas E. Dickey
    
     Copyright 1999, Mike Glover
     All rights reserved.
@@ -50,7 +50,7 @@ are identical, though the copyright owner differs of course):
 
 Files: aclocal.m4
 Licence: other-BSD
-Copyright:  1999-2014,2015 by Thomas E. Dickey
+Copyright:  1999-2015,2016 by Thomas E. Dickey
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -111,7 +111,7 @@ Licence: other-BSD
     shared with many OS's install programs.
 
 Files: debian/*
-Copyright:  2011-2014,2015 Thomas E. Dickey
+Copyright:  2011-2015,2016 Thomas E. Dickey
 Licence: other-BSD
     Permission to use, copy, modify, and distribute this software and its
     documentation for any purpose and without fee is hereby granted,

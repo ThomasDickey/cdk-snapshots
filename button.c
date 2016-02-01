@@ -3,9 +3,9 @@
 #include <limits.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 13:20:52 $
- * $Revision: 1.37 $
+ * $Author: Aarian.P.Aleahmad $
+ * $Date: 2016/01/31 20:32:25 $
+ * $Revision: 1.38 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -64,10 +64,12 @@ CDKBUTTON *newCDKButton (CDKSCREEN *cdkscreen,
    button->boxWidth             = boxWidth;
    button->boxHeight            = boxHeight;
    button->callback             = callback;
+   button->callbackData         = NULL;
    ObjOf (button)->inputWindow  = button->win;
    ObjOf (button)->acceptsFocus = TRUE;
    initExitType (button);
    button->shadow               = shadow;
+   button->highlight            = A_REVERSE;
 
    /* Is the window NULL? */
    if (button->win == (WINDOW *)NULL)
@@ -217,7 +219,7 @@ static void drawCDKButtonText (CDKBUTTON *button)
 
       if (HasFocusObj (button))
       {
-	 c = A_REVERSE | CharOf (c);
+	 c = button->highlight | CharOf (c);
       }
 
       (void)mvwaddch (button->win, BorderOf (button), i + BorderOf (button), c);

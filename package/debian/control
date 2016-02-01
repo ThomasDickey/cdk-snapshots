@@ -8,15 +8,16 @@ Homepage: http://invisible-island.net/cdk/
 
 Package: libcdk5
 Architecture: any
-Depends: libncursesw5 (>= 5.3)
+Depends: libncursesw5 (>= 5.3), libc6
 Description: Cdk - Curses Development Kit
  Cdk stands for "Curses Development Kit".  It contains a large number of ready
  to use widgets which facilitate the speedy development of full-screen curses
  programs.
 
 Package: libcdk5-dev
+Section: libdevel
 Architecture: any
-Depends: libncursesw5 (>= 5.3), libcdk5
+Depends: libncursesw5 (>= 5.3), libcdk5, libc6-dev
 Suggests: libcdk-doc
 Description: Cdk - Curses Development Kit
  Cdk stands for "Curses Development Kit".  It contains a large number of ready
@@ -27,7 +28,8 @@ Description: Cdk - Curses Development Kit
  libcdk5.
 
 Package: libcdk5-doc
-Architecture: any
+Section: doc
+Architecture: all
 Depends: groff-base
 Description: Cdk - Curses Development Kit
  Cdk stands for "Curses Development Kit".  It contains a large number of ready

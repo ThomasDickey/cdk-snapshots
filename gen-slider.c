@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 13:19:15 $
- * $Revision: 1.25 $
+ * $Date: 2016/01/31 22:17:10 $
+ * $Revision: 1.27 $
  */
 
 /*
@@ -18,25 +18,25 @@ DeclareCDKObjects (<UPPER>, <MIXED>, setCdk, <DTYPE>);
  * This function creates a widget.
  */
 CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
-				 int xplace,
-				 int yplace,
-				 const char *title,
-				 const char *label,
-				 chtype filler,
-				 int fieldWidth,
-				 <CTYPE> start,
-				 <CTYPE> low,
-				 <CTYPE> high,
-				 <CTYPE> inc,
-				 <CTYPE> fastInc,
+			   int xplace,
+			   int yplace,
+			   const char *title,
+			   const char *label,
+			   chtype filler,
+			   int fieldWidth,
+			   <CTYPE> start,
+			   <CTYPE> low,
+			   <CTYPE> high,
+			   <CTYPE> inc,
+			   <CTYPE> fastInc,
 #if <FLOAT>
-				 int digits,
+			   int digits,
 #endif <FLOAT>
-				 boolean Box,
-				 boolean shadow)
+			   boolean Box,
+			   boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDK<UPPER> *widget = 0;
+   CDK<UPPER> *widget   = 0;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxHeight;
@@ -73,7 +73,8 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 #if <FLOAT>
    widget->digits       = digits;
 #endif <FLOAT>
-   highValueLen         = formattedSize (widget, high);
+   highValueLen         = MAXIMUM (formattedSize (widget, low),
+			           formattedSize (widget, high));
 
    /*
     * If the fieldWidth is a negative value, the fieldWidth will
@@ -190,7 +191,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    for (x = 0; x < (int)SIZEOF (bindings); ++x)
       bindCDKObject (v<UPPER>,
 		     widget,
-		     (chtype) bindings[x].from,
+		     (chtype)bindings[x].from,
 		     getcCDKBind,
 		     (void *)(long)bindings[x].to);
 
@@ -216,10 +217,10 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 
       for (;;)
       {
-	 input = (chtype) getchCDKObject (ObjOf (widget), &functionKey);
+	 input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
 
 	 /* Inject the character into the widget. */
-	 ret = (<CTYPE>) injectCDK<MIXED> (widget, input);
+	 ret = (<CTYPE>)injectCDK<MIXED> (widget, input);
 	 if (widget->exitType != vEARLY_EXIT)
 	 {
 	    return ret;
@@ -234,7 +235,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
       /* Inject each character one at a time. */
       for (x = 0; x < length; x++)
       {
-	 ret = (<CTYPE>) injectCDK<MIXED> (widget, actions[x]);
+	 ret = (<CTYPE>)injectCDK<MIXED> (widget, actions[x]);
 	 if (widget->exitType != vEARLY_EXIT)
 	 {
 	    return ret;
@@ -381,7 +382,7 @@ static bool performEdit (CDK<UPPER> *widget, chtype input)
       strcpy (temp + need, " ");
       if (isChar (input))	/* replace the char at the cursor */
       {
-	 temp[col] = (char) (input);
+	 temp[col] = (char)(input);
       }
       else if (input == KEY_BACKSPACE)	/* delete the char before the cursor */
       {
@@ -401,7 +402,7 @@ static bool performEdit (CDK<UPPER> *widget, chtype input)
 	  && value >= widget->low
 	  && value <= widget->high)
       {
-	 setCDK<MIXED>Value (widget, (<CTYPE>) value);
+	 setCDK<MIXED>Value (widget, (<CTYPE>)value);
 	 result = TRUE;
       }
       free (data);
@@ -652,8 +653,8 @@ static void drawCDK<MIXED>Field (CDK<UPPER> *widget)
 {
    int fillerCharacters, x;
    char temp[256];
-   double step = ((double)widget->fieldWidth
-		 / (double)(widget->high - widget->low));
+   double step = ((double)widget->fieldWidth /
+		  (double)(widget->high - widget->low));
 
    /* Determine how many filler characters need to be drawn. */
    fillerCharacters = (int)((widget->current - widget->low) * step);

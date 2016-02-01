@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/01/19 02:25:59 $
- * $Revision: 1.158 $
+ * $Date: 2016/01/31 21:44:07 $
+ * $Revision: 1.160 $
  */
 
 /*
@@ -621,8 +621,10 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
    {
       drawObjBox (scrollp->win, ObjOf (scrollp));
    }
-
-   /* Refresh the window. */
+   else
+   {
+      touchwin (scrollp->win);
+   }
    wrefresh (scrollp->win);
 }
 
