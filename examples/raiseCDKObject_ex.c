@@ -1,4 +1,4 @@
-/* $Id: raiseCDKObject_ex.c,v 1.10 2012/03/21 23:12:40 tom Exp $ */
+/* $Id: raiseCDKObject_ex.c,v 1.11 2016/01/31 21:18:22 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -6,7 +6,7 @@
 char *XCursesProgramName = "raiseCDKObject_ex";
 #endif
 
-#define MY_LABEL(p) ObjOf(p)->screenIndex | 0x30 | A_UNDERLINE | A_BOLD
+#define MY_LABEL(p) ((chtype)ObjOf(p)->screenIndex | 0x30 | A_UNDERLINE | A_BOLD)
 
 int main (int argc, char **argv)
 {
@@ -40,7 +40,7 @@ int main (int argc, char **argv)
    mesg1[7] = "label1 label1 label1 label1 label1 label1 label1";
    mesg1[8] = "label1 label1 label1 label1 label1 label1 label1";
    mesg1[9] = "label1 label1 label1 label1 label1 label1 label1";
-   label1 = newCDKLabel (cdkscreen, 10, 4, (CDK_CSTRING2) mesg1, 10, TRUE, FALSE);
+   label1 = newCDKLabel (cdkscreen, 10, 4, (CDK_CSTRING2)mesg1, 10, TRUE, FALSE);
    setCDKLabelULChar (label1, '1' | A_BOLD);
 
    mesg2[0] = "label2 label2 label2 label2 label2 label2 label2";
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
    mesg2[7] = "label2 label2 label2 label2 label2 label2 label2";
    mesg2[8] = "label2 label2 label2 label2 label2 label2 label2";
    mesg2[9] = "label2 label2 label2 label2 label2 label2 label2";
-   label2 = newCDKLabel (cdkscreen, 8, 8, (CDK_CSTRING2) mesg2, 10, TRUE, FALSE);
+   label2 = newCDKLabel (cdkscreen, 8, 8, (CDK_CSTRING2)mesg2, 10, TRUE, FALSE);
    setCDKLabelULChar (label2, '2' | A_BOLD);
 
    mesg3[0] = "label3 label3 label3 label3 label3 label3 label3";
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
    mesg3[7] = "label3 label3 label3 label3 label3 label3 label3";
    mesg3[8] = "label3 label3 label3 label3 label3 label3 label3";
    mesg3[9] = "label3 label3 label3 label3 label3 label3 label3";
-   label3 = newCDKLabel (cdkscreen, 6, 12, (CDK_CSTRING2) mesg3, 10, TRUE, FALSE);
+   label3 = newCDKLabel (cdkscreen, 6, 12, (CDK_CSTRING2)mesg3, 10, TRUE, FALSE);
    setCDKLabelULChar (label3, '3' | A_BOLD);
 
    mesg4[0] = "label4 label4 label4 label4 label4 label4 label4";
@@ -79,14 +79,14 @@ int main (int argc, char **argv)
    mesg4[7] = "label4 label4 label4 label4 label4 label4 label4";
    mesg4[8] = "label4 label4 label4 label4 label4 label4 label4";
    mesg4[9] = "label4 label4 label4 label4 label4 label4 label4";
-   label4 = newCDKLabel (cdkscreen, 4, 16, (CDK_CSTRING2) mesg4, 10, TRUE, FALSE);
+   label4 = newCDKLabel (cdkscreen, 4, 16, (CDK_CSTRING2)mesg4, 10, TRUE, FALSE);
    setCDKLabelULChar (label4, '4' | A_BOLD);
 
    mesg[0] = "</B>#<!B> - raise </U>label#<!U>, </B>r<!B> - </U>redraw<!U>, </B>q<!B> - </U>quit<!U>";
    instruct = newCDKLabel (cdkscreen,
 			   CDKparamValue (&params, 'X', CENTER),
 			   CDKparamValue (&params, 'Y', BOTTOM),
-			   (CDK_CSTRING2) mesg, 1,
+			   (CDK_CSTRING2)mesg, 1,
 			   CDKparamValue (&params, 'N', TRUE),
 			   CDKparamValue (&params, 'S', FALSE));
    setCDKLabelULChar (instruct, ' ' | A_NORMAL);

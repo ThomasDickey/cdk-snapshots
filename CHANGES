@@ -1,13 +1,41 @@
--- $Id: CHANGES,v 1.239 2015/09/28 23:41:11 tom Exp $
+-- $Id: CHANGES,v 1.247 2016/02/01 00:49:04 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2014, 2015
+Modifications copyright Thomas E. Dickey 1999-2015, 2016
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2016/01/31
+	+ fix a few of the lintian errors in package/debian
+	+ fix some too-wide tables in manpages, which caused Debian lintian
+	  errors.
+	+ take lower-limit's formatted length into account in slider, etc.,
+	  (patch by Guido Meusch).
+	+ make similar repainting-fixes for radio.c and marquee.c
+	+ fix repainting of Scroll widget when it has no box-outline
+	  (patch by Manuel Schmitz).
+	+ add highlight and callbackData members to CDKBUTTON, as well as
+	  macros for setting/getting the highlight value.  Use the highlight to
+	  override the default A_REVERSE used in CDK button (patch by Aarian P. 
+	  Aleahmad).
+	+ fix two bugs in template.c (patch by Aarian P. Aleahmad):
+	  + in cleanCDKTemplate, fill all of the info string with nulls
+	  + in setCDKTemplateValue, call cleanCDKTemplate whether or not
+	    the pointer for newValue passed by the caller was a null.
+	+ updated configure macros:
+	  + CF_LIB_PREFIX, CF_WITH_LIBTOOL, and CF_XOPEN_SOURCE, build-fixes
+	    for OS/2
+	  + CF_XOPEN_CURSES, improve check, making it define NCURSES_WIDECHAR
+	    if we happen to be building on a platform (such as OSX) where we do
+	    not define _XOPEN_SOURCE or _XOPEN_SOURCE_EXTENDED
+	  + CF_WITH_VERSIONED_SYMS, avoid ncurses build error on ppc64
+	    architecture the nm tool is reporting _is_missing in Data section
+	    for ppc64 (by comparison ppc64le is reporting it in Text section)
+	+ update config.guess, config.sub
 
 2015/09/28
 	+ build ".deb" test-package with ncurses6, using versioned symbols.

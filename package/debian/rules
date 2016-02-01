@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
-# MAde with the aid of dh_make, by Craig Small
-# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
-# Some lines taken from debmake, by Cristoph Lameter.
+# $Id: rules,v 1.21 2016/02/01 00:45:45 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -94,6 +92,7 @@ ifneq ($(PACKAGES.arch),)
 	dh_testroot
 	dh_link              $(verbose) $(PACKAGES.arch:%=-p%)
 	dh_installdocs       $(verbose) $(PACKAGES.arch:%=-p%)
+	dh_installchangelogs $(verbose) $(PACKAGES.arch:%=-p%) -k CHANGES
 	dh_installmenu       $(verbose) $(PACKAGES.arch:%=-p%)
 	dh_strip             $(verbose) $(PACKAGES.arch:%=-p%)
 	dh_compress          $(verbose) $(PACKAGES.arch:%=-p%)

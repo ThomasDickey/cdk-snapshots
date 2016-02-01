@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.22 2005/12/30 00:01:59 tom Exp $
+.\" $Id: cdk_binding.3,v 1.24 2016/02/01 00:50:10 tom Exp $
 .de XX
 ..
 .TH cdk_binding 3
@@ -72,8 +72,8 @@ which is one of the following values.
 center tab(/);
 l
 l l
-lw13 lw30 lw 30 .
-\fBEObjectType_Value/Corresponding_Widget/Widget_Manual_Page\fR
+lw10 lw20 lw 20 .
+\fBEObjectType_Value/Corresponding_Widget/Widget_Manual_Page\fP
 =
 vALPHALIST/Alphalist Widget/cdk_alphalist (3)
 vBUTTON/Button Widget/cdk_button (3)
@@ -149,10 +149,9 @@ If the keycode has been bound to the special function \fBgetcCDKBind\fP,
 then it will be translated to the value which was given for the binding data.
 Otherwise, a few special cases are performed:
 .TS
-center tab(/) allbox;
+center tab(/) box;
 l l
-l l
-lw35 lw35 .
+lw25 lw25 .
 \fBKey/Result\fR
 =
 CTRL-A/KEY_HOME
