@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 13:11:58 $
- * $Revision: 1.165 $
+ * $Author: Aarian P. Aleahmad $
+ * $Date: 2016/02/18 14:33:00 $
+ * $Revision: 1.166 $
  */
 
 /*
@@ -677,7 +677,8 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 }
 	 else
 	 {
-	    (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler | mentry->fieldAttr, mentry->fieldWidth - y);
+	    (void)mvwhline (mentry->fieldWin, x, y, mentry->filler | mentry->fieldAttr, mentry->fieldWidth - y);
+	    break;
 	 }
       }
    }
