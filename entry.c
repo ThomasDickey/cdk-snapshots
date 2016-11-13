@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 13:12:32 $
- * $Revision: 1.221 $
+ * $Author: Aarian P. Aleahmad $
+ * $Date: 2016/02/18 14:34:00 $
+ * $Revision: 1.222 $
  */
 
 /*
@@ -661,8 +661,11 @@ static void drawCDKEntryField (CDKENTRY *entry)
    int infoLength = 0;
    int x = 0;
 
+   /* Set background color and attributes of the entry field */
+   wbkgd(entry->fieldWin, entry->fieldAttr);
+
    /* Draw in the filler characters. */
-   (void)mvwhline (entry->fieldWin, 0, x, entry->filler, entry->fieldWidth);
+   (void)mvwhline (entry->fieldWin, 0, x, entry->filler | entry->fieldAttr, entry->fieldWidth);
 
    /* If there is information in the field. Then draw it in. */
    if (entry->info != 0)
@@ -674,7 +677,7 @@ static void drawCDKEntryField (CDKENTRY *entry)
       {
 	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
-	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden);
+	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden | entry->fieldAttr);
 	 }
       }
       else
