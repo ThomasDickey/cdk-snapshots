@@ -87,7 +87,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
 
    /* Make the label window. */
-   entry->win = subwin (cdkscreen->window, boxHeight, boxWidth, ypos, xpos);
+   entry->win = newwin (boxHeight, boxWidth, ypos, xpos);
    if (entry->win == 0)
    {
       destroyCDKObject (entry);
@@ -151,7 +151,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    /* Do we want a shadow? */
    if (shadow)
    {
-      entry->shadowWin = subwin (cdkscreen->window,
+	   entry->shadowWin = newwin (
 				 boxHeight,
 				 boxWidth,
 				 ypos + 1,
