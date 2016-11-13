@@ -655,6 +655,9 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	      ? length - 1
 	      : length);
 
+   /* Set background color and attributes of the entry field */
+   wbkgd(mentry->fieldWin, mentry->fieldAttr);
+
    /* Start redrawing the fields. */
    for (x = 0; x < mentry->rows; x++)
    {
@@ -664,7 +667,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 {
 	    if (isHiddenDisplayType (mentry->dispType))
 	    {
-	       (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	       (void)mvwaddch (mentry->fieldWin, x, y, mentry->hidden | mentry->fieldAttr);
 	    }
 	    else
 	    {
@@ -674,7 +677,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 }
 	 else
 	 {
-	    (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	    (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler | mentry->fieldAttr, mentry->fieldWidth - y);
 	 }
       }
    }
