@@ -337,6 +337,18 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
       from++;
    }
    else if (isdigit (CharOf (string[from + 1])) &&
+	    isdigit (CharOf (string[from + 2])) &&
+	    isdigit (CharOf (string[from + 3])))
+   {
+#ifdef HAVE_START_COLOR
+      pair = DigitOf (string[from + 1]) * 100 + DigitOf (string[from + 2]) * 10 + DigitOf (string[from + 3]);
+      *mask = (chtype)COLOR_PAIR ( (pair>255) ? 255 : pair );
+#else
+      *mask = A_BOLD;
+#endif
+      from += 3;
+   }
+   else if (isdigit (CharOf (string[from + 1])) &&
 	    isdigit (CharOf (string[from + 2])))
    {
 #ifdef HAVE_START_COLOR
