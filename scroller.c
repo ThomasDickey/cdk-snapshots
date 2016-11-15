@@ -3,9 +3,9 @@
 #include <scroller.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/09/01 17:59:22 $
- * $Revision: 1.2 $
+ * $Author: Aarian P. Aleahmad $
+ * $Date: 2016/03/06 16:45:00 $
+ * $Revision: 1.3 $
  */
 
 void scroller_KEY_UP (CDKSCROLLER *scroller)
@@ -173,7 +173,7 @@ void scroller_SetPosition (CDKSCROLLER *scroller, int item)
    }
 
    scroller->currentItem = item;
-   scroller->currentHigh = item;
+   scroller->currentHigh = scroller->currentItem - scroller->currentTop;
 }
 
 int scroller_MaxViewSize (CDKSCROLLER *scroller)
