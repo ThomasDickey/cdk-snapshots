@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2013/06/16 13:11:58 $
- * $Revision: 1.165 $
+ * $Author: Aarian P. Aleahmad $
+ * $Date: 2016/02/18 14:33:00 $
+ * $Revision: 1.166 $
  */
 
 /*
@@ -655,6 +655,9 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	      ? length - 1
 	      : length);
 
+   /* Set background color and attributes of the entry field */
+   wbkgd(mentry->fieldWin, mentry->fieldAttr);
+
    /* Start redrawing the fields. */
    for (x = 0; x < mentry->rows; x++)
    {
@@ -664,7 +667,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 {
 	    if (isHiddenDisplayType (mentry->dispType))
 	    {
-	       (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	       (void)mvwaddch (mentry->fieldWin, x, y, mentry->hidden | mentry->fieldAttr);
 	    }
 	    else
 	    {
@@ -674,7 +677,8 @@ void drawCDKMentryField (CDKMENTRY *mentry)
 	 }
 	 else
 	 {
-	    (void)mvwaddch (mentry->fieldWin, x, y, mentry->filler);
+	    (void)mvwhline (mentry->fieldWin, x, y, mentry->filler | mentry->fieldAttr, mentry->fieldWidth - y);
+	    break;
 	 }
       }
    }
