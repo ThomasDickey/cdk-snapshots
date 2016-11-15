@@ -86,7 +86,15 @@ struct SEntry {
    chtype	filler;
    chtype	hidden;
    ENTRYCB	callbackfn;
+   void		*callbackData;
 };
+
+/*
+ * This sets the callback function of the button's argument.
+ */
+#define setCDKEntryCBArgs(entry, argPtr)	((entry)->callbackData = (void*)(argPtr))
+
+#define getCDKEntryCBArgs(entry, argType)	((argType) ((entry)->callbackData))
 
 /*
  * This creates a pointer to a new CDK entry widget.
