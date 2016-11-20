@@ -6,8 +6,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2008/11/01 14:27:23 $
- * $Revision: 1.88 $
+ * $Date: 2016/01/19 10:57:39 $
+ * $Revision: 1.89 $
  */
 
 typedef struct _all_screens
@@ -232,6 +232,16 @@ void registerCDKObject (CDKSCREEN *screen, EObjectType cdktype, void *object)
    {
       setScreenIndex (screen, screen->objectCount++, obj);
    }
+}
+
+/*
+ * This registers a CDK object with a screen.
+ */
+void reRegisterCDKObject (EObjectType cdktype, void *object)
+{
+   CDKOBJS *obj = (CDKOBJS *)object;
+
+   registerCDKObject ( obj->screen, cdktype, object);
 }
 
 /*

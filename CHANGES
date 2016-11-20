@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.247 2016/02/01 00:49:04 tom Exp $
+-- $Id: CHANGES,v 1.255 2016/11/20 14:18:31 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -8,6 +8,18 @@ Modifications copyright Thomas E. Dickey 1999-2015, 2016
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2016/11/20
+	> patches by Aarian P. Aleahmad:
+	+ modify encodeAttribute() to allow up to 256 color pairs.
+	+ corrected assignment in scroller_SetPosition(), to show highlighted
+	  member.
+	+ improve the way attributes are applied to Mentry widgets.
+	+ improve Entry widget by using newwin rather than subwin, as well
+	  as passing arguments to callback function.
+
+2016/11/19
+	+ add reRegisterCDKObject() 
 
 2016/01/31
 	+ fix a few of the lintian errors in package/debian

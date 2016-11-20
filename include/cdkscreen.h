@@ -1,5 +1,5 @@
 /*
- * $Id: cdkscreen.h,v 1.16 2005/12/30 01:53:30 tom Exp $
+ * $Id: cdkscreen.h,v 1.17 2016/01/19 11:00:35 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -95,6 +95,13 @@ CDKSCREEN *setDefaultCDKScreen (
  */
 void registerCDKObject (
 		CDKSCREEN *	/* screen */,
+		EObjectType	/* cdktype */,
+		void *		/* object */);
+
+/*
+ * This function registers a CDK widget with it's former screen.
+ */
+void reRegisterCDKObject (
 		EObjectType	/* cdktype */,
 		void *		/* object */);
 

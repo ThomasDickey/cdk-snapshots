@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: tom $
- * $Date: 2014/11/05 10:20:13 $
- * $Revision: 1.215 $
+ * $Author: aleahmad $
+ * $Date: 2016/11/20 13:48:59 $
+ * $Revision: 1.216 $
  */
 
 #define L_MARKER '<'
@@ -335,6 +335,18 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
    if (*mask != 0)
    {
       from++;
+   }
+   else if (isdigit (CharOf (string[from + 1])) &&
+	    isdigit (CharOf (string[from + 2])) &&
+	    isdigit (CharOf (string[from + 3])))
+   {
+#ifdef HAVE_START_COLOR
+      pair = DigitOf (string[from + 1]) * 100 + DigitOf (string[from + 2]) * 10 + DigitOf (string[from + 3]);
+      *mask = (chtype)COLOR_PAIR ( (pair>255) ? 255 : pair );
+#else
+      *mask = A_BOLD;
+#endif
+      from += 3;
    }
    else if (isdigit (CharOf (string[from + 1])) &&
 	    isdigit (CharOf (string[from + 2])))
