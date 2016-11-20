@@ -1,3 +1,15 @@
+cdk (5.0.20161120) unstable; urgency=low
+
+  * maintenance updates
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Sun, 20 Nov 2016 08:43:47 -0500
+
+cdk (5.0.20161119) unstable; urgency=low
+
+  * maintenance updates
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Sat, 19 Nov 2016 08:24:00 -0500
+
 cdk (5.0.20160131) unstable; urgency=low
 
   * maintenance updates
