@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/01/19 01:58:00 $
- * $Revision: 1.110 $
+ * $Date: 2016/11/20 18:39:12 $
+ * $Revision: 1.111 $
  */
 
 /*
@@ -36,7 +36,6 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen,
 {
    /* *INDENT-EQLS* */
    CDKALPHALIST *alphalist      = 0;
-   chtype *chtypeLabel          = 0;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -80,7 +79,7 @@ CDKALPHALIST *newCDKAlphalist (CDKSCREEN *cdkscreen,
    /* Translate the label char *pointer to a chtype pointer. */
    if (label != 0)
    {
-      chtypeLabel = char2Chtype (label, &labelLen, &junk2);
+      chtype *chtypeLabel = char2Chtype (label, &labelLen, &junk2);
       freeChtype (chtypeLabel);
    }
 
@@ -344,7 +343,7 @@ char *activateCDKAlphalist (CDKALPHALIST *alphalist, chtype *actions)
 static int _injectCDKAlphalist (CDKOBJS *object, chtype input)
 {
    CDKALPHALIST *alphalist = (CDKALPHALIST *)object;
-   char *ret = unknownString;
+   char *ret;
 
    /* Draw the widget. */
    drawCDKAlphalist (alphalist, ObjOf (alphalist)->box);
@@ -602,10 +601,11 @@ static int adjustAlphalistCB (EObjectType objectType GCC_UNUSED, void
    CDKALPHALIST *alphalist = (CDKALPHALIST *)clientData;
    CDKSCROLL *scrollp      = alphalist->scrollField;
    CDKENTRY *entry         = alphalist->entryField;
-   char *current           = 0;
 
    if (scrollp->listSize > 0)
    {
+      char *current;
+
       /* Adjust the scrolling list. */
       injectMyScroller (alphalist, key);
 
@@ -743,17 +743,10 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    CDKALPHALIST *alphalist = (CDKALPHALIST *)clientData;
    CDKENTRY *entry         = (CDKENTRY *)alphalist->entryField;
    CDKSCROLL *scrollp      = 0;
-   int currentIndex        = 0;
    int wordLength          = 0;
-   int selected            = -1;
-   int altCount            = 0;
-   int height              = 0;
-   int match               = 0;
    int Index               = 0;
    int ret                 = 0;
-   int x                   = 0;
    char **altWords         = 0;
-   unsigned used           = 0;
 
    if (entry->info == 0)
    {
@@ -791,9 +784,13 @@ static int completeWordCB (EObjectType objectType GCC_UNUSED, void *object GCC_U
    ret = strncmp (alphalist->list[Index + 1], entry->info, (size_t) wordLength);
    if (ret == 0)
    {
-      /* *INDENT-EQLS* */
-      currentIndex = Index;
-      altCount     = 0;
+      int currentIndex = Index;
+      int altCount = 0;
+      unsigned used = 0;
+      int selected;
+      int height;
+      int match;
+      int x;
 
       /* Start looking for alternate words. */
       /* FIXME: bsearch would be more suitable */

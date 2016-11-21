@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/01/31 21:11:59 $
- * $Revision: 1.141 $
+ * $Date: 2016/11/20 20:13:16 $
+ * $Revision: 1.142 $
  */
 
 /*
@@ -234,7 +234,6 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 {
    CDKTEMPLATE *widget = (CDKTEMPLATE *)object;
    int ppReturn = 1;
-   int length, x;
    char *ret = unknownString;
    bool complete = FALSE;
 
@@ -303,6 +302,8 @@ static int _injectCDKTemplate (CDKOBJS *object, chtype input)
 	 case CDK_PASTE:
 	    if (GPasteBuffer != 0)
 	    {
+	       int length, x;
+
 	       cleanCDKTemplate (widget);
 
 	       /* Start inserting each character one at a time. */
@@ -543,10 +544,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
  */
 char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
 {
-   /* *INDENT-EQLS* */
-   char *mixedString    = 0;
-   int platePos         = 0;
-   int infoPos          = 0;
+   char *mixedString = 0;
 
    if (cdktemplate->info != 0 && cdktemplate->info[0] != '\0')
    {
@@ -554,6 +552,9 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
 
       if (mixedString != 0)
       {
+	 int infoPos = 0;
+	 int platePos = 0;
+
 	 while (platePos < cdktemplate->plateLen)
 	 {
 	    mixedString[platePos] = (char)(isPlateChar (cdktemplate->plate[platePos])
@@ -573,13 +574,14 @@ char *mixCDKTemplate (CDKTEMPLATE *cdktemplate)
 char *unmixCDKTemplate (CDKTEMPLATE *cdktemplate, const char *info)
 {
    /* *INDENT-EQLS* */
-   int x                = 0;
-   int pos              = 0;
    int infolen          = (int)strlen (info);
    char *unmixedString  = typeCallocN (char, infolen + 2);
 
    if (unmixedString != 0)
    {
+      int pos = 0;
+      int x = 0;
+
       while (pos < infolen)
       {
 	 if (isPlateChar (cdktemplate->plate[pos]))
@@ -681,7 +683,6 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
    /* *INDENT-EQLS* */
    chtype fieldColor    = 0;
    int infolen          = (int)strlen (cdktemplate->info);
-   int x                = 0;
 
    /* Draw in the label and the cdktemplate object. */
    if (cdktemplate->labelWin != 0)
@@ -705,6 +706,7 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
       if (infolen != 0)
       {
 	 int pos = 0;
+	 int x = 0;
 	 for (x = 0; x < cdktemplate->fieldWidth; x++)
 	 {
 	    if (isPlateChar (cdktemplate->plate[x]) && pos < infolen)

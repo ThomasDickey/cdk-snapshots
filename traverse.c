@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 09:42:50 $
- * $Revision: 1.23 $
+ * $Date: 2016/11/20 18:28:30 $
+ * $Revision: 1.24 $
  */
 
 #define limitFocusIndex(screen, value) \
@@ -55,7 +55,7 @@ static CDKOBJS *switchFocus (CDKOBJS *newobj, CDKOBJS *oldobj)
 
 static boolean checkMenuKey (int keyCode, int functionKey)
 {
-   int result = FALSE;
+   int result;
 
    result = (keyCode == KEY_ESC && !functionKey);
 

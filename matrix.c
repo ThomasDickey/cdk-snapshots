@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 13:17:18 $
- * $Revision: 1.193 $
+ * $Date: 2016/11/20 20:09:36 $
+ * $Revision: 1.194 $
  */
 
 /*
@@ -129,7 +129,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
     * Count the number of lines in the title (see setCdkTitle).
     */
    temp = CDKsplitString (title, '\n');
-   TitleLinesOf (matrix) = (int)CDKcountStrings ((CDK_CSTRING2) temp);
+   TitleLinesOf (matrix) = (int)CDKcountStrings ((CDK_CSTRING2)temp);
    CDKfreeStrings (temp);
 
    /* Determine the height of the box. */
@@ -415,7 +415,6 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    int movedCell     = FALSE;
    int charcount     = (int)strlen (MATRIX_INFO (widget, widget->row, widget->col));
    int ppReturn      = 1;
-   int infolen;
    int ret           = unknownInt;
    bool complete     = FALSE;
 
@@ -856,7 +855,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       infolen = (int)strlen (CurMatrixInfo (widget));
+	       int infolen = (int)strlen (CurMatrixInfo (widget));
 	       wmove (CurMatrixCell (widget), 1, infolen + 1);
 	    }
 	    wrefresh (CurMatrixCell (widget));

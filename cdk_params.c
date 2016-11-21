@@ -4,8 +4,8 @@
  * Useful functions for command-line parsing.
  *
  * $Author: tom $
- * $Date: 2014/11/06 00:56:26 $
- * $Revision: 1.11 $
+ * $Date: 2016/11/20 18:32:53 $
+ * $Revision: 1.12 $
  */
 
 #define OPTION_ON	((char *)1)
@@ -111,13 +111,14 @@ void CDKparseParams (int argc,
 		     const char *options)
 {
    int code;
-   const char *str;
 
    memset (params, 0, sizeof (*params));
    params->Box = TRUE;
 
    while ((code = getopt (argc, argv, options)) != EOF)
    {
+      const char *str;
+
       if (code == '?' || (str = (strchr) (options, code)) == 0)
       {
 	 usage (argv, params, options);

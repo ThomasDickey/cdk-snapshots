@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2012/03/22 00:43:33 $
- * $Revision: 1.16 $
+ * $Date: 2016/11/20 20:07:11 $
+ * $Revision: 1.17 $
  */
 
 /*
@@ -99,17 +99,15 @@ int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 
       if (title != 0)
       {
-	 chtype *holder;
 	 char **temp = 0;
 	 int titleWidth;
 	 int x;
 	 int len;
 	 int align;
-	 int maxWidth = 0;
 
 	 /* We need to split the title on \n. */
 	 temp = CDKsplitString (title, '\n');
-	 obj->titleLines = (int)CDKcountStrings ((CDK_CSTRING2) temp);
+	 obj->titleLines = (int)CDKcountStrings ((CDK_CSTRING2)temp);
 
 	 obj->title = typeCallocN (chtype *, obj->titleLines + 1);
 	 obj->titlePos = typeCallocN (int, obj->titleLines + 1);
@@ -117,10 +115,12 @@ int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 
 	 if (boxWidth >= 0)
 	 {
+	    int maxWidth = 0;
+
 	    /* We need to determine the widest title line. */
 	    for (x = 0; x < obj->titleLines; x++)
 	    {
-	       holder = char2Chtype (temp[x], &len, &align);
+	       chtype *holder = char2Chtype (temp[x], &len, &align);
 	       maxWidth = MAXIMUM (maxWidth, len);
 	       freeChtype (holder);
 	    }

@@ -1,4 +1,4 @@
-/* $Id: radio_ex.c,v 1.18 2012/03/21 23:51:54 tom Exp $ */
+/* $Id: radio_ex.c,v 1.19 2016/11/20 20:19:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,7 @@ int main (int argc, char **argv)
    char **item          = 0;
    const char *mesg[5];
    char temp[256];
-   int selection, count;
+   int count;
 
    CDK_PARAMS params;
 
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 			CDKparamValue (&params, 'H', 10),
 			CDKparamValue (&params, 'W', 40),
 			CDKparamString2 (&params, 't', title),
-			CDKparamNumber (&params, 'c') ? 0 : (CDK_CSTRING2) item,
+			CDKparamNumber (&params, 'c') ? 0 : (CDK_CSTRING2)item,
 			CDKparamNumber (&params, 'c') ? 0 : count,
 			'#' | A_REVERSE, 1,
 			A_REVERSE,
@@ -76,14 +76,14 @@ int main (int argc, char **argv)
 
    if (CDKparamNumber (&params, 'c'))
    {
-      setCDKRadioItems (radio, (CDK_CSTRING2) item, count);
+      setCDKRadioItems (radio, (CDK_CSTRING2)item, count);
    }
 
    /* loop until user selects a file, or cancels */
    for (;;)
    {
       /* Activate the radio list. */
-      selection = activateCDKRadio (radio, 0);
+      int selection = activateCDKRadio (radio, 0);
 
       /* Check the exit status of the widget. */
       if (radio->exitType == vESCAPE_HIT)
@@ -91,7 +91,7 @@ int main (int argc, char **argv)
 	 mesg[0] = "<C>You hit escape. No item selected.";
 	 mesg[1] = "";
 	 mesg[2] = "<C>Press any key to continue.";
-	 popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+	 popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
 	 break;
       }
       else if (radio->exitType == vNORMAL)
@@ -108,14 +108,14 @@ int main (int argc, char **argv)
 	    mesg[1] = temp;
 	    mesg[2] = "";
 	    mesg[3] = "<C>Press any key to continue.";
-	    popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
+	    popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 4);
 	    count = CDKgetDirectoryContents (item[selection], &nitem);
 	    if (count > 0)
 	    {
 	       CDKfreeStrings (item);
 	       item = nitem;
 	       if (chdir (item[selection]) == 0)
-		  setCDKRadioItems (radio, (CDK_CSTRING2) item, count);
+		  setCDKRadioItems (radio, (CDK_CSTRING2)item, count);
 	    }
 	 }
 	 else
@@ -125,7 +125,7 @@ int main (int argc, char **argv)
 	    mesg[1] = temp;
 	    mesg[2] = "";
 	    mesg[3] = "<C>Press any key to continue.";
-	    popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
+	    popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 4);
 	    break;
 	 }
       }

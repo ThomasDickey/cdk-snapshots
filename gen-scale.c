@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:03:13 $
- * $Revision: 1.24 $
+ * $Date: 2016/11/20 18:32:34 $
+ * $Revision: 1.25 $
  */
 
 /*
@@ -339,7 +339,6 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
 {
    bool result = FALSE;
    bool modify = TRUE;
-   int base = 0;
    int need = widget->fieldWidth;
    char *temp = (char *)malloc ((size_t) need + 2);
    char test;
@@ -355,6 +354,8 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
 
    if (temp != 0)
    {
+      int base = 0;
+
       wmove (widget->fieldWin, 0, base);
       winnstr (widget->fieldWin, temp, need);
       strcpy (temp + need, " ");
@@ -766,7 +767,7 @@ void setCDK<MIXED>LowHigh (CDK<UPPER> * widget, <CTYPE> low, <CTYPE> high)
       widget->low = low;
       widget->high = high;
    }
-   else if (low > high)
+   else
    {
       widget->low = high;
       widget->high = low;

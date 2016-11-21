@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.255 2016/11/20 14:18:31 tom Exp $
+-- $Id: CHANGES,v 1.257 2016/11/20 20:35:10 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -10,6 +10,27 @@ Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
 2016/11/20
+	+ fix warnings from cppcheck 1.76.1
+	+ updated configure macros:
+	  + CF_CC_ENV_FLAGS don't limit the check to -I, -U and -D options,
+	    since the added options can include various compiler options before
+	    and after preprocessor options.
+	  + CF_GNU_SOURCE recent glibc (Debian 2.23-4 for example) has
+	    misordered ifdef/checks for new symbol _DEFAULT_SOURCE, producing
+	    warning messages when only _GNU_SOURCE is defined.  Add a followup
+	    check to define _DEFAULT_SOURCE.
+	  + CF_LD_RPATH_OPT change FreeBSD to use -Wl,-rpath rather than -rpath
+	    option.  According to FreeBSD #178732, either works since FreeBSD
+	    4.x; however scons does not accept anything except the -Wl,-rpath
+	    form.
+	  + CF_PROG_LINT add cpplint to programs to use; drop ad hoc tdlint and
+	    alint.
+	  + CF_WITH_NCURSES_ETC add check for ncurses pthreads
+	  + CF_XOPEN_SOURCE add "uclinux" to list of Linux's and use
+	    _GNU_SOURCE for cygwin headers, tested with cygwin 2.3, 2.5
+	  + CF__ADD_SHLIB_RULES improve scripting for ldconfig to avoid warning
+	    messages if no permissions
+	+ update config.guess, config.sub
 	> patches by Aarian P. Aleahmad:
 	+ modify encodeAttribute() to allow up to 256 color pairs.
 	+ corrected assignment in scroller_SetPosition(), to show highlighted

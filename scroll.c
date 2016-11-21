@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/01/31 21:44:07 $
- * $Revision: 1.160 $
+ * $Date: 2016/11/20 19:24:26 $
+ * $Revision: 1.161 $
  */
 
 /*
@@ -239,10 +239,11 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
    {
       chtype input;
       boolean functionKey;
-      int ret;
 
       for (;;)
       {
+	 int ret;
+
 	 fixCursorPosition (scrollp);
 	 input = (chtype)getchCDKObject (ObjOf (scrollp), &functionKey);
 
@@ -258,12 +259,11 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
    {
       int length = chlen (actions);
       int i = 0;
-      int ret;
 
       /* Inject each character one at a time. */
       for (i = 0; i < length; i++)
       {
-	 ret = injectCDKScroll (scrollp, actions[i]);
+	 int ret = injectCDKScroll (scrollp, actions[i]);
 	 if (scrollp->exitType != vEARLY_EXIT)
 	    return ret;
       }
@@ -558,18 +558,17 @@ static void setViewSize (CDKSCROLL *scrollp, int listSize)
  */
 static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 {
-   int screenPos;
-   int xpos, ypos;
-   int j, k;
-
    /* If the list is empty, don't draw anything. */
    if (scrollp->listSize > 0)
    {
+      int j;
+
       /* Redraw the list */
       for (j = 0; j < scrollp->viewSize; j++)
       {
-	 xpos = SCREEN_YPOS (scrollp, 0);
-	 ypos = SCREEN_YPOS (scrollp, j);
+	 int k;
+	 int xpos = SCREEN_YPOS (scrollp, 0);
+	 int ypos = SCREEN_YPOS (scrollp, j);
 
 	 writeBlanks (scrollp->listWin, xpos, ypos,
 		      HORIZONTAL, 0, scrollp->boxWidth - 2 * BorderOf (scrollp));
@@ -579,7 +578,7 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 	 /* Draw the elements in the scroll list. */
 	 if (k < scrollp->listSize)
 	 {
-	    screenPos = SCREENPOS (scrollp, k);
+	    int screenPos = SCREENPOS (scrollp, k);
 
 	    /* Write in the correct line. */
 	    writeChtype (scrollp->listWin,
@@ -694,7 +693,6 @@ static boolean allocListArrays (CDKSCROLL *scrollp,
 {
    /* *INDENT-EQLS* */
    boolean result;
-   int n;
    int nchunk           = ((newSize + 1) | 31) + 1;
    chtype **newList     = typeCallocN (chtype *, nchunk);
    int *newLen          = typeCallocN (int, nchunk);
@@ -704,6 +702,8 @@ static boolean allocListArrays (CDKSCROLL *scrollp,
        newLen != 0 &&
        newPos != 0)
    {
+      int n;
+
       for (n = 0; n < oldSize; ++n)
       {
 	 newList[n] = scrollp->item[n];
@@ -784,13 +784,14 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp,
    if (listSize > 0)
    {
       /* *INDENT-EQLS* */
-      int widestItem            = 0;
-      int x                     = 0;
       size_t have               = 0;
       char *temp                = 0;
 
       if (allocListArrays (scrollp, 0, listSize))
       {
+	 int widestItem = 0;
+	 int x = 0;
+
 	 /* Create the items in the scrolling list. */
 	 status = 1;
 	 for (x = 0; x < listSize; x++)
@@ -865,10 +866,10 @@ void setCDKScrollItems (CDKSCROLL *scrollp, CDK_CSTRING2 list, int listSize, boo
 }
 int getCDKScrollItems (CDKSCROLL *scrollp, char **list)
 {
-   int x;
-
    if (list != 0)
    {
+      int x;
+
       for (x = 0; x < scrollp->listSize; x++)
       {
 	 list[x] = chtype2Char (scrollp->item[x]);
@@ -1011,10 +1012,10 @@ void insertCDKScrollItem (CDKSCROLL *scrollp, const char *item)
  */
 void deleteCDKScrollItem (CDKSCROLL *scrollp, int position)
 {
-   int x;
-
    if (position >= 0 && position < scrollp->listSize)
    {
+      int x;
+
       freeChtype (scrollp->item[position]);
 
       /* Adjust the list. */

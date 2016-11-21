@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 14:58:52 $
- * $Revision: 1.164 $
+ * $Date: 2016/11/20 20:15:53 $
+ * $Revision: 1.165 $
  */
 
 /*
@@ -53,9 +53,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
    int boxHeight;
    int xpos          = xplace;
    int ypos          = yplace;
-   int buttonWidth   = 0;
    int buttonAdj     = 0;
-   int buttonPos     = 1;
    int x             = 0;
    /* *INDENT-OFF* */
    static const struct { int from; int to; } bindings[] = {
@@ -97,6 +95,9 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
    viewer->buttonCount = buttonCount;
    if (buttonCount > 0)
    {
+      int buttonWidth = 0;
+      int buttonPos = 1;
+
       if ((viewer->button = typeCallocN (chtype *, buttonCount + 1)) == 0
 	  || (viewer->buttonLen = typeCallocN (int, buttonCount + 1)) == 0
 	  || (viewer->buttonPos = typeCallocN (int, buttonCount + 1)) == 0)
@@ -200,7 +201,8 @@ chtype **getCDKViewerTitle (CDKVIEWER *viewer)
    return TitleOf (viewer);
 }
 
-static void setupLine (CDKVIEWER *viewer, boolean interpret, const char *list, int x)
+static void setupLine (CDKVIEWER *viewer, boolean interpret, const char
+		       *list, int x)
 {
    /* Did they ask for attribute interpretation? */
    if (interpret)
@@ -350,7 +352,6 @@ int setCDKViewerInfo (CDKVIEWER *viewer, CDK_CSTRING2 list, int listSize, boolea
 	    /* We have a link, open the file. */
 	    char **fileContents = 0;
 	    int fileLen = 0;
-	    int fileLine = 0;
 
 	    /* Open the file and put it into the viewer. */
 	    fileLen = CDKreadFile (filename, &fileContents);
@@ -368,6 +369,8 @@ int setCDKViewerInfo (CDKVIEWER *viewer, CDK_CSTRING2 list, int listSize, boolea
 	    }
 	    else
 	    {
+	       int fileLine;
+
 	       /* For each line read, copy it into the viewer. */
 	       fileLen = MINIMUM (fileLen, (viewerSize - currentLine));
 	       for (fileLine = 0; fileLine < fileLen; fileLine++)
@@ -504,7 +507,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
    char temp[500];
    chtype input;
    boolean functionKey;
-   int x, REFRESH;
+   int x;
 
    /* Create the information about the file stats. */
    sprintf (temp, "</5>      </U>File Statistics<!U>     <!5>");
@@ -534,7 +537,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
    for (;;)
    {
       /* Reset the refresh flag. */
-      REFRESH = FALSE;
+      int REFRESH = FALSE;
 
       input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
       if (!checkCDKObjectBind (vVIEWER, widget, input))
@@ -759,7 +762,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
 	 case 'i':
 	 case 's':
 	 case 'S':
-	    popUpLabel (widget, (CDK_CSTRING2) fileInfo);
+	    popUpLabel (widget, (CDK_CSTRING2)fileInfo);
 	    REFRESH = TRUE;
 	    break;
 
@@ -836,7 +839,7 @@ static void getAndStorePattern (CDKSCREEN *screen)
    list = activateCDKEntry (getPattern, 0);
 
    /* Save the list. */
-   if ((list != 0) || (strlen (list) != 0))
+   if ((list != 0) && (strlen (list) != 0))
    {
       SearchPattern = copyChar (list);
    }
@@ -851,12 +854,14 @@ static void getAndStorePattern (CDKSCREEN *screen)
  */
 static int searchForWord (CDKVIEWER *viewer, char *pattern, int direction)
 {
-   int x, y, pos, len, plen;
    int found = 0;
+   int plen;
 
    /* If the pattern is empty then return. */
    if (pattern != 0 && (plen = (int)strlen (pattern)) != 0)
    {
+      int x, y, pos, len;
+
       if (direction == DOWN)
       {
 	 /* Start looking from 'here' down. */
@@ -943,7 +948,7 @@ static void popUpLabel (CDKVIEWER *viewer, CDK_CSTRING2 mesg)
 
    /* Set up variables. */
    label = newCDKLabel (ScreenOf (viewer), CENTER, CENTER,
-			(CDK_CSTRING2) mesg,
+			(CDK_CSTRING2)mesg,
 			(int)CDKcountStrings (mesg),
 			TRUE, FALSE);
 
@@ -1144,7 +1149,6 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
 {
    int listAdjust = 0;
    int lastLine = 0;
-   char temp[256];
    int x;
 
    /* Clear the window. */
@@ -1155,6 +1159,8 @@ static void drawCDKViewerInfo (CDKVIEWER *viewer)
    /* Draw in the current line at the top. */
    if (viewer->showLineInfo == TRUE)
    {
+      char temp[256];
+
       /* Set up the info line and draw it. */
       if (viewer->inProgress)
       {

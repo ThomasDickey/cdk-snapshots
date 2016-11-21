@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/01/31 22:17:10 $
- * $Revision: 1.27 $
+ * $Date: 2016/11/20 18:29:20 $
+ * $Revision: 1.28 $
  */
 
 /*
@@ -822,7 +822,7 @@ void setCDK<MIXED>LowHigh (CDK<UPPER> *widget, <CTYPE> low, <CTYPE> high)
       widget->low = low;
       widget->high = high;
    }
-   else if (low > high)
+   else
    {
       widget->low = high;
       widget->high = low;

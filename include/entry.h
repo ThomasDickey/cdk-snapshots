@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.28 2016/11/20 14:09:47 aleahmad Exp $
+ * $Id: entry.h,v 1.29 2016/11/20 14:41:44 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2003,2012 copyright Thomas E. Dickey
+ * Changes 1999-2015,2016 copyright Thomas E. Dickey
  *
  * Copyright 1999, Mike Glover
  * All rights reserved.

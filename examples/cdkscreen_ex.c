@@ -1,4 +1,4 @@
-/* $Id: cdkscreen_ex.c,v 1.7 2012/03/21 23:32:27 tom Exp $ */
+/* $Id: cdkscreen_ex.c,v 1.8 2016/11/20 20:07:37 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -30,7 +30,6 @@ int main (void)
       "Continue",
       "Exit"
    };
-   int answer;
 
    /* Create the curses window. */
    cursesWindow = initscr ();
@@ -48,7 +47,7 @@ int main (void)
    title1Mesg[2] = "<C>Hit space to go to the next screen";
    title1Mesg[3] = "<C><#HL(30)>";
    label1 = newCDKLabel (cdkScreen1, CENTER, TOP,
-			 (CDK_CSTRING2) title1Mesg, 4,
+			 (CDK_CSTRING2)title1Mesg, 4,
 			 FALSE, FALSE);
 
    /* Create the second screen. */
@@ -57,7 +56,7 @@ int main (void)
    title2Mesg[2] = "<C>Hit space to go to the next screen";
    title2Mesg[3] = "<C><#HL(30)>";
    label2 = newCDKLabel (cdkScreen2, RIGHT, CENTER,
-			 (CDK_CSTRING2) title2Mesg, 4,
+			 (CDK_CSTRING2)title2Mesg, 4,
 			 FALSE, FALSE);
 
    /* Create the third screen. */
@@ -66,7 +65,7 @@ int main (void)
    title3Mesg[2] = "<C>Hit space to go to the next screen";
    title3Mesg[3] = "<C><#HL(30)>";
    label3 = newCDKLabel (cdkScreen3, CENTER, BOTTOM,
-			 (CDK_CSTRING2) title3Mesg, 4,
+			 (CDK_CSTRING2)title3Mesg, 4,
 			 FALSE, FALSE);
 
    /* Create the fourth screen. */
@@ -75,7 +74,7 @@ int main (void)
    title4Mesg[2] = "<C>Hit space to go to the next screen";
    title4Mesg[3] = "<C><#HL(30)>";
    label4 = newCDKLabel (cdkScreen4, LEFT, CENTER,
-			 (CDK_CSTRING2) title4Mesg, 4,
+			 (CDK_CSTRING2)title4Mesg, 4,
 			 FALSE, FALSE);
 
    /* Create the fifth screen. */
@@ -86,13 +85,15 @@ int main (void)
    dialogMesg[4] = "<C>Otherwise press the 'Exit' button";
    dialogMesg[5] = "<C><#HL(30)>";
    dialog = newCDKDialog (cdkScreen5, CENTER, CENTER,
-			  (CDK_CSTRING2) dialogMesg, 6,
-			  (CDK_CSTRING2) buttons, 2,
+			  (CDK_CSTRING2)dialogMesg, 6,
+			  (CDK_CSTRING2)buttons, 2,
 			  A_REVERSE, TRUE, TRUE, FALSE);
 
    /* Do this for ever... (almost) */
    for (;;)
    {
+      int answer;
+
       /* Draw the first screen. */
       drawCDKScreen (cdkScreen1);
       waitCDKLabel (label1, ' ');

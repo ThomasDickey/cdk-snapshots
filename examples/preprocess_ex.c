@@ -1,4 +1,4 @@
-/* $Id: preprocess_ex.c,v 1.18 2012/03/21 23:20:40 tom Exp $ */
+/* $Id: preprocess_ex.c,v 1.19 2016/11/20 20:21:09 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -56,7 +56,7 @@ int main (void)
       mesg[0] = "<C>You hit escape. No information passed back.";
       mesg[1] = "",
 	 mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (widget->exitType == vNORMAL)
    {
@@ -65,7 +65,7 @@ int main (void)
       mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 4);
    }
 
    /* Clean up and exit. */
@@ -75,32 +75,32 @@ int main (void)
    ExitProgram (EXIT_SUCCESS);
 }
 
-static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED,
-			      void *object,
+static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object,
 			      void *clientData GCC_UNUSED,
 			      chtype input)
 {
-   /* *INDENT-EQLS* */
-   CDKENTRY *entry       = (CDKENTRY *)object;
-   CDKDIALOG *widget     = 0;
-   const char *buttons[] =
-   {
-      "OK"
-   };
-   int buttonCount       = 1;
-   int lines             = 0;
-   const char *mesg[5];
+   CDKENTRY *entry = (CDKENTRY *)object;
 
    /* Check the input. */
    if ((input == 'g') || (input == 'G'))
    {
+      /* *INDENT-EQLS* */
+      CDKDIALOG *widget     = 0;
+      int buttonCount       = 1;
+      int lines             = 0;
+      const char *buttons[] =
+      {
+	 "OK"
+      };
+      const char *mesg[5];
+
       mesg[lines++] = "<C><#HL(30)>";
       mesg[lines++] = "<C>I told you </B>NOT<!B> to type G";
       mesg[lines++] = "<C><#HL(30)>";
 
       widget = newCDKDialog (ScreenOf (entry), CENTER, CENTER,
-			     (CDK_CSTRING2) mesg, lines,
-			     (CDK_CSTRING2) buttons, buttonCount,
+			     (CDK_CSTRING2)mesg, lines,
+			     (CDK_CSTRING2)buttons, buttonCount,
 			     A_REVERSE, FALSE, TRUE, FALSE);
       activateCDKDialog (widget, 0);
       destroyCDKDialog (widget);
