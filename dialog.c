@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 13:21:40 $
- * $Revision: 1.101 $
+ * $Date: 2016/11/20 19:02:55 $
+ * $Revision: 1.102 $
  */
 
 DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
@@ -198,7 +198,6 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
 {
    /* *INDENT-EQLS* */
    CDKDIALOG *widget = (CDKDIALOG *)object;
-   int firstButton   = 0;
    int lastButton    = widget->buttonCount - 1;
    int ppReturn      = 1;
    int ret           = unknownInt;
@@ -227,6 +226,8 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
       }
       else
       {
+	 int firstButton = 0;
+
 	 switch (input)
 	 {
 	 case KEY_LEFT:

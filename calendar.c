@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/23 13:54:44 $
- * $Revision: 1.98 $
+ * $Date: 2016/11/20 20:06:42 $
+ * $Revision: 1.99 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -101,6 +101,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 	    { CDK_BACKCHAR,	KEY_PPAGE },
    };
    /* *INDENT-ON* */
+
 
    if ((calendar = newCDKObject (CDKCALENDAR, &my_funcs)) == 0)
         return (0);
@@ -501,7 +502,6 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    char *monthName = calendar->MonthName[calendar->month];
    int monthLength = getMonthLength (calendar->year, calendar->month);
    int yearIndex   = YEAR2INDEX (calendar->year);
-   int yearLen     = 0;
    int day;
    int row, col;
    int save_y      = -1;
@@ -551,6 +551,8 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    /* Draw the month in. */
    if (calendar->labelWin != 0)
    {
+      int yearLen = 0;
+
       sprintf (temp, "%s %d,", monthName, calendar->day);
       writeChar (calendar->labelWin, 0, 0,
 		 temp, HORIZONTAL, 0, (int)strlen (temp));
@@ -937,11 +939,11 @@ static void incrementCalendarDay (CDKCALENDAR *calendar, int adjust)
  */
 static void decrementCalendarDay (CDKCALENDAR *calendar, int adjust)
 {
-   int monthLength;
-
    /* Make sure we adjust the day correctly. */
    if (calendar->day - adjust < 1)
    {
+      int monthLength;
+
       /* Set the day according to the length of the month. */
       if (calendar->month == 1)
       {
@@ -954,7 +956,7 @@ static void decrementCalendarDay (CDKCALENDAR *calendar, int adjust)
 	       "Can not go past the year 1900"
 	    };
 	    Beep ();
-	    popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
+	    popupLabel (ScreenOf (calendar), (CDK_CSTRING2)mesg, 2);
 	    return;
 	 }
 	 monthLength = getMonthLength (calendar->year - 1, 12);
@@ -1027,7 +1029,7 @@ static void decrementCalendarMonth (CDKCALENDAR *calendar, int adjust)
 	    "Can not go past the year 1900"
 	 };
 	 Beep ();
-	 popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
+	 popupLabel (ScreenOf (calendar), (CDK_CSTRING2)mesg, 2);
 	 return;
       }
       else
@@ -1096,7 +1098,7 @@ static void decrementCalendarYear (CDKCALENDAR *calendar, int adjust)
 	 "Can not go past the year 1900"
       };
       Beep ();
-      popupLabel (ScreenOf (calendar), (CDK_CSTRING2) mesg, 2);
+      popupLabel (ScreenOf (calendar), (CDK_CSTRING2)mesg, 2);
       return;
    }
 

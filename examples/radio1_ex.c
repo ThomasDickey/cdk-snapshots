@@ -1,4 +1,4 @@
-/* $Id: radio1_ex.c,v 1.12 2012/03/21 23:51:54 tom Exp $ */
+/* $Id: radio1_ex.c,v 1.13 2016/11/20 20:19:40 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,11 +11,10 @@ char *XCursesProgramName = "radio_ex";
  */
 int main (int argc, char **argv)
 {
-   /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = (CDKSCREEN *)NULL;
-   CDKRADIO *radio      = (CDKRADIO *)NULL;
-   WINDOW *cursesWin    = (WINDOW *)NULL;
-   const char *item[5]  =
+   CDKSCREEN *cdkscreen;
+   CDKRADIO *radio;
+   WINDOW *cursesWin;
+   const char *item[5] =
    {
       "Choice A",
       "Choice B",
@@ -45,7 +44,7 @@ int main (int argc, char **argv)
 			CDKparamValue (&params, 'H', 5),
 			CDKparamValue (&params, 'W', 20),
 			CDKparamString (&params, 't'),
-			(CDK_CSTRING2) item, 3,
+			(CDK_CSTRING2)item, 3,
 			'#' | A_REVERSE, 1,
 			A_REVERSE,
 			CDKparamValue (&params, 'N', TRUE),
@@ -72,7 +71,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No item selected.";
       mesg[1] = "",
 	 mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (radio->exitType == vNORMAL)
    {
@@ -81,7 +80,7 @@ int main (int argc, char **argv)
       mesg[1] = temp;
       mesg[2] = "";
       mesg[3] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 4);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 4);
    }
 
    destroyCDKRadio (radio);

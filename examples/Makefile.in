@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.21 2013/07/19 23:55:03 tom Exp $
+# $Id: Makefile.in,v 1.22 2016/11/20 19:41:20 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -70,7 +70,7 @@ BINS	= \
 	viewer_ex$x \
 	viewer_ex2$x
 
-CKDKSRC	= \
+CDKSRC	= \
 	alphalist_ex.c \
 	bind_ex.c \
 	buttonbox_ex.c \

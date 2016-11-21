@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:05:27 $
- * $Revision: 1.91 $
+ * $Date: 2016/11/20 19:12:46 $
+ * $Revision: 1.92 $
  */
 
 DeclareCDKObjects (HISTOGRAM, Histogram, setCdk, Unknown);
@@ -140,9 +140,6 @@ void setCDKHistogram (CDKHISTOGRAM *widget,
  */
 void setCDKHistogramValue (CDKHISTOGRAM *widget, int low, int high, int value)
 {
-   char string[100];
-   int len;
-
    /* *INDENT-EQLS* We should error check the information we have. */
    widget->low          = (low <= high ? low : 0);
    widget->high         = (low <= high ? high : 0);
@@ -169,10 +166,14 @@ void setCDKHistogramValue (CDKHISTOGRAM *widget, int low, int high, int value)
     */
    if (widget->viewType != vNONE)
    {
+      char string[100];
+      int len;
+
       if (widget->orient == VERTICAL)
       {
 	 if (widget->statsPos == LEFT || widget->statsPos == BOTTOM)
 	 {
+
 	    /* Free the space used by the character strings. */
 	    freeChar (widget->lowString);
 	    freeChar (widget->highString);
@@ -568,7 +569,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    chtype fattr = widget->filler & A_ATTRIBUTES;
    int histX    = TitleLinesOf (widget) + 1;
    int histY    = widget->barSize;
-   int len, x, y;
+   int x, y;
 
    /* Erase the window. */
    werase (widget->win);
@@ -593,7 +594,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       /* Draw in the low label. */
       if (widget->lowString != 0)
       {
-	 len = (int)strlen (widget->lowString);
+	 int len = (int)strlen (widget->lowString);
 	 writeCharAttrib (widget->win,
 			  widget->lowx,
 			  widget->lowy,
@@ -606,7 +607,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       /* Draw in the current value label. */
       if (widget->curString != 0)
       {
-	 len = (int)strlen (widget->curString);
+	 int len = (int)strlen (widget->curString);
 	 writeCharAttrib (widget->win,
 			  widget->curx,
 			  widget->cury,
@@ -619,7 +620,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       /* Draw in the high label. */
       if (widget->highString != 0)
       {
-	 len = (int)strlen (widget->highString);
+	 int len = (int)strlen (widget->highString);
 	 writeCharAttrib (widget->win,
 			  widget->highx,
 			  widget->highy,

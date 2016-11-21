@@ -1,4 +1,4 @@
-/* $Id: vinstall.c,v 1.18 2012/03/22 09:44:58 tom Exp $ */
+/* $Id: vinstall.c,v 1.20 2016/11/20 20:40:00 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -50,8 +50,7 @@ int main (int argc, char **argv)
    char **fileList              = 0;
    const char *mesg[20];
    char oldPath[512], newPath[512], temp[2000];
-   char **files;
-   int count, chunks, ret, x;
+   int count, ret, x;
 
    /* Parse up the command line. */
    while (1)
@@ -133,7 +132,7 @@ int main (int argc, char **argv)
    titleMessage[1] = copyChar (temp);
    titleMessage[2] = copyChar ("<C></32/B><#HL(30)>");
    titleWin = newCDKLabel (cdkScreen, CENTER, TOP,
-			   (CDK_CSTRING2) titleMessage, 3,
+			   (CDK_CSTRING2)titleMessage, 3,
 			   FALSE, FALSE);
    freeCharList (titleMessage, 3);
 
@@ -254,13 +253,16 @@ int main (int argc, char **argv)
    /* Start copying the files. */
    for (x = 0; x < count; x++)
    {
+      char **files;
+      int chunks;
+
       /*
        * If the 'file' list file has 2 columns, the first is
        * the source filename, the second being the destination
        * filename.
        */
       files = CDKsplitString (fileList[x], ' ');
-      chunks = (int)CDKcountStrings ((CDK_CSTRING2) files);
+      chunks = (int)CDKcountStrings ((CDK_CSTRING2)files);
       if (chunks == 2)
       {
 	 /* Create the correct paths. */
@@ -332,8 +334,8 @@ int main (int argc, char **argv)
 
       /* Popup the dialog box. */
       ret = popupDialog (cdkScreen,
-			 (CDK_CSTRING2) mesg, 8,
-			 (CDK_CSTRING2) buttons, 3);
+			 (CDK_CSTRING2)mesg, 8,
+			 (CDK_CSTRING2)buttons, 3);
       if (ret == 0)
       {
 	 activateCDKSwindow (installOutput, 0);
@@ -367,8 +369,8 @@ int main (int argc, char **argv)
 	    mesg[1] = "<C>scrolling window to a file?";
 
 	    if (popupDialog (cdkScreen,
-			     (CDK_CSTRING2) mesg, 2,
-			     (CDK_CSTRING2) buttons, 2) == 1)
+			     (CDK_CSTRING2)mesg, 2,
+			     (CDK_CSTRING2)buttons, 2) == 1)
 	    {
 	       (void)injectCDKSwindow (installOutput, 's');
 	    }
@@ -433,18 +435,11 @@ static ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *des
  */
 static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 {
-   const char *buttons[] =
-   {
-      "Yes",
-      "No"
-   };
    int status = 0;
 #if !defined (__MINGW32__)
    mode_t dirMode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH;
 #endif
    struct stat fileStat;
-   const char *mesg[10];
-   char *error[10];
    char temp[512];
 
    /* Stat the directory. */
@@ -453,6 +448,14 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
       /* The directory does not exist. */
       if (errno == ENOENT)
       {
+	 const char *buttons[] =
+	 {
+	    "Yes",
+	    "No"
+	 };
+	 const char *mesg[10];
+	 char *error[10];
+
 	 /* Create the question. */
 	 mesg[0] = "<C>The directory ";
 	 sprintf (temp, "<C>%.256s", directory);
@@ -462,8 +465,8 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 
 	 /* Ask them if they want to create the directory. */
 	 if (popupDialog (cdkScreen,
-			  (CDK_CSTRING2) mesg, 4,
-			  (CDK_CSTRING2) buttons, 2) == 0)
+			  (CDK_CSTRING2)mesg, 4,
+			  (CDK_CSTRING2)buttons, 2) == 0)
 	 {
 	    /* Create the directory. */
 #if defined (__MINGW32__)
@@ -485,7 +488,7 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 	       error[2] = copyChar (temp);
 
 	       /* Pop up the error message. */
-	       popupLabel (cdkScreen, (CDK_CSTRING2) error, 3);
+	       popupLabel (cdkScreen, (CDK_CSTRING2)error, 3);
 
 	       freeCharList (error, 3);
 	       status = -1;
@@ -497,7 +500,7 @@ static int verifyDirectory (CDKSCREEN *cdkScreen, char *directory)
 	    error[0] = copyChar ("<C>Installation aborted.");
 
 	    /* Pop up the error message. */
-	    popupLabel (cdkScreen, (CDK_CSTRING2) error, 1);
+	    popupLabel (cdkScreen, (CDK_CSTRING2)error, 1);
 
 	    freeCharList (error, 1);
 	    status = -1;

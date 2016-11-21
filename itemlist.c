@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 13:16:15 $
- * $Revision: 1.85 $
+ * $Date: 2016/11/20 20:16:56 $
+ * $Revision: 1.86 $
  */
 
 static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count);
@@ -545,7 +545,8 @@ void setCDKItemlist (CDKITEMLIST *itemlist,
 /*
  * This function sets the contents of the list.
  */
-void setCDKItemlistValues (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count, int defaultItem)
+void setCDKItemlistValues (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int
+			   count, int defaultItem)
 {
    if (createList (itemlist, item, count))
    {
@@ -725,13 +726,14 @@ static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count)
       chtype **newItems = typeCallocN (chtype *, count + 1);
       int *newPos = typeCallocN (int, count + 1);
       int *newLen = typeCallocN (int, count + 1);
-      int x;
-      int fieldWidth = 0;
 
       if (newItems != 0
 	  && newPos != 0
 	  && newLen != 0)
       {
+	 int fieldWidth = 0;
+	 int x;
+
 	 /* Go through the list and determine the widest item. */
 	 status = 1;
 	 for (x = 0; x < count; x++)
@@ -759,9 +761,9 @@ static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count)
 
 	 /* *INDENT-EQLS* Copy in the new information. */
 	 itemlist->listSize = count;
-	 itemlist->item    = newItems;
-	 itemlist->itemPos = newPos;
-	 itemlist->itemLen = newLen;
+	 itemlist->item     = newItems;
+	 itemlist->itemPos  = newPos;
+	 itemlist->itemLen  = newLen;
       }
       else
       {
@@ -773,7 +775,7 @@ static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count)
    else
    {
       destroyInfo (itemlist);
-      status            = TRUE;
+      status             = TRUE;
    }
 
    return status;

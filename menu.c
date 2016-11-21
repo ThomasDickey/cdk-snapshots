@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:05:27 $
- * $Revision: 1.104 $
+ * $Date: 2016/11/20 18:56:05 $
+ * $Revision: 1.105 $
  */
 
 #define TITLELINES 1
@@ -32,7 +32,7 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
    int rightcount;
    int rightloc         = getmaxx (cdkscreen->window);
    int leftloc          = 0;
-   int x, y, max, junk;
+   int x, y, junk;
    int xpos             = getbegx (cdkscreen->window);
    int ypos             = getbegy (cdkscreen->window);
    int ymax             = getmaxy (cdkscreen->window);
@@ -58,11 +58,13 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
    /* Create the pull down menus. */
    for (x = 0; x < menuItems; x++)
    {
-      int x1 = (menuLocation[x] == LEFT) ? x : rightcount--;
+      /* *INDENT-EQLS* */
+      int x1   = (menuLocation[x] == LEFT) ? x : rightcount--;
       int x2;
-      int y1 = (menuPos == BOTTOM) ? (ymax - 1) : 0;
-      int y2 = (menuPos == BOTTOM) ? (ymax - subsize[x] - 2) : TITLELINES;
+      int y1   = (menuPos == BOTTOM) ? (ymax - 1) : 0;
+      int y2   = (menuPos == BOTTOM) ? (ymax - subsize[x] - 2) : TITLELINES;
       int high = subsize[x] + TITLELINES;
+      int max  = -1;
 
       /*
        * Limit the menu height to fit on the screen.

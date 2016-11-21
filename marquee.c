@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/01/31 21:44:55 $
- * $Revision: 1.81 $
+ * $Date: 2016/11/20 19:14:46 $
+ * $Revision: 1.82 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
@@ -117,7 +117,7 @@ int activateCDKMarquee (CDKMARQUEE *widget,
    int viewLimit;
    int padding;
    chtype *message;
-   int x, y, junk, oldcurs;
+   int x, junk, oldcurs;
    bool firstTime       = TRUE;
 
    /* Make sure the message has some content. */
@@ -142,6 +142,8 @@ int activateCDKMarquee (CDKMARQUEE *widget,
    oldcurs = curs_set (0);
    while (widget->active)
    {
+      int y;
+
       if (firstTime)
       {
 	 firstChar = 0;

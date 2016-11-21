@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/11/06 00:29:59 $
- * $Revision: 1.155 $
+ * $Date: 2016/11/20 19:25:35 $
+ * $Revision: 1.156 $
  */
 
 /*
@@ -242,10 +242,11 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    {
       chtype input;
       boolean functionKey;
-      int ret;
 
       for (;;)
       {
+	 int ret;
+
 	 fixCursorPosition (selection);
 	 input = (chtype)getchCDKObject (ObjOf (selection), &functionKey);
 
@@ -261,12 +262,11 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    {
       int length = chlen (actions);
       int j = 0;
-      int ret;
 
       /* Inject each character one at a time. */
       for (j = 0; j < length; j++)
       {
-	 ret = injectCDKSelection (selection, actions[j]);
+	 int ret = injectCDKSelection (selection, actions[j]);
 	 if (selection->exitType != vEARLY_EXIT)
 	 {
 	    return ret;
@@ -516,8 +516,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* *INDENT-EQLS* */
    int scrollbarAdj     = (selection->scrollbarPlacement == LEFT) ? 1 : 0;
    int screenPos        = 0;
-   int xpos, ypos;
-   int j, k;
+   int j;
    int selItem          = -1;
 
    /* If there is to be a highlight, assign it now */
@@ -527,8 +526,9 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
    /* draw the list... */
    for (j = 0; j < selection->viewSize; j++)
    {
-      xpos = SCREEN_XPOS (selection, 0);
-      ypos = SCREEN_YPOS (selection, j);
+      int xpos = SCREEN_XPOS (selection, 0);
+      int ypos = SCREEN_YPOS (selection, j);
+      int k;
 
       /* Draw the empty line. */
       writeBlanks (selection->win, xpos, ypos,
@@ -674,7 +674,7 @@ void setCDKSelection (CDKSELECTION *selection,
  */
 void setCDKSelectionItems (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 {
-   int widestItem = -1;
+   int widestItem;
    int j = 0;
 
    widestItem = createList (selection, list, listSize);
@@ -697,10 +697,10 @@ void setCDKSelectionItems (CDKSELECTION *selection, CDK_CSTRING2 list, int listS
 }
 int getCDKSelectionItems (CDKSELECTION *selection, char **list)
 {
-   int j;
-
    if (list != 0)
    {
+      int j;
+
       for (j = 0; j < selection->listSize; j++)
       {
 	 list[j] = chtype2Char (selection->item[j]);
@@ -932,7 +932,6 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 {
    int status = 0;
    int widestItem = 0;
-   int j;
 
    if (listSize >= 0)
    {
@@ -951,6 +950,7 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
       {
 	 int boxWidth = AvailableWidth (selection);
 	 int adjust = selection->maxchoicelen + BorderOf (selection);
+	 int j;
 
 	 status = 1;
 	 for (j = 0; j < listSize; j++)

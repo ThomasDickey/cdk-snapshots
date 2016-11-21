@@ -1,4 +1,4 @@
-/* $Id: marquee_ex.c,v 1.11 2012/03/22 00:07:35 tom Exp $ */
+/* $Id: marquee_ex.c,v 1.12 2016/11/20 19:42:24 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -54,7 +54,6 @@ int main (int argc, char **argv)
    CDKMARQUEE	*scrollMessage;
    WINDOW	*cursesWin;
    char		message[1024];
-   char		*currentTime;
    time_t	clck;
 
    CDK_PARAMS   params;
@@ -121,6 +120,8 @@ int main (int argc, char **argv)
    /* Create the marquee message. */
    if (mesg == 0)
    {
+      char *currentTime;
+
       /* Get the current time and chop off the newline. */
       time (&clck);
       currentTime = ctime (&clck);

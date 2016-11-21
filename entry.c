@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: aleahmad $
- * $Date: 2016/11/20 14:09:47 $
- * $Revision: 1.222 $
+ * $Author: tom $
+ * $Date: 2016/11/20 19:04:57 $
+ * $Revision: 1.224 $
  */
 
 /*
@@ -151,11 +151,11 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    /* Do we want a shadow? */
    if (shadow)
    {
-	   entry->shadowWin = newwin (
-				 boxHeight,
-				 boxWidth,
-				 ypos + 1,
-				 xpos + 1);
+      entry->shadowWin = newwin (
+				   boxHeight,
+				   boxWidth,
+				   ypos + 1,
+				   xpos + 1);
    }
 
    registerCDKObject (cdkscreen, vENTRY, entry);
@@ -221,14 +221,13 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 static void setPositionToEnd (CDKENTRY *entry)
 {
    int stringLen;
-   int charCount;
 
    stringLen = (int)strlen (entry->info);
    if (stringLen >= entry->fieldWidth)
    {
       if (stringLen < entry->max)
       {
-	 charCount = entry->fieldWidth - 1;
+	 int charCount = entry->fieldWidth - 1;
 	 entry->leftChar = stringLen - charCount;
 	 entry->screenCol = charCount;
       }
@@ -252,8 +251,6 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 {
    CDKENTRY *widget = (CDKENTRY *)object;
    int ppReturn = 1;
-   int x;
-   char holder;
    char *ret = unknownString;
    bool complete = FALSE;
 
@@ -306,7 +303,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    }
 	    else
 	    {
-	       holder = widget->info[currPos];
+	       char holder = widget->info[currPos];
 	       widget->info[currPos] = widget->info[currPos + 1];
 	       widget->info[currPos + 1] = holder;
 	       drawCDKEntryField (widget);
@@ -370,6 +367,8 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	       {
 		  if (currPos < infoLength)
 		  {
+		     int x;
+
 		     for (x = currPos; x < infoLength; x++)
 		     {
 			widget->info[x] = widget->info[x + 1];
@@ -559,7 +558,6 @@ static void _moveCDKEntry (CDKOBJS *object,
 static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
 {
    int plainchar = filterByDisplayType (entry->dispType, character);
-   size_t temp;
 
    if (plainchar == ERR ||
        ((int)strlen (entry->info) >= entry->max))
@@ -585,7 +583,7 @@ static void CDKEntryCallBack (CDKENTRY *entry, chtype character)
       else
       {
 	 /* Update the character pointer. */
-	 temp = strlen (entry->info);
+	 size_t temp = strlen (entry->info);
 	 entry->info[temp] = (char)plainchar;
 	 entry->info[temp + 1] = '\0';
 	 /* Do not update the pointer if it's the last character */
@@ -658,11 +656,10 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
  */
 static void drawCDKEntryField (CDKENTRY *entry)
 {
-   int infoLength = 0;
    int x = 0;
 
    /* Set background color and attributes of the entry field */
-   wbkgd(entry->fieldWin, entry->fieldAttr);
+   wbkgd (entry->fieldWin, entry->fieldAttr);
 
    /* Draw in the filler characters. */
    (void)mvwhline (entry->fieldWin, 0, x, entry->filler | entry->fieldAttr, entry->fieldWidth);
@@ -670,14 +667,15 @@ static void drawCDKEntryField (CDKENTRY *entry)
    /* If there is information in the field. Then draw it in. */
    if (entry->info != 0)
    {
-      infoLength = (int)strlen (entry->info);
+      int infoLength = (int)strlen (entry->info);
 
       /* Redraw the field. */
       if (isHiddenDisplayType (entry->dispType))
       {
 	 for (x = entry->leftChar; x < infoLength; x++)
 	 {
-	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar, entry->hidden | entry->fieldAttr);
+	    (void)mvwaddch (entry->fieldWin, 0, x - entry->leftChar,
+			    entry->hidden | entry->fieldAttr);
 	 }
       }
       else
@@ -757,8 +755,6 @@ void setCDKEntry (CDKENTRY *entry,
  */
 void setCDKEntryValue (CDKENTRY *entry, const char *newValue)
 {
-   int copychars = 0;
-
    /* If the pointer sent in is the same pointer as before, do nothing. */
    if (entry->info != newValue)
    {
@@ -775,7 +771,7 @@ void setCDKEntryValue (CDKENTRY *entry, const char *newValue)
       else
       {
 	 /* Determine how many characters we need to copy. */
-	 copychars = MINIMUM ((int)strlen (newValue), entry->max);
+	 int copychars = MINIMUM ((int)strlen (newValue), entry->max);
 
 	 /* OK, erase the old value, and copy in the new value. */
 	 cleanChar (entry->info, entry->max, '\0');

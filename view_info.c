@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:39:09 $
- * $Revision: 1.2 $
+ * $Date: 2016/11/20 18:35:56 $
+ * $Revision: 1.3 $
  */
 
 /*
@@ -17,9 +17,8 @@ int viewInfo (CDKSCREEN *screen,
 	      int buttonCount,
 	      boolean interpret)
 {
-   /* *INDENT-EQLS* * */
-   CDKVIEWER *viewer    = 0;
-   int selected         = -1;
+   CDKVIEWER *viewer = 0;
+   int selected;
 
    /* Create the file viewer to view the file selected. */
    viewer = newCDKViewer (screen, CENTER, CENTER, -6, -16,

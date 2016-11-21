@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/11/06 01:32:50 $
- * $Revision: 1.84 $
+ * $Date: 2016/11/20 20:12:18 $
+ * $Revision: 1.85 $
  */
 
 /*
@@ -477,8 +477,6 @@ void setCDKFselect (CDKFSELECT *fselect,
    CDKSCROLL *fscroll   = fselect->scrollField;
    CDKENTRY *fentry     = fselect->entryField;
    char *tempDir        = 0;
-   char *mesg[10];
-   char *newDirectory;
 
    /* Keep the info sent to us. */
    fselect->fieldAttribute = fieldAttrib;
@@ -492,6 +490,8 @@ void setCDKFselect (CDKFSELECT *fselect,
    /* Only do the directory stuff if the directory is not null. */
    if (directory != 0)
    {
+      char *newDirectory;
+
       /* Try to expand the directory if it starts with a ~ */
       if ((tempDir = expandTilde (directory)) != 0)
       {
@@ -505,6 +505,8 @@ void setCDKFselect (CDKFSELECT *fselect,
       /* Change directories. */
       if (chdir (newDirectory) != 0)
       {
+	 char *mesg[10];
+
 	 Beep ();
 
 	 /* Could not get into the directory, pop up a little message. */
@@ -586,7 +588,6 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
 {
    struct stat fileStat;
    char **dirList = 0;
-   char *oldItem;
    int fileCount;
    int x = 0;
 
@@ -607,6 +608,7 @@ int setCDKFselectDirContents (CDKFSELECT *fselect)
    /* Set the properties of the files. */
    for (x = 0; x < fselect->fileCounter; x++)
    {
+      char *oldItem;
       const char *attr = "";
       const char *mode = "?";
 
@@ -1163,14 +1165,8 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    char *mydirname      = dirName (filename);
    char *newFilename    = 0;
    size_t filenameLen   = 0;
-   int currentIndex     = 0;
-   int matches          = 0;
-   int baseChars        = 0;
-   int secondaryMatches = 0;
    int isDirectory;
    char **list;
-   int Index, x;
-   int difference, absoluteDifference;
 
    /* Make sure the filename is not null/empty. */
    if (filename == 0 ||
@@ -1226,6 +1222,8 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    /* Create the file list. */
    if ((list = typeMallocN (char *, fselect->fileCounter)) != 0)
    {
+      int Index, x;
+
       for (x = 0; x < fselect->fileCounter; x++)
       {
 	 list[x] = contentToPath (fselect, fselect->dirContents[x]);
@@ -1242,8 +1240,8 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
       else
       {
 	 /* Move to the current item in the scrolling list. */
-	 difference = Index - scrollp->currentItem;
-	 absoluteDifference = abs (difference);
+	 int difference = Index - scrollp->currentItem;
+	 int absoluteDifference = abs (difference);
 	 if (difference < 0)
 	 {
 	    for (x = 0; x < absoluteDifference; x++)
@@ -1265,9 +1263,9 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	     0 != list[Index + 1] &&
 	     0 == strncmp (list[Index + 1], filename, filenameLen))
 	 {
-	    currentIndex = Index;
-	    baseChars = (int)filenameLen;
-	    matches = 0;
+	    int currentIndex = Index;
+	    int baseChars = (int)filenameLen;
+	    int matches = 0;
 
 	    /* Determine the number of files which match. */
 	    while (currentIndex < fselect->fileCounter)
@@ -1285,7 +1283,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	    /* Start looking for the common base characters. */
 	    for (;;)
 	    {
-	       secondaryMatches = 0;
+	       int secondaryMatches = 0;
 	       for (x = Index; x < Index + matches; x++)
 	       {
 		  if (list[Index][baseChars] == list[x][baseChars])
@@ -1415,11 +1413,12 @@ static int fselectAdjustScrollCB (EObjectType objectType GCC_UNUSED,
    CDKFSELECT *fselect  = (CDKFSELECT *)clientData;
    CDKSCROLL *scrollp   = (CDKSCROLL *)fselect->scrollField;
    CDKENTRY *entry      = (CDKENTRY *)fselect->entryField;
-   char *current;
-   char *temp;
 
    if (scrollp->listSize > 0)
    {
+      char *current;
+      char *temp;
+
       /* Move the scrolling list. */
       injectMyScroller (fselect, key);
 
@@ -1474,7 +1473,10 @@ static char *format1Number (const char *format, long value)
    return result;
 }
 
-static char *format3String (const char *format, const char *s1, const char *s2, const char *s3)
+static char *format3String (const char *format,
+			    const char *s1,
+			    const char *s2,
+			    const char *s3)
 {
    char *result;
 

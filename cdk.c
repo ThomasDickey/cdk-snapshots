@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: aleahmad $
- * $Date: 2016/11/20 13:48:59 $
- * $Revision: 1.216 $
+ * $Author: tom $
+ * $Date: 2016/11/20 18:59:18 $
+ * $Revision: 1.218 $
  */
 
 #define L_MARKER '<'
@@ -204,10 +204,11 @@ chtype *copyChtype (const chtype *original)
    if (original != 0)
    {
       int len = chlen (original);
-      int x;
 
       if ((newstring = typeMallocN (chtype, len + 4)) != 0)
       {
+	 int x;
+
 	 for (x = 0; x < len; x++)
 	 {
 	    newstring[x] = original[x];
@@ -341,8 +342,10 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
 	    isdigit (CharOf (string[from + 3])))
    {
 #ifdef HAVE_START_COLOR
-      pair = DigitOf (string[from + 1]) * 100 + DigitOf (string[from + 2]) * 10 + DigitOf (string[from + 3]);
-      *mask = (chtype)COLOR_PAIR ( (pair>255) ? 255 : pair );
+      pair = (DigitOf (string[from + 1]) * 100
+	      + DigitOf (string[from + 2]) * 10
+	      + DigitOf (string[from + 3]));
+      *mask = (chtype)COLOR_PAIR ((pair > 255) ? 255 : pair);
 #else
       *mask = A_BOLD;
 #endif
@@ -476,28 +479,27 @@ chtype *char2Chtype (const char *string, int *to, int *align)
    chtype attrib;
    chtype lastChar;
    chtype mask;
-   int adjust;
-   int from;
-   int insideMarker;
-   int len;
-   int pass;
-   int start;
-   int used;
-   int x;
 
    (*to) = 0;
    *align = LEFT;
 
    if (string != 0 && *string != 0)
    {
-      len = (int)strlen (string);
-      used = 0;
+      int len = (int)strlen (string);
+      int pass;
+      int used = 0;
       /*
        * We make two passes because we may have indents and tabs to expand, and
        * do not know in advance how large the result will be.
        */
       for (pass = 0; pass < 2; pass++)
       {
+	 int insideMarker;
+	 int from;
+	 int adjust;
+	 int start;
+	 int x = 3;
+
 	 if (pass != 0)
 	 {
 	    if ((result = typeMallocN (chtype, used + 2)) == 0)
@@ -510,7 +512,6 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	 attrib = A_NORMAL;
 	 start = 0;
 	 used = 0;
-	 x = 3;
 
 	 /* Look for an alignment marker.  */
 	 if (*string == L_MARKER)
@@ -856,10 +857,11 @@ char *chtype2Char (const chtype *string)
    if (string != 0)
    {
       int len = chlen (string);
-      int x;
 
       if ((newstring = typeMallocN (char, len + 1)) != 0)
       {
+	 int x;
+
 	 for (x = 0; x < len; x++)
 	 {
 	    newstring[x] = (char)CharOf (string[x]);
@@ -928,8 +930,6 @@ void stripWhiteSpace (EStripType stripType, char *string)
 {
    /* Declare local variables.  */
    size_t stringLength = 0;
-   unsigned alphaChar = 0;
-   unsigned x;
 
    /* Make sure the string is not null.  */
    if (string != 0
@@ -938,6 +938,9 @@ void stripWhiteSpace (EStripType stripType, char *string)
       /* Strip leading whitespace */
       if (stripType == vFRONT || stripType == vBOTH)
       {
+	 unsigned alphaChar = 0;
+	 unsigned x;
+
 	 /* Find the first non-whitespace character.  */
 	 while (string[alphaChar] == ' ' || string[alphaChar] == '\t')
 	 {
@@ -981,18 +984,15 @@ static unsigned countChar (const char *string, int separator)
 char **CDKsplitString (const char *string, int separator)
 {
    char **result = 0;
-   const char *first;
    char *temp;
-   unsigned item;
-   unsigned need;
 
    if (string != 0 && *string != 0)
    {
-      need = countChar (string, separator) + 2;
+      unsigned need = countChar (string, separator) + 2;
       if ((result = typeMallocN (char *, need)) != 0)
       {
-	 item = 0;
-	 first = string;
+	 unsigned item = 0;
+	 const char *first = string;
 	 for (;;)
 	 {
 	    while (*string != 0 && *string != separator)
@@ -1253,21 +1253,19 @@ int CDKgetDirectoryContents (const char *directory, char ***list)
  */
 int searchList (CDK_CSTRING2 list, int listSize, const char *pattern)
 {
-   /* Declare local variables.  */
-   size_t len;
    int Index = -1;
-   int x, ret;
 
    /* Make sure the pattern isn't null. */
    if (pattern != 0)
    {
-      len = strlen (pattern);
+      size_t len = strlen (pattern);
+      int x;
 
       /* Cycle through the list looking for the word. */
       for (x = 0; x < listSize; x++)
       {
 	 /* Do a string compare. */
-	 ret = strncmp (list[x], pattern, len);
+	 int ret = strncmp (list[x], pattern, len);
 
 	 /*
 	  * If 'ret' is less than 0, then the current word is alphabetically
@@ -1299,7 +1297,6 @@ int checkForLink (const char *line, char *filename)
 {
    int len = 0;
    int fPos = 0;
-   int x = 3;
 
    /* Make sure the line isn't null. */
    if (line == 0)
@@ -1311,6 +1308,8 @@ int checkForLink (const char *line, char *filename)
    /* Strip out the filename. */
    if (line[0] == L_MARKER && line[1] == 'F' && line[2] == '=')
    {
+      int x = 3;
+
       /* Strip out the filename.  */
       while (x < len)
       {
@@ -1334,15 +1333,17 @@ int checkForLink (const char *line, char *filename)
 char *baseName (char *pathname)
 {
    char *base = 0;
-   size_t pathLen;
-   size_t x;
 
    if (pathname != 0
        && *pathname != '\0'
        && (base = copyChar (pathname)) != 0)
    {
+      size_t pathLen;
+
       if ((pathLen = strlen (pathname)) != 0)
       {
+	 size_t x;
+
 	 for (x = pathLen - 1; x != 0; --x)
 	 {
 	    /* Find the last '/' in the pathname. */
@@ -1365,14 +1366,13 @@ char *dirName (char *pathname)
 {
    char *dir = 0;
    size_t pathLen;
-   size_t x;
 
    /* Check if the string is null.  */
    if (pathname != 0
        && (dir = copyChar (pathname)) != 0
        && (pathLen = strlen (pathname)) != 0)
    {
-      x = pathLen;
+      size_t x = pathLen;
       while ((dir[x] != '/') && (x > 0))
       {
 	 dir[x--] = '\0';
