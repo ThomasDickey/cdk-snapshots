@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.28 2016/11/20 19:45:14 tom Exp $ */
+/* $Id: appointment.c,v 1.29 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -70,7 +70,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen         = 0;
    CDKCALENDAR *calendar        = 0;
-   WINDOW *cursesWin            = 0;
    const char *title            = "<C></U>CDK Appointment Book\n<C><#HL(30)>\n";
    char *filename               = 0;
    struct tm *dateInfo          = 0;
@@ -143,9 +142,7 @@ int main (int argc, char **argv)
    /* Read the appointment book information. */
    readAppointmentFile (filename, &appointmentInfo);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: bind_ex.c,v 1.19 2012/03/21 23:54:26 tom Exp $ */
+/* $Id: bind_ex.c,v 1.20 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -50,7 +50,6 @@ int main (int argc, char **argv)
    /* *INDENT-OFF* */
    CDKSCREEN	*cdkscreen;
    CDKDIALOG	*question;
-   WINDOW	*cursesWin;
    const char	*buttons[40];
    const char	*message[40];
    const char	*info[5];
@@ -64,9 +63,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

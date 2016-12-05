@@ -1,4 +1,4 @@
-/* $Id: position_ex.c,v 1.14 2012/03/21 23:18:54 tom Exp $ */
+/* $Id: position_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,7 +14,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKENTRY *directory  = 0;
-   WINDOW *cursesWin    = 0;
    const char *label    = "</U/5>Directory:<!U!5> ";
    char *info           = 0;
    const char *mesg[10];
@@ -24,9 +23,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, "w:" CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK colors. */
    initCDKColor ();

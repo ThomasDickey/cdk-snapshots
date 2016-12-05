@@ -1,4 +1,4 @@
-/* $Id: mentry_ex.c,v 1.10 2012/03/21 23:32:57 tom Exp $ */
+/* $Id: mentry_ex.c,v 1.11 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,7 +11,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKMENTRY *widget    = 0;
-   WINDOW *cursesWin    = 0;
    char *info           = 0;
    const char *label    = "</R>Message";
    const char *title    = "<C></5>Enter a message.<!5>";
@@ -20,9 +19,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, "w:h:l:" CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

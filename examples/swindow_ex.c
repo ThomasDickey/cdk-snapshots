@@ -1,4 +1,4 @@
-/* $Id: swindow_ex.c,v 1.13 2012/03/21 23:52:34 tom Exp $ */
+/* $Id: swindow_ex.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -18,7 +18,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKSWINDOW *swindow  = 0;
-   WINDOW *cursesWin    = 0;
    const char *title    = "<C></5>Error Log";
    const char *mesg[5];
 
@@ -26,9 +25,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, CDK_CLI_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK colors. */
    initCDKColor ();

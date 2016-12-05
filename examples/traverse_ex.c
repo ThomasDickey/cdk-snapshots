@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.24 2014/01/19 02:06:35 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.25 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -690,7 +690,6 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    /* Declare local variables. */
    CDKSCREEN *cdkscreen = NULL;
    CDKMENU *menu = NULL;
-   WINDOW *cursesWin = NULL;
    const char *mesg[3];
    static const char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS] =
    {
@@ -715,9 +714,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
       }
    }
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK colors. */
    initCDKColor ();

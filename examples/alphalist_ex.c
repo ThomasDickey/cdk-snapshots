@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.29 2014/11/06 01:34:20 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.30 2016/12/04 15:38:55 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -197,7 +197,6 @@ int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
    CDKALPHALIST *alphaList      = 0;
-   WINDOW *cursesWin            = 0;
    const char *title            = "<C></B/24>Alpha List\n<C>Title";
    const char *label            = "</B>Account: ";
    char *word                   = 0;
@@ -220,9 +219,7 @@ int main (int argc, char **argv)
    myUndoList = (UNDO *) malloc ((size_t) userSize * sizeof (UNDO));
    undoSize = 0;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: cdkselection.c,v 1.14 2014/11/05 10:33:55 tom Exp $ */
+/* $Id: cdkselection.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKSELECTION *widget         = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    chtype *holder               = 0;
    char *item                   = 0;
    char *CDK_WIDGET_COLOR       = 0;
@@ -170,11 +169,7 @@ int main (int argc, char **argv)
       choiceSize = (int)CDKcountStrings ((CDK_CSTRING2)choiceList);
    }
 
-   /* Start curses. */
-   cursesWindow = initscr ();
-
-   /* Create the CDK screen. */
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

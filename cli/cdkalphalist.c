@@ -1,4 +1,4 @@
-/* $Id: cdkalphalist.c,v 1.17 2014/01/19 02:27:01 tom Exp $ */
+/* $Id: cdkalphalist.c,v 1.18 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKALPHALIST *widget         = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    char *CDK_WIDGET_COLOR       = 0;
    char *answer                 = 0;
    char *buttons;
@@ -111,11 +110,7 @@ int main (int argc, char **argv)
       scrollLines = (int)CDKcountStrings ((CDK_CSTRING2)scrollList);
    }
 
-   /* Start curses. */
-   cursesWindow = initscr ();
-
-   /* Create the CDK screen. */
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

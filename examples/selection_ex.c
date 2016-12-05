@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.20 2016/11/20 20:19:12 tom Exp $ */
+/* $Id: selection_ex.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -27,7 +27,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen    = 0;
    CDKSELECTION *selection = 0;
-   WINDOW *cursesWin       = 0;
    const char *title       = "<C></5>Pick one or more accounts.";
    char *title_string      = 0;
    char **item             = 0;
@@ -55,9 +54,7 @@ int main (int argc, char **argv)
 #endif
    count--;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Set up CDK Colors. */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: command.c,v 1.21 2016/11/20 19:46:52 tom Exp $ */
+/* $Id: command.c,v 1.22 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -42,7 +42,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen         = 0;
    CDKSWINDOW *commandOutput    = 0;
    CDKENTRY *commandEntry       = 0;
-   WINDOW *cursesWin            = 0;
    chtype *convert              = 0;
    const char *prompt           = "</B/24>Command >";
    const char *title            = "<C></B/5>Command Output Window";
@@ -81,9 +80,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

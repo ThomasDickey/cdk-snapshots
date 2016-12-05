@@ -1,4 +1,4 @@
-/* $Id: cdkscreen_ex.c,v 1.8 2016/11/20 20:07:37 tom Exp $ */
+/* $Id: cdkscreen_ex.c,v 1.9 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,7 +13,6 @@ char *XCursesProgramName = "cdkscreen_ex";
 
 int main (void)
 {
-   WINDOW *cursesWindow;
    CDKSCREEN *cdkScreen1, *cdkScreen2;
    CDKSCREEN *cdkScreen3, *cdkScreen4;
    CDKSCREEN *cdkScreen5;
@@ -31,15 +30,12 @@ int main (void)
       "Exit"
    };
 
-   /* Create the curses window. */
-   cursesWindow = initscr ();
-
-   /* Create the two screens. */
-   cdkScreen1 = initCDKScreen (cursesWindow);
-   cdkScreen2 = initCDKScreen (cursesWindow);
-   cdkScreen3 = initCDKScreen (cursesWindow);
-   cdkScreen4 = initCDKScreen (cursesWindow);
-   cdkScreen5 = initCDKScreen (cursesWindow);
+   /* Create the screens. */
+   cdkScreen1 = initCDKScreen (NULL);
+   cdkScreen2 = initCDKScreen (stdscr);
+   cdkScreen3 = initCDKScreen (stdscr);
+   cdkScreen4 = initCDKScreen (stdscr);
+   cdkScreen5 = initCDKScreen (stdscr);
 
    /* Create the first screen. */
    title1Mesg[0] = "<C><#HL(30)>";

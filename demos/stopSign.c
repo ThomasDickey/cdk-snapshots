@@ -1,4 +1,4 @@
-/* $Id: stopSign.c,v 1.12 2012/03/22 09:10:45 tom Exp $ */
+/* $Id: stopSign.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,15 +12,12 @@ int main (void)
    CDKSCREEN *cdkscreen = 0;
    CDKLABEL *stopSign   = 0;
    CDKLABEL *title      = 0;
-   WINDOW *cursesWin    = 0;
    const char *mesg[5];
    const char *sign[4];
    chtype key;
    boolean functionKey;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

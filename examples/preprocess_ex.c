@@ -1,4 +1,4 @@
-/* $Id: preprocess_ex.c,v 1.19 2016/11/20 20:21:09 tom Exp $ */
+/* $Id: preprocess_ex.c,v 1.20 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -16,15 +16,12 @@ int main (void)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKENTRY *widget     = 0;
-   WINDOW *cursesWin    = 0;
    const char *title    = "<C>Type in anything you want\n<C>but the dreaded letter </B>G<!B>!";
    char *info;
    const char *mesg[10];
    char temp[256];
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK colors. */
    initCDKColor ();

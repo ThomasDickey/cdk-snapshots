@@ -1,4 +1,4 @@
-/* $Id: itemlist_ex.c,v 1.14 2012/03/21 23:36:35 tom Exp $ */
+/* $Id: itemlist_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -19,7 +19,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen         = 0;
    CDKITEMLIST *monthlist       = 0;
-   WINDOW *cursesWin            = 0;
    const char *title            = "<C>Pick A Month";
    const char *label            = "</U/5>Month:";
    const char *info[MONTHS];
@@ -41,9 +40,7 @@ int main (int argc, char **argv)
    dateInfo = localtime (&clck);
    startMonth = dateInfo->tm_mon;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK colors. */
    initCDKColor ();

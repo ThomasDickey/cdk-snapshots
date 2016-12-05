@@ -6,8 +6,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:07:27 $
- * $Revision: 1.90 $
+ * $Date: 2016/12/04 15:41:50 $
+ * $Revision: 1.91 $
  */
 
 typedef struct _all_screens
@@ -181,12 +181,19 @@ CDKSCREEN *initCDKScreen (WINDOW *window)
    CDKSCREEN *screen = 0;
 
    /* initialization, for the first time */
-   if (all_screens == 0)
+   if (all_screens == 0 || stdscr == 0 || window == 0)
    {
       /* Set up basic curses settings. */
 #ifdef HAVE_SETLOCALE
       setlocale (LC_ALL, "");
 #endif
+      /* Initialize curses after setting the locale, since curses depends
+       * on having a correct locale to reflect the terminal's encoding.
+       */
+      if (stdscr == 0 || window == 0)
+      {
+	 window = initscr ();
+      }
       noecho ();
       cbreak ();
    }

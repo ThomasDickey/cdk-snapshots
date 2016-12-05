@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.26 2013/09/01 18:06:41 tom Exp $
+ * $Id: cdk_int.h,v 1.27 2016/12/04 19:43:43 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2011,2013 Thomas E. Dickey
+ * Copyright 2003-2013,2016 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,8 @@ extern "C" {
 #define CharOf(c)               ((unsigned char)(c))
 
 #define SIZEOF(v)               (sizeof(v)/sizeof((v)[0]))
+
+#define MAX_COLORS		8
 
 /*
  * Macros to check if caller is attempting to make the widget as high (or wide)

@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.257 2016/11/20 20:35:10 tom Exp $
+-- $Id: CHANGES,v 1.261 2016/12/04 20:06:39 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -8,6 +8,13 @@ Modifications copyright Thomas E. Dickey 1999-2015, 2016
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2016/12/04
+	+ cleanup change for color pairs in 2016/11/20
+	+ modify initCDKScreen() to simplify initialization of curses by
+	  calling initscr() in this function after initializing the locale.
+	  That fixes a problem using PuTTY with CDK when built using ncurses
+	  (report by Marc Smith).
 
 2016/11/20
 	+ fix warnings from cppcheck 1.76.1

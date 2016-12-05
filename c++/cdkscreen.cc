@@ -2,8 +2,7 @@
 
 CDKScreen::CDKScreen() 
 {
-  cursesWin = initscr();
-  cdkscreen = initCDKScreen(cursesWin);
+  cdkscreen = initCDKScreen(NULL);
   // Now, set up color.
   initCDKColor();
 }

@@ -1,4 +1,4 @@
-/* $Id: radio1_ex.c,v 1.13 2016/11/20 20:19:40 tom Exp $ */
+/* $Id: radio1_ex.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,7 +13,6 @@ int main (int argc, char **argv)
 {
    CDKSCREEN *cdkscreen;
    CDKRADIO *radio;
-   WINDOW *cursesWin;
    const char *item[5] =
    {
       "Choice A",
@@ -28,9 +27,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, "s:t:" CDK_CLI_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Set up CDK Colors. */
    initCDKColor ();

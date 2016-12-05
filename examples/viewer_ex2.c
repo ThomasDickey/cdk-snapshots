@@ -1,4 +1,4 @@
-/* $Id: viewer_ex2.c,v 1.7 2016/11/20 20:20:16 tom Exp $ */
+/* $Id: viewer_ex2.c,v 1.8 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,7 +14,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKFSELECT *fSelect  = 0;
-   WINDOW *cursesWin    = 0;
    const char *button[5];
    char vTitle[256];
    const char *mesg[4];
@@ -36,9 +35,7 @@ int main (int argc, char **argv)
    button[0] = "</5><OK><!5>";
    button[1] = "</5><Cancel><!5>";
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

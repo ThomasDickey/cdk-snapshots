@@ -1,4 +1,4 @@
-/* $Id: cdkitemlist.c,v 1.13 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkitemlist.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKITEMLIST *widget          = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    chtype *holder               = 0;
    char *answer                 = 0;
    char *CDK_WIDGET_COLOR       = 0;
@@ -107,11 +106,7 @@ int main (int argc, char **argv)
       itemlistLines = (int)CDKcountStrings ((CDK_CSTRING2) itemlistList);
    }
 
-   /* Start curses. */
-   cursesWindow = initscr ();
-
-   /* Create the CDK screen. */
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

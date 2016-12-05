@@ -1,4 +1,4 @@
-/* $Id: cdkfselect.c,v 1.13 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkfselect.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,7 +17,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKFSELECT *widget           = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    char *filename               = 0;
    char *CDK_WIDGET_COLOR       = 0;
    char *temp                   = 0;
@@ -79,9 +78,7 @@ int main (int argc, char **argv)
       label = copyChar ("Directory: ");
    }
 
-   /* Set up CDK. */
-   cursesWindow = initscr ();
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();
