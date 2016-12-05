@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_display.3,v 1.12 2011/05/15 18:10:30 Loic.Pefferkorn Exp $
+.\" $Id: cdk_display.3,v 1.14 2016/12/04 19:57:27 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -29,24 +32,35 @@ page outlines and demonstrates how they work.
 .SS How To Use Colors
 Cdk has the capability to display colors in almost every string type displayed
 in a Cdk widget.
-To turn on colors, the function \fBinitCDKColor\fR has to be called.
-When this function is called 64 color pairs are created.
-Normally the
-color pairs are accessed via the COLOR_PAIR macro.
-You can still do this, but
-creating a string with multiple colors gets terribly difficult.
-That is why
-the color commands were created.
+.PP
+Normally the color pairs are accessed via the COLOR_PAIR macro.
+You can still do this, but creating a string with multiple colors is tedious.
+That is why the color commands were created.
+Use \fBinitCDKColor\fR to create up to 64 color pairs
+which you can refer to by number in strings.
 .LP
 The color settings are stored directly in the string.
 When the widget is created or activated, the string is converted
 to take advantage of any color commands in the string.
+.bP
 To turn on a color pair
-insert </XX> into the string; where \fIXX\fR is a numeric value from 0 to 64.
+insert \fI</XX>\fP into the string;
+where \fIXX\fR is a numeric value from 0 to the maximum color pair.
+.IP
 Color pair 0 is the standard default color pair for the screen.
+.IP
+If you used \fBinitCDKColor\fP, the maximum value for \fIXX\fR is 63
+for terminals supporting 8 ANSI colors.
+.IP
+If you created color pairs directly using \fBinit_pair\fP,
+the maximum value for \fIXX\fR is implementation-dependent,
+e.g., 63 (for Unix systems) and 255 for ncurses.
+.IP
+If the terminal does not support color, Cdk uses the \fBbold\fP attribute.
+.bP
 To turn off a
 color pair use the format command <!XX> where \fIXX\fR is a numeric value from
-0 to 64.
+0 to the maximum color pair.
 .LP
 The following example demonstrates the use of the color commands.
 .ne 10
@@ -60,12 +74,9 @@ void main()
 {
    CDKSCREEN	*cdkscreen;
    CDKLABEL	*demo;
-   WINDOW 	*screen;
    char		*mesg[4];
 
-   /* Initialize the Cdk screen.	*/
-   screen = initscr();
-   cdkscreen = initCDKScreen (screen);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors */
    initCDKColor();
@@ -130,12 +141,9 @@ void main()
 {
    CDKSCREEN    *cdkscreen;
    CDKLABEL     *demo;
-   WINDOW       *screen;
    char         *mesg[4];
 
-   /* Initialize the Cdk screen.  */
-   screen = initscr();
-   cdkscreen = initCDKScreen (screen);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors */
    initCDKColor();
@@ -202,12 +210,9 @@ void main()
 {
    CDKSCREEN    *cdkscreen;
    CDKLABEL     *demo;
-   WINDOW       *screen;
    char         *mesg[5];
 
-   /* Initialize the Cdk screen.  */
-   screen = initscr();
-   cdkscreen = initCDKScreen (screen);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors */
    initCDKColor();
@@ -311,12 +316,9 @@ void main()
    /* Declare variables.  */
    CDKSCREEN    *cdkscreen;
    CDKLABEL     *demo;
-   WINDOW       *cursesWin;
    char         *mesg[4];
 
-   /* Set up CDK */
-   cursesWin = initscr();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors */
    initCDKColor();
@@ -351,7 +353,6 @@ void main()
    /* Clean up */
    destroyCDKLabel (demo);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
    exit (0);
 }

@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.17 2012/03/21 23:55:33 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.18 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -16,7 +16,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKMATRIX *courseList = 0;
-   WINDOW *cursesWin    = 0;
    const char *title    = 0;
    int rows             = 8;
    int cols             = 5;
@@ -54,9 +53,7 @@ int main (int argc, char **argv)
    use_coltitles = !CDKparamValue (&params, 'c', FALSE);
    use_rowtitles = !CDKparamValue (&params, 'r', FALSE);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

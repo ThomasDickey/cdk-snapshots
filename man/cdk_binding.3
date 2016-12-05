@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.24 2016/02/01 00:50:10 tom Exp $
+.\" $Id: cdk_binding.3,v 1.25 2016/12/04 15:53:30 tom Exp $
 .de XX
 ..
 .TH cdk_binding 3
@@ -225,7 +225,6 @@ int main (void)
    /* Declare variables. */
    CDKSCREEN	*cdkscreen;
    CDKDIALOG	*question;
-   WINDOW	*cursesWin;
    char		*buttons[40];
    char		*message[40], *info[5], *loginName;
    char		temp[256];
@@ -233,9 +232,7 @@ int main (void)
    time_t	clck;
    struct tm	*currentTime;
 
-   /* Set up CDK. */
-   cursesWin = initscr();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor();
@@ -326,7 +323,6 @@ int main (void)
    /* Clean up. */
    destroyCDKDialog (question);
    destroyCDKScreen (cdkscreen);
-   delwin (cursesWin);
    endCDK();
    exit (0);
 }

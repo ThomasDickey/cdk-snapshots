@@ -1,4 +1,4 @@
-/* $Id: vinstall.c,v 1.20 2016/11/20 20:40:00 tom Exp $ */
+/* $Id: vinstall.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -29,7 +29,6 @@ static int verifyDirectory (CDKSCREEN *screen, char *directory);
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   WINDOW *cursesWin            = 0;
    CDKSCREEN *cdkScreen         = 0;
    CDKSWINDOW *installOutput    = 0;
    CDKENTRY *sourceEntry        = 0;
@@ -112,9 +111,7 @@ int main (int argc, char **argv)
       stripWhiteSpace (vBOTH, fileList[x]);
    }
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkScreen = initCDKScreen (cursesWin);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

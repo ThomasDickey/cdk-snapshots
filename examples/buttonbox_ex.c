@@ -1,4 +1,4 @@
-/* $Id: buttonbox_ex.c,v 1.20 2012/03/22 09:45:11 tom Exp $ */
+/* $Id: buttonbox_ex.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,7 +17,6 @@ int main (void)
    CDKSCREEN *cdkscreen         = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
    CDKENTRY *entry              = 0;
-   WINDOW *cursesWin            = 0;
    const char *buttons[]        =
    {
       " OK ",
@@ -26,9 +25,7 @@ int main (void)
    char *info                   = 0;
    int selection;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

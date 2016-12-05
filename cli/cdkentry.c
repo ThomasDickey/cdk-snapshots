@@ -1,4 +1,4 @@
-/* $Id: cdkentry.c,v 1.15 2014/11/06 00:21:24 tom Exp $ */
+/* $Id: cdkentry.c,v 1.16 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKENTRY *widget             = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    chtype *holder               = 0;
    chtype fieldAttr             = A_NORMAL;
    char *answer                 = 0;
@@ -92,9 +91,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /* Set up CDK. */
-   cursesWindow = initscr ();
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

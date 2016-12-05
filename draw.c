@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:07:58 $
- * $Revision: 1.61 $
+ * $Date: 2016/12/04 19:43:46 $
+ * $Revision: 1.62 $
  */
 
 /*
@@ -27,7 +27,7 @@ void initCDKColor (void)
 
       start_color ();
 
-      limit = (COLORS < 8) ? COLORS : 8;
+      limit = (COLORS < MAX_COLORS) ? COLORS : MAX_COLORS;
 
       /* Create the color pairs. */
       for (fg = 0; fg < limit; fg++)

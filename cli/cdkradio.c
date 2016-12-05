@@ -1,4 +1,4 @@
-/* $Id: cdkradio.c,v 1.12 2012/03/22 09:36:04 tom Exp $ */
+/* $Id: cdkradio.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,7 +25,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKRADIO *widget             = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    char *buttons                = 0;
    char *CDK_WIDGET_COLOR       = 0;
    char *temp                   = 0;
@@ -119,11 +118,7 @@ int main (int argc, char **argv)
       scrollLines = (int)CDKcountStrings ((CDK_CSTRING2) scrollList);
    }
 
-   /* Start curses. */
-   cursesWindow = initscr ();
-
-   /* Create the CDK screen. */
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: clock.c,v 1.10 2016/11/20 20:07:48 tom Exp $ */
+/* $Id: clock.c,v 1.11 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,7 +11,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKLABEL *demo       = 0;
-   WINDOW *cursesWin    = 0;
    int boxLabel         = 0;
    const char *mesg[4];
    char temp[256];
@@ -28,9 +27,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /* Set up CDK */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: lowerCDKObject_ex.c,v 1.9 2012/03/21 23:11:37 tom Exp $ */
+/* $Id: lowerCDKObject_ex.c,v 1.10 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,7 +14,6 @@ int main (int argc, char **argv)
    const char *mesg1[10];
    const char *mesg2[10];
 
-   WINDOW *cursesWin;
    CDKSCREEN *cdkscreen;
    CDKLABEL *label1, *label2, *instruct;
 
@@ -22,9 +21,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    mesg1[0] = "label1 label1 label1 label1 label1 label1 label1";
    mesg1[1] = "label1 label1 label1 label1 label1 label1 label1";

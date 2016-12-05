@@ -1,4 +1,4 @@
-/* $Id: syb.c,v 1.12 2005/12/27 12:36:06 tom Exp $ */
+/* $Id: syb.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 #include <sybfront.h>
@@ -78,7 +78,6 @@ int main (int argc, char **argv)
    CDKSWINDOW *commandOutput	= 0;
    CDKENTRY *commandEntry	= 0;
    DBPROCESS *dbProcess		= 0;
-   WINDOW *cursesWin		= 0;
    char *dsquery		= 0;
    char *command		= 0;
    char *prompt			= 0;
@@ -154,9 +153,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /* Set up CDK. */
-   cursesWin = initscr();
-   GPCdkScreen = initCDKScreen (cursesWin);
+   GPCdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor();

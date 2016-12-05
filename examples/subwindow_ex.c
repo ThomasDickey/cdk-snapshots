@@ -1,4 +1,4 @@
-/* $Id: subwindow_ex.c,v 1.12 2012/03/22 09:10:45 tom Exp $ */
+/* $Id: subwindow_ex.c,v 1.13 2016/12/04 16:20:33 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -33,7 +33,7 @@ int main (int argc, char **argv)
    CDKparseParams (argc, argv, &params, "s:" CDK_CLI_PARAMS);
 
    /* Start curses. */
-   initscr ();
+   (void) initCDKScreen (NULL);
    curs_set (0);
 
    /* Create a basic window. */

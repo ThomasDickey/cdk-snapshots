@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.24 2012/03/21 23:42:48 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.25 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -69,7 +69,6 @@ int main (int argc, char **argv)
    /* Declare variables. */
    CDKSCREEN *cdkscreen = 0;
    CDKSCROLL *scrollList = 0;
-   WINDOW *cursesWin = 0;
    const char *title = "<C></5>Pick a file";
    char **item = 0;
    const char *mesg[5];
@@ -80,9 +79,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Set up CDK Colors. */
    initCDKColor ();

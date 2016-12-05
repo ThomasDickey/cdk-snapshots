@@ -1,4 +1,4 @@
-/* $Id: cdkdialog.c,v 1.14 2014/11/05 10:33:55 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -19,7 +19,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkScreen         = 0;
    CDKDIALOG *widget            = 0;
-   WINDOW *cursesWindow         = 0;
    char *CDK_WIDGET_COLOR       = 0;
    char *button                 = 0;
    char *temp                   = 0;
@@ -109,9 +108,7 @@ int main (int argc, char **argv)
       buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
    }
 
-   /* Set up CDK. */
-   cursesWindow = initscr ();
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

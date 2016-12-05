@@ -1,4 +1,4 @@
-/* $Id: fileview.c,v 1.13 2016/11/20 20:21:24 tom Exp $ */
+/* $Id: fileview.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -15,7 +15,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen  = 0;
    CDKVIEWER *example    = 0;
    CDKFSELECT *fSelect   = 0;
-   WINDOW *cursesWin     = 0;
    const char *directory = ".";
    char *filename        = 0;
    char **info           = 0;
@@ -49,9 +48,7 @@ int main (int argc, char **argv)
    button[0] = "</5><OK><!5>";
    button[1] = "</5><Cancel><!5>";
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

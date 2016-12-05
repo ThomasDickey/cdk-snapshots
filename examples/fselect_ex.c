@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.26 2014/11/06 00:50:21 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.27 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -174,7 +174,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKVIEWER *example   = 0;
    CDKFSELECT *fSelect  = 0;
-   WINDOW *cursesWin    = 0;
    const char *title    = "<C>Pick\n<C>A\n<C>File";
    const char *label    = "File: ";
    char **info          = 0;
@@ -195,9 +194,7 @@ int main (int argc, char **argv)
    button[0] = "</5><OK><!5>";
    button[1] = "</5><Cancel><!5>";
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

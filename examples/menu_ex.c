@@ -1,4 +1,4 @@
-/* $Id: menu_ex.c,v 1.12 2012/03/21 23:26:05 tom Exp $ */
+/* $Id: menu_ex.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -40,15 +40,12 @@ int main (void)
    CDKSCREEN *cdkscreen = 0;
    CDKLABEL *infoBox    = 0;
    CDKMENU *menu        = 0;
-   WINDOW *cursesWin    = 0;
    int submenusize[3], menuloc[4];
    const char *mesg[5];
    char temp[256];
    int selection;
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK color. */
    initCDKColor ();

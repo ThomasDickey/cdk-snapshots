@@ -1,4 +1,4 @@
-/* $Id: calendar_ex.c,v 1.16 2012/03/23 13:54:44 tom Exp $ */
+/* $Id: calendar_ex.c,v 1.17 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,7 +17,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen		= 0;
    CDKCALENDAR *calendar	= 0;
-   WINDOW *cursesWin		= 0;
    const char *mesg[5];
    char temp[256];
    struct tm *dateInfo;
@@ -43,9 +42,7 @@ int main (int argc, char **argv)
    year  = CDKparamNumber2 (&params, 'y', dateInfo->tm_year + 1900);
    title = CDKparamString2 (&params, 't', "<C></U>CDK Calendar Widget\n<C>Demo");
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

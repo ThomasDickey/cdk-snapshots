@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.28 2016/11/20 19:54:51 tom Exp $ */
+/* $Id: rolodex.c,v 1.29 2016/12/04 15:22:16 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -25,7 +25,6 @@ int main (void)
    CDKMENU *rolodexMenu;
    CDKLABEL *rolodexTitle;
    SRolodex groupList[MAXGROUPS];
-   WINDOW *cursesWin;
    const char *menulist[MAX_MENU_ITEMS][MAX_SUB_ITEMS];
    const char *title[5];
    char *home, temp[MYSIZE];
@@ -34,9 +33,7 @@ int main (void)
    int group, ret, x;
    int groupCount = 0;
 
-   /* Set up CDK  */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK color. */
    initCDKColor ();

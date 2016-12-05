@@ -1,4 +1,4 @@
-/* $Id: cdkcalendar.c,v 1.16 2012/03/23 13:54:44 tom Exp $ */
+/* $Id: cdkcalendar.c,v 1.17 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -22,7 +22,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkScreen         = 0;
    CDKCALENDAR *widget          = 0;
    CDKBUTTONBOX *buttonWidget   = 0;
-   WINDOW *cursesWindow         = 0;
    struct tm *dateInfo          = 0;
    time_t selected              = 0;
    chtype dayAttrib             = A_NORMAL;
@@ -77,9 +76,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /* Set up CDK. */
-   cursesWindow = initscr ();
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

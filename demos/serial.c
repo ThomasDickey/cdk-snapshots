@@ -1,4 +1,4 @@
-/* $Id: serial.c,v 1.7 2016/11/20 20:24:06 tom Exp $ */
+/* $Id: serial.c,v 1.8 2016/12/04 15:22:16 tom Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +43,6 @@ int LFD;
 int main (int argc, char **argv)
 {
    CDKSCREEN *cdkScreen = 0;
-   WINDOW *cursesWin = 0;
    int lines = 0;
    char *info[256], temp[256];
    struct termios termInfo;
@@ -76,11 +75,7 @@ int main (int argc, char **argv)
       }
    }
 
-   /*
-    * Create the CDK screen.
-    */
-   cursesWin = initscr ();
-   cdkScreen = initCDKScreen (cursesWin);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start CDK color. */
    initCDKColor ();

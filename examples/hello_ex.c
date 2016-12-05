@@ -1,4 +1,4 @@
-/* $Id: hello_ex.c,v 1.11 2014/11/05 10:08:32 tom Exp $ */
+/* $Id: hello_ex.c,v 1.12 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -10,16 +10,13 @@ int main (int argc, char **argv)
 {
    CDKSCREEN *cdkscreen;
    CDKLABEL *demo;
-   WINDOW *cursesWin;
    const char *mesg[4];
 
    CDK_PARAMS params;
 
    CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

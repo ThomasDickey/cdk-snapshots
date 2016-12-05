@@ -1,4 +1,4 @@
-/* $Id: dialog_ex.c,v 1.13 2012/03/21 23:28:29 tom Exp $ */
+/* $Id: dialog_ex.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,7 +14,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKDIALOG *question  = 0;
-   WINDOW *cursesWin    = 0;
    const char *buttons[] =
    {"</B/24>Ok", "</B16>Cancel"};
    const char *message[10];
@@ -26,9 +25,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, CDK_MIN_PARAMS);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

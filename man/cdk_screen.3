@@ -1,4 +1,8 @@
-.\" $Id: cdk_screen.3,v 1.8 2005/12/29 01:31:04 tom Exp $
+.\" $Id: cdk_screen.3,v 1.9 2016/12/04 16:17:40 tom Exp $
+.\" Bulleted paragraph
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_screen 3
@@ -81,13 +85,21 @@ If you do not have color
 support, this function call makes no difference.
 .TP 5
 .B initCDKScreen
-takes a \fIWINDOW *\fR (\fIcursesWindow\fR) and returns a
-pointer to a \fICDKSCREEN *\fR.
+takes a \fBWINDOW*\fR parameter \fIcursesWindow\fR and returns a
+pointer to a \fBCDKSCREEN\fR.
+.IP
 Since all of the widgets take a
-\fICDKSCREEN\fR pointer as a first argument, this is also one of the first
-calls made.
-This also starts curses, so no curses initialization calls have
-to be made when using Cdk.
+\fBCDKSCREEN\fR pointer as a first argument,
+this is one of the first calls made.
+.IP
+If the \fIcursesWindow\fP parameter is a null pointer,
+\fBinitCDKScreen\fP initializes curses and
+replaces the parameter with \fBstdscr\fP.
+Otherwise, it assumes that your application has already
+initialized the locale and then called \fBinitscr\fP
+.IP
+In either case, the (possibly updated) \fIcursesWindow\fP parameter is
+used as the window for the \fBCDKSCREEN\fP result.
 .TP 5
 .B lowerCDKObject
 has the opposite effect of the \fBraiseCDKObject\fR function call.
@@ -97,8 +109,12 @@ raises the widget to the top of the screen.
 If there are any
 widgets which overlap the given object when a refresh is done, calling this
 function has the effect of raiding the object so no other widgets obstruct it.
+.RS
+.bP
 The \fIwidgetType\fR parameter states what Cdk widget type this object is.
+.bP
 The \fIobject\fR parameter is a void pointer to the object.
+.RE
 .TP 5
 .B refreshCDKScreen
 redraws all of the widgets which are currently associated to the
@@ -109,17 +125,25 @@ is called automatically when a widget is created.
 If for some
 reason an object does get unregistered, by calling \fBunregisterCDKObject\fR,
 the widget can be registered again by calling this function.
+.RS
+.bP
 The \fIwidgetType\fR parameter states what Cdk widget type this object is.
+.bP
 The \fIobject\fR parameter is a void pointer to the object.
+.RE
 .TP 5
 .B unregisterCDKObject
 removes the widget from the screen.
 This does \fBNOT\fR destroy
 the object, it removes the widget from any further refreshes by the function
 \fBrefreshCDKScreen\fR.
+.RS
+.bP
 The \fIwidgetType\fR parameter states what Cdk widget
 type this object is.
+.bP
 The \fIobject\fR parameter is a void pointer to the object.
+.RE
 .SH SEE ALSO
 .BR cdk (3),
 .BR cdk_binding (3),

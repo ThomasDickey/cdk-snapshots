@@ -1,4 +1,4 @@
-/* $Id: histogram_ex.c,v 1.11 2012/03/21 23:05:11 tom Exp $ */
+/* $Id: histogram_ex.c,v 1.12 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,7 +17,6 @@ int main (int argc, char **argv)
    CDKHISTOGRAM *volume         = 0;
    CDKHISTOGRAM *bass           = 0;
    CDKHISTOGRAM *treble         = 0;
-   WINDOW *cursesWin            = 0;
    const char *volumeTitle      = "<C></5>Volume<!5>";
    const char *bassTitle        = "<C></5>Bass  <!5>";
    const char *trebleTitle      = "<C></5>Treble<!5>";
@@ -28,9 +27,7 @@ int main (int argc, char **argv)
    CDKparseParams (argc, argv, &params, CDK_CLI_PARAMS);
    Box = CDKparamValue (&params, 'N', TRUE);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Color. */
    initCDKColor ();

@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.14 2012/03/22 00:33:08 tom Exp $ */
+/* $Id: cdklabel.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -23,7 +23,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkScreen         = 0;
    CDKLABEL *widget             = 0;
-   WINDOW *cursesWindow         = 0;
    char *CDK_WIDGET_COLOR       = 0;
    char *temp                   = 0;
    chtype *holder               = 0;
@@ -88,9 +87,7 @@ int main (int argc, char **argv)
       messageLines = (int)CDKcountStrings ((CDK_CSTRING2) messageList);
    }
 
-   /* Set up CDK. */
-   cursesWindow = initscr ();
-   cdkScreen = initCDKScreen (cursesWindow);
+   cdkScreen = initCDKScreen (NULL);
 
    /* Start color. */
    initCDKColor ();

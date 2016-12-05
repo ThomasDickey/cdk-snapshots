@@ -1,4 +1,4 @@
-/* $Id: graph_ex.c,v 1.14 2012/03/22 09:32:24 tom Exp $ */
+/* $Id: graph_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,7 +12,6 @@ int main (int argc, char **argv)
    CDKSCREEN *cdkscreen         = 0;
    CDKGRAPH *graph              = 0;
    CDKLABEL *pausep             = 0;
-   WINDOW *cursesWin            = 0;
    const char *title            = 0;
    const char *xtitle           = 0;
    const char *ytitle           = 0;
@@ -25,9 +24,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, CDK_CLI_PARAMS);	/* -N, -S unused */
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

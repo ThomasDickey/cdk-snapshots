@@ -1,4 +1,4 @@
-/* $Id: fscale_ex.c,v 1.8 2012/03/21 23:11:37 tom Exp $ */
+/* $Id: fscale_ex.c,v 1.9 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -24,7 +24,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKFSCALE *scale     = 0;
-   WINDOW *cursesWin    = 0;
    const char *title    = "<C>Select a value";
    const char *label    = "</5>Current value";
    char temp[256];
@@ -42,9 +41,7 @@ int main (int argc, char **argv)
    inc    = myFloatParam (&params, 'i', 0.2);
    low    = myFloatParam (&params, 'l', -1.2);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

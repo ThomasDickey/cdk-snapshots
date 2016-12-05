@@ -1,4 +1,4 @@
-/* $Id: uslider_ex.c,v 1.4 2012/03/21 23:57:50 tom Exp $ */
+/* $Id: uslider_ex.c,v 1.5 2016/12/04 15:22:16 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,7 +14,6 @@ int main (int argc, char **argv)
    /* *INDENT-EQLS* */
    CDKSCREEN *cdkscreen = 0;
    CDKUSLIDER *widget   = 0;
-   WINDOW *cursesWin    = 0;
    char title[256];
    const char *label    = "</B>Current Value:";
    const char *mesg[5];
@@ -34,9 +33,7 @@ int main (int argc, char **argv)
 
    sprintf (title, "<C></U>Enter a value:\nLow  %#x\nHigh %#x", low, high);
 
-   /* Set up CDK. */
-   cursesWin = initscr ();
-   cdkscreen = initCDKScreen (cursesWin);
+   cdkscreen = initCDKScreen (NULL);
 
    /* Start CDK Colors. */
    initCDKColor ();

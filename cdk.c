@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 18:59:18 $
- * $Revision: 1.218 $
+ * $Date: 2016/12/04 19:33:34 $
+ * $Revision: 1.219 $
  */
 
 #define L_MARKER '<'
@@ -337,40 +337,26 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
    {
       from++;
    }
-   else if (isdigit (CharOf (string[from + 1])) &&
-	    isdigit (CharOf (string[from + 2])) &&
-	    isdigit (CharOf (string[from + 3])))
+   else
    {
+      int digits;
+
+      pair = 0;
+      for (digits = 1; digits <= 3; ++digits)
+      {
+	 if (!isdigit (CharOf (string[1 + from])))
+	    break;
+	 pair *= 10;
+	 pair += DigitOf (string[++from]);
+      }
 #ifdef HAVE_START_COLOR
-      pair = (DigitOf (string[from + 1]) * 100
-	      + DigitOf (string[from + 2]) * 10
-	      + DigitOf (string[from + 3]));
-      *mask = (chtype)COLOR_PAIR ((pair > 255) ? 255 : pair);
-#else
-      *mask = A_BOLD;
-#endif
-      from += 3;
-   }
-   else if (isdigit (CharOf (string[from + 1])) &&
-	    isdigit (CharOf (string[from + 2])))
-   {
-#ifdef HAVE_START_COLOR
-      pair = DigitOf (string[from + 1]) * 10 + DigitOf (string[from + 2]);
+#define MAX_PAIR (int) (A_COLOR / (((~A_COLOR) << 1) & A_COLOR))
+      if (pair > MAX_PAIR)
+	 pair = MAX_PAIR;
       *mask = (chtype)COLOR_PAIR (pair);
 #else
       *mask = A_BOLD;
 #endif
-      from += 2;
-   }
-   else if (isdigit (CharOf (string[from + 1])))
-   {
-#ifdef HAVE_START_COLOR
-      pair = DigitOf (string[from + 1]);
-      *mask = (chtype)COLOR_PAIR (pair);
-#else
-      *mask = A_BOLD;
-#endif
-      from++;
    }
    return from;
 }
