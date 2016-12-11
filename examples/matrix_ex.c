@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.18 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.19 2016/12/10 13:29:08 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -32,9 +32,12 @@ int main (int argc, char **argv)
    int colwidth[MY_COLS];
    int colvalue[MY_COLS];
 
+   int col_spacing;
+   int row_spacing;
+
    CDK_PARAMS params;
 
-   CDKparseParams (argc, argv, &params, "trcT:" CDK_MIN_PARAMS);
+   CDKparseParams (argc, argv, &params, "trcT:C:R:" CDK_MIN_PARAMS);
 
    /* invert, so giving -S causes the shadow to turn off */
    params.Shadow = !params.Shadow;
@@ -52,6 +55,8 @@ int main (int argc, char **argv)
    /* allow cancelling of column and/or row titles with -c and/or -r */
    use_coltitles = !CDKparamValue (&params, 'c', FALSE);
    use_rowtitles = !CDKparamValue (&params, 'r', FALSE);
+   col_spacing = CDKparamNumber2 (&params, 'C', -1);
+   row_spacing = CDKparamNumber2 (&params, 'R', -1);
 
    cdkscreen = initCDKScreen (NULL);
 
@@ -88,10 +93,10 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'Y', CENTER),
 			      rows, cols, vrows, vcols,
 			      title,
-			      (CDK_CSTRING2) rowtitle,
-			      (CDK_CSTRING2) coltitle,
+			      (CDK_CSTRING2)rowtitle,
+			      (CDK_CSTRING2)coltitle,
 			      colwidth, colvalue,
-			      -1, -1, '.',
+			      col_spacing, row_spacing, '.',
 			      COL, params.Box,
 			      params.Box,
 			      params.Shadow);
@@ -117,7 +122,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No information passed back.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (courseList->exitType == vNORMAL)
    {
@@ -131,7 +136,7 @@ int main (int argc, char **argv)
       mesg[4] = getCDKMatrixCell (courseList, courseList->crow, courseList->ccol);
       mesg[5] = "";
       mesg[6] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 7);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 7);
    }
 
    /* Clean up. */

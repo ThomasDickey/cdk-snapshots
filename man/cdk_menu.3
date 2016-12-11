@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.19 2012/03/22 08:36:55 tom Exp $
+.\" $Id: cdk_menu.3,v 1.20 2016/12/11 01:00:45 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_menu 3
@@ -125,15 +128,22 @@ which create or manipulate the Cdk menu widget.
 .TP 5
 .B activateCDKMenu
 activates the menu widget and lets the user interact with the widget.
+.RS
+.bP
 The parameter \fBmenu\fR is a pointer to a non-NULL menu widget.
+.bP
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
 in the array will be injected into the widget.
+.IP
 To activate the widget
 interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+.RE
+.IP
 If the character entered
 into this widget is \fIRETURN\fR then this then this function returns an
 integer which is a value of the current menu list * 100 + the sub-menu number.
 It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
+.IP
 If the character entered into this widget was \fIESCAPE\fR then the widget
 will return a value of -1 and the widget data \fIexitType\fR will be
 set to \fIvESCAPE_HIT\fR.
@@ -143,6 +153,7 @@ removes the widget from the screen and frees memory the object used.
 .TP 5
 .B drawCDKMenu
 draws the menu widget on the screen.
+.IP
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
 .B drawCDKMenuSubwin
@@ -167,8 +178,13 @@ returns the highlight attributes of the menu title.
 .TP 5
 .B injectCDKMenu
 injects a single character into the widget.
+.RS
+.bP
 The parameter \fBmenu\fR is a pointer to a non-NULL menu widget.
+.bP
 The parameter \fBcharacter\fR is the character to inject into the widget.
+.RE
+.IP
 The return value and side-effect (setting the widget data \fIexitType\fP)
 depend upon the injected character:
 .RS
@@ -226,19 +242,26 @@ If the widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B setCDKMenu
 lets the programmer modify certain elements of an existing menu widget.
+.RS
+.bP
 The parameters \fBmenuItem\fR and \fBsubmenuItem\fR set which
 menu list and sub-menu item are going to be highlighted when the widget is activated.
+.bP
 The other parameter names correspond to the same parameter names
 listed in the \fBnewCDKMenu\fR function.
+.RE
 .TP 5
 .B setCDKMenuBackgroundAttrib
 sets the background attribute of the widget.
+.IP
 The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKMenuBackgroundColor
 sets the background color of the widget.
+.IP
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
+.IP
 See \fBcdk_display (3)\fR.
 .TP 5
 .B setCDKMenuCurrentItem
@@ -247,15 +270,25 @@ sets the current item in the menu widget.
 .B setCDKMenuPostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKMenuPreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKMenuSubTitleHighlight

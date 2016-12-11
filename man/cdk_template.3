@@ -1,4 +1,7 @@
-.\" $Id: cdk_template.3,v 1.27 2012/03/22 08:43:16 tom Exp $
+.\" $Id: cdk_template.3,v 1.28 2016/12/11 01:26:36 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_template 3
@@ -178,15 +181,22 @@ which create or manipulate the Cdk template box widget.
 .TP 5
 .B activateCDKTemplate
 activates the template widget and lets the user interact with the widget.
+.RS
+.bP
 The parameter \fBtemplate\fR is a pointer to a non-NULL template widget.
+.bP
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
 in the array will be injected into the widget.
+.IP
 To activate the widget
 interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+.RE
+.IP
 If the character entered
 into this widget is \fIRETURN\fR or \fITAB\fR then this function will return
 a \fIchar\ *\fR representing the information typed into the widget and the
 widget data \fIexitType\fR will be set to \fIvNORMAL\fR.
+.IP
 If the character
 entered was \fIESCAPE\fR then the function will return \fINULL\fR pointer and
 the widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
@@ -218,8 +228,13 @@ returns the current value of the widget.
 .TP 5
 .B injectCDKTemplate
 injects a single character into the widget.
+.RS
+.bP
 The parameter \fBtemplate\fR is a pointer to a non-NULL template widget.
+.bP
 The parameter \fBcharacter\fR is the character to inject into the widget.
+.RE
+.IP
 The return value and side-effect (setting the widget data \fIexitType\fP)
 depend upon the injected character:
 .RS
@@ -246,23 +261,32 @@ returns a \fIchar*\fR pointer to the field value and the plate.
 .TP 5
 .B moveCDKTemplate
 moves the given widget to the given position.
+.RS
+.bP
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
+.IP
 The parameter \fBxpos\fR is an integer or one of the predefined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.IP
 The parameter \fBypos\fR
 may be an integer or one of the pre-defined values \fILEFT\fR,
 \fIRIGHT\fR, and \fICENTER\fR.
+.bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
+.IP
 For example,
 if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
 If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+.IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR
 (weird things may happen).
+.bP
 The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will be repainted after the move.
+.RE
 .TP 5
 .B newCDKTemplate
 creates a template widget, returning a pointer to it.
@@ -355,17 +379,21 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKTemplate
 lets the programmer modify certain elements of an existing
 template widget.
+.IP
 The parameter names correspond to the same parameter names
 listed in the \fBnewCDKTemplate\fR function.
 .TP 5
 .B setCDKTemplateBackgroundAttrib
 sets the background attribute of the widget.
+.IP
 The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKTemplateBackgroundColor
 sets the background color of the widget.
+.IP
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
+.IP
 For more information, see the \fIcdk_display (3)\fR.
 .TP 5
 .B setCDKTemplateBox
@@ -376,7 +404,9 @@ sets the attribute of the box.
 .TP 5
 .B setCDKTemplateCB
 allows the programmer to set a different widget input handler.
+.IP
 The parameter \fBcallbackFunction\fR is of type \fITEMPLATECB\fR.
+.IP
 The default input handler is \fICDKTemplateCallBack\fR.
 .TP 5
 .B setCDKTemplateHorizontalChar

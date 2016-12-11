@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:09:36 $
- * $Revision: 1.194 $
+ * $Date: 2016/12/10 15:18:01 $
+ * $Revision: 1.198 $
  */
 
 /*
@@ -14,7 +14,7 @@ static void CDKMatrixCallBack (CDKMATRIX *matrix, chtype input);
 static void drawCDKMatrixCell (CDKMATRIX *matrix,
 			       int srow, int scol,
 			       int vrow, int vcol,
-			       chtype attr, boolean Box);
+			       boolean Box);
 static void drawCurCDKMatrixCell (CDKMATRIX *matrix);
 static void drawEachCDKMatrixCell (CDKMATRIX *matrix);
 static void drawEachColTitle (CDKMATRIX *matrix);
@@ -33,6 +33,30 @@ static void redrawTitles (CDKMATRIX *matrix, int row, int col);
 	    matrix->lcol + matrix->ccol - 1)
 
 DeclareCDKObjects (MATRIX, Matrix, setCdk, Int);
+
+#define WHOLE_BOX ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER
+
+#define TOP_C_BOX ACS_ULCORNER, ACS_URCORNER, ACS_LTEE,     ACS_RTEE
+#define MID_C_BOX ACS_LTEE,     ACS_RTEE,     ACS_LTEE,     ACS_RTEE
+#define BOT_C_BOX ACS_LTEE,     ACS_RTEE,     ACS_LLCORNER, ACS_LRCORNER
+
+#define LFT_R_BOX ACS_ULCORNER, ACS_TTEE,     ACS_LLCORNER, ACS_BTEE
+#define MID_R_BOX ACS_TTEE,     ACS_TTEE,     ACS_BTEE,     ACS_BTEE
+#define RGT_R_BOX ACS_TTEE,     ACS_URCORNER, ACS_BTEE,     ACS_LRCORNER
+
+#define LFT_T_BOX ACS_ULCORNER, ACS_TTEE,     ACS_LTEE,     ACS_PLUS
+#define MID_T_BOX ACS_TTEE,     ACS_TTEE,     ACS_PLUS,     ACS_PLUS
+#define RGT_T_BOX ACS_TTEE,     ACS_URCORNER, ACS_PLUS,     ACS_RTEE
+
+#define LFT_M_BOX ACS_LTEE,     ACS_PLUS,     ACS_LTEE,     ACS_PLUS
+#define MID_M_BOX ACS_PLUS,     ACS_PLUS,     ACS_PLUS,     ACS_PLUS
+#define RGT_M_BOX ACS_PLUS,     ACS_RTEE,     ACS_PLUS,     ACS_RTEE
+
+#define LFT_B_BOX ACS_LTEE,     ACS_PLUS,     ACS_LLCORNER, ACS_BTEE
+#define MID_B_BOX ACS_PLUS,     ACS_PLUS,     ACS_BTEE,     ACS_BTEE
+#define RGT_B_BOX ACS_PLUS,     ACS_RTEE,     ACS_BTEE,     ACS_LRCORNER
+
+#define MyBox(cell,what,attr) attrbox(cell, what, ACS_HLINE, ACS_VLINE, attr)
 
 /*
  * This function creates the matrix widget.
@@ -434,11 +458,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    }
 
    /* Put the focus on the current cell */
-   attrbox (CurMatrixCell (widget),
-	    ACS_ULCORNER, ACS_URCORNER,
-	    ACS_LLCORNER, ACS_LRCORNER,
-	    ACS_HLINE, ACS_VLINE,
-	    A_BOLD);
+   MyBox (CurMatrixCell (widget), WHOLE_BOX, A_BOLD);
    wrefresh (CurMatrixCell (widget));
    highlightCDKMatrixCell (widget);
 
@@ -822,11 +842,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    wrefresh (MATRIX_CELL (widget, widget->oldcrow, widget->oldccol));
 
 	    /* Highlight the new cell. */
-	    attrbox (CurMatrixCell (widget),
-		     ACS_ULCORNER, ACS_URCORNER,
-		     ACS_LLCORNER, ACS_LRCORNER,
-		     ACS_HLINE, ACS_VLINE,
-		     A_BOLD);
+	    MyBox (CurMatrixCell (widget), WHOLE_BOX, A_BOLD);
 	    wrefresh (CurMatrixCell (widget));
 	    highlightCDKMatrixCell (widget);
 	 }
@@ -837,11 +853,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    drawEachCDKMatrixCell (widget);
 
 	    /* Highlight the current cell. */
-	    attrbox (CurMatrixCell (widget),
-		     ACS_ULCORNER, ACS_URCORNER,
-		     ACS_LLCORNER, ACS_LRCORNER,
-		     ACS_HLINE, ACS_VLINE,
-		     A_BOLD);
+	    MyBox (CurMatrixCell (widget), WHOLE_BOX, A_BOLD);
 	    wrefresh (CurMatrixCell (widget));
 	    highlightCDKMatrixCell (widget);
 	 }
@@ -1029,7 +1041,6 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
 			       int col,
 			       int vrow,
 			       int vcol,
-			       chtype attr,
 			       boolean Box)
 {
    /* *INDENT-EQLS* */
@@ -1039,6 +1050,7 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
    int rows             = matrix->vrows;
    int cols             = matrix->vcols;
    int infolen          = (int)strlen (MATRIX_INFO (matrix, vrow, vcol));
+   chtype attr          = A_NORMAL;
    int x;
 
    /*
@@ -1076,174 +1088,94 @@ static void drawCDKMatrixCell (CDKMATRIX *matrix,
     * If the value of the column spacing is greater than 0 then these
     * are independent boxes.
     */
-   if (matrix->colSpace != 0 && matrix->rowSpace != 0)
+   if (matrix->colSpace != 0)
    {
-      attrbox (cell,
-	       ACS_ULCORNER, ACS_URCORNER,
-	       ACS_LLCORNER, ACS_LRCORNER,
-	       ACS_HLINE, ACS_VLINE,
-	       attr);
-      return;
+      if (matrix->rowSpace != 0)
+      {
+	 MyBox (cell, WHOLE_BOX, attr);
+      }
+      else
+      {
+	 if (row == 1)
+	 {
+	    MyBox (cell, TOP_C_BOX, attr);
+	 }
+	 else if (row > 1 && row < rows)
+	 {
+	    MyBox (cell, MID_C_BOX, attr);
+	 }
+	 else if (row == rows)
+	 {
+	    MyBox (cell, BOT_C_BOX, attr);
+	 }
+      }
    }
-   if (matrix->colSpace != 0 && matrix->rowSpace == 0)
+   else if (matrix->rowSpace != 0)
+   {
+      if (col == 1)
+      {
+	 MyBox (cell, LFT_R_BOX, attr);
+      }
+      else if (col > 1 && col < cols)
+      {
+	 MyBox (cell, MID_R_BOX, attr);
+      }
+      else if (col == cols)
+      {
+	 MyBox (cell, RGT_R_BOX, attr);
+      }
+   }
+   else
    {
       if (row == 1)
       {
-	 attrbox (cell,
-		  ACS_ULCORNER, ACS_URCORNER,
-		  ACS_LTEE, ACS_RTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
+	 if (col == 1)
+	 {
+	    MyBox (cell, LFT_T_BOX, attr);	/* top left corner */
+	 }
+	 else if (col > 1 && col < cols)
+	 {
+	    MyBox (cell, MID_T_BOX, attr);	/* top middle */
+	 }
+	 else if (col == cols)
+	 {
+	    MyBox (cell, RGT_T_BOX, attr);	/* top right corner */
+	 }
       }
       else if (row > 1 && row < rows)
       {
-	 attrbox (cell,
-		  ACS_LTEE, ACS_RTEE,
-		  ACS_LTEE, ACS_RTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
+	 if (col == 1)
+	 {
+	    MyBox (cell, LFT_M_BOX, attr);	/* middle left */
+	 }
+	 else if (col > 1 && col < cols)
+	 {
+	    MyBox (cell, MID_M_BOX, attr);	/* middle */
+	 }
+	 else if (col == cols)
+	 {
+	    MyBox (cell, RGT_M_BOX, attr);	/* middle right */
+	 }
       }
       else if (row == rows)
       {
-	 attrbox (cell,
-		  ACS_LTEE, ACS_RTEE,
-		  ACS_LLCORNER, ACS_LRCORNER,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
-      }
-   }
-   if (matrix->colSpace == 0 && matrix->rowSpace != 0)
-   {
-      if (col == 1)
-      {
-	 attrbox (cell,
-		  ACS_ULCORNER, ACS_TTEE,
-		  ACS_LLCORNER, ACS_BTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
-      }
-      else if (col > 1 && col < cols)
-      {
-	 attrbox (cell,
-		  ACS_TTEE, ACS_TTEE,
-		  ACS_BTEE, ACS_BTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
-      }
-      else if (col == cols)
-      {
-	 attrbox (cell,
-		  ACS_TTEE, ACS_URCORNER,
-		  ACS_BTEE, ACS_LRCORNER,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-	 return;
-      }
-   }
-
-   /* Start drawing the matrix. */
-   if (row == 1)
-   {
-      if (col == 1)
-      {
-	 /* Draw the top left corner */
-	 attrbox (cell,
-		  ACS_ULCORNER, ACS_TTEE,
-		  ACS_LTEE, ACS_PLUS,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col > 1 && col < cols)
-      {
-	 /* Draw the top middle box */
-	 attrbox (cell,
-		  ACS_TTEE, ACS_TTEE,
-		  ACS_PLUS, ACS_PLUS,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col == cols)
-      {
-	 /* Draw the top right corner */
-	 attrbox (cell,
-		  ACS_TTEE, ACS_URCORNER,
-		  ACS_PLUS, ACS_RTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-   }
-   else if (row > 1 && row < rows)
-   {
-      if (col == 1)
-      {
-	 /* Draw the middle left box */
-	 attrbox (cell,
-		  ACS_LTEE, ACS_PLUS,
-		  ACS_LTEE, ACS_PLUS,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col > 1 && col < cols)
-      {
-	 /* Draw the middle box */
-	 attrbox (cell,
-		  ACS_PLUS, ACS_PLUS,
-		  ACS_PLUS, ACS_PLUS,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col == cols)
-      {
-	 /* Draw the middle right box */
-	 attrbox (cell,
-		  ACS_PLUS, ACS_RTEE,
-		  ACS_PLUS, ACS_RTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-   }
-   else if (row == rows)
-   {
-      if (col == 1)
-      {
-	 /* Draw the bottom left corner */
-	 attrbox (cell,
-		  ACS_LTEE, ACS_PLUS,
-		  ACS_LLCORNER, ACS_BTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col > 1 && col < cols)
-      {
-	 /* Draw the bottom middle box */
-	 attrbox (cell,
-		  ACS_PLUS, ACS_PLUS,
-		  ACS_BTEE, ACS_BTEE,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
-      }
-      else if (col == cols)
-      {
-	 /* Draw the bottom right corner */
-	 attrbox (cell,
-		  ACS_PLUS, ACS_RTEE,
-		  ACS_BTEE, ACS_LRCORNER,
-		  ACS_HLINE, ACS_VLINE,
-		  attr);
+	 if (col == 1)
+	 {
+	    MyBox (cell, LFT_B_BOX, attr);	/* bottom left corner */
+	 }
+	 else if (col > 1 && col < cols)
+	 {
+	    MyBox (cell, MID_B_BOX, attr);	/* bottom middle */
+	 }
+	 else if (col == cols)
+	 {
+	    MyBox (cell, RGT_B_BOX, attr);	/* bottom right corner */
+	 }
       }
    }
 
    /* Highlight the current cell. */
-   attrbox (CurMatrixCell (matrix),
-	    ACS_ULCORNER, ACS_URCORNER,
-	    ACS_LLCORNER, ACS_LRCORNER,
-	    ACS_HLINE, ACS_VLINE,
-	    A_BOLD);
+   MyBox (CurMatrixCell (matrix), WHOLE_BOX, A_BOLD);
    wrefresh (CurMatrixCell (matrix));
    highlightCDKMatrixCell (matrix);
 }
@@ -1298,7 +1230,6 @@ static void drawEachCDKMatrixCell (CDKMATRIX *matrix)
 	 drawCDKMatrixCell (matrix, x, y,
 			    matrix->trow + x - 1,
 			    matrix->lcol + y - 1,
-			    A_NORMAL,
 			    matrix->boxCell);
       }
    }
@@ -1311,7 +1242,6 @@ static void drawCurCDKMatrixCell (CDKMATRIX *matrix)
 		      matrix->ccol,
 		      matrix->row,
 		      matrix->col,
-		      A_NORMAL,
 		      matrix->boxCell);
 }
 
@@ -1322,7 +1252,6 @@ static void drawOldCDKMatrixCell (CDKMATRIX *matrix)
 		      matrix->oldccol,
 		      matrix->oldvrow,
 		      matrix->oldvcol,
-		      A_NORMAL,
 		      matrix->boxCell);
 }
 
@@ -1354,11 +1283,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    drawEachCDKMatrixCell (matrix);
 
    /* Highlight the current cell. */
-   attrbox (CurMatrixCell (matrix),
-	    ACS_ULCORNER, ACS_URCORNER,
-	    ACS_LLCORNER, ACS_LRCORNER,
-	    ACS_HLINE, ACS_VLINE,
-	    A_BOLD);
+   MyBox (CurMatrixCell (matrix), WHOLE_BOX, A_BOLD);
    wrefresh (CurMatrixCell (matrix));
    highlightCDKMatrixCell (matrix);
 }
