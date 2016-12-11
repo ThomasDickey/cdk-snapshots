@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.27 2016/02/01 00:03:53 tom Exp $
+.\" $Id: cdk_entry.3,v 1.28 2016/12/11 02:04:55 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_entry 3
@@ -207,15 +210,22 @@ The following functions create or manipulate the Cdk entry box widget.
 .TP 5
 .B activateCDKEntry
 activates the entry widget and lets the user interact with the widget.
+.RS
+.bP
 The parameter \fBentry\fR is a pointer to a non-NULL entry widget.
+.bP
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
 in the array will be injected into the widget.
+.IP
 To activate the widget
 interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+.RE
+.IP
 If the character entered
 into this widget is \fIRETURN\fR or \fITAB\fR then this function will return
 a \fIchar *\fR representing the information typed into the widget and the
 widget data \fIexitType\fR will be set to \fIvNORMAL\fR.
+.IP
 If the character
 entered was \fIESCAPE\fR then the function will return \fINULL\fR pointer and
 the widget data \fIexitType\fR is set to \fIvESCAPE_HIT\fR.
@@ -228,6 +238,7 @@ removes the widget from the screen and frees memory the object used.
 .TP 5
 .B drawCDKEntry
 draws the entry widget on the screen.
+.IP
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
 .B eraseCDKEntry
@@ -254,8 +265,13 @@ returns the current value of the widget.
 .TP 5
 .B injectCDKEntry
 injects a single character into the widget.
+.RS
+.bP
 The parameter \fBentry\fR is a pointer to a non-NULL entry widget.
+.bP
 The parameter \fBcharacter\fR is the character to inject into the widget.
+.RE
+.IP
 The return value and side-effect (setting the widget data \fIexitType\fP)
 depend upon the injected character:
 .RS
@@ -279,75 +295,88 @@ The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
 .TP 5
 .B moveCDKEntry
 moves the given widget to the given position.
+.RS
+.bP
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
+.IP
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.IP
 The parameter \fBypos\fR may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
+.bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
+.IP
 For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
 If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+.IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
 (weird things may happen).
+.bP
 The final parameter \fBrefresh\fR is a boolean value which states
 whether the widget will get refreshed after the move.
+.RE
 .TP 5
 .B newCDKEntry
 creates a pointer to an entry widget.
 Parameters:
 .RS
-.TP 5
+.bP
 The \fBscreen\fR parameter
 is the screen you wish this widget to be placed in.
-.TP 5
+.bP
 \fBxpos\fR
 controls the placement of the object along the horizontal axis.
 It may be an integer or one of the pre-defined values
 \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
-.TP 5
+.bP
 \fBypos\fR
 controls the placement of the object along the vertical axis.
 It may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
-.TP 5
+.bP
 \fBtitle\fR
 is the string which will be displayed at the top of the widget.
 The title can be more than one line; just provide a carriage
 return character at the line break.
-.TP 5
+.bP
 \fBlabel\fR
 is the string which will be displayed in the label of the entry field.
-.TP 5
+.bP
 \fBfieldAttribute\fR
 is the attribute of the characters which are typed in.
-.TP 5
+.bP
 \fBfiller\fR
 is the character which is to be displayed in an empty space in the entry field.
-.TP 5
+.bP
 \fBdisplayType\fR
 tells how the entry field will behave when a character is entered into the field.
 See \fBcdk_display (3)\fR for valid values for this field.
-.TP 5
+.bP
 \fBfieldWidth\fR
-denotes the width of the field.
+denotes the width of the field:
+.RS
+.bP
 If a value
 of zero is provided, the field will be made as wide as possible on the screen.
+.bP
 If a negative value is given, then the field width will be the
 maximum width minus the value provided.
-.TP 5
+.RE
+.bP
 \fBminimumLength\fR
 controls the number of characters
 which must be entered before the user can exit the entry field.
-.TP 5
+.bP
 \fBmaximumLength\fR
 sets the maximum number of characters that can be entered.
-.TP 5
+.bP
 \fBbox\fR
 is true if the widget should be drawn with a box around it.
-.TP 5
+.bP
 \fBshadow\fR
 turns the shadow on around this widget.
 .RE
@@ -364,17 +393,23 @@ See \fBcdk_position (3)\fR for key bindings.
 .B setCDKEntry
 lets the programmer modify certain elements of an existing
 entry widget.
+.RS
+.bP
 The \fBvalue\fR parameter sets the value of the contents of the
 entry field.
+.bP
 The other parameter names correspond to the same parameter names
 listed in the \fBnewCDKEntry\fR function.
+.RE
 .TP 5
 .B setCDKEntryBackgroundAttrib
 sets the background attribute of the widget.
+.IP
 The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKEntryBackgroundColor
 sets the background color of the widget.
+.IP
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
 See \fBcdk_display (3)\fR.
@@ -387,7 +422,9 @@ function sets the attribute of the box.
 .TP 5
 .B setCDKEntryCB
 allows the programmer to set a different widget input handler.
+.IP
 The parameter \fBcallbackFunction\fR is of type \fIENTRYCB\fR.
+.IP
 The default function is \fICDKEntryCallBack\fR.
 .TP 5
 .B setCDKEntryFillerChar
@@ -419,15 +456,25 @@ sets the minimum length of the string that the widget will allow.
 .B setCDKEntryPostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKEntryPreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKEntryULChar

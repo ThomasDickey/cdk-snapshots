@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.9 2012/03/22 00:54:17 tom Exp $
+.\" $Id: cdk_util.3,v 1.10 2016/12/11 01:32:30 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_util 3
@@ -177,10 +180,15 @@ parameters.
 Translate a character \fIstring\fP with embedded format markers
 (e.g., "</X/Y>Blah Blah")
 to a null-terminated array of chtype's.
+.RS
+.bP
 The length of the array is stored via the \fIlength\fP parameter.
+.bP
 The \fBalign\fR parameter contains justification information
 (LEFT, CENTER, RIGHT).
+.IP
 The caller is responsible for freeing the result.
+.RE
 .TP 5
 .B char2DisplayType
 Lookup the given name in \fIstring\fP and return the equivalent display type.
@@ -213,14 +221,27 @@ i.e., first check if the \fIwindow\fP parameter is nonnull.
 Display a scrollable list of strings in a dialog,
 allow the user to select one.
 Return the index in the list of the value selected.
+.RS
+.bP
 The \fIlist\fP parameter contains the strings to display;
 there are \fIlistSize\fP strings in the list.
+.bP
 If \fInumbers\fP is true, the displayed list items will be numbered.
+.RE
 .TP 5
 .B getString
-pops up an entry widget with a title supplied by the value
-of the \fBtitle\fR parameter, a label supplied by the \fBlabel\fR parameter,
-and an initial value supplied by the \fBinitialValue\fR parameter.
+pops up an entry widget with
+.RS
+.bP
+a title supplied by the value
+of the \fBtitle\fR parameter,
+.bP
+a label supplied by the \fBlabel\fR parameter,
+and
+.bP
+an initial value supplied by the \fBinitialValue\fR parameter.
+.RE
+.IP
 It returns
 a pointer to the value typed in or NULL if the widget was exited early.
 .TP 5
@@ -240,16 +261,26 @@ Move a given \fIwindow\fP by the amounts in \fIxdiff\fP and \fIydiff\fP.
 .TP 5
 .B popupDialog
 creates a quick pop-up dialog box.
-Pass in the message in the
-\fBmesg\fR parameter, the size of the message in the \fBmesgCount\fR parameter,
-the button labels in the \fBbuttons\fR parameter and the number of buttons in
-the \fBbuttonCount\fR parameter.
+Pass in
+.RS
+.bP
+the message in the \fBmesg\fR parameter,
+.bP
+the size of the message in the \fBmesgCount\fR parameter,
+.bP
+the button labels in the \fBbuttons\fR parameter and
+.bP
+the number of buttons in the \fBbuttonCount\fR parameter.
+.RE
+.IP
 The dialog box will be centered on the screen.
 .TP 5
 .B popupLabel
 creates a quick pop-up label widget.
+.IP
 The message and the size of
 the message are passed in via the \fBmesg\fR and \fBcount\fR parameters respectively.
+.IP
 The label widget waits until the user hits a character and is centered
 on the screen.
 .TP 5
@@ -266,32 +297,27 @@ The caller should free the return-value.
 .B setWidgetDimension
 This is a helper function used to set the height/width of a widget:
 .RS
-.TP 3
--
+.bP
 If the proposed dimension \fIproposedDim\fP is FULL or zero,
 the return value will be \fIparentDim\fP.
-.TP 3
--
+.bP
 If the proposed dimension \fIproposedDim\fP is positive,
 .RS
-.TP 3
--
+.bP
 and it is larger than \fIparentDim\fP, return \fIproposedDim\fP,
-.TP 3
--
+.bP
 otherwise return \fIproposedDim\fP plus \fIadjustment\fP.
 .RE
-.TP 3
--
+.bP
 If the proposed dimension \fIproposedDim\fP is negative,
 the return value will be \fIparentDim\fP plus \fIproposedDim\fP.
-.TP 3
--
+.bP
 Otherwise, the return value will be \fIproposedDim\fP.
 .RE
 .TP 5
 .B stripWhiteSpace
 Strip whitespace from the front and/or back of the given \fIstring\fP.
+.IP
 The \fIstripType\fP parameter controls the type of stripping done:
 vFRONT, vBACK or vBOTH.
 .TP 5
@@ -299,10 +325,15 @@ vFRONT, vBACK or vBOTH.
 Read the file specified by \fIfilename\fP and display it in a CDKVIEWER window.
 The \fItitle\fP, \fIbuttons\fP and \fIbuttonCount\fP are applied to the
 CDKVIEWER window.
+.RS
+.bP
 The viewer shows
 the contents of the file supplied by the \fBfilename\fR value.
+.bP
 The buttons on
 the file viewer are supplied by the \fBbuttons\fR parameter.
+.RE
+.IP
 It returns the index of the button selected,
 or -1 if the file does not exist or if the widget was exited early.
 .LP

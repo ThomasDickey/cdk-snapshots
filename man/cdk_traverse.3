@@ -1,4 +1,7 @@
-.\" $Id: cdk_traverse.3,v 1.7 2005/12/30 01:47:25 tom Exp $
+.\" $Id: cdk_traverse.3,v 1.8 2016/12/11 01:27:58 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_traverse 3
@@ -117,34 +120,27 @@ Calls the focusObject method on the first widget.
 Repeats the following until one of the exit functions listed above has been
 called:
 .RS 4
-.TP 3
-*
+.bP
 Read a keystroke from the keyboard.
-.TP 3
-*
+.bP
 If the keystroke is ESCAPE and a menu widget is present, activate the
 menu and traverse it until the user selects an entry or hits TAB.
-.TP 3
-*
+.bP
 If the keystroke is TAB/BACKTAB then call the unfocusObject method on the
 current widget, and move focus to the next/previous widget (not counting
 menu widgets).
 Call the focusObject method on the newly current widget.
-.TP 3
-*
+.bP
 If the keystroke is the EXIT-SAVE keystroke, then call the saveData method
 on each widget and return 1.
-.TP 3
-*
+.bP
 If the keystroke is the EXIT-CANCEL keystroke, return 0 without saving
 changes made by the user.
-.TP 3
-*
+.bP
 If the keystroke is the RESET-DATA keystroke, then call the refreshData
 method on each of the widgets to reset their appearance to match the data
 values that were present upon entry.
-.TP 3
-*
+.bP
 Otherwise, pass the keystroke to the current widget.
 .RE
 .RE

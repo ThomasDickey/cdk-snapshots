@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_swindow.3,v 1.24 2012/03/22 08:42:21 tom Exp $
+.\" $Id: cdk_swindow.3,v 1.25 2016/12/11 01:21:42 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_swindow 3
@@ -195,29 +198,40 @@ The following functions create or manipulate the Cdk swindow box widget.
 .TP 5
 .B activateCDKSwindow
 function activates the swindow widget and lets the user interact with the widget.
+.RS
+.bP
 The parameter \fBswindow\fR is a pointer to a non-NULL swindow widget.
+.bP
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
 in the array will be injected into the widget.
+.IP
 To activate the widget
 interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+.RE
+.IP
 If the character
 entered into this widget is \fIRETURN\fR or \fITAB\fR then this function will
 return 1.
 It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
+.IP
 If the character entered into this widget was \fIESCAPE\fR then the widget will
 return a value of -1 and the widget data \fIexitType\fR will be set to
 \fIvESCAPE_HIT\fR.
 .TP 5
 .B addCDKSwindow
 adds information to a scrolling window.
+.RS
+.bP
 The information
 is supplied by the \fBinfo\fR parameter.
 The information is immediately added
 to the scrolling window.
+.bP
 The position of the new information is governed by
 the value of the parameter \fBinsertPosition\fR.
 This parameter may be
 two values: \fITOP\fR or \fIBOTTOM\fR.
+.RE
 .TP 5
 .B cleanCDKSwindow
 clears the information from the window.
@@ -227,6 +241,7 @@ removes the widget from the screen and frees memory the object used.
 .TP 5
 .B drawCDKSwindow
 draws the swindow widget on the screen.
+.IP
 If the \fBbox\fR parameter is true, the widget is drawn with a box.
 .TP 5
 .B dumpCDKSwindow
@@ -242,22 +257,32 @@ This does \fINOT\fR destroy the widget.
 .B execCDKSwindow
 allows the user to execute a shell command and have the output
 of the shell command direct itself to the scrolling window.
+.RS
+.bP
 The \fBcommand\fR parameter is the command to execute.
+.bP
 The \fBinsertPosition\fR parameter tells where the
 output will be inserted within the scrolling window.
+.RE
 .TP 5
 .B getCDKSwindowBox
 returns true if the widget will be drawn with a box around it.
 .TP 5
 .B getCDKSwindowContents
 returns the contents of the scrolling window.
+.IP
 The parameter \fBlines\fR will be
 set to the number of lines returned.
 .TP 5
 .B injectCDKSwindow
 injects a single character into the widget.
+.RS
+.bP
 The parameter \fBswindow\fR is a pointer to a non-NULL swindow widget.
+.bP
 The parameter \fBcharacter\fR is the character to inject into the widget.
+.RE
+.IP
 The return value and side-effect (setting the widget data \fIexitType\fP)
 depend upon the injected character:
 .RS
@@ -281,6 +306,7 @@ The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
 .TP 5
 .B jumpToLineCDKSwindow
 moves the scrolling window to the given line.
+.IP
 The parameter \fBline\fR may be an integer or one of the two predefined values
 \fITOP\fR and \fIBOTTOM\fR.
 .TP 5
@@ -290,22 +316,31 @@ This function is interactive, and will ask for a filename.
 .TP 5
 .B moveCDKSwindow
 moves the given widget to the given position.
+.RS
+.bP
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
+.IP
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.IP
 The parameter \fBypos\fR may be an integer or one of the pre-defined values \fILEFT\fR,
 \fIRIGHT\fR, and \fICENTER\fR.
+.bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
+.IP
 For example,
 if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
 If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+.IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR
 (weird things may happen).
+.bP
 The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will get refreshed after the move.
+.RE
 .TP 5
 .B newCDKSwindow
 creates a swindow widget and returns a pointer to it.
@@ -364,19 +399,26 @@ This function is interactive, and will ask for a filename.
 .B setCDKSwindow
 lets the programmer modify certain elements of an existing
 swindow widget.
+.RS
+.bP
 The parameter \fBinfo\fR is a \fIchar **\fR of the information
 to set in the scrolling window; \fBlines\fR is the number of lines being added.
+.bP
 The other parameter names correspond to the same parameter names listed in the
 \fBnewCDKSwindow\fR function.
+.RE
 .TP 5
 .B setCDKSwindowBackgroundAttrib
 sets the background attribute of the widget.
+.IP
 The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .TP 5
 .B setCDKSwindowBackgroundColor
 sets the background color of the widget.
+.IP
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
+.IP
 See \fBcdk_display (3)\fR.
 .TP 5
 .B setCDKSwindowBox
@@ -387,8 +429,13 @@ sets the attribute of the box.
 .TP 5
 .B setCDKSwindowContents
 lets the programmer modify certain elements of an existing swindow widget.
+.RS
+.bP
 The parameter \fBinfo\fR is a \fIchar **\fR of the information
-to set in the scrolling window; \fBlines\fR is the number of lines being added.
+to set in the scrolling window.
+.bP
+\fBlines\fR is the number of lines being added.
+.RE
 .TP 5
 .B setCDKSwindowHorizontalChar
 sets the horizontal drawing character for the box to the given character.
@@ -402,15 +449,25 @@ sets the lower right hand corner of the widget's box to the given character.
 .B setCDKSwindowPostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKSwindowPreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKSwindowULChar
@@ -424,7 +481,9 @@ sets the vertical drawing character for the box to the given character.
 .TP 5
 .B trimCDKSwindow
 removes information from a scrolling window.
+.IP
 The parameters \fBstart\fR and \fBend\fR state where to start cutting from and where to stop.
+.IP
 The first element in the scrolling window starts at index 0.
 .SH KEY BINDINGS
 When the widget is activated there are several default key bindings which will

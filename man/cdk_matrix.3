@@ -1,5 +1,8 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.26 2012/03/22 08:39:04 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.28 2016/12/11 02:26:07 tom Exp $
+.de bP
+.IP \(bu 4
+..
 .de XX
 ..
 .TH cdk_matrix 3
@@ -157,6 +160,7 @@ cdk_matrix \- curses matrix widget.
 .BI "int " "row",
 .BI "int " "col",
 .BI "const char *" "value");
+.TP 15
 .B "void setCDKMatrixCells ("
 .BI "CDKMATRIX *" "matrix",
 .BI "CDK_CONST char **" "info",
@@ -206,19 +210,27 @@ create or manipulate the Cdk matrix box widget.
 .TP 5
 .B activateCDKMatrix
 activates the matrix widget and lets the user interact with the widget.
+.RS
+.bP
 The parameter \fBmatrix\fR is a pointer to a non-NULL matrix widget.
+.bP
 If the \fBactions\fR parameter is passed with a non-NULL value, the characters
 in the array will be injected into the widget.
+.IP
 To activate the widget
 interactively pass in a \fINULL\fR pointer for \fBactions\fR.
+.IP
 If the character
 entered into this widget is \fIRETURN\fR then this function will return 1.
 It will also set the widget data \fIexitType\fR to \fIvNORMAL\fR.
+.IP
 If the character entered into this widget was \fIESCAPE\fR then the widget
 will return a value of -1 and the widget data \fIexitType\fR will be
 set to \fIvESCAPE_HIT\fR.
+.bP
 The matrix cell contents can be retrieved by using
 the \fBinfo\fR array of the matrix widget.
+.RE
 .TP 5
 .B cleanCDKMatrix
 clears the information from all cells of the matrix.
@@ -251,8 +263,12 @@ returns the current row index.
 .TP 5
 .B injectCDKMatrix
 injects a single character into the widget.
+.RS
+.bP
 The parameter \fBmatrix\fR is a pointer to a non-NULL matrix widget.
+.bP
 The parameter \fBcharacter\fR is the character to inject into the widget.
+.IP
 The return value and side-effect (setting the widget data \fIexitType\fP)
 depend upon the injected character:
 .RS
@@ -273,9 +289,10 @@ the function returns
 -1.
 The widget data \fIexitType\fR is set to \fIvEARLY_EXIT\fR.
 .RE
-.IP
+.bP
 The matrix cell contents can be retrieved by
 using the \fBinfo\fR array of the matrix widget.
+.RE
 .TP 5
 .B jumpToCell
 provides an interactive method of moving to a cell.
@@ -285,21 +302,31 @@ Then it performs the jump.
 .TP 5
 .B moveCDKMatrix
 moves the given widget to the given position.
+.RS
+.bP
 The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
+.IP
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
+.IP
 The parameter \fBypos\fR may be an integer or one of the pre-defined values \fILEFT\fR,
 \fIRIGHT\fR, and \fICENTER\fR.
+.bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
+.IP
 For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
+.IP
 If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+.IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
 (weird things may happen).
+.bP
 The final parameter \fBrefresh\fR is a boolean value which
 states whether the widget will get refreshed after the move.
+.RE
 .TP 5
 .B moveToCDKMatrixCell
 jumps to the given cells dictated by the parameters \fBrow\fR and \fBcol\fR.
@@ -367,6 +394,7 @@ states which (the rows or the columns)
 will have the dominant character attributes.
 This is stated when a cell has
 both a row attribute and a column attribute.
+.IP
 If the value of the parameter
 \fBdominantAttribute\fR is set to \fBROW\fR then the attribute of the row
 will be displayed.
@@ -392,11 +420,18 @@ See \fBcdk_position (3)\fR for key bindings.
 .TP 5
 .B setCDKMatrix
 lets the programmer modify certain elements of an existing matrix widget.
+.RS
+.bP
 The parameter \fBinfo\fR is an array of \fIchar *\fR which
 contains the cell information.
+.bP
 The parameter \fBrows\fR has the number of rows
-the parameter \fBinfo\fR contains, while \fBcolumnLengths\fR has the lengths of
+.bP
+the parameter \fBinfo\fR contains,
+.bP
+\fBcolumnLengths\fR has the lengths of
 the individual columns in \fBinfo\fR.
+.RE
 .IP
 Do not use this function.
 It is obsolete, provided only for compatibility with older versions of CDK.
@@ -429,12 +464,18 @@ The value of the cell will be set to \fBvalue\fR.
 .TP
 .B setCDKMatrixCells,
 lets the programmer initialize elements of an existing matrix widget.
+.bP
 The parameter \fBinfo\fR is an array of \fIchar *\fR which
 contains the cell information.
+.RS
+.bP
 The parameter \fBrows\fR has the number of rows
+.bP
 The parameter \fBcols\fR has the number of columns
-the parameter \fBinfo\fR contains, while \fBcolumnLengths\fR has the lengths of
+.bP
+The parameter \fBinfo\fR contains, while \fBcolumnLengths\fR has the lengths of
 the individual columns in \fBinfo\fR.
+.RE
 .TP 5
 .B setCDKMatrixHorizontalChar
 sets the horizontal drawing character for the box to
@@ -451,15 +492,25 @@ the given character.
 .B setCDKMatrixPostProcess
 allows the user to have the widget call a function after the
 key has been applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about post-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKMatrixPreProcess
 allows the user to have the widget call a function after a key
 is hit and before the key is applied to the widget.
+.RS
+.bP
 The parameter \fBfunction\fR is the callback function.
+.bP
 The parameter \fBdata\fR points to data passed to the callback function.
+.RE
+.IP
 To learn more about pre-processing see \fIcdk_process (3)\fR.
 .TP 5
 .B setCDKMatrixULChar
