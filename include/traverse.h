@@ -54,9 +54,13 @@ typedef boolean (*CHECK_KEYCODE)(int /* keyCode */, int /* functionKey */);
 
 extern CDKOBJS *getCDKFocusCurrent (CDKSCREEN * /* screen */);
 extern CDKOBJS *setCDKFocusCurrent (CDKSCREEN * /*screen */, CDKOBJS * /* obj */);
+extern CDKOBJS *getCDKFocusNext (CDKSCREEN * /* screen */);
 extern CDKOBJS *setCDKFocusNext (CDKSCREEN * /* screen */);
+extern CDKOBJS *getCDKFocusPrevious (CDKSCREEN * /* screen */);
 extern CDKOBJS *setCDKFocusPrevious (CDKSCREEN * /* screen */);
+extern CDKOBJS *getCDKFocusFirst (CDKSCREEN * /* screen */);
 extern CDKOBJS *setCDKFocusFirst (CDKSCREEN * /* screen */);
+extern CDKOBJS *getCDKFocusLast (CDKSCREEN * /* screen */);
 extern CDKOBJS *setCDKFocusLast (CDKSCREEN * /* screen */);
 
 extern int  traverseCDKScreen (CDKSCREEN * /* screen */);
