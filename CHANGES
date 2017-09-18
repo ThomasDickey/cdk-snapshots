@@ -1,13 +1,32 @@
--- $Id: CHANGES,v 1.264 2016/12/11 02:27:55 tom Exp $
+-- $Id: CHANGES,v 1.266 2017/09/18 21:17:11 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2015, 2016
+Modifications copyright Thomas E. Dickey 1999-2016, 2017
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2017/09/18
+	+ updated configure macros:
+	  + CF_ADD_CFLAGS improve formatting of generated lists using
+	    CF_APPEND_TEXT
+	  + CF_CC_ENV_FLAGS - two changes
+	    a) revise the expression generating $cf_flags to actually work when
+	       there is more than one option.
+	    b) correct the parameter passed to CF_ADD_CFLAGS, which was the
+	       whole list rather than the current parameter.
+	  + CF_CURSES_LIBS reorganize to handle the case where initscr is a
+	    macro.
+	  + CF_NCURSES_CONFIG add check for term.h when using pkg-config
+	  + CF_NCURSES_VERSION use prototype for main
+	  + CF_SHARED_OPTS workaround for PGI compiler
+	  + CF_WITH_LIBTOOL use SIGQUIT(3) rather than SIGTRAP(5) in trap
+	    commands.  Fix a few places in configure/build scripts where
+	    DESTDIR and rpath were combined.
+	+ update config.guess, config.sub
 
 2016/12/10
 	+ improve formatting of manpages, using bullets
