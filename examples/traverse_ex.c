@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.25 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.26 2017/12/09 19:03:36 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -98,7 +98,7 @@ static CDKOBJS *make_buttonbox (CDKSCREEN *cdkscreen, int x, int y)
    CDKBUTTONBOX *widget = newCDKButtonbox (cdkscreen, x, y,
 					   10, 16,
 					   "ButtonBox", 6, 2,
-					   months,
+					   (CDK_CSTRING2)months,
 					   NumElements (months),
 					   A_REVERSE,
 					   TRUE, FALSE);
