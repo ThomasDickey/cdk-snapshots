@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.21 2016/02/01 00:45:45 tom Exp $
+# $Id: rules,v 1.22 2017/12/09 18:59:26 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -13,7 +13,9 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 PACKAGES.indep = libcdk5-doc
 PACKAGES.arch  = libcdk5-dev libcdk5
 
-CFLAGS =
+CPPFLAGS	:= $(shell dpkg-buildflags --get CPPFLAGS)
+CFLAGS		:= $(shell dpkg-buildflags --get CFLAGS)
+LDFLAGS		:= $(shell dpkg-buildflags --get LDFLAGS)
 
 TARGET = $(CURDIR)/debian
 P_SHARED = $(CURDIR)/t/shared
@@ -23,7 +25,11 @@ verbose = # -v
 
 LOG = @echo "**"
 
-configure = ../../configure \
+configure = \
+	CPPFLAGS="$(CPPFLAGS)" \
+	CFLAGS="$(CFLAGS)" \
+	LDFLAGS="$(LDFLAGS)" \
+	../../configure \
 		--disable-echo \
 		--host=$(DEB_HOST_GNU_TYPE) \
 		--build=$(DEB_BUILD_GNU_TYPE) \

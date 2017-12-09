@@ -2,12 +2,12 @@
 # $FreeBSD: devel/cdk/Makefile 315072 2013-03-23 19:19:55Z bapt $
 
 PORTNAME=	cdk
-PORTVERSION=	5.0.20170918
+PORTVERSION=	5.0.20171209
 
 PORTREVISION=	2
 PORTEPOCH=	1
 CATEGORIES=	devel
-MASTER_SITES=	ftp://invisible-island.net/cdk/ \
+MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/ \
 		http://fossies.org/linux/misc/
 DISTNAME=	${PORTNAME}-${PORTVERSION:R}-${PORTVERSION:E}
 EXTRACT_SUFX=	.tgz
