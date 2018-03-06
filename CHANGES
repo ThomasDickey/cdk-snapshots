@@ -1,13 +1,21 @@
--- $Id: CHANGES,v 1.269 2017/12/09 21:24:17 tom Exp $
+-- $Id: CHANGES,v 1.273 2018/03/06 23:22:45 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2016, 2017
+Modifications copyright Thomas E. Dickey 1999-2017, 2018
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2018/03/06
+	+ update versioned-symbol list for reRegisterCDKObject (prompted by
+	  Debian #892114, which adopted a different set of symbol versions
+	  such as "5.0.20161120", cf: 2014/11/06).
+	+ updated configure macros, from lynx development:  CF_CURSES_FUNCS,
+	  CF_CURSES_LIBS, CF_MAKEFLAGS, CF_NCURSES_CONFIG, CF_SHARED_OPTS
+	+ update config.guess, config.sub
 
 2017/12/09
 	+ updated ftp url in test-packages, etc.

@@ -1,4 +1,4 @@
-# $Id: cdk.sym,v 1.1 2014/11/02 19:57:43 tom Exp $
+# $Id: cdk.sym,v 1.2 2018/03/06 22:24:55 tom Exp $
 Beep
 CDKDEBUG
 CDKVersion
@@ -306,6 +306,7 @@ popupLabelAttrib
 positionCDKButton
 positionCDKObject
 raiseCDKObject
+reRegisterCDKObject
 readFile
 refreshCDKScreen
 refreshCDKWindow
