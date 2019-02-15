@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.28 2016/12/10 17:30:49 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.30 2019/02/15 00:51:07 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -245,7 +246,8 @@ returns true if the widget will be drawn with a box around it.
 returns the character being used to draw unused space in the widget.
 .TP 5
 .B getCDKMentryHiddenChar
-returns the character being used to draw hidden characters in the widget (obsolete).
+returns the character being used
+to draw hidden characters in the widget (obsolete).
 .TP 5
 .B getCDKMentryMin
 returns the minimum length of a string the widget will allow.
@@ -293,16 +295,18 @@ The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
 .IP
-The parameter \fBypos\fR may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
+The parameter \fBypos\fR may be an integer
+or one of the pre-defined values \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
 .bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 .IP
-For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+For example,
+if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
 .IP
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
@@ -345,9 +349,9 @@ is the attribute of the characters to be displayed when they are typed in.
 is the character which is to display in an empty space in the mentry field.
 .TP 5
 \fBdisplayType\fR
-tells how the mentry field will behave when a character is entered into the field.
-The following table
-outlines valid values for this field and what they mean:
+tells how the mentry field will behave
+when a character is entered into the field.
+The following table outlines valid values for this field and what they mean:
 .LP
 .TS
 center tab(/);
@@ -428,9 +432,10 @@ vVIEWONLY/Uneditable field.
 \fBfieldWidth\fR
 control the height and width of the field of the widget.
 If you provide a value of zero for either of the values,
-the field in the widget will be made as large as it can both in width and in height.
-If you provide a negative value, the field will be created the full height or width
-minus the value provided.
+the field in the widget will be made
+as large as it can both in width and in height.
+If you provide a negative value,
+the field will be created the full height or width minus the value provided.
 .TP 5
 \fBlogicalRows\fR
 is the number of rows for the mentry field.

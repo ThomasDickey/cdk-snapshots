@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_histogram.3,v 1.17 2016/12/10 16:59:39 tom Exp $
+.\" $Id: cdk_histogram.3,v 1.19 2019/02/15 00:46:28 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -248,7 +249,8 @@ the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 For example
 if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
@@ -342,8 +344,10 @@ It accepts \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
 .bP
 The parameter \fBstatsAttribute\fR sets the attributes of the statistics.
 .bP
-The parameters \fBlowValue\fR, \fBhighValue\fR, and \fBcurrentValue\fR are the low, high,
-and current values respectively.
+The parameters
+\fBlowValue\fR,
+\fBhighValue\fR, and
+\fBcurrentValue\fR are the low, high, and current values respectively.
 .bP
 The \fBfiller\fR character is the character
 to use in the unused space in the histogram.
