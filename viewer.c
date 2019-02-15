@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:15:53 $
- * $Revision: 1.165 $
+ * $Date: 2019/02/15 01:34:47 $
+ * $Revision: 1.166 $
  */
 
 /*
@@ -68,6 +68,7 @@ CDKVIEWER *newCDKViewer (CDKSCREEN *cdkscreen,
 	    { '$',		KEY_END },
    };
    /* *INDENT-ON* */
+
 
    if ((viewer = newCDKObject (CDKVIEWER, &my_funcs)) == 0)
         return (0);
@@ -488,13 +489,20 @@ void cleanCDKViewer (CDKVIEWER *viewer)
 
 static void PatternNotFound (CDKVIEWER *viewer, char *pattern)
 {
-   CDK_CSTRING tempInfo[2];
-   char *temp = (char *)malloc (80 + strlen (pattern));
-   tempInfo[0] = temp;
-   tempInfo[1] = 0;
-   sprintf (temp, "</U/5>Pattern '%s' not found.<!U!5>", pattern);
-   popUpLabel (viewer, tempInfo);
-   free (temp);
+   if (pattern == 0)
+   {
+      PatternNotFound (viewer, "");
+   }
+   else
+   {
+      CDK_CSTRING tempInfo[2];
+      char *temp = (char *)malloc (80 + strlen (pattern));
+      tempInfo[0] = temp;
+      tempInfo[1] = 0;
+      sprintf (temp, "</U/5>Pattern '%s' not found.<!U!5>", pattern);
+      popUpLabel (viewer, tempInfo);
+      free (temp);
+   }
 }
 
 /*

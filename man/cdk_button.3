@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_button.3,v 1.11 2016/12/11 01:52:43 tom Exp $
+.\" $Id: cdk_button.3,v 1.12 2019/02/15 00:40:02 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -37,36 +38,36 @@ cdk_button \- create and manage a curses button widget.
 .B \-lcdk
 .RI "[ " "library" " \|.\|.\|. ]"
 .LP
-#include <cdk.h>
+.B #include <cdk.h>
 
-typedef void (*tButtonCallback)(struct SButton *button);
+\fBtypedef void (*tButtonCallback)(struct SButton *\fP\fIbutton\fB);\fP
 .nf
 .TP 15
 .B "int activateCDKButton ("
 .BI "CDKBUTTON *" "button",
 .BI "chtype * " "actions");
 .TP 15
-.BI "void destroyCDKButton ("
+.B "void destroyCDKButton ("
 .BI "CDKBUTTON *" "button");
 .TP 15
-.BI "void drawCDKButton ("
+.B "void drawCDKButton ("
 .BI "CDKBUTTON *" "b",
 .BI "boolean " "box");
 .TP 15
-.BI "void eraseCDKButton ("
+.B "void eraseCDKButton ("
 .BI "CDKBUTTON *" "button");
 .TP 15
-.BI "boolean getCDKButtonBox ("
+.B "boolean getCDKButtonBox ("
 .BI "CDKBUTTON *" "b");
 .TP 15
-.BI "chtype *getCDKButtonMessage ("
+.B "chtype *getCDKButtonMessage ("
 .BI "CDKBUTTON *" "b");
 .TP 15
 .B "int injectCDKButtonbox ("
 .BI "CDKBUTTON *" "buttonbox",
 .BI "chtype " "input");
 .TP 15
-.BI "CDKBUTTON *newCDKButton("
+.B "CDKBUTTON *newCDKButton("
 .BI "CDKSCREEN *" "cdkscreen",
 .BI "int " "xpos",
 .BI "int " "ypos",
@@ -75,66 +76,66 @@ typedef void (*tButtonCallback)(struct SButton *button);
 .BI "boolean " "box",
 .BI "boolean " "shadow");
 .TP 15
-.BI "void setCDKButton("
+.B "void setCDKButton("
 .BI "CDKBUTTON *" "b",
 .BI "const char *" "message",
 .BI "boolean " "box");
 .TP 15
-.BI "void setCDKButtonBackgroundAttrib ("
+.B "void setCDKButtonBackgroundAttrib ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "attribute");
 .TP 15
-.BI "void setCDKButtonBackgroundColor ("
+.B "void setCDKButtonBackgroundColor ("
 .BI "CDKBUTTON *" "b",
 .BI "const char * " "color");
 .TP 15
-.BI "void setCDKButtonBox ("
+.B "void setCDKButtonBox ("
 .BI "CDKBUTTON *" "button",
 .BI "boolean " "box");
 .TP 15
-.BI "void setCDKButtonBoxAttribute ("
+.B "void setCDKButtonBoxAttribute ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonHorizontalChar ("
+.B "void setCDKButtonHorizontalChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonLLChar ("
+.B "void setCDKButtonLLChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonLRChar ("
+.B "void setCDKButtonLRChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonMessage ("
+.B "void setCDKButtonMessage ("
 .BI "CDKBUTTON *" "b",
 .BI "const char *" "message");
 .TP 15
-.BI "void setCDKButtonULChar ("
+.B "void setCDKButtonULChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonURChar ("
+.B "void setCDKButtonURChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void setCDKButtonVerticalChar ("
+.B "void setCDKButtonVerticalChar ("
 .BI "CDKBUTTON *" "b",
 .BI "chtype " "c");
 .TP 15
-.BI "void moveCDKButton("
+.B "void moveCDKButton("
 .BI "CDKBUTTON *" "b",
 .BI "int " "xpos",
 .BI "int " "ypos",
 .BI "boolean " "relative",
 .BI "boolean " "refresh");
 .TP 15
-.BI "void positionCDKButton ("
+.B "void positionCDKButton ("
 .BI "CDKBUTTON *" "b");
 .TP 15
-.BI "void waitCDKButton ("
+.B "void waitCDKButton ("
 .BI "CDKBUTTON *" "button",
 .BI "char " "key");
 .fi
@@ -234,9 +235,11 @@ The parameter \fBypos\fR may be an integer or one of the pre-defined values
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 .IP
-For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+For example,
+if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.

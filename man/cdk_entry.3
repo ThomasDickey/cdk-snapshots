@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_entry.3,v 1.28 2016/12/11 02:04:55 tom Exp $
+.\" $Id: cdk_entry.3,v 1.30 2019/02/15 00:44:23 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -308,9 +309,11 @@ The parameter \fBypos\fR may be an integer or one of the pre-defined values
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 .IP
-For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+For example,
+if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
@@ -353,7 +356,8 @@ is the attribute of the characters which are typed in.
 is the character which is to be displayed in an empty space in the entry field.
 .bP
 \fBdisplayType\fR
-tells how the entry field will behave when a character is entered into the field.
+tells how the entry field will behave
+when a character is entered into the field.
 See \fBcdk_display (3)\fR for valid values for this field.
 .bP
 \fBfieldWidth\fR

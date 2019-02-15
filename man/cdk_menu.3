@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_menu.3,v 1.20 2016/12/11 01:00:45 tom Exp $
+.\" $Id: cdk_menu.3,v 1.22 2019/02/15 00:51:07 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -48,13 +49,13 @@ cdk_menu \- curses menu widget
 .BI "CDKMENU *" "menu",
 .BI "boolean " "box");
 .TP 15
-.BI "void drawCDKMenuSubwin ("
+.B "void drawCDKMenuSubwin ("
 .BI "CDKMENU *" "menu");
 .TP 15
 .B "void eraseCDKMenu ("
 .BI "CDKMENU *" "menu");
 .TP 15
-.BI "void eraseCDKMenuSubwin ("
+.B "void eraseCDKMenuSubwin ("
 .BI "CDKMENU *" "menu");
 .TP 15
 .B "void getCDKMenuCurrentItem ("
@@ -245,7 +246,8 @@ lets the programmer modify certain elements of an existing menu widget.
 .RS
 .bP
 The parameters \fBmenuItem\fR and \fBsubmenuItem\fR set which
-menu list and sub-menu item are going to be highlighted when the widget is activated.
+menu list and sub-menu item are going to be highlighted
+when the widget is activated.
 .bP
 The other parameter names correspond to the same parameter names
 listed in the \fBnewCDKMenu\fR function.

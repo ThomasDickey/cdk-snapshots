@@ -1,6 +1,7 @@
-.\" $Id: cdk_traverse.3,v 1.8 2016/12/11 01:27:58 tom Exp $
+.\" $Id: cdk_traverse.3,v 1.10 2019/02/15 01:03:42 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -57,12 +58,12 @@ cdk_traverse - functions to support keyboard traversal
 .LP
 .BI "void resetCDKScreenOf (CDKOBJS *" "obj");
 .TP 15
-.BI "void traverseCDKOnce ("
-.BI "CDKSCREEN *\fIscreen\fP,"
-.BI "CDKOBJS *\fIcurobj\fP,"
-.BI "int \fIkeyCode\fP,"
-.BI "boolean \fIfunctionKey\fP,"
-.BI "CHECK_KEYCODE \fIfuncMenuKey\fP);
+.B "void traverseCDKOnce ("
+.BI "CDKSCREEN *" "screen,"
+.BI "CDKOBJS *" "curobj,"
+.BI "int " "keyCode,"
+.BI "boolean " "functionKey,"
+.BI "CHECK_KEYCODE " "funcMenuKey);"
 .fi
 .
 .SH DESCRIPTION

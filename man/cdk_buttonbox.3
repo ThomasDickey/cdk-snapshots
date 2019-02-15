@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_buttonbox.3,v 1.23 2016/12/11 01:49:29 tom Exp $
+.\" $Id: cdk_buttonbox.3,v 1.25 2019/02/15 00:29:55 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -168,8 +169,8 @@ cdk_buttonbox \- Creates a managed curses buttonbox widget.
 .BI "chtype " "character");
 .fi
 .SH DESCRIPTION
-The Cdk buttonbox widget creates a buttonbox box with a message and a varied number of
-buttons to choose from.
+The Cdk buttonbox widget creates a buttonbox box with a message
+and a varied number of buttons to choose from.
 The following functions create or manipulate the Cdk buttonbox box widget.
 .SH AVAILABLE FUNCTIONS
 .TP 5
@@ -271,9 +272,11 @@ The parameter \fBypos\fR may be an integer or one of the pre-defined values
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 .IP
-For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+For example,
+if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.

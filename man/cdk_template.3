@@ -1,6 +1,7 @@
-.\" $Id: cdk_template.3,v 1.28 2016/12/11 01:26:36 tom Exp $
+.\" $Id: cdk_template.3,v 1.30 2019/02/15 01:02:05 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -278,7 +279,8 @@ the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 For example,
 if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR
@@ -359,8 +361,8 @@ T}
 is the overlay of the template field.
 If the field
 needs some sort of overlay, this parameter supplies this.
-A date field could
-have YY/MM/DD, the overlay parameter would display YY/MM/DD on an empty template field.
+A date field could have YY/MM/DD,
+the overlay parameter would display YY/MM/DD on an empty template field.
 .TP 5
 \fBbox\fR
 is true if the widget should be drawn with a box around it.

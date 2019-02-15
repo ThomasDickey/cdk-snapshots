@@ -1,7 +1,8 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.31 2016/12/11 01:06:02 tom Exp $
+.\" $Id: cdk_radio.3,v 1.33 2019/02/15 00:53:27 tom Exp $
 .de bP
-.IP \(bu 4
+.ie n  .IP \(bu 4
+.el    .IP \(bu 2
 ..
 .de XX
 ..
@@ -315,15 +316,17 @@ The parameters \fBxpos\fR and \fBypos\fR are the new position of the widget.
 The parameter \fBxpos\fR may be an integer or one of the pre-defined values
 \fITOP\fR, \fIBOTTOM\fR, and \fICENTER\fR.
 .IP
-The parameter \fBypos\fR may be an integer or one of the pre-defined values \fILEFT\fR,
-\fIRIGHT\fR, and \fICENTER\fR.
+The parameter \fBypos\fR may be an integer
+or one of the pre-defined values \fILEFT\fR, \fIRIGHT\fR, and \fICENTER\fR.
 .bP
 The parameter \fBrelative\fR states whether
 the \fBxpos\fR/\fBypos\fR pair is a relative move or an absolute move.
 .IP
-For example, if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
+For example,
+if \fBxpos\fR = 1 and \fBypos\fR = 2 and \fBrelative\fR = \fBTRUE\fR,
 then the widget would move one row down and two columns right.
-If the value of \fBrelative\fR was \fBFALSE\fR then the widget would move to the position (1,2).
+If the value of \fBrelative\fR was \fBFALSE\fR,
+then the widget would move to the position (1,2).
 .IP
 Do not use the values \fITOP\fR, \fIBOTTOM\fR, \fILEFT\fR,
 \fIRIGHT\fR, or \fICENTER\fR when \fBrelative\fR = \fITRUE\fR.
@@ -372,8 +375,8 @@ control the height and width of the widget.
 If you
 provide a value of zero for either of the height or the width, the widget will
 be created with the full width and height of the screen.
-If you provide a negative
-value, the widget will be created the full height or width minus the value provided.
+If you provide a negative value,
+the widget will be created the full height or width minus the value provided.
 .TP 5
 \fBtitle\fR
 is the string which will be displayed at the top of the widget.
