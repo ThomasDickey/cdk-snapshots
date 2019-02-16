@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.278 2019/02/15 01:34:11 tom Exp $
+-- $Id: CHANGES,v 1.280 2019/02/16 01:05:07 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
@@ -10,6 +10,8 @@ Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
 2019/02/16
+	+ modify writeCharAttrib to replace the color in the target cell rather
+	  than OR'ing it from the source-attribute (patch by Aarian P. Aleahmad)
 	+ add a null-pointer check in viewer.c's PatternNotFound() function
 	  (report by "c").
 	+ improve macros/markup in manpages.
