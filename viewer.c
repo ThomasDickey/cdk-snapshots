@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/15 01:34:47 $
- * $Revision: 1.166 $
+ * $Date: 2019/02/17 19:45:07 $
+ * $Revision: 1.167 $
  */
 
 /*
@@ -487,7 +487,7 @@ void cleanCDKViewer (CDKVIEWER *viewer)
    drawCDKViewer (viewer, ObjOf (viewer)->box);
 }
 
-static void PatternNotFound (CDKVIEWER *viewer, char *pattern)
+static void PatternNotFound (CDKVIEWER *viewer, const char *pattern)
 {
    if (pattern == 0)
    {

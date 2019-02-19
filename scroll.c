@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 19:24:26 $
- * $Revision: 1.161 $
+ * $Date: 2019/02/16 01:30:43 $
+ * $Revision: 1.162 $
  */
 
 /*
@@ -523,18 +523,21 @@ static void _drawCDKScroll (CDKOBJS *object, boolean Box)
 
 static void drawCDKScrollCurrent (CDKSCROLL *s)
 {
-   /* Rehighlight the current menu item. */
-   int screenPos = s->itemPos[s->currentItem] - s->leftChar;
-   chtype highlight = HasFocusObj (s) ? s->highlight : A_NORMAL;
+   if ((s->listSize > 0) && (s->listSize > s->currentItem))
+   {
+      /* Rehighlight the current menu item. */
+      int screenPos = s->itemPos[s->currentItem] - s->leftChar;
+      chtype highlight = HasFocusObj (s) ? s->highlight : A_NORMAL;
 
-   writeChtypeAttrib (s->listWin,
-		      (screenPos >= 0) ? screenPos : 0,
-		      s->currentHigh,
-		      s->item[s->currentItem],
-		      highlight,
-		      HORIZONTAL,
-		      (screenPos >= 0) ? 0 : (1 - screenPos),
-		      s->itemLen[s->currentItem]);
+      writeChtypeAttrib (s->listWin,
+			 (screenPos >= 0) ? screenPos : 0,
+			 s->currentHigh,
+			 s->item[s->currentItem],
+			 highlight,
+			 HORIZONTAL,
+			 (screenPos >= 0) ? 0 : (1 - screenPos),
+			 s->itemLen[s->currentItem]);
+   }
 }
 
 static int maxViewSize (CDKSCROLL *scrollp)
