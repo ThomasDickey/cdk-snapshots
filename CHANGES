@@ -1,15 +1,21 @@
--- $Id: CHANGES,v 1.280 2019/02/16 01:05:07 tom Exp $
+-- $Id: CHANGES,v 1.285 2019/02/19 02:14:27 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
+Copyright Thomas E. Dickey 1999-2018, 2019
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
-Modifications copyright Thomas E. Dickey 1999-2018, 2019
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
-2019/02/16
+2019/02/18
+	+ change shlib-version in test-package to "abi", for better
+	  compatibility with the test-package for cdk-perl.
+	+ add manpage for cdk5-config
+	+ documentation improvements (report by St√©phane Goujet).
+	+ add check in drawCDKScrollCurrent() in case the list is not
+	  initialized (report by St√©phane Goujet).
 	+ modify writeCharAttrib to replace the color in the target cell rather
 	  than OR'ing it from the source-attribute (patch by Aarian P. Aleahmad)
 	+ add a null-pointer check in viewer.c's PatternNotFound() function
@@ -294,7 +300,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ modify marquee widget so that changing its box flag will cause the
 	  widget to be resized, e.g., after 2006/05/07 changes which caused the
 	  example program to not display properly.
-	+ corrected example for cdk_display.3 manpage (patch by LoÔc
+	+ corrected example for cdk_display.3 manpage (patch by Lo√Øc
 	  Pefferkorn).
 	+ modify install rules to allow package scripts to specify that
 	  libcdkw's header files go into /usr/include/cdkw, and its *-config
@@ -338,7 +344,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  passing a null pointer in the newCDKMatrix() call.  Fix repainting
 	  of column titles by first erasing the cell (patch by Vincenzo Romano).
 	+ regenerate configure script with autoconf 2.52 (patched) to make this
-	  work in non-POSIX locales (report by Mart Stˆˆr).
+	  work in non-POSIX locales (report by Mart St√∂√∂r).
 	+ updated configure script macros, e.g., to ensure that options are
 	  appended to $CFLAGS rather than prepended.
 	+ update config.guess, config.sub
@@ -1430,5 +1436,3 @@ ttfn,
 
 PS: There is also a Perl5 extension of this library for you Perl5 fans.
     Look under any CPAN site under the directory CPAN/authors/id/GLOVER.
-
--- vile:fk=8bit txtmode

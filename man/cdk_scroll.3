@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.32 2019/02/15 00:56:24 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.33 2019/02/16 02:20:03 tom Exp $"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -280,9 +280,12 @@ returns true if the widget will be drawn with a box around it.
 .TP 5
 .B getCDKScrollCurrent
 returns the current item's index.
+.IP
+This is deprecated because the name is inconsistent with other widgets:
+use \fBgetCDKScrollCurrentItem\fP.
 .TP 5
 .B getCDKScrollCurrentItem
-returns the current item number in the scroller.
+returns the current item's index in the scroller.
 .TP 5
 .B getCDKScrollHighlight
 returns the attribute of the highlight bar.
