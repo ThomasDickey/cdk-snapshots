@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.27 2019/02/15 00:58:28 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.28 2019/02/19 09:40:54 tom Exp $"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -275,8 +275,10 @@ returns the current selection index.
 returns the attribute of the highlight bar.
 .TP 5
 .B getCDKSelectionItems
-copies the selection-list items into the caller's array
-and returns the number of items in the list.
+optionally copies the selection-list items into the caller's list,
+which must be large enough since this function does not allocate it.
+If the \fIlist\fP parameter is null, no copying is done.
+It returns the list size whether or not the \fIlist\fP parameter is null.
 .TP 5
 .B getCDKSelectionMode
 returns the selection mode at the given index.

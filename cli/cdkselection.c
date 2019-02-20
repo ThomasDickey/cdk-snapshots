@@ -1,4 +1,4 @@
-/* $Id: cdkselection.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkselection.c,v 1.16 2019/02/20 02:13:25 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -76,6 +76,7 @@ int main (int argc, char **argv)
    title        = CDKparamString (&params, 'T');
    numbers      = CDKparamValue (&params, 'n', FALSE);
    spos         = CDKparsePosition (CDKparamString (&params, 's'));
+   (void)numbers;
 
    /* If the user asked for an output file, try to open it. */
    if (outputFile != 0)
@@ -154,10 +155,10 @@ int main (int argc, char **argv)
       scrollLines = (int)CDKcountStrings ((CDK_CSTRING2)scrollList);
    }
 
-   /* Did they supply a chopice list. */
+   /* Did they supply a choice list. */
    if (choices == 0)
    {
-      choiceList = calloc(sizeof(char *), 3);
+      choiceList = calloc(sizeof (char *), 3);
       choiceList[0] = copyChar ("Yes ");
       choiceList[1] = copyChar ("No ");
       choiceSize = 2;

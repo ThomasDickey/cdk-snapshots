@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.26 2019/02/16 01:41:01 tom Exp $
+.\" $Id: cdk_binding.3,v 1.27 2019/02/19 10:19:12 tom Exp $
 .de XX
 ..
 .TH cdk_binding 3
@@ -143,8 +143,12 @@ reads a keycode from the given widget.
 This is deprecated: use \fBgetchCDKObject\fP.
 .TP 5
 .B getchCDKObject
-reads a keycode from the given widget.
-It sets a flag to indicate if the result is a function key.
+reads a keycode from the given widget, and
+sets a flag via the \fIfunctionKey\fP parameter
+to indicate if the result is a function key.
+The \fIfunctionKey\fP parameter may be null;
+the keycode is returned whether or not the flag can be set.
+.IP
 If the keycode has been bound to the special function \fBgetcCDKBind\fP,
 then it will be translated to the value which was given for the binding data.
 Otherwise, a few special cases are performed:

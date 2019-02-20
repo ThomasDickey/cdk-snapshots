@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.33 2019/02/15 00:53:27 tom Exp $
+.\" $Id: cdk_radio.3,v 1.34 2019/02/19 09:40:47 tom Exp $
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -263,9 +263,10 @@ returns the index of the current item.
 returns the attribute of the highlight bar.
 .TP 5
 .B getCDKRadioItems
-copies the radio box items into the caller's list,
+optionally copies the radio-box items into the caller's list,
 which must be large enough since this function does not allocate it.
-It returns the list size.
+If the \fIlist\fP parameter is null, no copying is done.
+It returns the list size whether or not the \fIlist\fP parameter is null.
 .TP 5
 .B getCDKRadioLeftBrace
 returns the character being used to draw the left brace of the selection box.
