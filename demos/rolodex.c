@@ -1,4 +1,4 @@
-/* $Id: rolodex.c,v 1.29 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: rolodex.c,v 1.30 2019/02/20 02:10:33 tom Exp $ */
 #include "rolodex.h"
 
 #ifdef HAVE_XCURSES
@@ -1659,7 +1659,7 @@ int printGroup (SRolodex groupRecord, const char *filename, char *printer)
    /* Determine if the information is going to a file or printer. */
    if (printer != 0)
    {
-      char command[MYSIZE];
+      char command[MYSIZE * 4];
       /* Print the file to the given printer. */
       sprintf (command, "lpr -P%s %s", printer, tempFilename);
       system (command);

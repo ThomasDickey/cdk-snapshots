@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2011/05/16 22:36:08 $
- * $Revision: 1.56 $
+ * $Date: 2019/02/19 10:12:38 $
+ * $Revision: 1.57 $
  *
  * Notes:
  *
@@ -225,6 +225,9 @@ int getcCDKObject (CDKOBJS *obj)
 int getchCDKObject (CDKOBJS *obj, boolean *functionKey)
 {
    int key = getcCDKObject (obj);
-   *functionKey = (key >= KEY_MIN && key <= KEY_MAX);
+   if (functionKey != NULL)
+   {
+      *functionKey = (key >= KEY_MIN && key <= KEY_MAX);
+   }
    return key;
 }

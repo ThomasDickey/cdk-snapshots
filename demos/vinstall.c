@@ -1,4 +1,4 @@
-/* $Id: vinstall.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: vinstall.c,v 1.22 2019/02/20 02:13:54 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -390,7 +390,8 @@ int main (int argc, char **argv)
  */
 static ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *dest)
 {
-   char command[2000];
+#define MYSIZE 256
+   char command[MYSIZE * 5];
    FILE *fd;
 
    /* Make sure we can open the source file. */
@@ -420,7 +421,8 @@ static ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *des
     * as the 'mv' command that you can not move across partitions.
     * Quite limiting in an install binary.
     */
-   sprintf (command, "rm -f %s; cp %s %s; chmod 444 %s", dest, src, dest, dest);
+   sprintf (command, "rm -f %.*s; cp %.*s %.*s; chmod 444 %.*s",
+	    MYSIZE, dest, MYSIZE, src, MYSIZE, dest, MYSIZE, dest);
    system (command);
    return vOK;
 }

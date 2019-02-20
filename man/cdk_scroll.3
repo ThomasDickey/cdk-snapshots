@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.33 2019/02/16 02:20:03 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.35 2019/02/19 09:45:58 tom Exp $"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -95,7 +95,7 @@ cdk_scroll \- curses scrolling list widget.
 .TP 15
 .B "int getCDKScrollItems ("
 .BI "CDKSCROLL *" "scroll",
-.BI "char **" "itemList");
+.BI "char **" "list");
 .TP 15
 .B "int injectCDKScroll ("
 .BI "CDKSCROLL *" "scroll",
@@ -161,9 +161,6 @@ cdk_scroll \- curses scrolling list widget.
 .B "void setCDKScrollCurrentItem ("
 .BI "CDKSCROLL *" "widget",
 .BI "int" "item");
-.TP 15
-.B "int getCDKScrollCurrentTop ("
-.BI "CDKSCROLL *" "widget");
 .TP 15
 .B "void setCDKScrollHighlight ("
 .BI "CDKSCROLL *" "scroll",
@@ -294,8 +291,10 @@ returns the attribute of the highlight bar.
 returns the top line of the scroller, counting from zero.
 .TP 5
 .B getCDKScrollItems
-fills the parameter \fBitemList\fR with the contents of the scrolling list.
-It returns the number of elements in the scrolling list.
+optionally copies the scrolling-list items into the caller's list,
+which must be large enough since this function does not allocate it.
+If the \fIlist\fP parameter is null, no copying is done.
+It returns the list size whether or not the \fIlist\fP parameter is null.
 .TP 5
 .B injectCDKScroll
 injects a single character into the widget.

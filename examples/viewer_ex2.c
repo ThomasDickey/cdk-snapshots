@@ -1,4 +1,4 @@
-/* $Id: viewer_ex2.c,v 1.8 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: viewer_ex2.c,v 1.9 2019/02/20 02:09:15 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -30,6 +30,7 @@ int main (int argc, char **argv)
    filename     = CDKparamString (&params, 'f');
    directory    = CDKparamString2 (&params, 'd', ".");
    interp_it    = CDKparamNumber2 (&params, 'i', FALSE);
+   (void)interp_it;
 
    /* Create the viewer buttons. */
    button[0] = "</5><OK><!5>";
