@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 19:25:35 $
- * $Revision: 1.156 $
+ * $Date: 2019/02/20 14:15:43 $
+ * $Revision: 1.157 $
  */
 
 /*
@@ -933,6 +933,16 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
    int status = 0;
    int widestItem = 0;
 
+   if (selection->listSize > 0)
+   {
+      CDKfreeChtypes (selection->item);
+      selection->item = 0;
+      freeAndNull (selection->itemLen);
+      freeAndNull (selection->itemPos);
+      freeAndNull (selection->selections);
+      freeAndNull (selection->mode);
+   }
+
    if (listSize >= 0)
    {
       /* *INDENT-EQLS* */
@@ -970,11 +980,12 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 	    destroyInfo (selection);
 
 	    /* *INDENT-EQLS* */
-	    selection->item      = newList;
-	    selection->itemPos   = newPos;
-	    selection->itemLen   = newLen;
+	    selection->listSize   = listSize;
+	    selection->item       = newList;
+	    selection->itemPos    = newPos;
+	    selection->itemLen    = newLen;
 	    selection->selections = newSel;
-	    selection->mode      = newMode;
+	    selection->mode       = newMode;
 	 }
 	 else
 	 {

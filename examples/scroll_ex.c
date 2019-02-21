@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.25 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.26 2019/02/20 23:11:52 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,8 +14,7 @@ static char *newLabel (const char *prefix)
    return result;
 }
 
-static int addItemCB (EObjectType cdktype GCC_UNUSED,
-		      void *object,
+static int addItemCB (EObjectType cdktype GCC_UNUSED, void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -28,8 +27,7 @@ static int addItemCB (EObjectType cdktype GCC_UNUSED,
    return (TRUE);
 }
 
-static int insItemCB (EObjectType cdktype GCC_UNUSED,
-		      void *object,
+static int insItemCB (EObjectType cdktype GCC_UNUSED, void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -42,8 +40,7 @@ static int insItemCB (EObjectType cdktype GCC_UNUSED,
    return (TRUE);
 }
 
-static int delItemCB (EObjectType cdktype GCC_UNUSED,
-		      void *object,
+static int delItemCB (EObjectType cdktype GCC_UNUSED, void *object,
 		      void *clientData GCC_UNUSED,
 		      chtype input GCC_UNUSED)
 {
@@ -77,7 +74,7 @@ int main (int argc, char **argv)
 
    CDK_PARAMS params;
 
-   CDKparseParams (argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
+   CDKparseParams (argc, argv, &params, "acs:t:" CDK_CLI_PARAMS);
 
    cdkscreen = initCDKScreen (NULL);
 
@@ -99,7 +96,7 @@ int main (int argc, char **argv)
 			      CDKparamString2 (&params, 't', title),
 			      (CDKparamNumber (&params, 'c')
 			       ? 0
-			       : (CDK_CSTRING2) item),
+			       : (CDK_CSTRING2)item),
 			      (CDKparamNumber (&params, 'c')
 			       ? 0
 			       : count),
@@ -121,27 +118,28 @@ int main (int argc, char **argv)
 
    if (CDKparamNumber (&params, 'c'))
    {
-      setCDKScrollItems (scrollList, (CDK_CSTRING2) item, count, TRUE);
+      setCDKScrollItems (scrollList, (CDK_CSTRING2)item, count, TRUE);
    }
-#if 0
-   drawCDKScroll (scrollList, 1);
+   if (CDKparamNumber (&params, 'a'))
+   {
+      drawCDKScroll (scrollList, 1);
 
-   setCDKScrollPosition (scrollList, 10);
-   drawCDKScroll (scrollList, 1);
-   sleep (3);
+      setCDKScrollPosition (scrollList, 10);
+      drawCDKScroll (scrollList, 1);
+      napms (3000);
 
-   setCDKScrollPosition (scrollList, 20);
-   drawCDKScroll (scrollList, 1);
-   sleep (3);
+      setCDKScrollPosition (scrollList, 20);
+      drawCDKScroll (scrollList, 1);
+      napms (3000);
 
-   setCDKScrollPosition (scrollList, 30);
-   drawCDKScroll (scrollList, 1);
-   sleep (3);
+      setCDKScrollPosition (scrollList, 30);
+      drawCDKScroll (scrollList, 1);
+      napms (3000);
 
-   setCDKScrollPosition (scrollList, 70);
-   drawCDKScroll (scrollList, 1);
-   sleep (3);
-#endif
+      setCDKScrollPosition (scrollList, 70);
+      drawCDKScroll (scrollList, 1);
+      napms (3000);
+   }
    bindCDKObject (vSCROLL, scrollList, 'a', addItemCB, NULL);
    bindCDKObject (vSCROLL, scrollList, 'i', insItemCB, NULL);
    bindCDKObject (vSCROLL, scrollList, 'd', delItemCB, NULL);
@@ -156,7 +154,7 @@ int main (int argc, char **argv)
       mesg[0] = "<C>You hit escape. No file selected.";
       mesg[1] = "";
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
    }
    else if (scrollList->exitType == vNORMAL)
    {
@@ -165,7 +163,7 @@ int main (int argc, char **argv)
       sprintf (temp, "<C>%.*s", (int)(sizeof (temp) - 20), theItem);
       mesg[1] = temp;
       mesg[2] = "<C>Press any key to continue.";
-      popupLabel (cdkscreen, (CDK_CSTRING2) mesg, 3);
+      popupLabel (cdkscreen, (CDK_CSTRING2)mesg, 3);
       freeChar (theItem);
    }
 

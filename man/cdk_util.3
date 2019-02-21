@@ -1,9 +1,13 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.12 2019/02/15 01:04:17 tom Exp $
+.\" $Id: cdk_util.3,v 1.14 2019/02/20 23:22:06 tom Exp $
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
+.ie \n(.g .ds `` \(lq
+.el       .ds `` ``
+.ie \n(.g .ds '' \(rq
+.el       .ds '' ''
 .de XX
 ..
 .TH cdk_util 3
@@ -84,7 +88,7 @@ cdk_util \- Cdk utility functions
 .BI "int " "listSize",
 .BI "boolean " "numbers");
 .TP 15
-.B char *getString ("
+.B "char *getString ("
 .BI "CDKSCREEN *" "screen",
 .BI "const char *" "title",
 .BI "const char *" "label",
@@ -179,7 +183,7 @@ parameters.
 .TP 5
 .B char2Chtype
 Translate a character \fIstring\fP with embedded format markers
-(e.g., "</X/Y>Blah Blah")
+(e.g., \*(``</X/Y>Blah Blah\*('')
 to a null-terminated array of chtype's.
 .RS
 .bP
@@ -190,6 +194,8 @@ The \fBalign\fR parameter contains justification information
 .IP
 The caller is responsible for freeing the result.
 .RE
+.IP
+See \fBcdk_display\fP(3) for details on formatting.
 .TP 5
 .B char2DisplayType
 Lookup the given name in \fIstring\fP and return the equivalent display type.
@@ -209,6 +215,14 @@ Return nonzero if a filename is extracted.
 Extract the characters and formatting information
 from a null-terminated array of chtype's \fIstring\fP.
 A dynamically allocated string is returned.
+.IP
+See \fBcdk_display\fP(3) for details on Cdk's formatting.
+.IP
+In addition, this function supports a feature needed to represent
+multi-line title strings returned by \fBgetCdkTitle\fP (see \fBcdk_objs\fP(3)).
+Each newline separating lines in the title
+is represented by \*(``<#10>\*('' to
+allow Cdk to display the string in a text field.
 .TP 5
 .B deleteCursesWindow
 Safely delete a given window,
@@ -370,7 +384,8 @@ The \fItitle\fP, \fIbuttons\fP and \fIbuttonCount\fP are applied to the
 CDKVIEWER window.
 .
 .SH SEE ALSO
-cdk_dialog (3),
-cdk_display (3),
-cdk_position (3),
-cdk_misc (3).
+.BR cdk_dialog (3),
+.BR cdk_display (3),
+.BR cdk_misc (3),
+.BR cdk_objs (3),
+.BR cdk_position (3).

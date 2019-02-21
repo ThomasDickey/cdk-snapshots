@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:14:41 $
- * $Revision: 1.146 $
+ * $Date: 2019/02/20 13:45:52 $
+ * $Revision: 1.147 $
  */
 
 /*
@@ -797,6 +797,14 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
    int status = 0;
    int widestItem = 0;
 
+   if (radio->listSize > 0)
+   {
+      CDKfreeChtypes (radio->item);
+      radio->item = 0;
+      freeAndNull (radio->itemLen);
+      freeAndNull (radio->itemPos);
+   }
+
    if (listSize >= 0)
    {
       /* *INDENT-EQLS* */
@@ -828,9 +836,11 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
 	 {
 	    destroyInfo (radio);
 
-	    radio->item = newList;
-	    radio->itemLen = newLen;
-	    radio->itemPos = newPos;
+	    /* *INDENT-EQLS* */
+	    radio->listSize = listSize;
+	    radio->item     = newList;
+	    radio->itemLen  = newLen;
+	    radio->itemPos  = newPos;
 	 }
 	 else
 	 {

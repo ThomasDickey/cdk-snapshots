@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.map,v 1.4 2018/03/06 22:25:48 tom Exp $
+ * $Id: cdk.map,v 1.5 2019/02/20 23:30:50 tom Exp $
  * script for shared library versioning
  */
 
@@ -569,3 +569,9 @@ CDK_6.1.4 {
 	global:
 		reRegisterCDKObject;
 } CDK_5.0.4;
+
+/* 2019/02/20 */
+CDK_6.2.4 {
+	global:
+		getCdkTitle;
+} CDK_6.1.4;

@@ -1,60 +1,41 @@
 # Created by: Andrey Zakhvatov
-# $FreeBSD: devel/cdk/Makefile 315072 2013-03-23 19:19:55Z bapt $
+# $FreeBSD: head/devel/cdk/Makefile 439311 2017-04-24 15:17:34Z sunpoet $
 
 PORTNAME=	cdk
-PORTVERSION=	5.0.20190218
-
-PORTREVISION=	2
+DISTVERSION=	5.0-20190220
 PORTEPOCH=	1
 CATEGORIES=	devel
-MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/ \
-		http://fossies.org/linux/misc/
-DISTNAME=	${PORTNAME}-${PORTVERSION:R}-${PORTVERSION:E}
-EXTRACT_SUFX=	.tgz
+MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/
 
-MAINTAINER=	bapt@FreeBSD.org
+MAINTAINER=	ports@FreeBSD.org
 COMMENT=	Curses Development Kit for speedy development of full screen programs
 
-LICENSE=	BSD
+LICENSE=	BSD4CLAUSE
+LICENSE_FILE=	${WRKSRC}/COPYING
 
-USE_GMAKE=	yes
-USE_NCURSES=	yes
+USES=		gmake ncurses tar:tgz
 GNU_CONFIGURE=	yes
-PORTDOCS=	COPYING EXPANDING INSTALL NOTES README TODO
+PORTDOCS=	EXPANDING INSTALL NOTES README TODO
 MAKE_JOBS_UNSAFE=	yes
 
-.include <bsd.port.options.mk>
-
-CONFIGURE_ARGS+=--with-ncurses --verbose
-ALL_TARGET=	default examples demos cli cdkshlib
+CONFIGURE_ARGS+=--with-ncurses
+ALL_TARGET=	default cdkshlib
 INSTALL_TARGET=	install installCDKSHLibrary
 USE_LDCONFIG=	yes
 
-.include "${.CURDIR}/maninfo.mk"
-
-post-extract:
-.if ! ${PORT_OPTIONS:MDOCS}
-EXTRA_PATCHES+=      ${FILESDIR}/extra-patch-Makefile.in
-.endif
+OPTIONS_DEFINE=	DOCS EXAMPLES
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|/doc/cdk|/share/doc/cdk| ; s|VERSION)|VERSION_MAJOR)|' \
-		-e 's|gcc|${CC}|g' ${WRKSRC}/Makefile.in
-	@${REINPLACE_CMD} -e 's|$$(INSTALL_DATA) cdk-config|$(INSTALL_SCRIPT) cdk-config|g' \
-		${WRKSRC}/Makefile.in
+	@${REINPLACE_CMD} -e 's|gcc|$$(CC)| ; \
+		 /^CDKREADME/s| COPYING||' ${WRKSRC}/Makefile.in
 
 post-install:
-.if ${PORT_OPTIONS:MEXAMPLES}
-	${INSTALL} -d ${EXAMPLESDIR}
-	${INSTALL} -d ${EXAMPLESDIR}/cli
-	cd ${WRKSRC}/cli; \
-	${FIND} . | ${CPIO} -pdm -R ${LIBOWN}:${LIBGRP} ${EXAMPLESDIR}/cli
-	${INSTALL} -d ${EXAMPLESDIR}/demos
-	cd ${WRKSRC}/demos; \
-	${FIND} . | ${CPIO} -pdm -R ${LIBOWN}:${LIBGRP} ${EXAMPLESDIR}/demos
-	${INSTALL} -d ${EXAMPLESDIR}/examples
-	cd ${WRKSRC}/examples; \
-	${FIND} . | ${CPIO} -pdm -R ${LIBOWN}:${LIBGRP} ${EXAMPLESDIR}/examples
-.endif
+	${STRIP_CMD} ${STAGEDIR}${PREFIX}/lib/libcdk*.so
+
+post-install-EXAMPLES-on:
+	${MKDIR} ${STAGEDIR}${EXAMPLESDIR}
+	(cd ${WRKSRC} && \
+		${COPYTREE_SHARE} "cli demos examples" \
+		${STAGEDIR}${EXAMPLESDIR})
 
 .include <bsd.port.mk>

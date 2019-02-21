@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/12/04 19:33:34 $
- * $Revision: 1.219 $
+ * $Date: 2019/02/20 21:02:15 $
+ * $Revision: 1.221 $
  */
 
 #define L_MARKER '<'
@@ -387,7 +387,7 @@ static unsigned decodeAttribute (char *string,
    /* *INDENT-ON* */
 
    char temp[80];
-   char *result = (string != 0) ? string : temp;
+   char *result = (string != 0) ? (string + from) : temp;
    char *base = result;
    chtype tmpattr = oldattr & A_ATTRIBUTES;
 
@@ -683,8 +683,16 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 			}
 			break;
 		     default:
-			if (string[from + 1] == 'D' &&
-			    string[from + 2] == 'I')
+#if 0
+			if (isdigit (string[from + 1])
+			    && isdigit (string[from + 2]))
+			   /* special case to allow control characters to be edited */
+			   lastChar = (10 * ((string[from + 1] - '0'))
+				       + (string[from + 2] - '0'));
+			else
+#endif
+			   if (string[from + 1] == 'D' &&
+			       string[from + 2] == 'I')
 			   lastChar = ACS_DIAMOND;
 			else if (string[from + 1] == 'C' &&
 				 string[from + 2] == 'B')
@@ -878,19 +886,38 @@ char *chtype2String (const chtype *string)
 
 	 for (x = 0; x < len; ++x)
 	 {
-	    need = decodeAttribute (newstring, need,
-				    (x > 0) ? string[x - 1] : 0,
-				    string[x]);
+	    unsigned this_ch = string[x];
+	    unsigned last_ch = (x > 0) ? string[x - 1] : 0;
+	    int next = ((this_ch & 0xff) < 32) ? 5 : 1;
+
+	    need = decodeAttribute (newstring, need, last_ch, this_ch);
 	    if (newstring != 0)
-	       newstring[need] = (char)(string[x]);
-	    ++need;
+	    {
+	       if (next == 1)
+	       {
+		  newstring[need] = (char)this_ch;
+	       }
+	       else
+	       {
+		  unsigned ch = (0xff & this_ch);
+		  newstring[need] = L_MARKER;
+		  newstring[need + 1] = '#';
+		  newstring[need + 2] = '0' + (ch / 10);
+		  newstring[need + 3] = '0' + (ch % 10);
+		  newstring[need + 4] = R_MARKER;
+
+	       }
+	    }
+	    need += next;
 	 }
 	 if (pass)
-	    newstring[need] = 0;
+	 {
+	    newstring[need] = 0;	/* keep a null on the end */
+	 }
 	 ++need;
 	 if (!pass)
 	 {
-	    if ((newstring = typeMallocN (char, need)) == 0)
+	    if ((newstring = typeCallocN (char, need)) == 0)
 	         break;
 	 }
       }
