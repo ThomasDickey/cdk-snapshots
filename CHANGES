@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.286 2019/02/19 10:13:49 tom Exp $
+-- $Id: CHANGES,v 1.292 2019/02/21 02:45:11 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2018, 2019
@@ -9,7 +9,15 @@ This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
 
-2019/02/18
+2019/02/20
+	+ updated rpm spec-file, for test-builds.
+	+ added pkgsrc files, for test-builds.
+	+ updated FreeBSD port-files, for test-builds.
+	+ add getCdkTitle, which uses new display encoding "<#10>" for newline
+	  in the example which demonstrates it, mentry_ex2 (prompted by
+	  discussion with Stéphane Goujet).
+	+ fix similar memory leaks in setCDKRadioItems and setCDKSelectionItems
+	+ fix memory leak in setCDKScrollItems (report by Stéphane Goujet).
 	+ make functionKey parameter to getchCDKObject optional
 	  (suggested by Stéphane Goujet).
 	+ modify test-packages to adjust includes in cdk.h when using test

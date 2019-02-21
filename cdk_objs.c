@@ -4,9 +4,12 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2016/11/20 20:07:11 $
- * $Revision: 1.17 $
+ * $Date: 2019/02/20 20:53:53 $
+ * $Revision: 1.22 $
  */
+
+#define MARKUP_CENTER  "<C>"
+#define MARKUP_NEWLINE "<#10>"
 
 /*
  * Set the object's upper-left-corner line-drawing character.
@@ -88,6 +91,29 @@ void setCDKObjectBackgroundColor (CDKOBJS *obj, const char *color)
    freeChtype (holder);
 }
 
+static char *convert_NL (const char *source)
+{
+   char *target = strdup (source);
+   char *d = target;
+   const char *s = source;
+   size_t need = strlen (MARKUP_NEWLINE);
+
+   while (*s != '\0')
+   {
+      if (!strncmp (s, MARKUP_NEWLINE, need))
+      {
+	 *d++ = '\n';
+	 s += need;
+      }
+      else
+      {
+	 *d++ = *s++;
+      }
+   }
+   *d = '\0';
+   return target;
+}
+
 /*
  * Set the widget's title.
  */
@@ -99,6 +125,7 @@ int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 
       if (title != 0)
       {
+	 char *retitle = convert_NL (title);
 	 char **temp = 0;
 	 int titleWidth;
 	 int x;
@@ -106,7 +133,7 @@ int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 	 int align;
 
 	 /* We need to split the title on \n. */
-	 temp = CDKsplitString (title, '\n');
+	 temp = CDKsplitString (retitle, '\n');
 	 obj->titleLines = (int)CDKcountStrings ((CDK_CSTRING2)temp);
 
 	 obj->title = typeCallocN (chtype *, obj->titleLines + 1);
@@ -141,9 +168,55 @@ int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 					      obj->titlePos[x]);
 	 }
 	 CDKfreeStrings (temp);
+	 free (retitle);
       }
    }
    return boxWidth;
+}
+
+char *getCdkTitle (CDKOBJS *obj)
+{
+   int x;
+   int pass;
+   char *result = 0;
+   for (pass = 0; pass < 2; ++pass)
+   {
+      unsigned need = obj->titleLines + 1;
+      for (x = 0; x < obj->titleLines; x++)
+      {
+	 char *title = chtype2String (obj->title[x]);
+	 char *check = 0;
+	 char *format = 0;
+	 if (title == 0)
+	    continue;
+	 need += strlen (title);
+	 if ((check = chtype2Char (obj->title[x])) != 0)
+	 {
+	    /* FIXME - we could infer <R> as well */
+	    if (isspace (*check) || obj->titlePos[x] > 0)
+	       format = MARKUP_CENTER;
+	    free (check);
+	 }
+	 if (x)
+	    need += 5;
+	 if (format)
+	    need += strlen (format);
+	 if (pass)
+	 {
+	    if (x)
+	       strcat (result, MARKUP_NEWLINE);
+	    if (format)
+	       strcat (result, format);
+	    strcat (result, title);
+	 }
+	 free (title);
+      }
+      if (!pass)
+      {
+	 result = typeCallocN (char, need);
+      }
+   }
+   return result;
 }
 
 /*

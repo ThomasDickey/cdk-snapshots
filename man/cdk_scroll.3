@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.35 2019/02/19 09:45:58 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.36 2019/02/20 14:29:03 tom Exp $"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -489,6 +489,7 @@ the given character.
 .TP 5
 .B setCDKScrollItems
 sets the contents of the scrolling list.
+The previous contents of the scrolling list stored in the widget are freed.
 .TP 5
 .B setCDKScrollLLChar
 sets the lower left hand corner of the widget's box to

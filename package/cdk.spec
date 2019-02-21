@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.48 2019/02/19 02:15:07 tom Exp $
-Summary:	Curses Development Kit
+# $Id: cdk.spec,v 1.50 2019/02/21 02:42:40 tom Exp $
+Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20190218
+%define AppRelease 20190220
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -11,7 +11,7 @@ Group:  Development/Libraries
 URL:  http://invisible-island.net/%{name}/
 Source0:  %{name}-%{version}-%{release}.tgz
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# BuildRequires:	ncurses-devel
+# BuildRequires:  ncurses-devel
 
 %description
 Cdk stands for "Curses Development Kit".  It contains a large number of ready
@@ -19,9 +19,9 @@ to use widgets which facilitate the speedy development of full screen curses
 programs.
 
 %package devel
-Summary:	Curses Development Kit
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Summary:        Curses Development Kit
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
 
 %description devel
 Development headers for cdk (Curses Development Kit)
@@ -42,8 +42,8 @@ make all
 %install
 rm -rf $RPM_BUILD_ROOT
 make install.libs install \
-	DESTDIR=$RPM_BUILD_ROOT \
-	DOCUMENT_DIR=$RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
+  DESTDIR=$RPM_BUILD_ROOT \
+  DOCUMENT_DIR=$RPM_BUILD_ROOT%{_defaultdocdir}/%{name}
 ls -l $RPM_BUILD_ROOT%{_libdir}
 chmod +x $RPM_BUILD_ROOT%{_libdir}/*.so # fixes rpmlint unstripped-binary-or-object
 install -m 644 libcdk.a $RPM_BUILD_ROOT%{_libdir}
@@ -59,7 +59,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc CHANGES COPYING INSTALL NOTES README VERSION
 %{_libdir}/*.so.*
 %exclude %{_libdir}/*.a
+%exclude %{_mandir}/man1/*
 %exclude %{_mandir}/man3/*
+%{_datadir}/doc/%{name}/*
 %{_defaultdocdir}/%{name}/*
 
 %files devel
@@ -68,11 +70,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 %{_libdir}/*.so
 %{_bindir}/cdk5-config
+%{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_includedir}/%{name}.h
 %{_includedir}/%{name}
+%exclude %{_datadir}/doc/%{name}/*
+%exclude %{_defaultdocdir}/%{name}/*
 
 %changelog
+
+* Wed Feb 20 2019 Thomas E. Dickey
+- build-fixes for Fedora 28
 
 * Wed Nov 05 2014 Thomas E. Dickey
 - move manpages to -devel package

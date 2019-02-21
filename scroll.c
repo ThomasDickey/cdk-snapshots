@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/16 01:30:43 $
- * $Revision: 1.162 $
+ * $Date: 2019/02/20 13:22:09 $
+ * $Revision: 1.164 $
  */
 
 /*
@@ -691,40 +691,69 @@ static void _eraseCDKScroll (CDKOBJS *object)
 }
 
 static boolean allocListArrays (CDKSCROLL *scrollp,
-				int oldSize,
-				int newSize)
+				int newSize,
+				bool first)
 {
    /* *INDENT-EQLS* */
    boolean result;
-   int nchunk           = ((newSize + 1) | 31) + 1;
-   chtype **newList     = typeCallocN (chtype *, nchunk);
-   int *newLen          = typeCallocN (int, nchunk);
-   int *newPos          = typeCallocN (int, nchunk);
+   chtype **newList     = 0;
+   int *newLen          = 0;
+   int *newPos          = 0;
+   int n;
+
+   if (newSize != 0)
+   {
+      /* *INDENT-EQLS* */
+      int nchunk  = ((newSize + 1) | 31) + 1;
+      newList     = typeCallocN (chtype *, nchunk);
+      newLen      = typeCallocN (int, nchunk);
+      newPos      = typeCallocN (int, nchunk);
+   }
+
+   /* if called via setCDKScrollItems(), free the obsolete data */
+   if ((first || (newSize == 0)) && scrollp->item && scrollp->listSize)
+   {
+      for (n = 0; n < scrollp->listSize; ++n)
+      {
+	 freeAndNull (scrollp->item[n]);
+	 scrollp->itemLen[n] = 0;
+	 scrollp->itemPos[n] = 0;
+      }
+   }
 
    if (newList != 0 &&
        newLen != 0 &&
        newPos != 0)
    {
-      int n;
-
-      for (n = 0; n < oldSize; ++n)
+      if (!first)
       {
-	 newList[n] = scrollp->item[n];
-	 newLen[n] = scrollp->itemLen[n];
-	 newPos[n] = scrollp->itemPos[n];
+	 for (n = 0; n < scrollp->listSize; ++n)
+	 {
+	    /* *INDENT-EQLS* */
+	    newList[n] = scrollp->item[n];
+	    newLen[n]  = scrollp->itemLen[n];
+	    newPos[n]  = scrollp->itemPos[n];
+	 }
       }
 
       freeChecked (scrollp->item);
       freeChecked (scrollp->itemPos);
       freeChecked (scrollp->itemLen);
 
-      scrollp->item = newList;
-      scrollp->itemLen = newLen;
-      scrollp->itemPos = newPos;
+      /* *INDENT-EQLS* */
+      scrollp->listSize = newSize;
+      scrollp->item     = newList;
+      scrollp->itemLen  = newLen;
+      scrollp->itemPos  = newPos;
+
       result = TRUE;
    }
    else
    {
+      freeAndNull (scrollp->item);
+      freeAndNull (scrollp->itemPos);
+      freeAndNull (scrollp->itemLen);
+
       freeChecked (newList);
       freeChecked (newLen);
       freeChecked (newPos);
@@ -790,7 +819,7 @@ static int createCDKScrollItemList (CDKSCROLL *scrollp,
       size_t have               = 0;
       char *temp                = 0;
 
-      if (allocListArrays (scrollp, 0, listSize))
+      if (allocListArrays (scrollp, listSize, TRUE))
       {
 	 int widestItem = 0;
 	 int x = 0;
@@ -960,7 +989,7 @@ void addCDKScrollItem (CDKSCROLL *scrollp, const char *item)
    char *temp = 0;
    size_t have = 0;
 
-   if (allocListArrays (scrollp, scrollp->listSize, scrollp->listSize + 1) &&
+   if (allocListArrays (scrollp, scrollp->listSize + 1, FALSE) &&
        allocListItem (scrollp,
 		      itemNumber,
 		      &temp,
@@ -988,7 +1017,7 @@ void insertCDKScrollItem (CDKSCROLL *scrollp, const char *item)
    char *temp = 0;
    size_t have = 0;
 
-   if (allocListArrays (scrollp, scrollp->listSize, scrollp->listSize + 1) &&
+   if (allocListArrays (scrollp, scrollp->listSize + 1, FALSE) &&
        insertListItem (scrollp, scrollp->currentItem) &&
        allocListItem (scrollp,
 		      scrollp->currentItem,

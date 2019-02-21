@@ -1,5 +1,5 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.28 2019/02/19 09:40:54 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.29 2019/02/20 14:28:42 tom Exp $"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -465,6 +465,7 @@ sets the horizontal drawing character for the box to the given character.
 .TP 5
 .B setCDKSelectionItems
 sets the selection list items.
+The previous selection list items stored in the widget are freed.
 .TP 5
 .B setCDKSelectionLLChar
 sets the lower left hand corner of the widget's box to the given character.

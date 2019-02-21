@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.22 2016/11/20 19:41:20 tom Exp $
+# $Id: Makefile.in,v 1.23 2019/02/20 14:38:34 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -52,6 +52,7 @@ BINS	= \
 	marquee_ex$x \
 	matrix_ex$x \
 	mentry_ex$x \
+	mentry_ex2$x \
 	menu_ex$x \
 	position_ex$x \
 	preprocess_ex$x \
@@ -60,6 +61,7 @@ BINS	= \
 	raiseCDKObject_ex$x \
 	scale_ex$x \
 	scroll_ex$x \
+	scroll_ex2$x \
 	selection_ex$x \
 	slider_ex$x \
 	subwindow_ex$x \
@@ -89,6 +91,7 @@ CDKSRC	= \
 	lowerCDKObject_ex.c \
 	marquee_ex.c \
 	matrix_ex.c \
+	matrix_ex2.c \
 	mentry_ex.c \
 	menu_ex.c \
 	position_ex.c \
@@ -98,6 +101,7 @@ CDKSRC	= \
 	raiseCDKObject_ex.c \
 	scale_ex.c \
 	scroll_ex.c \
+	scroll_ex2.c \
 	selection_ex.c \
 	slider_ex.c \
 	subwindow_ex.c \
@@ -131,6 +135,7 @@ lowerCDKObject_ex$x :	lowerCDKObject_ex.c	; $(LINKIT)
 marquee_ex$x :		marquee_ex.c		; $(LINKIT)
 matrix_ex$x :		matrix_ex.c		; $(LINKIT)
 mentry_ex$x :		mentry_ex.c		; $(LINKIT)
+mentry_ex2$x :		mentry_ex2.c		; $(LINKIT)
 menu_ex$x :		menu_ex.c		; $(LINKIT)
 position_ex$x :		position_ex.c		; $(LINKIT)
 preprocess_ex$x :	preprocess_ex.c		; $(LINKIT)
@@ -139,6 +144,7 @@ radio_ex$x :		radio_ex.c		; $(LINKIT)
 raiseCDKObject_ex$x :	raiseCDKObject_ex.c	; $(LINKIT)
 scale_ex$x :		scale_ex.c		; $(LINKIT)
 scroll_ex$x :		scroll_ex.c		; $(LINKIT)
+scroll_ex2$x :		scroll_ex2.c		; $(LINKIT)
 selection_ex$x :	selection_ex.c		; $(LINKIT)
 slider_ex$x :		slider_ex.c		; $(LINKIT)
 subwindow_ex$x :	subwindow_ex.c		; $(LINKIT)
