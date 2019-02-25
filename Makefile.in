@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.124 2019/02/18 20:41:12 tom Exp $
+# $Id: Makefile.in,v 1.126 2019/02/24 23:28:05 tom Exp $
 #
 #  Copyright 2001-2015,2019 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
@@ -80,7 +80,7 @@ datarootdir	= @datarootdir@
 datadir		= @datadir@
 mandir		= @mandir@
 
-DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(PACKAGE)
+DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(HDR_ROOTNAME)
 BIN_DIR		= $(DESTDIR)$(bindir)
 INCLUDE_DIR	= $(DESTDIR)$(includedir)
 INCLUDE_SUBDIR	= $(DESTDIR)$(includedir)/$(HDR_ROOTNAME)
@@ -417,7 +417,7 @@ installCDKHeaderFiles :: \
 	@for i in $(CDKHDR); do \
 	   $(HEADERS_SH) include/$$i; \
 	done
-@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(PACKAGE).h
+@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(HDR_ROOTNAME).h
 
 uninstall \
 uninstallCDKHeaderFiles ::
@@ -506,6 +506,8 @@ all-lint: lint
 	cd demos    	&& $(MAKE) $(MAKE_RECUR) lint
 	cd cli      	&& $(MAKE) $(MAKE_RECUR) lint
 
+check:
+	@echo "This interactive program has no automated tests"
 #
 # Clean up after ourselves...
 #

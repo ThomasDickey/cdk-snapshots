@@ -6,9 +6,9 @@ int main (int argc, char *argv[])
 {
    CDKSCREEN *cdkscreen;
    CDKSCROLL *scrollList;
-   char *vegList[] =
+   CDK_CONST char *vegList[] =
    {"Artichoke", "Bean", "Cabbage", "Onion"};
-   char *furnList[] =
+   CDK_CONST char *furnList[] =
    {"Bed", "Chair", "Table"};
    const char *title = "<C></5>Replace scroll-items";
 
@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
 			      CDKparamValue (&params, 'H', 8),
 			      CDKparamValue (&params, 'W', 30),
 			      CDKparamString2 (&params, 't', title),
-			      vegList,
+			      (CDK_CSTRING2)vegList,
 			      NumElements (vegList),
 			      FALSE,
 			      A_REVERSE,
@@ -39,7 +39,10 @@ int main (int argc, char *argv[])
    napms (3000);
    eraseCDKScroll (scrollList);
 
-   setCDKScrollItems (scrollList, furnList, NumElements (furnList), FALSE);
+   setCDKScrollItems (scrollList,
+		      (CDK_CSTRING2)furnList,
+		      NumElements (furnList),
+		      FALSE);
    refreshCDKScreen (cdkscreen);
 
    while (scrollList->exitType != vNORMAL)

@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.50 2019/02/21 02:42:40 tom Exp $
+# $Id: cdk.spec,v 1.51 2019/02/23 01:02:28 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20190220
+%define AppRelease 20190224
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -61,7 +61,6 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_libdir}/*.a
 %exclude %{_mandir}/man1/*
 %exclude %{_mandir}/man3/*
-%{_datadir}/doc/%{name}/*
 %{_defaultdocdir}/%{name}/*
 
 %files devel
@@ -74,7 +73,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*
 %{_includedir}/%{name}.h
 %{_includedir}/%{name}
-%exclude %{_datadir}/doc/%{name}/*
 %exclude %{_defaultdocdir}/%{name}/*
 
 %changelog

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/20 21:02:15 $
- * $Revision: 1.221 $
+ * $Date: 2019/02/25 01:07:55 $
+ * $Revision: 1.224 $
  */
 
 #define L_MARKER '<'
@@ -886,9 +886,9 @@ char *chtype2String (const chtype *string)
 
 	 for (x = 0; x < len; ++x)
 	 {
-	    unsigned this_ch = string[x];
-	    unsigned last_ch = (x > 0) ? string[x - 1] : 0;
-	    int next = ((this_ch & 0xff) < 32) ? 5 : 1;
+	    chtype this_ch = string[x];
+	    chtype last_ch = (x > 0) ? string[x - 1] : 0;
+	    unsigned next = ((this_ch & 0xff) < 32) ? 5 : 1;
 
 	    need = decodeAttribute (newstring, need, last_ch, this_ch);
 	    if (newstring != 0)
@@ -902,8 +902,8 @@ char *chtype2String (const chtype *string)
 		  unsigned ch = (0xff & this_ch);
 		  newstring[need] = L_MARKER;
 		  newstring[need + 1] = '#';
-		  newstring[need + 2] = '0' + (ch / 10);
-		  newstring[need + 3] = '0' + (ch % 10);
+		  newstring[need + 2] = (char)('0' + (ch / 10));
+		  newstring[need + 3] = (char)('0' + (ch % 10));
 		  newstring[need + 4] = R_MARKER;
 
 	       }
@@ -1176,7 +1176,6 @@ int mode2Char (char *string, mode_t mode)
    };
    /* *INDENT-ON* */
 
-   /* Declare local variables.  */
    int permissions = 0;
    int filetype = mode2Filetype (mode);
    unsigned n;
