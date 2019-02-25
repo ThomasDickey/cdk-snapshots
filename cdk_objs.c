@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2019/02/20 20:53:53 $
- * $Revision: 1.22 $
+ * $Date: 2019/02/25 00:53:17 $
+ * $Revision: 1.24 $
  */
 
 #define MARKUP_CENTER  "<C>"
@@ -181,12 +181,12 @@ char *getCdkTitle (CDKOBJS *obj)
    char *result = 0;
    for (pass = 0; pass < 2; ++pass)
    {
-      unsigned need = obj->titleLines + 1;
+      size_t need = (size_t) (obj->titleLines + 1);
       for (x = 0; x < obj->titleLines; x++)
       {
 	 char *title = chtype2String (obj->title[x]);
 	 char *check = 0;
-	 char *format = 0;
+	 const char *format = 0;
 	 if (title == 0)
 	    continue;
 	 need += strlen (title);
