@@ -2,7 +2,7 @@
 # $FreeBSD: head/devel/cdk/Makefile 439311 2017-04-24 15:17:34Z sunpoet $
 
 PORTNAME=	cdk
-DISTVERSION=	5.0-20190224
+DISTVERSION=	5.0-20190303
 PORTEPOCH=	1
 CATEGORIES=	devel
 MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/
