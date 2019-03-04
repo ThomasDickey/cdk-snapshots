@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.126 2019/02/24 23:28:05 tom Exp $
+# $Id: Makefile.in,v 1.128 2019/03/03 23:21:00 tom Exp $
 #
 #  Copyright 2001-2015,2019 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
@@ -417,7 +417,7 @@ installCDKHeaderFiles :: \
 	@for i in $(CDKHDR); do \
 	   $(HEADERS_SH) include/$$i; \
 	done
-@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(HDR_ROOTNAME).h
+@HDR_SUBDIR@	$(RM) $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(HDR_ROOTNAME).h
 
 uninstall \
 uninstallCDKHeaderFiles ::
@@ -428,20 +428,24 @@ uninstallCDKHeaderFiles ::
 	@- for i in $(CDKHDR); do \
 	   $(RM) $(INCLUDE_SUBDIR)/$$i; \
 	done
-@HDR_SUBDIR@	rm -f $(INCLUDE_DIR)/cdk.h
+@HDR_SUBDIR@	$(RM) $(INCLUDE_DIR)/cdk.h
 
 #
 # This installs the CDK library.
 #
 install \
-installCDKLibrary :: $(SHLIB_DIR) $(CDKLIB)
-	@echo "Installing CDK library"
-	@$(INSTALL_LIB) $(CDKLIB) $(SHLIB_DIR)/$(CDKLIB)
+install.libs :: $(SHLIB_DIR) $(CDKLIB)
+@MAKE_STATIC@	@echo "Installing CDK library"
+@MAKE_STATIC@		@$(INSTALL_LIB) $(CDKLIB) $(SHLIB_DIR)/$(CDKLIB)
+
+installCDKLibrary : install.libs
 
 uninstall \
-uninstallCDKLibrary ::
-	@echo "Uninstalling CDK library"
-	@- $(UNINSTALL_LIB) $(SHLIB_DIR)/$(CDKLIB)
+uninstall.libs ::
+@MAKE_STATIC@		@echo "Uninstalling CDK library"
+@MAKE_STATIC@		@- $(UNINSTALL_LIB) $(SHLIB_DIR)/$(CDKLIB)
+
+uninstallCDKLibrary : uninstall.libs
 
 @MAKE_DLLS@install \
 @MAKE_DLLS@installImportLibrary :: $(LIB_DIR) $(IMPORT_LIB)
@@ -458,13 +462,13 @@ uninstallCDKLibrary ::
 #
 install \
 installCDKHeaderFiles \
-installCDKLibrary :: $(BIN_DIR) cdk-config
+install.libs :: $(BIN_DIR) cdk-config
 	@echo "Installing script $(CFG_ROOTNAME)$(VERSION_MAJOR)-config"
 	@$(INSTALL) cdk-config $(BIN_DIR)/$(CFG_ROOTNAME)$(VERSION_MAJOR)-config
 
 uninstall \
-uninstallCDKHeaderFiles \
-uninstallCDKLibrary :: cdk-config
+uninstall.libs \
+uninstallCDKHeaderFiles :: cdk-config
 	@echo "Uninstalling script $(CFG_ROOTNAME)$(VERSION_MAJOR)-config"
 	@$(RM) $(BIN_DIR)/$(CFG_ROOTNAME)$(VERSION_MAJOR)-config
 

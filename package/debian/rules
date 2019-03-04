@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.27 2019/02/19 02:06:08 tom Exp $
+# $Id: rules,v 1.29 2019/03/04 02:14:38 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -150,7 +150,8 @@ install-libcdk5-stamp      : build-libcdk5-stamp
 	dh_prep $(verbose) -plibcdk5
 	dh_installdirs $(verbose) -plibcdk5
 
-	$(MAKE) -C $(P_SHARED) DESTDIR=$(TARGET)/libcdk5 installCDKLibrary
+	$(MAKE) -C $(P_SHARED) DESTDIR=$(TARGET)/libcdk5 install.libs
+	find $(TARGET)/libcdk5/usr/lib -type l -name '*.so*' -exec rm -f {} \;
 
 	# remove -config file also in -dev package
 	rm -rf $(TARGET)/libcdk5/usr/bin

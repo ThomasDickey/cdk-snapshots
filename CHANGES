@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.294 2019/02/24 23:32:31 tom Exp $
+-- $Id: CHANGES,v 1.298 2019/03/04 01:33:44 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2018, 2019
@@ -8,6 +8,13 @@ Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2019/03/03
+	+ deprecate installCDKLibrary rule by install.libs, which is used in
+	  the newer shared-library macros.
+	+ conditionally-comment action lines for the part of install-rules
+	  which conflict with the newer shared-library rules (report by Tom
+	  Brownridge).
 
 2019/02/24
 	+ use HDR_ROOTNAME rather than PACKAGE in top-level makefile, to
