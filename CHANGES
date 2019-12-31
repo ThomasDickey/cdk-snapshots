@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.298 2019/03/04 01:33:44 tom Exp $
+-- $Id: CHANGES,v 1.300 2019/12/31 20:21:32 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2018, 2019
@@ -8,6 +8,13 @@ Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2019/12/31
+	+ fix issues found with check-manpage
+	+ updated configure macros, from xterm and ncurses development:
+	  CF_ADD_LIBS CF_GCC_VERSION CF_GCC_WARNINGS CF_PROG_CC CF_PROG_LINT
+	  CF_X_TOOLKIT
+	+ update config.guess, config.sub
 
 2019/03/03
 	+ deprecate installCDKLibrary rule by install.libs, which is used in

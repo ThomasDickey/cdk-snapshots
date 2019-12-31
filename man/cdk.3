@@ -1,11 +1,15 @@
 '\" t
-.\" $Id: cdk.3,v 1.15 2019/02/15 00:27:44 tom Exp $
+.\" $Id: cdk.3,v 1.16 2019/12/31 20:22:36 tom Exp $
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
 .el .ne 3
 .IP "\\$1" \\$2
 ..
+.ie \n(.g .ds `` \(lq
+.el       .ds `` ``
+.ie \n(.g .ds '' \(rq
+.el       .ds '' ''
 .TH Cdk 3
 .SH NAME
 cdk - \fBCurses Development Kit\fR
@@ -109,7 +113,7 @@ To learn more about this see \fIcdk_binding (3)\fR.
 .It "\(bu Pre and Post Processing." 5
 Certain widgets allow the user to trap a character before and after the 
 character has been applied to the widget.
-This allows programmers to `filter' character input.
+This allows programmers to \*(``filter\*('' character input.
 To learn more about this see \fIcdk_process (3)\fR.
 .PP
 .It "\(bu Self Test Widgets." 5
