@@ -1,10 +1,10 @@
 %?mingw_package_header
 
-# $Id: mingw-cdk.spec,v 1.30 2019/12/31 20:19:59 tom Exp $
+# $Id: mingw-cdk.spec,v 1.31 2020/02/29 00:42:46 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram mingw32-cdk
 %define AppVersion 5.0
-%define AppRelease 20191231
+%define AppRelease 20200228
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
