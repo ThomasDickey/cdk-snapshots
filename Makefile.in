@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.128 2019/03/03 23:21:00 tom Exp $
+# $Id: Makefile.in,v 1.129 2020/09/23 20:26:05 tom Exp $
 #
-#  Copyright 2001-2015,2019 Thomas E. Dickey
+#  Copyright 2001-2019,2020 Thomas E. Dickey
 #  Copyright 1999, Mike Glover
 #  All rights reserved.
 #
@@ -127,6 +127,10 @@ INSTALL_LIB	= $(LIBTOOL_INSTALL) $(INSTALL_DATA)
 UNINSTALL_LIB	= $(LIBTOOL_UNINSTALL) $(RM)
 
 .SUFFIXES: .c .o .lo .os .i
+
+@MAKE_PHONY@.PHONY: all cdklib check clean cli default demos distclean examples lint manpages realclean sources
+@MAKE_PHONY@.PHONY: installCDKHeaderFiles installCDKLibrary installCDKManPages installCDKReadme
+@MAKE_PHONY@.PHONY: uninstallCDKHeaderFiles uninstallCDKLibrary uninstallCDKManPages uninstallCDKReadme
 
 default :: $(CDKLIB)
 

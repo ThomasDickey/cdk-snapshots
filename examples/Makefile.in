@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.23 2019/02/20 14:38:34 tom Exp $
+# $Id: Makefile.in,v 1.24 2020/09/23 20:28:01 tom Exp $
 #
 # Makefile for the examples directory.
 #
@@ -113,6 +113,8 @@ CDKSRC	= \
 	viewer_ex2.c
 
 LINKIT	= @ECHO_LD@$(LINK) $(CFLAGS) $(CPPFLAGS) $? -o $@ $(LDFLAGS) $(LIBS)
+
+@MAKE_PHONY@.PHONY: all clean distclean lint
 
 all : $(BINS)
 
