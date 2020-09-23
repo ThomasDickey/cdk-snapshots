@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.302 2020/02/29 00:44:40 tom Exp $
+-- $Id: CHANGES,v 1.304 2020/09/23 08:02:06 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2019, 2020
@@ -8,6 +8,10 @@ Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2020/09/23
+	+ updated configure script, for compiler-warnings
+	+ update config.guess, config.sub
 
 2020/02/28
 	+ updated configure script, to work around ncurses 6.2 vs xcode's c99
