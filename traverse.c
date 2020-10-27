@@ -171,7 +171,7 @@ CDKOBJS *getCDKFocusCurrent (CDKSCREEN *screen)
 /*
  * Set focus to the next object, returning it.
  */
-CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
+CDKOBJS *getCDKFocusNext (CDKSCREEN *screen)
 {
    CDKOBJS *result = 0;
    CDKOBJS *curobj;
@@ -197,14 +197,19 @@ CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
       }
    }
 
-   setFocusIndex (screen, (result != 0) ? n : -1);
+//   setFocusIndex (screen, (result != 0) ? n : -1);
    return result;
+}
+
+CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
+{
+	return setCDKFocusCurrent(screen, getCDKFocusNext(screen));
 }
 
 /*
  * Set focus to the previous object, returning it.
  */
-CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
+CDKOBJS *getCDKFocusPrevious (CDKSCREEN *screen)
 {
    CDKOBJS *result = 0;
    CDKOBJS *curobj;
@@ -227,8 +232,13 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
       }
    }
 
-   setFocusIndex (screen, (result != 0) ? n : -1);
+//   setFocusIndex (screen, (result != 0) ? n : -1);
    return result;
+}
+
+CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
+{
+	return setCDKFocusCurrent(screen, getCDKFocusPrevious(screen));
 }
 
 /*
@@ -266,19 +276,37 @@ CDKOBJS *setCDKFocusCurrent (CDKSCREEN *screen, CDKOBJS *newobj)
 /*
  * Set focus to the first object in the screen.
  */
+CDKOBJS *getCDKFocusFirst (CDKSCREEN *screen)
+{
+   int idx = getFocusIndex(screen);
+   CDKOBJS *result;
+   setFocusIndex (screen, screen->objectCount - 1);
+   result = getCDKFocusNext (screen);
+   setFocusIndex(screen, idx);
+   return result;
+}
+
 CDKOBJS *setCDKFocusFirst (CDKSCREEN *screen)
 {
-   setFocusIndex (screen, screen->objectCount - 1);
-   return switchFocus (setCDKFocusNext (screen), 0);
+	return switchFocus (setCDKFocusCurrent(screen, getCDKFocusFirst(screen)), 0);
 }
 
 /*
  * Set focus to the last object in the screen.
  */
+CDKOBJS *getCDKFocusLast (CDKSCREEN *screen)
+{
+   int idx = getFocusIndex(screen);
+   CDKOBJS *result;
+   setFocusIndex (screen, 0);
+   result = getCDKFocusPrevious (screen);
+   setFocusIndex(screen, idx);
+   return result;
+}
+
 CDKOBJS *setCDKFocusLast (CDKSCREEN *screen)
 {
-   setFocusIndex (screen, 0);
-   return switchFocus (setCDKFocusPrevious (screen), 0);
+	return switchFocus (setCDKFocusCurrent(screen, getCDKFocusLast(screen)), 0);
 }
 
 void traverseCDKOnce (CDKSCREEN *screen,
