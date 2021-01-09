@@ -1,13 +1,18 @@
--- $Id: CHANGES,v 1.304 2020/09/23 08:02:06 tom Exp $
+-- $Id: CHANGES,v 1.307 2021/01/09 22:44:10 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
-Copyright Thomas E. Dickey 1999-2019, 2020
+Copyright Thomas E. Dickey 1999-2020, 2021
 Copyright Mike Glover, 1995, 1996, 1997, 1998, 1999
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2021/01/09
+	+ spelling fixes, per codespell.
+	+ updated configure script, for quoting/escaping fixes
+	+ update config.guess, config.sub
 
 2020/09/23
 	+ updated configure script, for compiler-warnings
@@ -268,7 +273,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 
 2014/01/01
 	+ improve limit-checks in trimCDKWindow() (patch by Tyson Nottingham).
-	+ updated configure script (further improvments for shared libraries,
+	+ updated configure script (further improvements for shared libraries,
 	  and clang).
 	+ update config.guess
 
@@ -279,7 +284,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	+ add scripts for testing cross-compiles to MinGW.
 	+ add new scroller.h to CDKHDR variable in Makefile.in, so it will be
 	  installed (report by Aitor Atuin).
-	+ updated configure script (further improvments for shared libraries,
+	+ updated configure script (further improvements for shared libraries,
 	  and MinGW).
 	+ update config.guess, config.sub
 
@@ -1022,7 +1027,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  a symbol conflict (reported by Kenneth Pronovici
 	  <pronovic@skyjammer.com>).
 	+ miscellaneous updates to configure script, including workarounds for
-	  incompatibilies in autoconf 2.5x.
+	  incompatibilities in autoconf 2.5x.
 
 2002/02/25 - T.E.Dickey <dickey@herndon4.his.com>
 =================================================

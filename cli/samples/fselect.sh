@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: fselect.sh,v 1.4 2005/12/27 17:56:05 tom Exp $
+# $Id: fselect.sh,v 1.5 2021/01/09 22:42:55 tom Exp $
 
 #
 # Description:
@@ -62,7 +62,7 @@ test $selected = 255 && exit 1
 answer=`cat ${file}`
 
 #
-# Diplay the file the user selected.
+# Display the file the user selected.
 #
 echo "<C>You selected the following file" > ${tmp}
 echo " " >> ${tmp}

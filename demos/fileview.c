@@ -1,4 +1,4 @@
-/* $Id: fileview.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: fileview.c,v 1.15 2021/01/09 22:41:39 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 			       "</5>", "</48>", "</N>", "</N>", TRUE, FALSE);
 
       /*
-       * Set the starting directory. This is not neccessary because when
+       * Set the starting directory. This is not necessary because when
        * the file selector starts it uses the present directory as a default.
        */
       setCDKFselect (fSelect, directory, A_NORMAL, '.', A_REVERSE,

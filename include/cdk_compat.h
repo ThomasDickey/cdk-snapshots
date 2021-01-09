@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_compat.h,v 1.2 2005/12/28 21:45:45 tom Exp $
+ * $Id: cdk_compat.h,v 1.4 2021/01/09 22:47:16 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2004,2005 Thomas E. Dickey
+ * Copyright 2004-2005,2021 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ extern "C" {
 
 /*
  * Renaming of struct members was done for consistency.  Making old/new
- * versions compatible with renaming is awkward (there may be inadvertant
+ * versions compatible with renaming is awkward (there may be inadvertent
  * naming collisions), but this is mainly for demonstration purposes.
  */
 #define info      list

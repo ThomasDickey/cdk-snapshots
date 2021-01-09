@@ -1,14 +1,14 @@
--- $Id: README,v 1.15 2020/02/29 00:44:40 tom Exp $
+-- $Id: README,v 1.16 2021/01/09 15:24:43 tom Exp $
 -------------------------------------------------------------------------------
 
-Copyright Thomas Dickey 1999-2019,2020
+Copyright Thomas Dickey 1999-2020,2021
 
 This is a modified/enhanced version of Cdk.  The original README contents are
 given below.
 
 This version of Cdk is found at
 
-	http://invisible-island.net/cdk/
+	https://invisible-island.net/cdk/
 	ftp://ftp.invisible-island.net/cdk/
 
 The intent of the modifications is to preserve nominal compatibility with the

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: alphalist.sh,v 1.7 2005/12/27 16:04:57 tom Exp $
+# $Id: alphalist.sh,v 1.8 2021/01/09 22:43:03 tom Exp $
 
 #
 # Description:
@@ -16,7 +16,7 @@ getPasswordFile()
    file=$2
 
    #
-   # Depeding on the system, get the password file
+   # Depending on the system, get the password file
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then

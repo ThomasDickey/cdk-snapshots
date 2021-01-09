@@ -1,4 +1,4 @@
-/* $Id: syb.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: syb.c,v 1.14 2021/01/09 22:41:48 tom Exp $ */
 
 #include <cdk_test.h>
 #include <sybfront.h>
@@ -565,7 +565,7 @@ DBPROCESS *loginToSybase (CDKSCREEN *screen, char *accountName, char *accountPas
    }
 
    /*
-    * Try to connect to the database and get a LOGINREC structre.
+    * Try to connect to the database and get a LOGINREC structure.
     */
    if ((dbLogin = dblogin()) == 0)
    {
@@ -596,7 +596,7 @@ void runIsqlCommand (CDKSCREEN *screen, CDKSWINDOW *swindow, DBPROCESS *dbProces
    RETCODE returnCode;
    int rowCount;
 
-   /* Add in a output seperation line. */
+   /* Add in a output separation line. */
    addCDKSwindow (swindow, "<C><#HL(5)> Start of Output <#HL(5)>", BOTTOM);
 
    /* Run the command. */
@@ -638,7 +638,7 @@ void runIsqlCommand (CDKSCREEN *screen, CDKSWINDOW *swindow, DBPROCESS *dbProces
       }
    }
 
-   /* Add in a output seperation line. */
+   /* Add in a output separation line. */
    addCDKSwindow (swindow, "<C><#HL(5)>  End of Output  <#HL(5)>", BOTTOM);
    addCDKSwindow (swindow, "", BOTTOM);
 
