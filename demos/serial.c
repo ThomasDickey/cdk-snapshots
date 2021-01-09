@@ -1,4 +1,4 @@
-/* $Id: serial.c,v 1.8 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: serial.c,v 1.9 2021/01/09 22:41:57 tom Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -257,7 +257,7 @@ boolean probeModem (void)
    LLastState = LCurrentState;
 
    /*
-    * Return False to tell X that we want this funtion to be
+    * Return False to tell X that we want this function to be
     * run again.
     */
    return FALSE;

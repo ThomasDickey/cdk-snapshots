@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: adduser,v 1.3 2002/07/16 22:24:53 tom Exp $
+# $Id: adduser,v 1.5 2021/01/09 22:45:59 tom Exp $
 
 #
 # Written by: Mike Glover, March 1997
@@ -14,6 +14,7 @@
 #
 
 #
+# Copyright 2000-2002,2021, Thomas E. Dickey
 # Copyright 2000, Mike Glover
 # All rights reserved.
 #
@@ -442,7 +443,7 @@ prompted for it's path.
          # Get the shell from the user.
          #
          buttons="Next
-Previuous
+Previous
 Cancel"
          label="</24/B>Shell Pathname: "
          title="<C></B>Custom Account Shell

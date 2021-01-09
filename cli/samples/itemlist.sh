@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: itemlist.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
+# $Id: itemlist.sh,v 1.4 2021/01/09 22:43:17 tom Exp $
 
 #
 # Description:
@@ -16,7 +16,7 @@ getPasswordFile()
    file=$2
 
    #
-   # Depeding on the system, get the password file
+   # Depending on the system, get the password file
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then

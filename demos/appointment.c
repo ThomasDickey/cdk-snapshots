@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.29 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: appointment.c,v 1.30 2021/01/09 22:42:07 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -321,7 +321,7 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
 			      (CDK_CSTRING2)items, 4, 0,
 			      TRUE, FALSE);
 
-   /* Get the appointment tye from the user. */
+   /* Get the appointment type from the user. */
    selection = activateCDKItemlist (itemlist, 0);
 
    /* They hit escape, kill the itemlist widget and leave. */

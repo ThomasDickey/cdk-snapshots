@@ -1,4 +1,4 @@
-/* $Id: radio_ex.c,v 1.20 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: radio_ex.c,v 1.21 2021/01/09 22:42:29 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -30,7 +30,7 @@ int main (int argc, char **argv)
 
    CDKparseParams (argc, argv, &params, "cs:t:" CDK_CLI_PARAMS);
 
-   /* Use the current diretory list to fill the radio list. */
+   /* Use the current directory list to fill the radio list. */
    count = CDKgetDirectoryContents (".", &item);
    if (count <= 0)
    {

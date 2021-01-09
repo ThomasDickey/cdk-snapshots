@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.26 2019/02/20 23:11:52 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.27 2021/01/09 22:42:39 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -81,7 +81,7 @@ int main (int argc, char **argv)
    /* Set up CDK Colors. */
    initCDKColor ();
 
-   /* Use the current diretory list to fill the radio list. */
+   /* Use the current directory list to fill the radio list. */
    count = CDKgetDirectoryContents (".", &item);
 
    /* Create the scrolling list. */
