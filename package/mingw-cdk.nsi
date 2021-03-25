@@ -1,4 +1,4 @@
-; $Id: mingw-cdk.nsi,v 1.35 2021/01/09 15:27:05 tom Exp $
+; $Id: mingw-cdk.nsi,v 1.36 2021/03/24 21:12:34 tom Exp $
 
 ; TODO add examples
 
@@ -9,7 +9,7 @@
 !define VERSION_MAJOR "5"
 !define VERSION_MINOR "0"
 !define VERSION_YYYY  "2021"
-!define VERSION_MMDD  "109"
+!define VERSION_MMDD  "324"
 !define VERSION_PATCH ${VERSION_YYYY}${VERSION_MMDD}
 
 !define SUBKEY "libcdk5"
