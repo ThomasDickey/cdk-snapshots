@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.57 2021/01/09 15:16:44 tom Exp $
+# $Id: cdk.spec,v 1.61 2021/03/25 00:25:51 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20210109
+%define AppRelease 20210324
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -35,7 +35,12 @@ Development headers for cdk (Curses Development Kit)
 make all
 find . -name '*.o' -exec rm -f {} \;
 
-%configure --with-shared --with-versioned-syms
+%configure \
+ --enable-warnings \
+ --enable-stdnoreturn \
+ --enable-const \
+ --with-shared \
+ --with-versioned-syms
 #make %{?_smp_mflags} cdkshlib
 make all
 
@@ -47,6 +52,14 @@ make install.libs install \
 ls -l $RPM_BUILD_ROOT%{_libdir}
 chmod +x $RPM_BUILD_ROOT%{_libdir}/*.so # fixes rpmlint unstripped-binary-or-object
 install -m 644 libcdk.a $RPM_BUILD_ROOT%{_libdir}
+
+# The "doc" tag installs the contents of the demos and examples directories,
+# but the binaries are unwanted in the rpm.
+echo "** cleanup demos-directory"
+( cd demos && make clean )
+
+echo "** cleanup examples-directory"
+( cd examples && make clean )
 
 %clean
 rm -rf $RPM_BUILD_ROOT

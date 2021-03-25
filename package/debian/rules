@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.29 2019/03/04 02:14:38 tom Exp $
+# $Id: rules,v 1.31 2021/03/24 22:30:29 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -40,7 +40,10 @@ configure = \
 		--with-screen=$(SCREEN) \
 		--with-versioned-syms \
 		--with-libname=cdk \
-		--disable-rpath-hack
+		--disable-rpath-hack \
+		--enable-warnings \
+		--enable-stdnoreturn \
+		--enable-const
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
         CFLAGS += -O0

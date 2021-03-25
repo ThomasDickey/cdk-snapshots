@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
-# Made with the aid of dh_make, by Craig Small
-# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
-# Some lines taken from debmake, by Cristoph Lameter.
+# $Id: rules,v 1.6 2021/03/24 22:30:16 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -26,7 +24,10 @@ CFLAGS = $(CC_NORMAL)
 CONFIG_OPTIONS = \
 	--disable-echo \
 	--verbose \
-	--with-shared
+	--with-shared \
+	--enable-warnings \
+	--enable-stdnoreturn \
+	--enable-const
 
 verbose = # -v
 
