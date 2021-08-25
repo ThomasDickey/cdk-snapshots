@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.110 2021/03/24 22:53:19 tom Exp $
+dnl $Id: aclocal.m4,v 1.111 2021/08/07 20:59:57 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2020,2021 Thomas E. Dickey
@@ -427,7 +427,7 @@ ifelse([$3],,[    :]dnl
 ])dnl
 ])])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_C11_NORETURN version: 2 updated: 2021/03/22 20:37:21
+dnl CF_C11_NORETURN version: 3 updated: 2021/03/28 11:36:23
 dnl ---------------
 AC_DEFUN([CF_C11_NORETURN],
 [
@@ -444,7 +444,7 @@ AC_CACHE_CHECK([for C11 _Noreturn feature], cf_cv_c11_noreturn,
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdnoreturn.h>
-static void giveup(void) { exit(0); }
+static _Noreturn void giveup(void) { exit(0); }
 	],
 	[if (feof(stdin)) giveup()],
 	cf_cv_c11_noreturn=yes,
@@ -455,7 +455,7 @@ else
 fi
 
 if test "$cf_cv_c11_noreturn" = yes; then
-	AC_DEFINE(HAVE_STDNORETURN_H, 1)
+	AC_DEFINE(HAVE_STDNORETURN_H, 1,[Define if <stdnoreturn.h> header is available and working])
 	AC_DEFINE_UNQUOTED(STDC_NORETURN,_Noreturn,[Define if C11 _Noreturn keyword is supported])
 	HAVE_STDNORETURN_H=1
 else
@@ -463,6 +463,7 @@ else
 fi
 
 AC_SUBST(HAVE_STDNORETURN_H)
+AC_SUBST(STDC_NORETURN)
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_CC_ENV_FLAGS version: 10 updated: 2020/12/31 18:40:20
@@ -586,21 +587,34 @@ AC_TRY_LINK([#include <stdio.h>],[printf("Hello world");],,
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CHECK_LIBTOOL_VERSION version: 1 updated: 2013/04/06 18:03:09
+dnl CF_CHECK_LIBTOOL_VERSION version: 2 updated: 2021/05/01 16:24:34
 dnl ------------------------
 dnl Show the version of libtool
 dnl
 dnl Save the version in a cache variable - this is not entirely a good thing,
 dnl but the version string from libtool is very ugly, and for bug reports it
 dnl might be useful to have the original string.
+dnl
+dnl There is an imitation in OpenBSD, which has no apparent use other than to
+dnl deny that it is GNU libtool.  Just ignore it.
 AC_DEFUN([CF_CHECK_LIBTOOL_VERSION],[
 if test -n "$LIBTOOL" && test "$LIBTOOL" != none
 then
 	AC_MSG_CHECKING(version of $LIBTOOL)
 	CF_LIBTOOL_VERSION
 	AC_MSG_RESULT($cf_cv_libtool_version)
-	if test -z "$cf_cv_libtool_version" ; then
-		AC_MSG_ERROR(This is not GNU libtool)
+	if test -n "$cf_cv_libtool_version"
+	then
+		cf_check_libtool_version=`$LIBTOOL --version 2>&1 | sed -e '/^$/d' -e 's,[[()]],...,g' -e 's,[[ ]],-,g' -e '2,$d'`
+		case "x$cf_check_libtool_version" in
+		(*...GNU-libtool...*)
+			;;
+		(*)
+			AC_MSG_ERROR(This is not GNU libtool)
+			;;
+		esac
+	else
+		AC_MSG_ERROR(No version found for $LIBTOOL)
 	fi
 else
 	AC_MSG_ERROR(GNU libtool has not been found)
@@ -675,7 +689,7 @@ if test "x$ifelse([$2],,CLANG_COMPILER,[$2])" = "xyes" ; then
 fi
 ])
 dnl ---------------------------------------------------------------------------
-dnl CF_CONST_X_STRING version: 6 updated: 2021/01/01 13:31:04
+dnl CF_CONST_X_STRING version: 7 updated: 2021/06/07 17:39:17
 dnl -----------------
 dnl The X11R4-X11R6 Xt specification uses an ambiguous String type for most
 dnl character-strings.
@@ -705,7 +719,7 @@ AC_TRY_COMPILE(
 #include <stdlib.h>
 #include <X11/Intrinsic.h>
 ],
-[String foo = malloc(1); (void)foo],[
+[String foo = malloc(1); free((void*)foo)],[
 
 AC_CACHE_CHECK(for X11/Xt const-feature,cf_cv_const_x_string,[
 	AC_TRY_COMPILE(
@@ -1190,7 +1204,7 @@ AC_SUBST(SHOW_CC)
 AC_SUBST(ECHO_CC)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_DISABLE_LEAKS version: 8 updated: 2021/01/05 20:05:09
+dnl CF_DISABLE_LEAKS version: 9 updated: 2021/04/03 16:41:50
 dnl ----------------
 dnl Combine no-leak checks with the libraries or tools that are used for the
 dnl checks.
@@ -1203,9 +1217,9 @@ AC_REQUIRE([CF_WITH_VALGRIND])
 AC_MSG_CHECKING(if you want to perform memory-leak testing)
 AC_ARG_ENABLE(leaks,
 	[  --disable-leaks         test: free permanent memory, analyze leaks],
-	[enable_leaks=no],
+	[enable_leaks=$enableval],
 	[enable_leaks=yes])
-dnl TODO - drop with_no_leaks
+dnl with_no_leaks is more readable...
 if test "x$enable_leaks" = xno; then with_no_leaks=yes; else with_no_leaks=no; fi
 AC_MSG_RESULT($with_no_leaks)
 
@@ -1546,7 +1560,7 @@ unset ac_ct_$1
 unset $1
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_FUNC_LSTAT version: 4 updated: 2021/01/02 09:31:20
+dnl CF_FUNC_LSTAT version: 5 updated: 2021/06/08 18:08:14
 dnl -------------
 dnl A conventional existence-check for 'lstat' won't work with the Linux
 dnl version of gcc 2.7.0, since the symbol is defined only within <sys/stat.h>
@@ -1560,7 +1574,7 @@ AC_CACHE_VAL(ac_cv_func_lstat,[
 AC_TRY_LINK([
 #include <sys/types.h>
 #include <sys/stat.h>],
-	[lstat(".", (struct stat *)0)],
+	[struct stat sb; lstat(".", &sb); (void) sb],
 	[ac_cv_func_lstat=yes],
 	[ac_cv_func_lstat=no])
 	])
@@ -1813,7 +1827,7 @@ rm -rf ./conftest*
 AC_SUBST(EXTRA_CFLAGS)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_GETOPT_HEADER version: 7 updated: 2021/01/01 13:31:04
+dnl CF_GETOPT_HEADER version: 8 updated: 2021/06/19 19:16:16
 dnl ----------------
 dnl Check for getopt's variables which are commonly defined in stdlib.h,
 dnl unistd.h or (nonstandard) in getopt.h
@@ -1826,7 +1840,7 @@ for cf_header in stdio.h stdlib.h unistd.h getopt.h
 do
 AC_TRY_COMPILE([
 #include <$cf_header>],
-[int x = optind; char *y = optarg],
+[int x = optind; char *y = optarg; (void)x; (void)y],
 [cf_cv_getopt_header=$cf_header
  break])
 done
@@ -2498,7 +2512,7 @@ printf("old\\n");
 	,[$1=no])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_CONFIG version: 26 updated: 2021/01/03 08:05:37
+dnl CF_NCURSES_CONFIG version: 27 updated: 2021/05/19 19:35:25
 dnl -----------------
 dnl Tie together the configure-script macros for ncurses, preferring these in
 dnl order:
@@ -2540,7 +2554,7 @@ if test "x${PKG_CONFIG:=none}" != xnone; then
 				[initscr(); mousemask(0,0); tigetstr((char *)0);],
 				[AC_TRY_RUN([#include <${cf_cv_ncurses_header:-curses.h}>
 					int main(void)
-					{ char *xx = curses_version(); return (xx == 0); }],
+					{ const char *xx = curses_version(); return (xx == 0); }],
 					[cf_test_ncuconfig=yes],
 					[cf_test_ncuconfig=no],
 					[cf_test_ncuconfig=maybe])],
@@ -2566,7 +2580,7 @@ if test "x${PKG_CONFIG:=none}" != xnone; then
 			[initscr(); mousemask(0,0); tigetstr((char *)0);],
 			[AC_TRY_RUN([#include <${cf_cv_ncurses_header:-curses.h}>
 				int main(void)
-				{ char *xx = curses_version(); return (xx == 0); }],
+				{ const char *xx = curses_version(); return (xx == 0); }],
 				[cf_have_ncuconfig=yes],
 				[cf_have_ncuconfig=no],
 				[cf_have_ncuconfig=maybe])],
@@ -2890,19 +2904,29 @@ EOF
 test "$cf_cv_ncurses_version" = no || AC_DEFINE(NCURSES,1,[Define to 1 if we are using ncurses headers/libraries])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NO_LEAKS_OPTION version: 8 updated: 2021/01/05 20:05:09
+dnl CF_NO_LEAKS_OPTION version: 9 updated: 2021/06/13 19:45:41
 dnl ------------------
 dnl see CF_WITH_NO_LEAKS
+dnl
+dnl $1 = option/name
+dnl $2 = help-text
+dnl $3 = symbol to define if the option is set
+dnl $4 = additional actions to take if the option is set
 AC_DEFUN([CF_NO_LEAKS_OPTION],[
 AC_MSG_CHECKING(if you want to use $1 for testing)
 AC_ARG_WITH($1,
 	[$2],
-	[AC_DEFINE_UNQUOTED($3,1,"Define to 1 if you want to use $1 for testing.")ifelse([$4],,[
+	[case "x$withval" in
+	(x|xno) ;;
+	(*)
+		: "${with_cflags:=-g}"
+		: "${enable_leaks:=no}"
+		with_$1=yes
+		AC_DEFINE_UNQUOTED($3,1,"Define to 1 if you want to use $1 for testing.")ifelse([$4],,[
 	 $4
 ])
-	: "${with_cflags:=-g}"
-	: "${enable_leaks:=no}"
-	 with_$1=yes],
+		;;
+	esac],
 	[with_$1=])
 AC_MSG_RESULT(${with_$1:-no})
 
@@ -3446,7 +3470,7 @@ do
 done
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_SHARED_OPTS version: 105 updated: 2021/01/02 17:09:14
+dnl CF_SHARED_OPTS version: 106 updated: 2021/08/07 16:59:57
 dnl --------------
 dnl --------------
 dnl Attempt to determine the appropriate CC/LD options for creating a shared
@@ -3616,6 +3640,10 @@ CF_EOF
 		if test "$cf_cv_ldflags_search_paths_first" = yes; then
 			LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
 		fi
+		;;
+	(haiku*)
+		CF_SHARED_SONAME
+		MK_SHARED_LIB='${CC} ${LDFLAGS} ${CFLAGS} -shared -Wl,-soname,'$cf_cv_shared_soname',-stats,-lc -o $[@]'
 		;;
 	(hpux[[7-8]]*)
 		# HP-UX 8.07 ld lacks "+b" option used for libdir search-list
@@ -4192,15 +4220,21 @@ AC_DEFUN([CF_UPPER],
 $1=`echo "$2" | sed y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%`
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_UTF8_LIB version: 8 updated: 2012/10/06 08:57:51
+dnl CF_UTF8_LIB version: 9 updated: 2021/05/19 19:35:25
 dnl -----------
 dnl Check for multibyte support, and if not found, utf8 compatibility library
 AC_DEFUN([CF_UTF8_LIB],
 [
+AC_HAVE_HEADERS(wchar.h)
 AC_CACHE_CHECK(for multibyte character support,cf_cv_utf8_lib,[
 	cf_save_LIBS="$LIBS"
 	AC_TRY_LINK([
-#include <stdlib.h>],[putwc(0,0);],
+#include <stdlib.h>
+#include <stdio.h>
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+],[putwc(0,0);],
 	[cf_cv_utf8_lib=yes],
 	[CF_FIND_LINKAGE([
 #include <libutf8.h>],[putwc(0,0);],utf8,
@@ -4947,7 +4981,7 @@ AC_SUBST(VERSIONED_SYMS)
 AC_SUBST(WILDCARD_SYMS)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_XOPEN_CURSES version: 16 updated: 2021/01/02 09:31:20
+dnl CF_XOPEN_CURSES version: 17 updated: 2021/07/10 12:22:27
 dnl ---------------
 dnl Test if we should define X/Open source for curses, needed on Digital Unix
 dnl 4.x, to see the extended functions, but breaks on IRIX 6.x.
@@ -4967,15 +5001,14 @@ AC_TRY_LINK([
 	make an error
 #endif
 #endif
-#ifdef NCURSES_VERSION
+#ifdef NCURSES_WIDECHAR
+make an error	/* prefer to fall-through on the second checks */
+#endif
 	cchar_t check;
 	int check2 = curs_set((int)sizeof(check));
-#endif
 	long x = winnstr(stdscr, "", 0);
 	int x1, y1;
-#ifdef NCURSES_VERSION
 	(void)check2;
-#endif
 	getbegyx(stdscr, y1, x1);
 	(void)x;
 	(void)y1;
@@ -4989,16 +5022,12 @@ AC_TRY_LINK([
 #define $cf_try_xopen_extension 1
 #include <stdlib.h>
 #include <${cf_cv_ncurses_header:-curses.h}>],[
-#ifdef NCURSES_VERSION
 		cchar_t check;
 		int check2 = curs_set((int)sizeof(check));
-#endif
 		long x = winnstr(stdscr, "", 0);
 		int x1, y1;
 		getbegyx(stdscr, y1, x1);
-#ifdef NCURSES_VERSION
 		(void)check2;
-#endif
 		(void)x;
 		(void)y1;
 		(void)x1;
@@ -5016,7 +5045,7 @@ esac
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_XOPEN_SOURCE version: 57 updated: 2021/01/01 16:53:59
+dnl CF_XOPEN_SOURCE version: 58 updated: 2021/05/01 17:49:36
 dnl ---------------
 dnl Try to get _XOPEN_SOURCE defined properly that we can use POSIX functions,
 dnl or adapt to the vendor's definitions to get equivalent functionality,
@@ -5081,7 +5110,15 @@ case "$host_os" in
 (netbsd*)
 	cf_xopen_source="-D_NETBSD_SOURCE" # setting _XOPEN_SOURCE breaks IPv6 for lynx on NetBSD 1.6, breaks xterm, is not needed for ncursesw
 	;;
-(openbsd[[4-9]]*)
+(openbsd[[6-9]]*)
+	# OpenBSD 6.x has broken locale support, both compile-time and runtime.
+	# see https://www.mail-archive.com/bugs@openbsd.org/msg13200.html
+	# Abusing the conformance level is a workaround.
+	AC_MSG_WARN(this system does not provide usable locale support)
+	cf_xopen_source="-D_BSD_SOURCE"
+	cf_XOPEN_SOURCE=700
+	;;
+(openbsd[[4-5]]*)
 	# setting _XOPEN_SOURCE lower than 500 breaks g++ compile with wchar.h, needed for ncursesw
 	cf_xopen_source="-D_BSD_SOURCE"
 	cf_XOPEN_SOURCE=600

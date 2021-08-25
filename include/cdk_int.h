@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.27 2016/12/04 19:43:43 tom Exp $
+ * $Id: cdk_int.h,v 1.28 2021/08/25 23:34:40 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2013,2016 Thomas E. Dickey
+ * Copyright 2003-2016,2021 Thomas E. Dickey
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,6 +95,12 @@ extern "C" {
  * Miscellaneous definitions.
  */
 #define CDK_PATHMAX		256
+
+#if !(defined(__hpux) && !defined(NCURSES_VERSION))
+#define CDK_FILLED_BOX		ACS_CKBOARD
+#else
+#define CDK_FILLED_BOX		WACS_CKBOARD
+#endif
 
 extern char *GPasteBuffer;
 

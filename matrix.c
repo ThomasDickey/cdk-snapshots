@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/12/10 15:18:01 $
- * $Revision: 1.198 $
+ * $Date: 2021/08/25 23:34:40 $
+ * $Revision: 1.199 $
  */
 
 /*
@@ -503,8 +503,8 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    else
 	    {
 	       charcount--;
-	       (void)mvwdelch (CurMatrixCell (widget), 1, charcount + 1);
-	       (void)mvwinsch (CurMatrixCell (widget), 1, charcount + 1, widget->filler);
+	       mvwdelch (CurMatrixCell (widget), 1, charcount + 1);
+	       mvwinsch (CurMatrixCell (widget), 1, charcount + 1, widget->filler);
 	       wrefresh (CurMatrixCell (widget));
 	       MATRIX_INFO (widget, widget->row, widget->col)[charcount] = '\0';
 	    }

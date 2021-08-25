@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/20 14:15:43 $
- * $Revision: 1.157 $
+ * $Date: 2021/08/25 23:34:40 $
+ * $Revision: 1.158 $
  */
 
 /*
@@ -571,7 +571,7 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
       selection->togglePos = MINIMUM (selection->togglePos,
 				      (getmaxy (selection->scrollbarWin) - 1));
 
-      (void)mvwvline (selection->scrollbarWin, 0, 0, ACS_CKBOARD, getmaxy (selection->scrollbarWin));
+      (void)mvwvline (selection->scrollbarWin, 0, 0, CDK_FILLED_BOX, getmaxy (selection->scrollbarWin));
       (void)mvwvline (selection->scrollbarWin,
 		      selection->togglePos,
 		      0,
