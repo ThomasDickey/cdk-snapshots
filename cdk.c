@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/25 01:07:55 $
- * $Revision: 1.224 $
+ * $Date: 2021/08/25 23:34:40 $
+ * $Revision: 1.225 $
  */
 
 #define L_MARKER '<'
@@ -666,6 +666,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 			}
 			break;
 		     case 'A':
+#if !(defined(__hpux) && !defined(NCURSES_VERSION))
 			switch (string[from + 1])
 			{
 			case 'L':
@@ -681,6 +682,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 			   lastChar = ACS_DARROW;
 			   break;
 			}
+#endif
 			break;
 		     default:
 #if 0
@@ -691,6 +693,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 				       + (string[from + 2] - '0'));
 			else
 #endif
+#if !(defined(__hpux) && !defined(NCURSES_VERSION))
 			   if (string[from + 1] == 'D' &&
 			       string[from + 2] == 'I')
 			   lastChar = ACS_DIAMOND;
@@ -712,6 +715,8 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 			else if (string[from + 1] == 'S' &&
 				 string[from + 2] == '9')
 			   lastChar = ACS_S9;
+#endif
+			break;
 		     }
 
 		     if (lastChar != 0)

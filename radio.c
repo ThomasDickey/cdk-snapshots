@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/20 13:45:52 $
- * $Revision: 1.147 $
+ * $Date: 2021/08/25 23:34:40 $
+ * $Revision: 1.148 $
  */
 
 /*
@@ -552,7 +552,7 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
 				  getmaxy (radio->scrollbarWin) - 1);
 
       (void)mvwvline (radio->scrollbarWin, 0, 0,
-		      ACS_CKBOARD, getmaxy (radio->scrollbarWin));
+		      CDK_FILLED_BOX, getmaxy (radio->scrollbarWin));
       (void)mvwvline (radio->scrollbarWin, radio->togglePos, 0,
 		      ' ' | A_REVERSE, radio->toggleSize);
    }

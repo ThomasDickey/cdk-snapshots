@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/20 13:22:09 $
- * $Revision: 1.164 $
+ * $Date: 2021/08/25 23:34:40 $
+ * $Revision: 1.166 $
  */
 
 /*
@@ -609,7 +609,7 @@ static void drawCDKScrollList (CDKSCROLL *scrollp, boolean Box)
 	 /* Draw the scrollbar. */
 	 (void)mvwvline (scrollp->scrollbarWin,
 			 0, 0,
-			 ACS_CKBOARD,
+			 CDK_FILLED_BOX,
 			 getmaxy (scrollp->scrollbarWin));
 	 (void)mvwvline (scrollp->scrollbarWin,
 			 scrollp->togglePos, 0,
@@ -1002,7 +1002,7 @@ void addCDKScrollItem (CDKSCROLL *scrollp, const char *item)
 
       updateViewWidth (scrollp, widestItem);
 
-      setViewSize (scrollp, scrollp->listSize + 1);
+      setViewSize (scrollp, scrollp->listSize);
    }
 
    freeChecked (temp);
@@ -1031,7 +1031,7 @@ void insertCDKScrollItem (CDKSCROLL *scrollp, const char *item)
 
       updateViewWidth (scrollp, widestItem);
 
-      setViewSize (scrollp, scrollp->listSize + 1);
+      setViewSize (scrollp, scrollp->listSize);
 
       resequence (scrollp);
    }
