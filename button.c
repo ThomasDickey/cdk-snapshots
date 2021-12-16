@@ -3,9 +3,9 @@
 #include <limits.h>
 
 /*
- * $Author: Aarian.P.Aleahmad $
- * $Date: 2016/01/31 20:32:25 $
- * $Revision: 1.38 $
+ * $Author: tom $
+ * $Date: 2021/12/16 00:37:00 $
+ * $Revision: 1.39 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -96,7 +96,6 @@ CDKBUTTON *newCDKButton (CDKSCREEN *cdkscreen,
  */
 int activateCDKButton (CDKBUTTON *button, chtype *actions)
 {
-   chtype input = 0;
    boolean functionKey;
    int ret;
 
@@ -106,7 +105,7 @@ int activateCDKButton (CDKBUTTON *button, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (button), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (button), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKButton (button, input);

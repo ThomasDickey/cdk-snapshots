@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/08/25 23:34:40 $
- * $Revision: 1.158 $
+ * $Date: 2021/12/16 01:09:14 $
+ * $Revision: 1.159 $
  */
 
 /*
@@ -240,11 +240,11 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
 
    if (actions == 0)
    {
-      chtype input;
       boolean functionKey;
 
       for (;;)
       {
+	 chtype input;
 	 int ret;
 
 	 fixCursorPosition (selection);

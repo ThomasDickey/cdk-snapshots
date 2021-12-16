@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 18:56:05 $
- * $Revision: 1.105 $
+ * $Date: 2021/12/16 00:45:55 $
+ * $Revision: 1.106 $
  */
 
 #define TITLELINES 1
@@ -131,7 +131,6 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
  */
 int activateCDKMenu (CDKMENU *menu, chtype *actions)
 {
-   chtype input;
    boolean functionKey;
    int ret;
 
@@ -152,7 +151,7 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
       /* Start taking input from the keyboard. */
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (menu), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (menu), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKMenu (menu, input);

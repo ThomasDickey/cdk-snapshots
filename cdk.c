@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/08/25 23:34:40 $
- * $Revision: 1.225 $
+ * $Date: 2021/12/16 01:10:45 $
+ * $Revision: 1.226 $
  */
 
 #define L_MARKER '<'
@@ -55,11 +55,11 @@ void cleanChtype (chtype *s, int len, chtype character)
  */
 void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 {
-   int first, gap, last;
+   int first, gap, limit, last;
 
    first = getbegx (window);
-   last = getmaxx (window);
-   if ((gap = (last - boxWidth)) < 0)
+   limit = getmaxx (window);
+   if ((gap = (limit - boxWidth)) < 0)
       gap = 0;
    last = first + gap;
 
@@ -81,10 +81,11 @@ void alignxy (WINDOW *window, int *xpos, int *ypos, int boxWidth, int boxHeight)
 	 (*xpos) = first;
       break;
    }
+   (void)last;
 
    first = getbegy (window);
-   last = getmaxy (window);
-   if ((gap = (last - boxHeight)) < 0)
+   limit = getmaxy (window);
+   if ((gap = (limit - boxHeight)) < 0)
       gap = 0;
    last = first + gap;
 
@@ -225,7 +226,7 @@ chtype *copyChtype (const chtype *original)
  */
 char **copyCharList (const char **list)
 {
-   size_t size = (size_t) lenCharList (list) + 1;
+   size_t size = (size_t)lenCharList (list) + 1;
    char **result = typeMallocN (char *, size);
 
    if (result != 0)
@@ -239,7 +240,7 @@ char **copyCharList (const char **list)
 
 chtype **copyChtypeList (const chtype **list)
 {
-   size_t size = (size_t) lenChtypeList (list) + 1;
+   size_t size = (size_t)lenChtypeList (list) + 1;
    chtype **result = typeMallocN (chtype *, size);
 
    if (result != 0)
@@ -308,8 +309,6 @@ int CDKreadFile (const char *filename, char ***array)
 
 static int encodeAttribute (const char *string, int from, chtype *mask)
 {
-   int pair = 0;
-
    *mask = 0;
    switch (string[from + 1])
    {
@@ -340,8 +339,8 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
    else
    {
       int digits;
+      int pair = 0;
 
-      pair = 0;
       for (digits = 1; digits <= 3; ++digits)
       {
 	 if (!isdigit (CharOf (string[1 + from])))
@@ -462,8 +461,6 @@ static unsigned decodeAttribute (char *string,
 chtype *char2Chtype (const char *string, int *to, int *align)
 {
    chtype *result = 0;
-   chtype attrib;
-   chtype lastChar;
    chtype mask;
 
    (*to) = 0;
@@ -480,6 +477,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
        */
       for (pass = 0; pass < 2; pass++)
       {
+	 chtype attrib;
 	 int insideMarker;
 	 int from;
 	 int adjust;
@@ -614,7 +612,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 		  break;
 	       case '#':
 		  {
-		     lastChar = 0;
+		     chtype lastChar = 0;
 		     switch (string[from + 2])
 		     {
 		     case 'L':
@@ -1479,6 +1477,8 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
       ypos += ydiff;
       werase (window);
       (void)setbegyx (window, (short)ypos, (short)xpos);
+      (void)ypos;
+      (void)xpos;
    }
 }
 

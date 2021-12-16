@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/08/25 23:34:40 $
- * $Revision: 1.166 $
+ * $Date: 2021/12/16 01:09:14 $
+ * $Revision: 1.167 $
  */
 
 /*
@@ -237,11 +237,11 @@ int activateCDKScroll (CDKSCROLL *scrollp, chtype *actions)
 
    if (actions == 0)
    {
-      chtype input;
       boolean functionKey;
 
       for (;;)
       {
+	 chtype input;
 	 int ret;
 
 	 fixCursorPosition (scrollp);
@@ -765,7 +765,7 @@ static boolean allocListArrays (CDKSCROLL *scrollp,
 static boolean allocListItem (CDKSCROLL *scrollp,
 			      int which,
 			      char **work,
-			      size_t * used,
+			      size_t *used,
 			      int number,
 			      const char *value)
 {

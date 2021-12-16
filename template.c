@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:13:16 $
- * $Revision: 1.142 $
+ * $Date: 2021/12/16 01:08:29 $
+ * $Revision: 1.143 $
  */
 
 /*
@@ -185,7 +185,6 @@ CDKTEMPLATE *newCDKTemplate (CDKSCREEN *cdkscreen,
  */
 char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
 {
-   chtype input = 0;
    boolean functionKey;
    char *ret = 0;
 
@@ -196,7 +195,7 @@ char *activateCDKTemplate (CDKTEMPLATE *cdktemplate, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (cdktemplate), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (cdktemplate), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKTemplate (cdktemplate, input);
@@ -434,7 +433,7 @@ static void CDKTemplateCallBack (CDKTEMPLATE *cdktemplate, chtype input)
    boolean change = FALSE;
    boolean moveby = FALSE;
    int amount = 0;
-   size_t mark = (size_t) cdktemplate->infoPos;
+   size_t mark = (size_t)cdktemplate->infoPos;
    size_t have = strlen (cdktemplate->info);
 
    if (input == KEY_LEFT)
@@ -681,7 +680,6 @@ static void _drawCDKTemplate (CDKOBJS *object, boolean Box)
 static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 {
    /* *INDENT-EQLS* */
-   chtype fieldColor    = 0;
    int infolen          = (int)strlen (cdktemplate->info);
 
    /* Draw in the label and the cdktemplate object. */
@@ -711,7 +709,7 @@ static void drawCDKTemplateField (CDKTEMPLATE *cdktemplate)
 	 {
 	    if (isPlateChar (cdktemplate->plate[x]) && pos < infolen)
 	    {
-	       fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
+	       chtype fieldColor = cdktemplate->overlay[x] & A_ATTRIBUTES;
 	       (void)mvwaddch (cdktemplate->fieldWin,
 			       0, x,
 			       CharOf (cdktemplate->info[pos++]) | fieldColor);
@@ -837,7 +835,7 @@ void setCDKTemplateValue (CDKTEMPLATE *cdktemplate, const char *newValue)
 
    /* OK, erase the old value, and copy in the new value. */
    cdktemplate->info[0] = '\0';
-   strncpy (cdktemplate->info, newValue, (size_t) copychars);
+   strncpy (cdktemplate->info, newValue, (size_t)copychars);
 
    /* Use the function which handles the input of the characters. */
    for (x = 0; x < len; x++)
@@ -884,7 +882,7 @@ boolean getCDKTemplateBox (CDKTEMPLATE *cdktemplate)
 void cleanCDKTemplate (CDKTEMPLATE *cdktemplate)
 {
    if (cdktemplate->fieldWidth > 0)
-      memset (cdktemplate->info, 0, (size_t) cdktemplate->fieldWidth);
+      memset (cdktemplate->info, 0, (size_t)cdktemplate->fieldWidth);
 
    /* *INDENT-EQLS* */
    cdktemplate->screenPos = 0;
