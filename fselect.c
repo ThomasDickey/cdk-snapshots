@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:12:18 $
- * $Revision: 1.85 $
+ * $Date: 2021/12/16 00:41:07 $
+ * $Revision: 1.86 $
  */
 
 /*
@@ -356,7 +356,6 @@ static void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
  */
 char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
 {
-   chtype input = 0;
    boolean functionKey;
    char *ret = 0;
 
@@ -367,7 +366,7 @@ char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (fselect->entryField), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (fselect->entryField), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKFselect (fselect, input);

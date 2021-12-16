@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 18:29:20 $
- * $Revision: 1.28 $
+ * $Date: 2021/12/16 00:42:01 $
+ * $Revision: 1.29 $
  */
 
 /*
@@ -212,12 +212,11 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 
    if (actions == 0)
    {
-      chtype input = 0;
       boolean functionKey;
 
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = (<CTYPE>)injectCDK<MIXED> (widget, input);
@@ -353,7 +352,6 @@ static bool removeChar (char *string, int col)
 static bool performEdit (CDK<UPPER> *widget, chtype input)
 {
    bool result = FALSE;
-   bool modify = TRUE;
    int base = widget->fieldWidth;
    int need = formattedSize (widget, widget->current);
    char *temp = (char *)malloc ((size_t) need + 5);
@@ -371,6 +369,7 @@ static bool performEdit (CDK<UPPER> *widget, chtype input)
 
    if (temp != 0)
    {
+      bool modify = TRUE;
       int adj = (col < 0) ? (-col) : 0;
       if (adj)
       {

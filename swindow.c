@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:11:20 $
- * $Revision: 1.126 $
+ * $Date: 2021/12/16 01:09:14 $
+ * $Revision: 1.127 $
  */
 
 /*
@@ -49,7 +49,6 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
 	    { '$',		KEY_END },
    };
    /* *INDENT-ON* */
-
 
    if ((swindow = newCDKObject (CDKSWINDOW, &my_funcs)) == 0)
         return (0);
@@ -482,12 +481,11 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
 
    if (actions == 0)
    {
-      chtype input;
       boolean functionKey;
 
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (swindow), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (swindow), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 (void)injectCDKSwindow (swindow, input);

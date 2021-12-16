@@ -1,3 +1,9 @@
+cdk (5.0.20211216) unstable; urgency=low
+
+  * maintenance updates
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Wed, 15 Dec 2021 16:39:43 -0500
+
 cdk (5.0.20210825) unstable; urgency=low
 
   * maintenance updates

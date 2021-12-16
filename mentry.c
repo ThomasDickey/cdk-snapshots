@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:55:23 $
- * $Revision: 1.169 $
+ * $Date: 2021/12/16 01:08:29 $
+ * $Revision: 1.170 $
  */
 
 /*
@@ -173,7 +173,6 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
  */
 char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 {
-   chtype input = 0;
    boolean functionKey;
    char *ret = 0;
 
@@ -184,7 +183,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (mentry), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (mentry), &functionKey);
 
 	 /* Inject this character into the widget. */
 	 ret = injectCDKMentry (mentry, input);
@@ -873,7 +872,7 @@ void setCDKMentryValue (CDKMENTRY *mentry, const char *newValue)
 
    /* OK, erase the old value, and copy in the new value. */
    cleanChar (mentry->info, mentry->totalWidth, '\0');
-   strncpy (mentry->info, newValue, (size_t) copychars);
+   strncpy (mentry->info, newValue, (size_t)copychars);
 
    /* Set the cursor/row info. */
    if (len < fieldCharacters)

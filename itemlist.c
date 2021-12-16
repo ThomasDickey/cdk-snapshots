@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:16:56 $
- * $Revision: 1.86 $
+ * $Date: 2021/12/16 00:44:50 $
+ * $Revision: 1.87 $
  */
 
 static int createList (CDKITEMLIST *itemlist, CDK_CSTRING2 item, int count);
@@ -166,12 +166,11 @@ int activateCDKItemlist (CDKITEMLIST *itemlist, chtype *actions)
 
    if (actions == 0)
    {
-      chtype input = 0;
       boolean functionKey;
 
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (itemlist), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (itemlist), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKItemlist (itemlist, input);

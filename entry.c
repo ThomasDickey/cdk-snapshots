@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 19:04:57 $
- * $Revision: 1.224 $
+ * $Date: 2021/12/16 00:34:02 $
+ * $Revision: 1.225 $
  */
 
 /*
@@ -170,7 +170,6 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
  */
 char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 {
-   chtype input = 0;
    boolean functionKey;
    char *ret = 0;
 
@@ -181,7 +180,7 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (entry), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (entry), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKEntry (entry, input);

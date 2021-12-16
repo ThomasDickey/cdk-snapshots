@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 20:06:42 $
- * $Revision: 1.99 $
+ * $Date: 2021/12/16 01:12:07 $
+ * $Revision: 1.100 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -101,7 +101,6 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 	    { CDK_BACKCHAR,	KEY_PPAGE },
    };
    /* *INDENT-ON* */
-
 
    if ((calendar = newCDKObject (CDKCALENDAR, &my_funcs)) == 0)
         return (0);
@@ -236,7 +235,6 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
 {
    /* *INDENT-EQLS* */
-   chtype input = 0;
    boolean functionKey;
    time_t ret   = -1;
 
@@ -247,7 +245,7 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
    {
       for (;;)
       {
-	 input = (chtype)getchCDKObject (ObjOf (calendar), &functionKey);
+	 chtype input = (chtype)getchCDKObject (ObjOf (calendar), &functionKey);
 
 	 /* Inject the character into the widget. */
 	 ret = injectCDKCalendar (calendar, input);
@@ -882,7 +880,7 @@ static int getMonthStartWeekday (int year, int month)
    Date.tm_isdst = 1;
 
    /* Call the mktime function to fill in the holes. */
-   if (mktime (&Date) == (time_t) - 1)
+   if (mktime (&Date) == (time_t)-1)
    {
       return 0;
    }

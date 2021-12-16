@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/08/25 23:34:40 $
- * $Revision: 1.199 $
+ * $Date: 2021/12/16 01:09:14 $
+ * $Revision: 1.200 $
  */
 
 /*
@@ -390,11 +390,12 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
 
    if (actions == 0)
    {
-      chtype input = 0;
       boolean functionKey;
 
       for (;;)
       {
+	 chtype input;
+
 	 ObjOf (matrix)->inputWindow = CurMatrixCell (matrix);
 	 keypad (ObjOf (matrix)->inputWindow, TRUE);
 	 input = (chtype)getchCDKObject (ObjOf (matrix), &functionKey);
@@ -435,8 +436,6 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 {
    /* *INDENT-EQLS* */
    CDKMATRIX *widget = (CDKMATRIX *)object;
-   int refreshCells  = FALSE;
-   int movedCell     = FALSE;
    int charcount     = (int)strlen (MATRIX_INFO (widget, widget->row, widget->col));
    int ppReturn      = 1;
    int ret           = unknownInt;
@@ -475,6 +474,10 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    /* Should we continue? */
    if (ppReturn != 0)
    {
+      /* *INDENT-EQLS* */
+      int refreshCells  = FALSE;
+      int movedCell     = FALSE;
+
       /* Check the key bindings. */
       if (checkCDKObjectBind (vMATRIX, widget, input) != 0)
       {
@@ -1444,7 +1447,7 @@ void setCDKMatrixCells (CDKMATRIX *matrix,
 	       }
 	       strncpy (MATRIX_INFO (matrix, x, y),
 			source,
-			(size_t) matrix->colwidths[y]);
+			(size_t)matrix->colwidths[y]);
 	    }
 	 }
 	 else
@@ -1716,7 +1719,7 @@ int setCDKMatrixCell (CDKMATRIX *matrix, int row, int col, const char *value)
    cleanCDKMatrixCell (matrix, row, col);
    strncpy (MATRIX_INFO (matrix, row, col),
 	    value,
-	    (size_t) matrix->colwidths[col]);
+	    (size_t)matrix->colwidths[col]);
    return 1;
 }
 

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/17 19:45:07 $
- * $Revision: 1.167 $
+ * $Date: 2021/12/16 00:34:50 $
+ * $Revision: 1.168 $
  */
 
 /*
@@ -513,7 +513,6 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
    char *fileInfo[10];
    CDK_CSTRING tempInfo[2];
    char temp[500];
-   chtype input;
    boolean functionKey;
    int x;
 
@@ -547,7 +546,7 @@ int activateCDKViewer (CDKVIEWER *widget, chtype *actions GCC_UNUSED)
       /* Reset the refresh flag. */
       int REFRESH = FALSE;
 
-      input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
+      chtype input = (chtype)getchCDKObject (ObjOf (widget), &functionKey);
       if (!checkCDKObjectBind (vVIEWER, widget, input))
       {
 	 switch (input)
@@ -1043,7 +1042,6 @@ static void _drawCDKViewer (CDKOBJS *object, boolean Box)
  */
 static void drawCDKViewerButtons (CDKVIEWER *viewer)
 {
-   chtype character;
    int x;
 
    /* No buttons, no drawing. */
@@ -1068,7 +1066,7 @@ static void drawCDKViewerButtons (CDKVIEWER *viewer)
    for (x = 0; x < viewer->buttonLen[viewer->currentButton]; x++)
    {
       /* Strip the character of any extra attributes. */
-      character = CharOf (viewer->button[viewer->currentButton][x]);
+      chtype character = CharOf (viewer->button[viewer->currentButton][x]);
 
       /* Add the character into the window. */
       (void)mvwaddch (viewer->win,
