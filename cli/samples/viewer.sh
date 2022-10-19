@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: viewer.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
+# $Id: viewer.sh,v 1.4 2022/10/18 23:58:13 tom Exp $
 
 #
 # Description:
@@ -26,13 +26,9 @@ interpret=0
 #
 # Chop up the command line.
 #
-set -- `getopt d:x:y:w:h:i $*`
-if [ $? != 0 ]
+if set -- `getopt d:x:y:w:h:i "$@"`
 then
-   echo $USAGE
-   exit 2
-fi
-for c in $*
+for c in "$@"
 do
     case $c in
          -d) directory=$2; shift 2;;
@@ -44,15 +40,19 @@ do
          --) shift; break;;
     esac
 done
+else
+   echo "Usage: $0 [-d dir] [-x xpos] [-y ypos] [-w width] [-h height] [-i]"
+   exit 2
+fi
 
 #
 # Create the CDK file selector.
 #
-${CDK_FSELECT} -T "<C>Select a file" -d "${directory}" 2> ${file}
+${CDK_FSELECT} -T "<C>Select a file" -d "${directory}" 2> "${file}"
 selected=$?
 test $selected = 255 && exit 1
 
-answer=`cat ${file}`
+answer=`cat "${file}"`
 
 #
 # Create the title and buttons for the viewer.
@@ -65,12 +65,12 @@ buttons="OK"
 # Create the file viewer.
 #
 if [ "$interpret" -eq 1 ]; then
-   ${CDK_VIEWER} -f "${answer}" -T "${title}" -B "${buttons}" -i -X ${xpos} -Y ${ypos} -H "${height}" -W "${width}"
+   ${CDK_VIEWER} -f "${answer}" -T "${title}" -B "${buttons}" -i -X "${xpos}" -Y "${ypos}" -H "${height}" -W "${width}"
 else
-   ${CDK_VIEWER} -f "${answer}" -T "${title}" -B "${buttons}" -X ${xpos} -Y ${ypos} -H "${height}" -W "${width}" -B "${buttons}"
+   ${CDK_VIEWER} -f "${answer}" -T "${title}" -B "${buttons}" -X "${xpos}" -Y "${ypos}" -H "${height}" -W "${width}" -B "${buttons}"
 fi
 
 #
 # Clean up.
 #
-rm -f ${tmp} ${file}
+rm -f "${tmp}" "${file}"

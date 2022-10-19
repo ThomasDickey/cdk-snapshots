@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: mentry.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
+# $Id: mentry.sh,v 1.4 2022/10/18 22:30:31 tom Exp $
 
 #
 # Description:
@@ -26,29 +26,31 @@ buttons=" OK
 #
 # Create the mentry box.
 #
-${CDK_MENTRY} -s 5 -v 10 -f 20 -T "${title}" -B "${buttons}" -F '_' -O ${output}
+${CDK_MENTRY} -s 5 -v 10 -f 20 -T "${title}" -B "${buttons}" -F '_' -O "${output}"
 selected=$?
 test $selected = 255 && exit 1
 
-answer=`cat ${output}`
+answer=`cat "${output}"`
 
 #
 # Create the message for the label widget.
 #
-echo "<C>Here is the message you typed in" > ${tmp}
-echo " " >> ${tmp}
-echo "<C></R>${answer}" >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>You chose button #${selected}" >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>Hit </R>space<!R> to continue." >> ${tmp}
+cat >"${tmp}" <<EOF
+<C>Here is the message you typed in
+
+<C></R>${answer}
+
+<C>You chose button #${selected}
+
+<C>Hit </R>space<!R> to continue.
+EOF
 
 #
 # Create the label widget to display the information.
 #
-${CDK_LABEL} -f ${tmp} -p " "
+${CDK_LABEL} -f "${tmp}" -p " "
 
 #
 # Clean up.
 #
-rm -f ${tmp} ${output}
+rm -f "${tmp}" "${output}"

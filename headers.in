@@ -1,6 +1,33 @@
 #! /bin/sh
-# $Id: headers.sh,v 1.10 2012/03/20 08:45:21 tom Exp $
+# $Id: headers.in,v 1.2 2022/10/18 21:32:59 tom Exp $
 # vi:ts=4 sw=4
+# ---------------------------------------------------------------------------
+# Copyright 2001-2012,2022 Thomas E. Dickey
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, distribute
+# with modifications, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to the
+# following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+# Except as contained in this notice, the name(s) of the above copyright
+# holders shall not be used in advertising or otherwise to promote the sale,
+# use or other dealings in this Software without prior written
+# authorization.
+# ---------------------------------------------------------------------------
 #
 # Adjust includes for header files that reside in a subdirectory of
 # /usr/include, etc.
@@ -57,17 +84,17 @@ do
 		fi
 		OPT_I=y
 
-		if ( test -n "$OPT_D" )
+		if test -n "$OPT_D"
 		then
-			if ( test -n "$OPT_S" && test -d "$OPT_S" )
+			if test -n "$OPT_S" && test -d "$OPT_S"
 			then
-				LEAF=`basename $OPT_D`
+				LEAF=`basename "$OPT_D"`
 				case $OPT_D in
 				/*/include/$LEAF)
-					END=`basename $OPT_D`
-					for i in $OPT_S/*.h
+					END=`basename "$OPT_D"`
+					for i in "$OPT_S"/*.h
 					do
-						NAME=`basename $i`
+						NAME=`basename "$i"`
 						if test -z "$OPT_H" || test "$OPT_H" != "$NAME"
 						then
 							echo "s%<$NAME>%<$END/$NAME>%g" >> $SCRIPT
@@ -90,12 +117,12 @@ do
 		if test -n "$OPT_P"
 		then
 			for name in `
-			egrep "#define[ 	][ 	]*[A-Z]" $OPT_C \
+			@EGREP@ "#define[ 	][ 	]*[A-Z]" "$OPT_C" \
 				| sed	-e 's/^#define[ 	][ 	]*//' \
 					-e 's/[ 	].*//' \
-				| fgrep -v GCC_ \
+				| @FGREP@ -v GCC_ \
 				| sort -u \
-				| egrep -v "^${OPT_P}_"`
+				| @EGREP@ -v "^${OPT_P}_"`
 			do
 				echo "s%\\<$name\\>%${OPT_P}_$name%g" >>$SCRIPT
 			done
@@ -123,30 +150,33 @@ do
 		shift
 		OPT_X="$1"
 		;;
+	-*)
+		usage
+		;;
 	*)
 		FILE=$1
 
-		SHOW=`basename $FILE`
+		SHOW=`basename "$FILE"`
 		TMPSRC=${TMPDIR-/tmp}/${SHOW}$$
 
 		echo "	... $SHOW"
-		test -f $OPT_S/$FILE && FILE="$OPT_S/$FILE"
+		test -f "$OPT_S/$FILE" && FILE="$OPT_S/$FILE"
 
 		if test -f "$FILE"
 		then
-			rm -f $TMPSRC
-			sed -f $SCRIPT $OPT_E $FILE > $TMPSRC
-			NAME=`basename $FILE`
+			rm -f "$TMPSRC"
+			sed -f "$SCRIPT" $OPT_E "$FILE" > "$TMPSRC"
+			NAME=`basename "$FILE"`
 			if test -n "$OPT_T" ; then
 				NAME=`echo "$NAME" | sed -e 's/\.[^.]*$//'`.$OPT_T
 			fi
 
 			# Just in case someone gzip'd manpages,
 			# remove the conflicting copy.
-			test -f $OPT_D/$NAME.gz && rm -f $OPT_D/$NAME.gz
+			test -f "$OPT_D/$NAME.gz" && rm -f "$OPT_D/$NAME.gz"
 
-			eval $OPT_X $TMPSRC $OPT_D/$NAME
-			rm -f $TMPSRC
+			eval "$OPT_X" "$TMPSRC" "$OPT_D/$NAME"
+			rm -f "$TMPSRC"
 		fi
 		;;
 	esac

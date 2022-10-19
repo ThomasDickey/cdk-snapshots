@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: itemlist.sh,v 1.4 2021/01/09 22:43:17 tom Exp $
+# $Id: itemlist.sh,v 1.5 2022/10/18 22:57:11 tom Exp $
 
 #
 # Description:
@@ -20,11 +20,11 @@ getPasswordFile()
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then
-      niscat passwd.org_dir | sort > $file
+      niscat passwd.org_dir | sort > "$file"
    elif [ "$system" = "YP" ]; then
-      ypcat passwd | sort > $file
+      ypcat passwd | sort > "$file"
    else
-      sort /etc/passwd > $file
+      sort /etc/passwd > "$file"
    fi
 }
 
@@ -39,12 +39,12 @@ displayAccountInformation()
    #
    # Get the user account information.
    #
-   line=`grep "^${userAccount}" $passwordFile`
-   uid=`echo $line | cut -d: -f3`
-   gid=`echo $line | cut -d: -f4`
-   info=`echo $line | cut -d: -f5`
-   home=`echo $line | cut -d: -f6`
-   shell=`echo $line | cut -d: -f7`
+   line=`grep "^${userAccount}" "$passwordFile"`
+   uid=`echo "$line" | cut -d: -f3`
+   gid=`echo "$line" | cut -d: -f4`
+   info=`echo "$line" | cut -d: -f5`
+   home=`echo "$line" | cut -d: -f6`
+   shell=`echo "$line" | cut -d: -f7`
 
    #
    # Create the label message information.
@@ -81,13 +81,9 @@ TYPE="Other";
 #
 # Chop up the command line.
 #
-set -- `getopt nNh $*`
-if [ $? != 0 ]
+if set -- `getopt nNh "$@"`
 then
-   echo $USAGE
-   exit 2
-fi
-for c in $*
+for c in "$@"
 do
     case $c in
          -n) TYPE="YP"; shift;;
@@ -96,6 +92,10 @@ do
          --) shift; break;;
     esac
 done
+else
+   echo "Usage: $0 [-n] [-N] [-h]"
+   exit 2
+fi
 
 #
 # Create the message for the item list.
@@ -113,23 +113,23 @@ getPasswordFile "${TYPE}" "$tmpPass"
 #
 # Get the user account from the password file.
 #
-awk 'BEGIN {FS=":"} {printf "</R>%s\n", $1}' $tmpPass | sort > ${userAccounts}
+awk 'BEGIN {FS=":"} {printf "</R>%s\n", $1}' "$tmpPass" | sort > "${userAccounts}"
 
 #
 # Create the item list.
 #
-${CDK_ITEMLIST} -d 3 -L "${label}" -T "${title}" -B "${buttons}" -f "${userAccounts}" 2> ${output}
+${CDK_ITEMLIST} -d 3 -L "${label}" -T "${title}" -B "${buttons}" -f "${userAccounts}" 2> "${output}"
 selected=$?
 test $selected = 255 && exit 1
 
-answer=`cat ${output}`
+answer=`cat "${output}"`
 
 #
 # Display the account information.
 #
-displayAccountInformation $answer $tmpPass
+displayAccountInformation "$answer" "$tmpPass"
 
 #
 # Clean up.
 #
-rm -f ${output} ${tmpPass} ${userAccounts}
+rm -f "${output}" "${tmpPass}" "${userAccounts}"

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: matrix.sh,v 1.4 2005/12/27 17:07:00 tom Exp $
+# $Id: matrix.sh,v 1.5 2022/10/18 22:28:29 tom Exp $
 
 #
 # Description:
@@ -45,18 +45,18 @@ getDiskInfo()
    #
    # Run the command.
    #
-   ${command} > ${fileName}
+   ${command} > "${fileName}"
 }
 
 #
 # Get the disk information.
 #
-getDiskInfo ${diskInfo}
+getDiskInfo "${diskInfo}"
 
 #
 # Create the row titles.
 #
-rowTitles=`tail +2 ${diskInfo} | awk '{printf "%s\n", $1}'`
+rowTitles=`tail +2 "${diskInfo}" | awk '{printf "%s\n", $1}'`
 
 #
 # Create the column titles.
@@ -75,7 +75,7 @@ title="<C></U>Current Filesystem Information"
 #
 # Create the data file to fill in the matrix.
 #
-tail +2 ${diskInfo} | awk '{printf "%s%s%s%s%s\n", $2, $3, $4, $5, $6}' > ${info}
+tail +2 "${diskInfo}" | awk '{printf "%s%s%s%s%s\n", $2, $3, $4, $5, $6}' > "${info}"
 
 #
 # Set the widths of the columns.
@@ -108,9 +108,11 @@ test $selected = 255 && exit 1
 #
 # Create the message for the label widget.
 #
-echo "<C>You chose button #${selected}" > ${tmp}
-echo " " >> ${tmp}
-echo "<C>Hit </R>space<!R> to continue." >> ${tmp}
+cat >"${tmp}" <<EOF
+<C>You chose button #${selected}
+
+<C>Hit </R>space<!R> to continue.
+EOF
  
 #
 # Create the label widget to display the information.
@@ -120,4 +122,4 @@ ${CDK_LABEL} -f "${tmp}" -p " "
 #
 # Clean up.
 #
-rm -f ${info} ${fileSystemList} ${tmp} ${diskInfo}
+rm -f "${info}" "${fileSystemList}" "${tmp}" "${diskInfo}"

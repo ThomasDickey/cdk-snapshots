@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: gen-scale.sh,v 1.6 2005/12/28 22:51:52 tom Exp $
+# $Id: gen-scale.sh,v 1.7 2022/10/18 21:34:09 tom Exp $
 #
 # This script generates source variations from scale.c for different datatypes.
 
@@ -39,7 +39,7 @@ esac
 
 if test "$print" = "d" ; then
 	MODEL=
-elif test $CTYPE = double; then
+elif test "$CTYPE" = double; then
 	MODEL="d"
 else
 	MODEL=$print
@@ -55,7 +55,7 @@ sed	-e '/^#if <FLOAT>/,/^#endif <FLOAT>/d' \
 	-e 's/<CTYPE>/'"$CTYPE"'/g' \
 	-e 's/<MODEL>/'"$MODEL"'/g' \
 	-e 's/<PRINT>/'"$print"'/g' \
-	$5
+	"$5"
 else
 sed	-e '/^#if <INT>/,/^#endif <INT>/d' \
 	-e '/^#if <FLOAT>/d' \
@@ -66,5 +66,5 @@ sed	-e '/^#if <INT>/,/^#endif <INT>/d' \
 	-e 's/<CTYPE>/'"$CTYPE"'/g' \
 	-e 's/<MODEL>/'"$MODEL"'/g' \
 	-e 's/<PRINT>/'"$print"'/g' \
-	$5
+	"$5"
 fi

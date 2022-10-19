@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: fselect.sh,v 1.5 2021/01/09 22:42:55 tom Exp $
+# $Id: fselect.sh,v 1.6 2022/10/19 00:21:44 tom Exp $
 
 #
 # Description:
@@ -32,13 +32,9 @@ file="${TMPDIR=/tmp}/fs.$$"
 #
 # Chop up the command line.
 #
-set -- `getopt d:L:T:X:Y:W:H: $*`
-if [ $? != 0 ]
+if set -- `getopt d:L:T:X:Y:W:H: "$@"`
 then
-   echo $USAGE
-   exit 2
-fi
-for c in $*
+for c in "$@"
 do
     case $c in
          -d) directory=$2; shift 2;;
@@ -51,32 +47,38 @@ do
          --) shift; break;;
     esac
 done
+else
+    echo "Usage: $0 [-d dir] [-L label] [-T title] [-X xpos] [-Y ypos] [-W width] [-H height]"
+    exit 1
+fi
 
 #
 # Create the CDK file selector.
 #
-${CDK_FSELECT} -d "${directory}" -T "${title}" -L "${label}" -X ${xpos} -Y ${ypos} -W ${width} -H ${height} -B "${buttons}" 2> ${file}
+${CDK_FSELECT} -d "${directory}" -T "${title}" -L "${label}" -X "${xpos}" -Y "${ypos}" -W "${width}" -H "${height}" -B "${buttons}" 2> "${file}"
 selected=$?
 test $selected = 255 && exit 1
 
-answer=`cat ${file}`
+answer=`cat "${file}"`
 
 #
 # Display the file the user selected.
 #
-echo "<C>You selected the following file" > ${tmp}
-echo " " >> ${tmp}
-echo "<C><#HL(10)>" >> ${tmp}
-echo "<C></B>${answer}" >> ${tmp}
-echo "<C><#HL(10)>" >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>You chose button #${selected}" >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>Press </R>space<!R> to continue." >> ${tmp}
+cat >"${tmp}" <<EOF
+<C>You selected the following file
 
-${CDK_LABEL} -f ${tmp} -p " "
+<C><#HL(10)>
+<C></B>${answer}
+<C><#HL(10)>
+
+<C>You chose button #${selected}
+
+<C>Press </R>space<!R> to continue.
+EOF
+
+${CDK_LABEL} -f "${tmp}" -p " "
 
 #
 # Clean up.
 #
-rm -f ${tmp} ${file}
+rm -f "${tmp}" "${file}"

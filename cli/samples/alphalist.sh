@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: alphalist.sh,v 1.8 2021/01/09 22:43:03 tom Exp $
+# $Id: alphalist.sh,v 1.9 2022/10/18 22:08:00 tom Exp $
 
 #
 # Description:
@@ -20,11 +20,11 @@ getPasswordFile()
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then
-      niscat passwd.org_dir > $file
+      niscat passwd.org_dir > "$file"
    elif [ "$system" = "YP" ]; then
-      ypcat passwd > $file
+      ypcat passwd > "$file"
    else
-      cp /etc/passwd $file
+      cp /etc/passwd "$file"
    fi
 }
 
@@ -39,12 +39,12 @@ displayAccountInformation()
    #
    # Get the user account information.
    #
-   line=`grep "^${userAccount}" $passwordFile`
-   uid=`echo $line | cut -d: -f3`
-   gid=`echo $line | cut -d: -f4`
-   info=`echo $line | cut -d: -f5`
-   home=`echo $line | cut -d: -f6`
-   shell=`echo $line | cut -d: -f7`
+   line=`grep "^${userAccount}" "$passwordFile"`
+   uid=`echo "$line" | cut -d: -f3`
+   gid=`echo "$line" | cut -d: -f4`
+   info=`echo "$line" | cut -d: -f5`
+   home=`echo "$line" | cut -d: -f6`
+   shell=`echo "$line" | cut -d: -f7`
 
    #
    # Create the label message information.
@@ -92,25 +92,25 @@ getPasswordFile "Other" "$tmpPass"
 #
 # Get the user account from the password file.
 #
-awk 'BEGIN {FS=":"} {printf "%s\n", $1}' $tmpPass | sort > ${userAccounts}
+awk 'BEGIN {FS=":"} {printf "%s\n", $1}' "$tmpPass" | sort > "${userAccounts}"
 
 #
 # Create the scrolling list.
 #
-${CDK_ALPHALIST} -T "${title}" -f ${userAccounts} -H -10 -W -20 2> ${output}
+${CDK_ALPHALIST} -T "${title}" -f "${userAccounts}" -H -10 -W -20 2> "${output}"
 selected=$?
 test $selected = 255 && exit 1
 
-answer=`sed -e 's/^[ ]*//' -e 's/[ ]*$//' ${output}`
+answer=`sed -e 's/^[ ]*//' -e 's/[ ]*$//' "${output}"`
 
 #
 # Display the account information.
 #
 if [ -n "$answer" ]; then
-    displayAccountInformation $answer $tmpPass
+    displayAccountInformation "$answer" "$tmpPass"
 fi
 
 #
 # Clean up.
 #
-rm -f ${output} ${tmpPass} ${userAccounts}
+rm -f "${output}" "${tmpPass}" "${userAccounts}"

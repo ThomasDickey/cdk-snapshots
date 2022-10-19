@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: selection.sh,v 1.4 2005/12/27 17:56:58 tom Exp $
+# $Id: selection.sh,v 1.5 2022/10/18 23:52:42 tom Exp $
 
 #
 # Description:
@@ -20,11 +20,11 @@ getPasswordFile()
    # using nicat, ypcat, or just plain old /etc/passwd
    #
    if [ "$system" = "NIS" ]; then
-      niscat passwd.org_dir > $file
+      niscat passwd.org_dir > "$file"
    elif [ "$system" = "YP" ]; then
-      ypcat passwd > $file
+      ypcat passwd > "$file"
    else
-      cp /etc/passwd $file
+      cp /etc/passwd "$file"
    fi
 }
 
@@ -41,12 +41,12 @@ displayAccountInformation()
    #
    # Get the user account information.
    #
-   line=`grep "^${userAccount}" $passwordFile`
-   uid=`echo $line | cut -d: -f3`
-   gid=`echo $line | cut -d: -f4`
-   info=`echo $line | cut -d: -f5`
-   home=`echo $line | cut -d: -f6`
-   shell=`echo $line | cut -d: -f7`
+   line=`grep "^${userAccount}" "$passwordFile"`
+   uid=`echo "$line" | cut -d: -f3`
+   gid=`echo "$line" | cut -d: -f4`
+   info=`echo "$line" | cut -d: -f5`
+   home=`echo "$line" | cut -d: -f6`
+   shell=`echo "$line" | cut -d: -f7`
 
    #
    # Create the label message information.
@@ -88,13 +88,9 @@ tmp="${TMPDIR=/tmp}/tmp.$$"
 #
 # Chop up the command line.
 #
-set -- `getopt nNh $*`
-if [ $? != 0 ]
+if set -- `getopt nNh "$@"`
 then
-   echo $USAGE
-   exit 2
-fi
-for c in $*
+for c in "$@"
 do
     case $c in
          -n) TYPE="YP"; shift;;
@@ -103,6 +99,10 @@ do
          --) shift; break;;
     esac
 done
+else
+   echo "Usage: $0 [-n] [-N] [-h]"
+   exit 2
+fi
 
 #
 # Create the message for the selection list.
@@ -117,9 +117,9 @@ getPasswordFile "${TYPE}" "$tmpPass"
 #
 # Create the user account list.
 #
-awk 'BEGIN {FS=":"} {printf "%s\n", $1}' $tmpPass | sort > ${userAccounts}
-awk '{printf "<C></B>%s\n", $1}' ${userAccounts} > ${accountList}
-accounts=`cat ${userAccounts}`
+awk 'BEGIN {FS=":"} {printf "%s\n", $1}' "$tmpPass" | sort > "${userAccounts}"
+awk '{printf "<C></B>%s\n", $1}' "${userAccounts}" > "${accountList}"
+accounts=`cat "${userAccounts}"`
 
 #
 # Create the choices list.
@@ -132,7 +132,7 @@ buttons=" OK
 #
 # Create the selection list.
 #
-${CDK_SELECTION} -T "${title}" -f "${accountList}" -c "${choices}" -B "${buttons}"  2> $output
+${CDK_SELECTION} -T "${title}" -f "${accountList}" -c "${choices}" -B "${buttons}"  2> "$output"
 selected=$?
 test $selected = 255 && exit 1
 
@@ -145,13 +145,13 @@ value=""
 #
 # Count how many were selected.
 #
-count=`grep -c "^1" ${output}`
+count=`grep -c "^1" "${output}"`
 current=0
 
 #
 # Create the label.
 #
-for i in `cat ${output}`
+for i in `cat "${output}"`
 do
    #
    # Since every other variable is value/selection, we
@@ -174,7 +174,7 @@ do
          #
          # Display the account information.
          #
-         displayAccountInformation $count $current $selection $tmpPass
+         displayAccountInformation "$count" "$current" "$selection" "$tmpPass"
       fi
 
       #
@@ -188,4 +188,4 @@ done
 #
 # Clean up.
 #
-rm -f ${accountList} ${userAccounts} ${output} ${tmpPass} ${tmp}
+rm -f "${accountList}" "${userAccounts}" "${output}" "${tmpPass}" "${tmp}"

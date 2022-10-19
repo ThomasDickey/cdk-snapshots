@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.63 2021/12/15 21:39:43 tom Exp $
+# $Id: cdk.spec,v 1.66 2022/10/19 00:53:03 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20211216
+%define AppRelease 20221018
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -69,7 +69,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc CHANGES COPYING INSTALL NOTES README VERSION
+%doc CHANGES COPYING VERSION
 %{_libdir}/*.so.*
 %exclude %{_libdir}/*.a
 %exclude %{_mandir}/man1/*
@@ -78,7 +78,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(-,root,root,-)
-%doc EXPANDING TODO examples demos
+%doc examples demos
 %{_libdir}/*.a
 %{_libdir}/*.so
 %{_bindir}/cdk5-config
@@ -89,6 +89,9 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_defaultdocdir}/%{name}/*
 
 %changelog
+
+* Tue Oct 18 2022 Thomas E. Dickey
+- drop obsolete doc-files
 
 * Wed Feb 20 2019 Thomas E. Dickey
 - build-fixes for Fedora 28

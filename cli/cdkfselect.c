@@ -1,4 +1,4 @@
-/* $Id: cdkfselect.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkfselect.c,v 1.15 2022/10/19 00:21:22 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -103,7 +103,6 @@ int main (int argc, char **argv)
 			   title, label, A_NORMAL, '.', A_REVERSE,
 			   "", "", "", "",
 			   boxWidget, shadowWidget);
-   freeChar (label);
 
    /* Check to make sure we created the file selector. */
    if (widget == 0)

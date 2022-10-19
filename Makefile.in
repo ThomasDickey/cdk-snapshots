@@ -1,36 +1,29 @@
-# $Id: Makefile.in,v 1.131 2021/12/15 23:26:27 tom Exp $
+# $Id: Makefile.in,v 1.136 2022/10/18 21:32:59 tom Exp $
 #
-#  Copyright 2001-2020,2021 Thomas E. Dickey
-#  Copyright 1999, Mike Glover
-#  All rights reserved.
+# Copyright 2001-2021,2022 Thomas E. Dickey
+# Copyright 1999, Mike Glover
 #
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions
-#  are met:
-#  1. Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer.
-#  2. Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#  3. All advertising materials mentioning features or use of this software
-#     must display the following acknowledgment:
-#       This product includes software developed by Mike Glover
-#       and contributors.
-#  4. Neither the name of Mike Glover, nor the names of contributors
-#     may be used to endorse or promote products derived from this software
-#     without specific prior written permission.
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, distribute with
+# modifications, sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject to the following
+# conditions:
 #
-#  THIS SOFTWARE IS PROVIDED BY MIKE GLOVER AND CONTRIBUTORS ``AS IS'' AND
-#  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-#  ARE DISCLAIMED.  IN NO EVENT SHALL MIKE GLOVER OR CONTRIBUTORS BE LIABLE
-#  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-#  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-#  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-#  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-#  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-#  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-#  SUCH DAMAGE.
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+# ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+# IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# Except as contained in this notice, the name(s) of the above copyright
+# holders shall not be used in advertising or otherwise to promote the sale,
+# use or other dealings in this Software without prior written authorization.
 #
 SHELL		= /bin/sh
 @SET_MAKE@
@@ -288,7 +281,7 @@ CDKMAN3		= \
 		cdk_util.3 \
 		cdk_viewer.3
 
-CDKREADME	= EXPANDING NOTES TODO COPYING INSTALL README
+CDKREADME	= COPYING README
 
 OBJECTS		= $(CDKSRC:.c=.o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
@@ -363,7 +356,7 @@ install \
 installCDKManPages ::  headers.sed $(MAN1_DIR) manpage.sed $(AUTO_MAN)
 	@echo "Installing the CDK man pages in $(MAN1_DIR) ..."
 	@for i in $(CDKMAN1); do \
-	   $(SHELL) $(srcdir)/headers.sh \
+	   $(SHELL) ./headers \
 			-x "$(INSTALL_DATA)" \
 			-d $(MAN1_DIR) \
 			-s . \
@@ -376,7 +369,7 @@ install \
 installCDKManPages ::  headers.sed $(MAN3_DIR) manpage.sed $(AUTO_MAN)
 	@echo "Installing the CDK man pages in $(MAN3_DIR) ..."
 	@for i in $(AUTO_MAN); do \
-	   $(SHELL) $(srcdir)/headers.sh \
+	   $(SHELL) ./headers \
 			-x "$(INSTALL_DATA)" \
 			-d $(MAN3_DIR) \
 			-s . \
@@ -385,7 +378,7 @@ installCDKManPages ::  headers.sed $(MAN3_DIR) manpage.sed $(AUTO_MAN)
 	   $(SHELL) $(srcdir)/manlinks.sh installing $(srcdir) $(MAN3_DIR) $(MANSECT) $$i;  \
 	done
 	@for i in $(CDKMAN3); do \
-	   $(SHELL) $(srcdir)/headers.sh \
+	   $(SHELL) ./headers \
 			-x "$(INSTALL_DATA)" \
 			-d $(MAN3_DIR) \
 			-s . \
@@ -411,7 +404,7 @@ uninstallCDKManPages ::
 # This installs the header files.
 #
 HDR_SUBDIR = @HDR_SUBDIR@ -h cdk.h
-HEADERS_SH = $(SHELL) $(srcdir)/headers.sh $(HDR_SUBDIR) -x "$(INSTALL_DATA)" -d $(INCLUDE_SUBDIR) -s $(srcdir)
+HEADERS_SH = $(SHELL) ./headers $(HDR_SUBDIR) -x "$(INSTALL_DATA)" -d $(INCLUDE_SUBDIR) -s $(srcdir)
 install \
 installCDKHeaderFiles :: \
 		$(INCLUDE_DIR) \
@@ -494,8 +487,8 @@ uninstallCDKHeaderFiles :: cdk-config
 @MAKE_NORMAL@	@ECHO_CC@- $(RM) $(SHLIB_DIR)/$(OLD_SONAME)
 @MAKE_NORMAL@	@ECHO_CC@- $(RM) $(SHLIB_DIR)/$(OLD_SHLIB_FILE)
 
-headers.sed : $(srcdir)/headers.sh
-	$(SHELL) $(srcdir)/headers.sh -p CDK $(HDR_SUBDIR) -c include/cdk_config.h -d $(INCLUDE_SUBDIR) -s $(srcdir)/include -i -s include -i
+headers.sed : ./headers
+	$(SHELL) ./headers -p CDK $(HDR_SUBDIR) -c include/cdk_config.h -d $(INCLUDE_SUBDIR) -s $(srcdir)/include -i -s include -i
 
 manpage.sed :
 	@echo "creating $@"
@@ -547,7 +540,8 @@ distclean :: realclean
 	$(RM) include/cdk_version.h
 	$(RM) Makefile
 	$(RM) cdk-config
-	$(RM) mk_shared_lib.sh     
+	$(RM) headers
+	$(RM) mk_shared_lib.sh
 	@- $(SHELL) -c 'if test "$(srcdir)" != . ; then \
 			rmdir examples; \
 			rmdir demos; \

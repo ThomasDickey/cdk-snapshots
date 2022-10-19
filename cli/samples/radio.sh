@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: radio.sh,v 1.3 2005/12/27 15:53:06 tom Exp $
+# $Id: radio.sh,v 1.4 2022/10/19 00:10:40 tom Exp $
 
 #
 # Description:
@@ -45,7 +45,7 @@ getDiskInfo()
    #
    # Run the command.
    #
-   ${command} > ${fileName}
+   ${command} > "${fileName}"
 }
 
 #
@@ -58,38 +58,42 @@ buttons=" OK
 #
 # Get a list of the local filesystems.
 #
-getDiskInfo ${diskInfo}
+getDiskInfo "${diskInfo}"
 
 #
 # Create the file system list.
 #
-grep "^/" ${diskInfo} | awk '{printf "%s\n", $1}' > ${fileSystemList}
+grep "^/" "${diskInfo}" | awk '{printf "%s\n", $1}' > "${fileSystemList}"
 
 #
 # Create the radio list.
 #
-${CDK_RADIO} -T "${title}" -f "${fileSystemList}" -c "</U>*" -B "${buttons}" 2> $output
+${CDK_RADIO} -T "${title}" -f "${fileSystemList}" -c "</U>*" -B "${buttons}" 2> "$output"
 selected=$?
 test $selected = 255 && exit 1
 
 #
 # The selection is now in the file $output.
 #
-fs=`cat ${output}`
-echo "<C></R>File Statistics on the filesystem ${fs}" > ${tmp}
-echo " " >> ${tmp}
-grep "${fs}" ${diskInfo} | awk '{printf "</B>%s\n", $0}' >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>You chose button #${selected}" >> ${tmp}
-echo " " >> ${tmp}
-echo "<C>Hit </R>space<!R> to continue." >> ${tmp}
+fs=`cat "${output}"`
+cat >"${tmp}" <<EOF
+<C></R>File Statistics on the filesystem ${fs}
+
+EOF
+"${fs}" "${diskInfo}" | awk '{printf "</B>%s\n", $0}' >> "${tmp}"
+cat >>"${tmp}" <<EOF
+
+<C>You chose button #${selected}
+
+<C>Hit </R>space<!R> to continue.
+EOF
 
 #
 # Create the label widget to display the information.
 #
-${CDK_LABEL} -f ${tmp} -p " "
+${CDK_LABEL} -f "${tmp}" -p " "
 
 #
 # Clean up.
 #
-rm -f ${tmp} ${output} ${fileSystemList} ${diskInfo}
+rm -f "${tmp}" "${output}" "${fileSystemList}" "${diskInfo}"
