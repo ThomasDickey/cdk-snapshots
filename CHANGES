@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.320 2022/10/18 22:04:42 tom Exp $
+-- $Id: CHANGES,v 1.322 2022/10/25 07:57:25 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2021, 2022
@@ -8,6 +8,10 @@ Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2022/10/25
+	+ change library dependencies in rpm spec-file.
+	+ update license in test-packages.
 
 2022/10/18
 	+ relicense as MIT-X11

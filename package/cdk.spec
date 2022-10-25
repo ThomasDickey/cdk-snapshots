@@ -1,17 +1,17 @@
-# $Id: cdk.spec,v 1.66 2022/10/19 00:53:03 tom Exp $
+# $Id: cdk.spec,v 1.70 2022/10/25 22:22:51 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20221018
+%define AppRelease 20221025
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
-License:  BSD (4-clause)
+License:  MIT-X11
 Group:  Development/Libraries
 URL:  http://invisible-island.net/%{name}/
 Source0:  %{name}-%{version}-%{release}.tgz
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# BuildRequires:  ncurses-devel
+BuildRequires:  ncurses6
 
 %description
 Cdk stands for "Curses Development Kit".  It contains a large number of ready
@@ -27,6 +27,7 @@ Requires:       %{name} = %{version}-%{release}
 Development headers for cdk (Curses Development Kit)
 
 %prep
+%global SCREEN ncursesw6
 %define debug_package %{nil}
 %setup -q -n %{name}-%{version}-%{release}
 
@@ -40,6 +41,7 @@ find . -name '*.o' -exec rm -f {} \;
  --enable-stdnoreturn \
  --enable-const \
  --with-shared \
+ --with-screen=%{SCREEN} \
  --with-versioned-syms
 #make %{?_smp_mflags} cdkshlib
 make all
@@ -89,6 +91,12 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_defaultdocdir}/%{name}/*
 
 %changelog
+
+* Tue Oct 25 2022 Thomas E. Dickey
+- use ncursesw6 test-package as in Debian, ensuring wide-characters.
+
+* Thu Oct 20 2022 Thomas E. Dickey
+- update license
 
 * Tue Oct 18 2022 Thomas E. Dickey
 - drop obsolete doc-files

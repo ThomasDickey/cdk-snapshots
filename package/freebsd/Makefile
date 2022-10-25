@@ -2,7 +2,7 @@
 # $FreeBSD: head/devel/cdk/Makefile 439311 2017-04-24 15:17:34Z sunpoet $
 
 PORTNAME=	cdk
-DISTVERSION=	5.0-20221018
+DISTVERSION=	5.0-20221025
 PORTEPOCH=	1
 CATEGORIES=	devel
 MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/
@@ -10,7 +10,7 @@ MASTER_SITES=	ftp://ftp.invisible-island.net/cdk/
 MAINTAINER=	ports@FreeBSD.org
 COMMENT=	Curses Development Kit for speedy development of full screen programs
 
-LICENSE=	BSD4CLAUSE
+LICENSE=	MIT
 LICENSE_FILE=	${WRKSRC}/COPYING
 
 USES=		gmake ncurses tar:tgz
