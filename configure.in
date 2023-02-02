@@ -1,7 +1,7 @@
-dnl $Id: configure.in,v 1.79 2022/10/18 21:00:45 tom Exp $
+dnl $Id: configure.in,v 1.80 2023/02/02 01:18:06 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
-dnl Copyright 1999-2020,2022 Thomas E. Dickey
+dnl Copyright 1999-2022,2023 Thomas E. Dickey
 dnl
 dnl Permission is hereby granted, free of charge, to any person obtaining a
 dnl copy of this software and associated documentation files (the "Software"),
@@ -53,6 +53,7 @@ CF_MAKE_PHONY
 CF_MAKE_TAGS
 
 CF_XOPEN_SOURCE
+AC_CHECK_DECL(exit)
 
 CF_DISABLE_ECHO
 CF_PROG_EXT
@@ -90,10 +91,8 @@ dnl
 dnl Checks for header files.
 dnl
 AC_HEADER_DIRENT
-AC_HEADER_STDC
 AC_CHECK_HEADERS(\
 limits.h \
-unistd.h \
 pwd.h \
 grp.h \
 )

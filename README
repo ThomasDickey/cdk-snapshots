@@ -1,7 +1,7 @@
--- $Id: README,v 1.18 2022/10/18 22:18:08 tom Exp $
+-- $Id: README,v 1.19 2023/02/02 01:15:18 tom Exp $
 -------------------------------------------------------------------------------
 
-Copyright Thomas E. Dickey 1999-2021,2022
+Copyright Thomas E. Dickey 1999-2022,2023
 
 This is a modified/enhanced version of Cdk.  The original README contents are
 given below.
