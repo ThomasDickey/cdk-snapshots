@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.16 2024/03/12 17:48:15 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -86,7 +86,7 @@ int main (int argc, char **argv)
    if (buttons == 0)
    {
       /* *INDENT-EQLS* */
-      buttonList        = calloc(sizeof(char *), 3);
+      buttonList        = calloc(3, sizeof(char *));
       buttonList[0]     = copyChar ("OK");
       buttonList[1]     = copyChar ("Cancel");
       buttonCount       = 2;

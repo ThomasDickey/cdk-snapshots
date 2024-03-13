@@ -1,13 +1,19 @@
--- $Id: CHANGES,v 1.323 2023/02/02 01:16:30 tom Exp $
+-- $Id: CHANGES,v 1.328 2024/03/13 00:13:15 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
-Copyright Thomas E. Dickey 1999-2022, 2023
+Copyright Thomas E. Dickey 1999-2023, 2024
 Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2024/03/12
+	+ build-fix for clang on Solaris.
+	+ improve compiler-warnings in configure-checks.
+	+ updated configure macros from xterm and ncurses development
+	+ update config.guess, config.sub
 
 2023/02/01
 	+ improve compiler-warnings in configure-checks.

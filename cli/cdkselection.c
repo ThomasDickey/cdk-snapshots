@@ -1,4 +1,4 @@
-/* $Id: cdkselection.c,v 1.16 2019/02/20 02:13:25 tom Exp $ */
+/* $Id: cdkselection.c,v 1.17 2024/03/12 17:48:06 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -158,7 +158,7 @@ int main (int argc, char **argv)
    /* Did they supply a choice list. */
    if (choices == 0)
    {
-      choiceList = calloc(sizeof (char *), 3);
+      choiceList = calloc(3, sizeof (char *));
       choiceList[0] = copyChar ("Yes ");
       choiceList[1] = copyChar ("No ");
       choiceSize = 2;
