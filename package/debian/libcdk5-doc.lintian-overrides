@@ -1,2 +1,4 @@
 # no, we want it this way, since the fulldemos scripts expect it
-libcdk5-doc: nested-examples-directory usr/share/doc/libcdk5-doc/examples/examples/
+libcdk5-doc: nested-examples-directory [usr/share/doc/libcdk5/examples/examples/]
+libcdk5-doc: spare-manual-page [usr/share/man/man1/cdk5-config.1.gz]
+libcdk5-doc: repeated-path-segment examples [usr/share/doc/libcdk5/examples/examples/]

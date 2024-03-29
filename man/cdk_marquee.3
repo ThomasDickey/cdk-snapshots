@@ -1,11 +1,11 @@
-.\" $Id: cdk_marquee.3,v 1.21 2019/02/15 00:49:26 tom Exp $
+.\" $Id: cdk_marquee.3,v 1.23 2024/03/28 23:09:15 tom Exp $
+.TH cdk_marquee 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_marquee 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKMarquee
 .XX deactivateCDKMarquee
@@ -26,9 +26,9 @@
 .XX setCDKMarqueeULChar
 .XX setCDKMarqueeURChar
 .XX setCDKMarqueeVerticalChar
-cdk_marquee \- curses marquee widget
+cdk_marquee \-
+\fICdk\fP marquee widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -118,7 +118,6 @@ cdk_marquee \- curses marquee widget
 .BI "CDKMARQUEE *" "marquee",
 .BI "chtype " "character");
 .fi
-.LP
 .SH DESCRIPTION
 The Cdk marquee widget creates a pop-up marquee window.
 The following functions create or manipulate the Cdk marquee widget.

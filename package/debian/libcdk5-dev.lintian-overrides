@@ -1,2 +1,3 @@
 # All of the manpages are in the "-doc" package
-libcdk5-dev: binary-without-manpage usr/bin/cdk5-config
+libcdk5-dev: no-manual-page [usr/bin/cdk5-config]
+libcdk5-dev: old-style-config-script [usr/bin/cdk5-config]

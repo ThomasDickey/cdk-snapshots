@@ -1,22 +1,29 @@
 '\" t
-.\" $Id: cdk_display.3,v 1.18 2019/02/20 22:15:59 tom Exp $
+.\" $Id: cdk_display.3,v 1.20 2024/03/28 23:06:46 tom Exp $
+.TH cdk_display 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
-.ie \n(.g .ds `` \(lq
-.el       .ds `` ``
-.ie \n(.g .ds '' \(rq
-.el       .ds '' ''
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
 .el .ne 3
 .IP "\\$1" \\$2
 ..
-.TH cdk_display 3 2019-02-20 "" "Library calls"
+.ie \n(.g \{\
+.ds `` \(lq
+.ds '' \(rq
+.\}
+.el \{\
+.ie t .ds `` ``
+.el   .ds `` ""
+.ie t .ds '' ''
+.el   .ds '' ""
+.\}
 .SH NAME
-cdk_display - \fBCurses Development Kit\fR Display Capabilities.
+cdk_display \-
+\fICdk\fP display capabilities
 .SH SYNOPSIS
 Cdk has a number of pre-defined display types.
 The following are outlined in this manual page:
@@ -34,7 +41,7 @@ or until the end of the string.
 This manual
 page outlines and demonstrates how they work.
 .
-.SS How To Use Colors
+.SS "How To Use Colors"
 Cdk has the capability to display colors in almost every string type displayed
 in a Cdk widget.
 .PP
@@ -108,9 +115,8 @@ void main()
 .fi
 .ce
 \fI----------------------------------------\fR
-.PP
 .
-.SS How To Use Different Character Attributes
+.SS "How To Use Different Character Attributes"
 Cdk also provides attribute commands which allow different character attributes
 to be displayed in a Cdk widget.
 To use a character attribute the format command
@@ -181,7 +187,7 @@ format marker.
 The above example underlines the label marker, which also sets
 color pair number 2.
 .
-.SS How To Justify Strings
+.SS "How To Justify Strings"
 Justification commands can
 left justify,
 right justify,
@@ -265,7 +271,7 @@ it would look like
 .PP
 A format command must be at the beginning of the string.
 .
-.SS How To Use Special Drawing Characters
+.SS "How To Use Special Drawing Characters"
 Cdk has a set of special drawing characters which can be inserted into any
 ASCII file.
 These characters are encoded using the format command \*(``<#\fIXX\fP>\*(''
@@ -372,9 +378,8 @@ void main()
 \fI----------------------------------------\fR
 .LP
 Notice that drawn text can also be justified.
-.LP
 .
-.SS Edit/Display Type Codes (EDisplayType)
+.SS "Edit/Display Type Codes (EDisplayType)"
 .TS
 center tab(/) box;
 l l

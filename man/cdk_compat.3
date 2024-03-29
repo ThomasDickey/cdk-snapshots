@@ -1,16 +1,15 @@
 '\" t
-.\" $Id: cdk_compat.3,v 1.7 2019/02/20 23:05:18 tom Exp $
+.\" $Id: cdk_compat.3,v 1.9 2024/03/28 23:17:15 tom Exp $
+.TH cdk_compat 3 2024-03-28 "" "Library calls"
 .de XX
 ..
-.TH cdk_compat 3 2019-02-20 "" "Library calls"
 .SH NAME
 .XX getDirectoryContents
 .XX readFile
 .XX splitString
-cdk_compat \- Cdk4 compatibility functions
+cdk_compat \-
+\fICdk4\fP compatibility functions
 .SH SYNOPSIS
-.SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -51,7 +50,7 @@ across the Cdk4 header files.
 .
 .SH AVAILABLE FUNCTIONS
 .TP 5
-.B getDirectoryContents 
+.B getDirectoryContents
 This opens the current directory and reads the contents.
 Use \fBCDKgetDirectoryContents()\fP in new code.
 .TP 5
@@ -63,7 +62,7 @@ Use \fBCDKreadFile()\fP for new code.
 This splits a string into one or more parts given the split character.
 Use \fBCDKsplitString()\fP for new code.
 .
-.SH EXAMPLE
+.SH EXAMPLES
 Start the porting process by changing the \fB#include\fP's to use
 .RS
 #include <cdk_compat.h>

@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_radio.3,v 1.36 2019/02/20 14:29:13 tom Exp $
+.\" $Id: cdk_radio.3,v 1.38 2024/03/28 23:07:10 tom Exp $
+.TH cdk_radio 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_radio 3 2019-02-20 "" "Library calls"
 .SH NAME
 .XX activateCDKRadio
 .XX destroyCDKRadio
@@ -44,9 +44,9 @@
 .XX setCDKRadioULChar
 .XX setCDKRadioURChar
 .XX setCDKRadioVerticalChar
-cdk_radio \- curses radio list widget.
+cdk_radio \-
+\fICdk\fP radio list widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -256,7 +256,7 @@ returns true if the widget will be drawn with a box around it.
 .B getCDKRadioChoiceCharacter
 returns the character being used to draw the selected element in the list.
 .TP 5
-.B getCDKRadioCurrentItem 
+.B getCDKRadioCurrentItem
 returns the index of the current item.
 .TP 5
 .B getCDKRadioHighlight
@@ -274,7 +274,7 @@ returns the character being used to draw the left brace of the selection box.
 .B getCDKRadioRightBrace
 returns the character being used to draw the right brace of the selection box.
 .TP 5
-.B getCDKRadioSelectedItem,
+.B getCDKRadioSelectedItem
 returns the selected item of the widget.
 .TP 5
 .B injectCDKRadio
@@ -441,7 +441,7 @@ function sets the attribute of the box.
 .B setCDKRadioChoiceCharacter
 sets the character to use to draw the selected element in the list.
 .TP 5
-.B setCDKRadioCurrentItem 
+.B setCDKRadioCurrentItem
 sets the current item by its index in the list.
 .TP 5
 .B setCDKRadioHighlight

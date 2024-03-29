@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_dialog.3,v 1.24 2019/02/15 00:32:59 tom Exp $
+.\" $Id: cdk_dialog.3,v 1.26 2024/03/28 23:16:40 tom Exp $
+.TH cdk_dialog 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_dialog 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKDialog
 .XX destroyCDKDialog
@@ -37,9 +37,9 @@
 .XX setCDKDialogULChar
 .XX setCDKDialogURChar
 .XX setCDKDialogVerticalChar
-cdk_dialog \- curses dialog widget
+cdk_dialog \-
+\fICdk\fP dialog widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -176,7 +176,6 @@ cdk_dialog \- curses dialog widget
 The Cdk dialog widget creates a dialog box with a message and a varied number of
 buttons to choose from.
 The following functions create or manipulate the Cdk dialog box widget.
-.PP
 .SH AVAILABLE FUNCTIONS
 .TP 5
 .B activateCDKDialog

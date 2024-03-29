@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_fselect.3,v 1.31 2019/02/15 00:45:08 tom Exp $
+.\" $Id: cdk_fselect.3,v 1.33 2024/03/28 23:14:58 tom Exp $
+.TH cdk_fselect 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_fselect 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKFselect
 .XX deleteFileCB
@@ -49,9 +49,9 @@
 .XX setCDKFselectULChar
 .XX setCDKFselectURChar
 .XX setCDKFselectVerticalChar
-cdk_fselect \- curses file selector widget.
+cdk_fselect \-
+\fICdk\fP file selector widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -557,14 +557,7 @@ Exits the widget and returns a \fINULL\fR pointer.
 It also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 .TE
-.SH SEE ALSO
-.BR cdk (3),
-.BR cdk_binding (3),
-.BR cdk_display (3),
-.BR cdk_position (3),
-.BR cdk_screen (3)
 .SH NOTES
-.PP
 This widget is created from the scrolling list widget,
 and the entry field widget.
 This is a good example on how to build your own widgets using the
@@ -581,3 +574,9 @@ where \fBfselect\fR is a pointer to the object.
 This was originally turned on,
 but I thought it better to put the control of file deletion
 on an 'as-need' basis.
+.SH SEE ALSO
+.BR cdk (3),
+.BR cdk_binding (3),
+.BR cdk_display (3),
+.BR cdk_position (3),
+.BR cdk_screen (3)

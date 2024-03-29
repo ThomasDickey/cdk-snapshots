@@ -1,7 +1,7 @@
-.\" $Id: cdk_draw.3,v 1.5 2009/02/15 17:10:04 tom Exp $
+.\" $Id: cdk_draw.3,v 1.7 2024/03/28 23:16:23 tom Exp $
+.TH cdk_draw 3 2024-03-28 "" "Library calls"
 .de XX
 ..
-.TH cdk_draw 3 2009-02-15 "" "Library calls"
 .XX boxWindow
 .XX attrbox
 .XX drawObjBox
@@ -13,9 +13,9 @@
 .XX writeChtype
 .XX writeChtypeAttrib
 .SH NAME
-cdk_draw \- Cdk Drawing Functions
+cdk_draw \-
+\fICdk\fP drawing functions
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -105,7 +105,7 @@ These functions perform useful drawing and attribute operations.
 .TP 5
 .B boxWindow
 draw a box with on the window \fIwin\fP.
-Like \fBattrbox\fP, 
+Like \fBattrbox\fP,
 this function ORs \fIattr\fP with each character as it draws the box.
 .TP 5
 .B attrbox

@@ -1,8 +1,8 @@
 '\" t
-.\" $Id: cdk_misc.3,v 1.23 2019/02/15 00:53:27 tom Exp $
+.\" $Id: cdk_misc.3,v 1.25 2024/03/28 23:07:36 tom Exp $
+.TH cdk_misc 3 2024-03-28 "" "Library calls"
 .de XX
 ..
-.TH cdk_misc 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX Beep
 .XX CDKallocStrings
@@ -34,10 +34,9 @@
 .XX mode2Char
 .XX searchList
 .XX sortList
-cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
-.LP
+cdk_misc \-
+\fICdk\fP miscellaneous routines
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -46,7 +45,7 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 #include <cdk.h>
 .nf
 .TP 15
-.B "void Beep(void);
+.B "void Beep(void);"
 .TP 15
 .B "unsigned CDKallocStrings("
 .BI "char ***" "list"/,
@@ -65,7 +64,7 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .TP 15
 .B "char ** CDKsplitString ("
 .BI "const char *" "string",
-.BI "int " "splitChar);
+.BI "int " "splitChar);"
 .TP 15
 .B "char * baseName ("
 .BI "char *" "string");
@@ -76,7 +75,7 @@ cdk_misc - \fBCurses Development Kit\fR Miscellaneous Routines
 .B "int chlen ("
 .BI "const chtype *" "string");
 .TP 15
-.B "void chstrncpy(
+.B "void chstrncpy("
 .BI "char *" "dest",
 .BI "const chtype *" "src",
 .BI "int " "maxcount");

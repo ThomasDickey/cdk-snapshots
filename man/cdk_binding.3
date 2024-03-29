@@ -1,8 +1,8 @@
 '\" t
-.\" $Id: cdk_binding.3,v 1.28 2019/02/19 10:19:12 tom Exp $
+.\" $Id: cdk_binding.3,v 1.30 2024/03/28 23:05:12 tom Exp $
+.TH cdk_binding 3 2024-03-28 "" "Library calls"
 .de XX
 ..
-.TH cdk_binding 3 2019-02-19 "" "Library calls"
 .SH NAME
 .XX bindCDKObject
 .XX checkCDKObjectBind
@@ -10,10 +10,9 @@
 .XX unbindCDKObject
 .XX getcCDKObject
 .XX getchCDKObject
-cdk_binding - \fBCurses Development Kit\fR Character Binding Capabilities.
-.LP
+cdk_binding \-
+\fICdk\fR character binding capabilities
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -72,7 +71,7 @@ which is one of the following values.
 center tab(/);
 l
 l l
-lw10 lw20 lw 20 .
+lw10 lw20 lw20 .
 \fBEObjectType_Value/Corresponding_Widget/Widget_Manual_Page\fP
 =
 vALPHALIST/Alphalist Widget/cdk_alphalist (3)
@@ -115,7 +114,7 @@ The parameter \fBkey\fR is the key hit which triggered this callback.
 check to see if a binding for the given \fBkey\fP exists.
 If it does,
 Cdk runs the associated command and returns its value,
-normally TRUE. 
+normally TRUE.
 If no binding exists, return FALSE.
 .IP
 The widgets which accept input, e.g., via "inject" methods,
@@ -171,7 +170,7 @@ newline/KEY_ENTER
 .TE
 .PP
 All of the widgets use \fBgetchCDKObject\fP internally for consistency.
-.SH EXAMPLE
+.SH EXAMPLES
 To help demonstrate how to use the key bindings I will demonstrate a simple
 dialog box widget with help for each button.
 The following code segment creates

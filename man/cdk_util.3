@@ -1,16 +1,22 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.15 2019/02/20 23:22:06 tom Exp $
+.\" $Id: cdk_util.3,v 1.17 2024/03/28 23:10:53 tom Exp $
+.TH cdk_util 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
-.ie \n(.g .ds `` \(lq
-.el       .ds `` ``
-.ie \n(.g .ds '' \(rq
-.el       .ds '' ''
 .de XX
 ..
-.TH cdk_util 3 2019-02-20 "" "Library calls"
+.ie \n(.g \{\
+.ds `` \(lq
+.ds '' \(rq
+.\}
+.el \{\
+.ie t .ds `` ``
+.el   .ds `` ""
+.ie t .ds '' ''
+.el   .ds '' ""
+.\}
 .SH NAME
 .XX CDKgetDirectoryContents
 .XX CDKreadFile
@@ -34,9 +40,9 @@
 .XX stripWhiteSpace
 .XX viewFile
 .XX viewInfo
-cdk_util \- Cdk utility functions
+cdk_util \-
+\fICdk\fP utility functions
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -72,7 +78,7 @@ cdk_util \- Cdk utility functions
 .BI "const char *" "line",
 .BI "char *" "filename");
 .TP 15
-.B "char *chtype2String (
+.B "char *chtype2String ("
 .BI "const chtype *" "string");
 .TP 15
 .B "void deleteCursesWindow ("

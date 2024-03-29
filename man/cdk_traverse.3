@@ -1,11 +1,16 @@
-.\" $Id: cdk_traverse.3,v 1.12 2019/02/15 01:03:42 tom Exp $
+.\" $Id: cdk_traverse.3,v 1.14 2024/03/28 23:11:16 tom Exp $
+.TH cdk_traverse 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_traverse 3 2019-02-14 "" "Library calls"
+.ie n .ds CW R
+.el   \{
+.ie \n(.g .ds CW CR
+.el       .ds CW CW
+.\}
 .SH NAME
 .XX exitCancelCDKScreen
 .XX exitCancelCDKScreenOf
@@ -21,9 +26,9 @@
 .XX setCDKFocusPrevious
 .XX traverseCDKOnce
 .XX traverseCDKScreen
-cdk_traverse - functions to support keyboard traversal
+cdk_traverse \-
+\fICdk\fP functions for keyboard traversal
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -80,7 +85,7 @@ the state of the traversal, i.e., the object which has focus.
 In order for widgets to be used on a screen which is to be handled by
 \fBtraverseCDKScreen()\fP, it must have the following methods available:
 .nf
-.ft C
+.ft CW
    injectCharObj
    inputWindowObj
    focusObj
@@ -92,12 +97,12 @@ In order for widgets to be used on a screen which is to be handled by
 .LP
 In addition, the following object properties must be properly handled:
 .nf
-.ft C
+.ft CW
    acceptsFocus
    hasFocus
    inputWindow
    dataPtr
-   dataType  
+   dataType
 .ft R
 .fi
 .LP
@@ -108,7 +113,7 @@ the screen-traversal facility.
 .RS 3
 This function contains the main screen traversal engine.
 It does the following:
-.TP 4 
+.TP 4
  1.
 Calls the refreshData method on each of the widgets to tell them to
 update their appearance to match the data which are referenced by their
@@ -180,9 +185,9 @@ This function was designed to be used as a callback routine
 for a button widget used as an OK button on a data-entry screen.
 .RE
 .TP 5
-.B exitCancelCDKScreen 
+.B exitCancelCDKScreen
 .RS 3
-Causes the traversal engine to exit without saving 
+Causes the traversal engine to exit without saving
 user modified data.
 .RE
 .TP 5
@@ -195,7 +200,7 @@ for a button widget used as a Cancel button on a data-entry screen.
 .RE
 .TP 5
 .B resetCDKScreen
-.RS 3 
+.RS 3
 Causes the traversal engine to call the refreshData method for each widget.
 This will cause any unsaved changes to be discarded
 and the widget states will be restored to their initial values.
@@ -214,9 +219,9 @@ This is a utility function, one of the pieces from which you can
 construct a customized version of \fBtraverseCDKScreen\fP.
 .RE
 .SH BUGS
-Not all widgets have had the extra methods added so that they work with 
+Not all widgets have had the extra methods added so that they work with
 the screen traversal engine.
-.SH AUTHOR
+.SH AUTHORS
 Grant Edwards, Aspen Research Corporation
 .br
 Thomas E. Dickey and contributors.

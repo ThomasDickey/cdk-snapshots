@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_mentry.3,v 1.31 2019/02/15 00:51:07 tom Exp $
+.\" $Id: cdk_mentry.3,v 1.33 2024/03/28 23:07:56 tom Exp $
+.TH cdk_mentry 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_mentry 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKMentry
 .XX cleanCDKMentry
@@ -41,9 +41,9 @@
 .XX setCDKMentryURChar
 .XX setCDKMentryValue
 .XX setCDKMentryVerticalChar
-cdk_mentry \- curses multiple line entry widget.
+cdk_mentry \-
+\fICdk\fP multiple line entry widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -455,7 +455,6 @@ turns the shadow on or off around this widget.
 .RE
 .IP
 If the widget could not be created then a \fINULL\fR pointer is returned.
-.RE
 .TP 5
 .B positionCDKMentry
 allows the user to move the widget around the screen via the
@@ -607,7 +606,6 @@ It also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 Ctrl-L/Refreshes the screen.
 .TE
-.fi
 .SH SEE ALSO
 .BR cdk (3),
 .BR cdk_binding (3),

@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.31 2019/02/15 00:49:43 tom Exp $
+.\" $Id: cdk_matrix.3,v 1.33 2024/03/28 23:09:04 tom Exp $
+.TH cdk_matrix 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_matrix 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKMatrix
 .XX cleanCDKMatrix
@@ -38,9 +38,9 @@
 .XX setCDKMatrixULChar
 .XX setCDKMatrixURChar
 .XX setCDKMatrixVerticalChar
-cdk_matrix \- curses matrix widget.
+cdk_matrix \-
+\fICdk\fP matrix widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -465,7 +465,7 @@ The default function is \fICDKMatrixCallBack\fR.
 sets the contents of the cell located by the \fBrow\fR and \fBcol\fR pair.
 The value of the cell will be set to \fBvalue\fR.
 .TP
-.B setCDKMatrixCells,
+.B setCDKMatrixCells
 lets the programmer initialize elements of an existing matrix widget.
 .bP
 The parameter \fBinfo\fR is an array of \fIchar *\fR which

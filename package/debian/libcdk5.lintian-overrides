@@ -2,4 +2,4 @@
 libcdk5: package-name-doesnt-match-sonames *
 
 # The symbolic link is in the "-dev" package
-libcdk5: ldconfig-symlink-missing-for-shlib usr/lib/libcdk.so.* usr/lib/libcdk.so.5.0 libcdk.so.*
+libcdk5: lacks-versioned-link-to-shared-library usr/lib/libcdk.so.* usr/lib/libcdk.so.5.0 libcdk.so.*

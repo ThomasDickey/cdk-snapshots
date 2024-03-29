@@ -1,11 +1,17 @@
-.\" $Id: cdk_objs.3,v 1.7 2019/02/20 22:16:25 tom Exp $
+.\" $Id: cdk_objs.3,v 1.9 2024/03/28 23:06:07 tom Exp $
+.TH cdk_objs 3 2024-03-28 "" "Library calls"
 .de XX
 ..
-.ie \n(.g .ds `` \(lq
-.el       .ds `` ``
-.ie \n(.g .ds '' \(rq
-.el       .ds '' ''
-.TH cdk_objs 3 2019-02-20 "" "Library calls"
+.ie \n(.g \{\
+.ds `` \(lq
+.ds '' \(rq
+.\}
+.el \{\
+.ie t .ds `` ``
+.el   .ds `` ""
+.ie t .ds '' ''
+.el   .ds '' ""
+.\}
 .SH NAME
 .XX cleanCdkTitle
 .XX drawCdkTitle
@@ -17,9 +23,9 @@
 .XX setCdkExitType
 .XX setCdkTitle
 .XX validCDKObject
-cdk_objs \- Cdk object-support functions
+cdk_objs \-
+\fICdk\fR object-support functions
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -93,7 +99,7 @@ expressions are too complex for a macro.
 .B cleanCdkTitle
 Remove storage for the widget's title.
 .TP 5
-.B drawCdkTitle,
+.B drawCdkTitle
 Draw the widget's title.
 .TP 5
 .B getCdkTitle
@@ -123,7 +129,7 @@ is used too pervasively in Cdk4 applications to move.
 .B setCdkTitle
 Set the widget's title.
 .TP 5
-.B validCDKObject 
+.B validCDKObject
 Returns true if a "new" was done on the object but no "destroy".
 .
 .SH SEE ALSO

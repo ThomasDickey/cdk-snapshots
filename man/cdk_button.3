@@ -1,17 +1,17 @@
 '\" t
-.\" $Id: cdk_button.3,v 1.13 2019/02/15 00:40:02 tom Exp $
+.\" $Id: cdk_button.3,v 1.15 2024/03/28 23:13:16 tom Exp $
+.TH cdk_button 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_button 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKButton
 .XX destroyCDKButton
 .XX drawCDKButton
-.XX eraseCDKButton 
+.XX eraseCDKButton
 .XX getCDKButtonBox
 .XX getCDKButtonMessage
 .XX injectCDKButton
@@ -30,9 +30,9 @@
 .XX setCDKButtonULChar
 .XX setCDKButtonURChar
 .XX setCDKButtonVerticalChar
-cdk_button \- create and manage a curses button widget.
+cdk_button \-
+create and manage a \fICdk\fP button widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -40,7 +40,7 @@ cdk_button \- create and manage a curses button widget.
 .LP
 .B #include <cdk.h>
 
-\fBtypedef void (*tButtonCallback)(struct SButton *\fP\fIbutton\fB);\fP
+\fBtypedef void (*tButtonCallback)(struct SButton *\fIbutton\fB);\fR
 .nf
 .TP 15
 .B "int activateCDKButton ("
@@ -276,7 +276,7 @@ is an optional pointer to a callback function
 that will be executed when the user activates the button by pressing space
 or enter.
 .bP
-\fBbox\fR 
+\fBbox\fR
 is true if the widget should be drawn with a box around it.
 .bP
 \fBshadow\fR
@@ -309,7 +309,7 @@ The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
 (See \fIcdk_display\fR).
 .TP 5
-.B setCDKButtonBox 
+.B setCDKButtonBox
 sets true if the widget will be drawn with a box around it.
 .TP 5
 .B setCDKButtonBoxAttribute
@@ -339,7 +339,7 @@ sets the vertical drawing character for the box to the given character.
 Changing the Box attribute after the widget has been created probably
 does not work right.
 None of the positioning/movement code has been tested.
-.SH AUTHOR
+.SH AUTHORS
 Grant Edwards, Aspen Research Corporation
 .SH SEE ALSO
 .BR cdk (3),

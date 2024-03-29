@@ -1,11 +1,11 @@
-.\" $Id: cdk_graph.3,v 1.20 2019/02/15 00:46:34 tom Exp $
+.\" $Id: cdk_graph.3,v 1.22 2024/03/28 23:10:22 tom Exp $
+.TH cdk_graph 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_graph 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKGraph
 .XX destroyCDKGraph
@@ -36,9 +36,9 @@
 .XX setCDKGraphValue
 .XX setCDKGraphValues
 .XX setCDKGraphVerticalChar
-cdk_graph \- curses graph widget
+cdk_graph \-
+\fICdk\fP graph widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -179,7 +179,7 @@ cdk_graph \- curses graph widget
 The Cdk graph widget creates a graph in either X/Y plot or line mode.
 The following functions create or manipulate the Cdk graph box widget.
 .SH AVAILABLE FUNCTIONS
-.TP 5 
+.TP 5
 .B activateCDKGraph
 this is an obsolete function that calls \fBdrawCDKGraph\fP.
 .TP 5
@@ -243,7 +243,7 @@ creates a pointer to a graph widget.
 Parameters:
 .RS
 .TP 5
-\fBscreen\fR 
+\fBscreen\fR
 is the screen you wish this widget to be placed in.
 .TP 5
 \fBxpos\fR

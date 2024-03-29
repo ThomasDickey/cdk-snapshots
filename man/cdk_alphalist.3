@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.31 2019/02/15 00:28:31 tom Exp $"
+.\" $Id: cdk_alphalist.3,v 1.33 2024/03/28 23:17:31 tom Exp $"
+.TH cdk_alphalist 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_alphalist 3 2019-02-14 "" "Library calls"
 .SH NAME
 .XX activateCDKAlphalist
 .XX destroyCDKAlphalist
@@ -38,9 +38,9 @@
 .XX setCDKAlphalistULChar
 .XX setCDKAlphalistURChar
 .XX setCDKAlphalistVerticalChar
-cdk_alphalist \- curses sorted list widget.
+cdk_alphalist \-
+\fICdk\fP sorted list widget.
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -506,15 +506,14 @@ Exits the widget and returns a \fINULL\fR pointer.
 It also sets the widget data \fIexitType\fR to \fIvESCAPE_HIT\fR.
 T}
 .TE
+.SH NOTES
+This widget is created from the scrolling list widget
+and the entry field widget.
+This is a good example on how to build your own widgets using the
+base widgets provided in this distribution.
 .SH SEE ALSO
 .BR cdk (3),
 .BR cdk_binding (3),
 .BR cdk_display (3),
 .BR cdk_position (3),
 .BR cdk_screen (3)
-.SH NOTES
-.PP
-This widget is created from the scrolling list widget
-and the entry field widget.
-This is a good example on how to build your own widgets using the
-base widgets provided in this distribution.

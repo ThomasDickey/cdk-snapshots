@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_selection.3,v 1.30 2019/02/20 14:28:42 tom Exp $"
+.\" $Id: cdk_selection.3,v 1.32 2024/03/28 23:12:22 tom Exp $"
+.TH cdk_selection 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_selection 3 2019-02-20 "" "Library calls"
 .SH NAME
 .XX activateCDKSelection
 .XX destroyCDKSelection
@@ -46,9 +46,9 @@
 .XX setCDKSelectionULChar
 .XX setCDKSelectionURChar
 .XX setCDKSelectionVerticalChar
-cdk_selection \- curses selection list widget.
+cdk_selection \-
+\fICdk\fP selection list widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -268,7 +268,7 @@ returns the selection choice at the given index.
 .B getCDKSelectionChoices
 returns an array of the current selection choices for the widget.
 .TP 5
-.B getCDKSelectionCurrent 
+.B getCDKSelectionCurrent
 returns the current selection index.
 .TP 5
 .B getCDKSelectionHighlight
@@ -454,7 +454,7 @@ sets the selection choice value at the given index.
 .B setCDKSelectionChoices
 sets the selection choice values of the widget.
 .TP 5
-.B setCDKSelectionCurrent 
+.B setCDKSelectionCurrent
 sets the current selection index.
 .TP 5
 .B setCDKSelectionHighlight

@@ -1,12 +1,12 @@
 '\" t
-.\" $Id: cdk_scroll.3,v 1.37 2019/02/20 14:29:03 tom Exp $"
+.\" $Id: cdk_scroll.3,v 1.39 2024/03/28 23:12:32 tom Exp $"
+.TH cdk_scroll 3 2024-03-28 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
 ..
 .de XX
 ..
-.TH cdk_scroll 3 2019-02-20 "" "Library calls"
 .SH NAME
 .XX activateCDKScroll
 .XX addCDKScrollItem
@@ -44,9 +44,9 @@
 .XX setCDKScrollULChar
 .XX setCDKScrollURChar
 .XX setCDKScrollVerticalChar
-cdk_scroll \- curses scrolling list widget.
+cdk_scroll \-
+\fICdk\fP scrolling list widget
 .SH SYNOPSIS
-.LP
 .B cc
 .RI "[ " "flag" " \|.\|.\|. ] " "file" " \|.\|.\|."
 .B \-lcdk
@@ -154,7 +154,7 @@ cdk_scroll \- curses scrolling list widget.
 .BI "CDKSCROLL *" "scroll",
 .BI "chtype " "character");
 .TP 15
-.B "void setCDKScrollCurrent(
+.B "void setCDKScrollCurrent("
 .BI "CDKSCROLL *" "scroll",
 .BI "int" "item");
 .TP 15
