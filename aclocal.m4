@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.119 2024/03/13 00:12:02 tom Exp $
+dnl $Id: aclocal.m4,v 1.120 2024/03/30 00:11:16 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2023,2024 Thomas E. Dickey
@@ -1037,7 +1037,7 @@ fi
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_CURSES_SETBEGYX version: 3 updated: 2013/06/15 11:12:27
+dnl CF_CURSES_SETBEGYX version: 4 updated: 2024/03/29 20:08:49
 dnl ------------------
 dnl See if we can define a function to set a window's beginning y/x coordinates.
 AC_DEFUN([CF_CURSES_SETBEGYX],[
@@ -1055,7 +1055,9 @@ setbegyx(win, 2, 3);
 ],[cf_result=$cf_check; break])
 done
 AC_MSG_RESULT("$cf_result")
-AC_DEFINE_UNQUOTED(setbegyx(win,y,x),$cf_result,[Define to function for setting window's y/x coordinates])
+if test "$cf_result" != ERR; then
+	AC_DEFINE_UNQUOTED(setbegyx(win,y,x),$cf_result,[Define to function for setting window's y/x coordinates])
+fi
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_CURSES_TERM_H version: 16 updated: 2024/01/07 06:34:16
@@ -3550,7 +3552,7 @@ do
 done
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_SHARED_OPTS version: 110 updated: 2024/03/12 19:44:02
+dnl CF_SHARED_OPTS version: 111 updated: 2024/03/29 20:08:49
 dnl --------------
 dnl --------------
 dnl Attempt to determine the appropriate CC/LD options for creating a shared

@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.29 2021/08/25 23:34:40 tom Exp $
+ * $Id: cdk_int.h,v 1.30 2024/03/30 00:19:06 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2016,2021 Thomas E. Dickey
+ * Copyright 2003-2021,2024 Thomas E. Dickey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -38,6 +38,15 @@ extern "C" {
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
+
+/* Solaris xpg4 curses uses these symbols; everyone else follows SVr4 */
+#if !defined(KEY_MIN) && defined(__KEY_MIN)
+#define KEY_MIN __KEY_MIN
+#endif
+
+#if !defined(KEY_MAX) && defined(__KEY_MAX)
+#define KEY_MAX __KEY_MAX
+#endif
 
 #define typeCallocN(type,n)     (type*)calloc((size_t)(n), sizeof(type))
 #define typeCalloc(type)        typeCallocN(type,1)

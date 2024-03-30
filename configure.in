@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.82 2024/03/27 22:15:19 tom Exp $
+dnl $Id: configure.in,v 1.83 2024/03/29 23:52:20 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2023,2024 Thomas E. Dickey
@@ -199,6 +199,7 @@ CF_CURSES_FUNCS(\
 	getbegy \
 	getmaxx \
 	getmaxy \
+	mvwin \
 	start_color \
 	\
 )

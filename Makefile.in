@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.136 2022/10/18 21:32:59 tom Exp $
+# $Id: Makefile.in,v 1.137 2024/03/29 07:41:33 tom Exp $
 #
-# Copyright 2001-2021,2022 Thomas E. Dickey
+# Copyright 2001-2022,2024 Thomas E. Dickey
 # Copyright 1999, Mike Glover
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -417,6 +417,7 @@ installCDKHeaderFiles :: \
 	   $(HEADERS_SH) include/$$i; \
 	done
 @HDR_SUBDIR@	$(RM) $(INCLUDE_DIR)/cdk.h && mv $(INCLUDE_SUBDIR)/cdk.h $(INCLUDE_DIR)/$(HDR_ROOTNAME).h
+@HDR_SUBDIR@	$(SHELL) -c "cd $(INCLUDE_SUBDIR) && $(LN_S) ../cdk.h ./cdk.h"
 
 uninstall \
 uninstallCDKHeaderFiles ::

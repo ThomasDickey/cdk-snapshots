@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.35 2024/03/29 00:05:20 tom Exp $
+# $Id: rules,v 1.39 2024/03/29 08:18:59 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -45,7 +45,6 @@ configure = \
 		--prefix=/usr \
 		--libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH) \
 		--mandir=\$${prefix}/share/man \
-		--enable-hdr-subdir \
 		--with-shlib-version=abi \
 		--with-screen=$(SCREEN) \
 		--with-versioned-syms \
@@ -187,12 +186,6 @@ install-libcdk5-dev-stamp  : install-libcdk5-stamp
 
 	$(MAKE) -C $(P_SHARED) DESTDIR=$(TARGET)/libcdk5-dev installCDKHeaderFiles
 	$(MAKE) -C $(P_STATIC) DESTDIR=$(TARGET)/libcdk5-dev install.libs
-
-	if [ $(SCREEN) = ncursesw6 ]; \
-	then \
-		sed -i 's,<curses.h>,<ncursesw6/curses.h>,' $(TARGET)/libcdk5-dev/usr/include/cdk/cdk.h; \
-		sed -i 's,<ncurses.h>,<ncursesw6/ncurses.h>,' $(TARGET)/libcdk5-dev/usr/include/cdk/cdk.h; \
-	fi
 
 	# get the symbolic link, but not the actual file
 	$(MAKE) -C $(P_SHARED) DESTDIR=$(TARGET)/libcdk5-dev install.libs

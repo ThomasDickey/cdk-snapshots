@@ -1,3 +1,9 @@
+cdk (5.0.20240329) unstable; urgency=low
+
+  * maintenance updates
+
+ -- Thomas E. Dickey <dickey@invisible-island.net>  Fri, 29 Mar 2024 03:48:02 -0400
+
 cdk (5.0.20240328) unstable; urgency=low
 
   * maintenance updates

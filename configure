@@ -20951,6 +20951,7 @@ for cf_func in \
 	getbegy \
 	getmaxx \
 	getmaxy \
+	mvwin \
 	start_color \
 	\
 
@@ -20958,10 +20959,10 @@ do
 
 cf_tr_func=`echo "$cf_func" | sed y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%`
 
-	echo "$as_me:20961: checking for ${cf_func}" >&5
+	echo "$as_me:20962: checking for ${cf_func}" >&5
 echo $ECHO_N "checking for ${cf_func}... $ECHO_C" >&6
 
-echo "${as_me:-configure}:20964: testing ${cf_func} ..." 1>&5
+echo "${as_me:-configure}:20965: testing ${cf_func} ..." 1>&5
 
 	if eval "test \"\${cf_cv_func_$cf_func+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -20970,7 +20971,7 @@ else
 		eval cf_result='$ac_cv_func_'$cf_func
 		if test ".$cf_result" != ".no"; then
 			cat >"conftest.$ac_ext" <<_ACEOF
-#line 20973 "configure"
+#line 20974 "configure"
 #include "confdefs.h"
 
 #ifdef HAVE_XCURSES
@@ -21003,16 +21004,16 @@ if (foo + 1234L > 5678L)
 }
 _ACEOF
 rm -f "conftest.$ac_objext" "conftest$ac_exeext"
-if { (eval echo "$as_me:21006: \"$ac_link\"") >&5
+if { (eval echo "$as_me:21007: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:21009: \$? = $ac_status" >&5
+  echo "$as_me:21010: \$? = $ac_status" >&5
   (exit "$ac_status"); } &&
          { ac_try='test -s "conftest$ac_exeext"'
-  { (eval echo "$as_me:21012: \"$ac_try\"") >&5
+  { (eval echo "$as_me:21013: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:21015: \$? = $ac_status" >&5
+  echo "$as_me:21016: \$? = $ac_status" >&5
   (exit "$ac_status"); }; }; then
   cf_result=yes
 else
@@ -21028,7 +21029,7 @@ fi
 
 	# use the computed/retrieved cache-value:
 	eval 'cf_result=$cf_cv_func_'$cf_func
-	echo "$as_me:21031: result: $cf_result" >&5
+	echo "$as_me:21032: result: $cf_result" >&5
 echo "${ECHO_T}$cf_result" >&6
 	if test "$cf_result" != no; then
 		cat >>confdefs.h <<EOF
@@ -21042,23 +21043,23 @@ case $LIBS in #(vi
 *ncurses*)
 
 if test "$enable_leaks" = no ; then
-	echo "$as_me:21045: checking for nc_alloc.h" >&5
+	echo "$as_me:21046: checking for nc_alloc.h" >&5
 echo $ECHO_N "checking for nc_alloc.h... $ECHO_C" >&6
 if test "${ac_cv_header_nc_alloc_h+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >"conftest.$ac_ext" <<_ACEOF
-#line 21051 "configure"
+#line 21052 "configure"
 #include "confdefs.h"
 #include <nc_alloc.h>
 _ACEOF
-if { (eval echo "$as_me:21055: \"$ac_cpp "conftest.$ac_ext"\"") >&5
+if { (eval echo "$as_me:21056: \"$ac_cpp "conftest.$ac_ext"\"") >&5
   (eval $ac_cpp "conftest.$ac_ext") 2>conftest.er1
   ac_status=$?
   $EGREP -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
-  echo "$as_me:21061: \$? = $ac_status" >&5
+  echo "$as_me:21062: \$? = $ac_status" >&5
   (exit "$ac_status"); } >/dev/null; then
   if test -s conftest.err; then
     ac_cpp_err=$ac_c_preproc_warn_flag
@@ -21077,19 +21078,19 @@ else
 fi
 rm -f conftest.err "conftest.$ac_ext"
 fi
-echo "$as_me:21080: result: $ac_cv_header_nc_alloc_h" >&5
+echo "$as_me:21081: result: $ac_cv_header_nc_alloc_h" >&5
 echo "${ECHO_T}$ac_cv_header_nc_alloc_h" >&6
 
 for ac_func in exit_curses exit_terminfo _nc_free_and_exit
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
-echo "$as_me:21086: checking for $ac_func" >&5
+echo "$as_me:21087: checking for $ac_func" >&5
 echo $ECHO_N "checking for $ac_func... $ECHO_C" >&6
 if eval "test \"\${$as_ac_var+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >"conftest.$ac_ext" <<_ACEOF
-#line 21092 "configure"
+#line 21093 "configure"
 #include "confdefs.h"
 #define $ac_func autoconf_temporary
 #include <limits.h>	/* least-intrusive standard header which defines gcc2 __stub macros */
@@ -21120,16 +21121,16 @@ main (void)
 }
 _ACEOF
 rm -f "conftest.$ac_objext" "conftest$ac_exeext"
-if { (eval echo "$as_me:21123: \"$ac_link\"") >&5
+if { (eval echo "$as_me:21124: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:21126: \$? = $ac_status" >&5
+  echo "$as_me:21127: \$? = $ac_status" >&5
   (exit "$ac_status"); } &&
          { ac_try='test -s "conftest$ac_exeext"'
-  { (eval echo "$as_me:21129: \"$ac_try\"") >&5
+  { (eval echo "$as_me:21130: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:21132: \$? = $ac_status" >&5
+  echo "$as_me:21133: \$? = $ac_status" >&5
   (exit "$ac_status"); }; }; then
   eval "$as_ac_var=yes"
 else
@@ -21139,7 +21140,7 @@ eval "$as_ac_var=no"
 fi
 rm -f "conftest.$ac_objext" "conftest$ac_exeext" "conftest.$ac_ext"
 fi
-echo "$as_me:21142: result: `eval echo '${'"$as_ac_var"'}'`" >&5
+echo "$as_me:21143: result: `eval echo '${'"$as_ac_var"'}'`" >&5
 echo "${ECHO_T}`eval echo '${'"$as_ac_var"'}'`" >&6
 if test "`eval echo '${'"$as_ac_var"'}'`" = yes; then
   cat >>confdefs.h <<EOF
@@ -21153,14 +21154,14 @@ fi
 ;;
 esac
 
-echo "$as_me:21156: checking how to define setbegyx" >&5
+echo "$as_me:21157: checking how to define setbegyx" >&5
 echo $ECHO_N "checking how to define setbegyx... $ECHO_C" >&6
 cf_result=ERR
 for cf_check in \
 	'((win)->_begy = (y), (win)->_begx = (x), OK)'
 do
 	cat >"conftest.$ac_ext" <<_ACEOF
-#line 21163 "configure"
+#line 21164 "configure"
 #include "confdefs.h"
 
 #include <${cf_cv_ncurses_header:-curses.h}>
@@ -21178,16 +21179,16 @@ setbegyx(win, 2, 3);
 }
 _ACEOF
 rm -f "conftest.$ac_objext"
-if { (eval echo "$as_me:21181: \"$ac_compile\"") >&5
+if { (eval echo "$as_me:21182: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
-  echo "$as_me:21184: \$? = $ac_status" >&5
+  echo "$as_me:21185: \$? = $ac_status" >&5
   (exit "$ac_status"); } &&
          { ac_try='test -s "conftest.$ac_objext"'
-  { (eval echo "$as_me:21187: \"$ac_try\"") >&5
+  { (eval echo "$as_me:21188: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:21190: \$? = $ac_status" >&5
+  echo "$as_me:21191: \$? = $ac_status" >&5
   (exit "$ac_status"); }; }; then
   cf_result=$cf_check; break
 else
@@ -21196,12 +21197,15 @@ cat "conftest.$ac_ext" >&5
 fi
 rm -f "conftest.$ac_objext" "conftest.$ac_ext"
 done
-echo "$as_me:21199: result: \"$cf_result\"" >&5
+echo "$as_me:21200: result: \"$cf_result\"" >&5
 echo "${ECHO_T}\"$cf_result\"" >&6
+if test "$cf_result" != ERR; then
 
 cat >>confdefs.h <<EOF
 #define setbegyx(win,y,x) $cf_result
 EOF
+
+fi
 
 cf_libname=\${LIB_BASENAME}
 cf_liblink=$cf_libname
@@ -21311,7 +21315,7 @@ DEFS=-DHAVE_CONFIG_H
 : "${CONFIG_STATUS=./config.status}"
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:21314: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:21318: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >"$CONFIG_STATUS" <<_ACEOF
 #! $SHELL
@@ -21492,7 +21496,7 @@ cat >>"$CONFIG_STATUS" <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:21495: error: ambiguous option: $1
+    { { echo "$as_me:21499: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -21511,7 +21515,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:21514: error: unrecognized option: $1
+  -*) { { echo "$as_me:21518: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -21572,7 +21576,7 @@ do
   "demos/Makefile" ) CONFIG_FILES="$CONFIG_FILES demos/Makefile" ;;
   "default" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
   "include/cdk_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS include/cdk_config.h:include/config.hin" ;;
-  *) { { echo "$as_me:21575: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:21579: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -21906,7 +21910,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:21909: creating $ac_file" >&5
+    { echo "$as_me:21913: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -21924,7 +21928,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo "$tmp"/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:21927: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:21931: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo "$f";;
@@ -21937,7 +21941,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo "$srcdir/$f"
          else
            # /dev/null tree
-           { { echo "$as_me:21940: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21944: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21953,7 +21957,7 @@ cat >>"$CONFIG_STATUS" <<\EOF
       if test -n "$ac_seen"; then
         ac_used=`grep '@datarootdir@' "$ac_item"`
         if test -z "$ac_used"; then
-          { echo "$as_me:21956: WARNING: datarootdir was used implicitly but not set:
+          { echo "$as_me:21960: WARNING: datarootdir was used implicitly but not set:
 $ac_seen" >&5
 echo "$as_me: WARNING: datarootdir was used implicitly but not set:
 $ac_seen" >&2;}
@@ -21962,7 +21966,7 @@ $ac_seen" >&2;}
       fi
       ac_seen=`grep '${datarootdir}' "$ac_item"`
       if test -n "$ac_seen"; then
-        { echo "$as_me:21965: WARNING: datarootdir was used explicitly but not set:
+        { echo "$as_me:21969: WARNING: datarootdir was used explicitly but not set:
 $ac_seen" >&5
 echo "$as_me: WARNING: datarootdir was used explicitly but not set:
 $ac_seen" >&2;}
@@ -22007,7 +22011,7 @@ cat >>"$CONFIG_STATUS" <<\EOF
             ac_init=`$EGREP '[ 	]*'$ac_name'[ 	]*=' "$ac_file"`
             if test -z "$ac_init"; then
               ac_seen=`echo "$ac_seen" |sed -e 's,^,'"$ac_file"':,'`
-              { echo "$as_me:22010: WARNING: Variable $ac_name is used but was not set:
+              { echo "$as_me:22014: WARNING: Variable $ac_name is used but was not set:
 $ac_seen" >&5
 echo "$as_me: WARNING: Variable $ac_name is used but was not set:
 $ac_seen" >&2;}
@@ -22018,7 +22022,7 @@ $ac_seen" >&2;}
     $EGREP -n '@[A-Z_][A-Z_0-9]+@' "$ac_file" >>"$tmp"/out
     if test -s "$tmp"/out; then
       ac_seen=`sed -e 's,^,'"$ac_file"':,' < "$tmp"/out`
-      { echo "$as_me:22021: WARNING: Some variables may not be substituted:
+      { echo "$as_me:22025: WARNING: Some variables may not be substituted:
 $ac_seen" >&5
 echo "$as_me: WARNING: Some variables may not be substituted:
 $ac_seen" >&2;}
@@ -22067,7 +22071,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:22070: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:22074: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -22078,7 +22082,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo "$tmp"/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:22081: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:22085: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -22091,7 +22095,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo "$srcdir/$f"
          else
            # /dev/null tree
-           { { echo "$as_me:22094: error: cannot find input file: $f" >&5
+           { { echo "$as_me:22098: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -22149,7 +22153,7 @@ cat >>"$CONFIG_STATUS" <<\EOF
   rm -f "$tmp"/in
   if test x"$ac_file" != x-; then
     if cmp -s "$ac_file" "$tmp/config.h" 2>/dev/null; then
-      { echo "$as_me:22152: $ac_file is unchanged" >&5
+      { echo "$as_me:22156: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \

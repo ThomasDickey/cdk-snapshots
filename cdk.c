@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:10:45 $
- * $Revision: 1.226 $
+ * $Date: 2024/03/30 00:07:08 $
+ * $Revision: 1.227 $
  */
 
 #define L_MARKER '<'
@@ -1463,7 +1463,7 @@ void deleteCursesWindow (WINDOW *window)
 
 /*
  * This moves a given window (if we're able to set the window's beginning).
- * We do not use mvwin(), because it does (usually) not move subwindows.
+ * We prefer to not use mvwin(), because SVr4 curses does not move subwindows.
  */
 void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
 {
@@ -1472,11 +1472,15 @@ void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
       int xpos, ypos;
 
       getbegyx (window, ypos, xpos);
+#if defined(setbegyx)
       (void)setbegyx (window, (short)ypos, (short)xpos);
       xpos += xdiff;
       ypos += ydiff;
       werase (window);
       (void)setbegyx (window, (short)ypos, (short)xpos);
+#elif defined(HAVE_MVWIN)
+      (void)mvwin (window, (short)(ypos + ydiff), (short)(xpos + xdiff));
+#endif
       (void)ypos;
       (void)xpos;
    }
