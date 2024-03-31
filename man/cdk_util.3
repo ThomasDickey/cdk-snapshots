@@ -1,6 +1,6 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.17 2024/03/28 23:10:53 tom Exp $
-.TH cdk_util 3 2024-03-28 "" "Library calls"
+.\" $Id: cdk_util.3,v 1.18 2024/03/31 18:27:59 tom Exp $
+.TH cdk_util 3 2024-03-31 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -18,7 +18,9 @@
 .el   .ds '' ""
 .\}
 .SH NAME
+.XX CDKchdir
 .XX CDKgetDirectoryContents
+.XX CDKopenFile
 .XX CDKreadFile
 .XX alignxy
 .XX char2Chtype
@@ -51,9 +53,16 @@ cdk_util \-
 #include <cdk.h>
 .nf
 .TP 15
+.B "int CDKchdir ("
+.BI "const char *" "directory");
+.TP 15
 .B "int CDKgetDirectoryContents ("
 .BI "const char *" "directory",
 .BI "char ***" "list");
+.TP 15
+.B "int CDKopenFile ("
+.BI "const char *" "filename",
+.BI "char *" "mode");
 .TP 15
 .B "int CDKreadFile ("
 .BI "const char *" "filename",
@@ -166,10 +175,20 @@ build or customize widgets.
 .
 .SH AVAILABLE FUNCTIONS
 .TP 5
+.B CDKchdir
+Change working directory to the given path,
+possibly expanding tilde (~) and wildcards (*).
+It returns zero on success.
+.TP 5
 .B CDKgetDirectoryContents
 opens and reads the contents of the given directory, filling
 the array \fBlist\fR with the sorted contents of the directory.
 If the directory cannot be opened then it returns a value of -1.
+.TP 5
+.B CDKopenFile
+Open the file,
+possibly expanding tilde (~) and wildcards (*).
+It returns a \fBFILE\fP pointer.
 .TP 5
 .B CDKreadFile
 Read the file \fIfilename\fP,

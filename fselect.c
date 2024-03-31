@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:41:07 $
- * $Revision: 1.86 $
+ * $Date: 2024/03/31 15:36:33 $
+ * $Revision: 1.87 $
  */
 
 /*
@@ -421,8 +421,8 @@ static int _injectCDKFselect (CDKOBJS *object, chtype input)
    }
 
    /* Can we change into the directory? */
-   file = chdir (filename);
-   if (chdir (fselect->pwd) != 0)
+   file = CDKchdir (filename);
+   if (CDKchdir (fselect->pwd) != 0)
    {
       return 0;
    }
@@ -502,7 +502,7 @@ void setCDKFselect (CDKFSELECT *fselect,
       }
 
       /* Change directories. */
-      if (chdir (newDirectory) != 0)
+      if (CDKchdir (newDirectory) != 0)
       {
 	 char *mesg[10];
 
@@ -678,7 +678,7 @@ int setCDKFselectDirectory (CDKFSELECT *fselect, const char *directory)
    if (fselect->pwd != directory)
    {
       /* Try to chdir into the given directory. */
-      if (chdir (directory) != 0)
+      if (CDKchdir (directory) != 0)
       {
 	 result = 0;
       }
@@ -1187,8 +1187,8 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    }
 
    /* Make sure we can change into the directory. */
-   isDirectory = chdir (filename);
-   if (chdir (fselect->pwd) != 0)
+   isDirectory = CDKchdir (filename);
+   if (CDKchdir (fselect->pwd) != 0)
    {
       freeChar (filename);
       freeChar (mydirname);

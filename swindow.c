@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:09:14 $
- * $Revision: 1.127 $
+ * $Date: 2024/03/31 15:46:26 $
+ * $Revision: 1.128 $
  */
 
 /*
@@ -1141,7 +1141,7 @@ int dumpCDKSwindow (CDKSWINDOW *swindow, const char *filename)
    int x;
 
    /* Try to open the file. */
-   if ((outputFile = fopen (filename, "w")) == 0)
+   if ((outputFile = CDKopenFile (filename, "w")) == 0)
    {
       return -1;
    }

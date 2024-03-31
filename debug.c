@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/20 21:58:33 $
- * $Revision: 1.11 $
+ * $Date: 2024/03/31 15:47:01 $
+ * $Revision: 1.12 $
  */
 
 FILE *CDKDEBUG;
@@ -23,7 +23,7 @@ FILE *startCDKDebug (const char *filename)
    }
 
    /* Try to open the file. */
-   return (fopen (filename, "w"));
+   return (CDKopenFile (filename, "w"));
 }
 
 /*

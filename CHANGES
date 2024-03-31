@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.335 2024/03/30 00:19:40 tom Exp $
+-- $Id: CHANGES,v 1.337 2024/03/31 15:34:02 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2023, 2024
@@ -8,6 +8,10 @@ Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2024/03/31
+	+ add CDKchdir(), CDKopenFile() to use wordexp() for expanding tilde
+	  (suggested by Henry Qin).
 
 2024/03/29
 	+ build-fix for Solaris xpg4 curses.

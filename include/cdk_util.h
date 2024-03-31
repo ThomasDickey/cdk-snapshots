@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.36 2014/01/19 01:58:31 tom Exp $
+ * $Id: cdk_util.h,v 1.38 2024/03/31 15:31:53 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2012,2014 copyright Thomas E. Dickey
+ * Changes 1999-2014,2024 copyright Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -154,6 +154,19 @@ int viewInfo (
 void sortList (
 		CDK_CSTRING *	/* list */,
 		int		/* length */);
+
+/*
+ * This changes to a new working directory, possibly expanding "~", etc.
+ */
+int CDKchdir (
+		const char *	/* filename */);
+
+/*
+ * This opens a file with the given mode, possibly expanding "~", etc.
+ */
+FILE * CDKopenFile (
+		const char *	/* filename */,
+		const char *	/* mode */);
 
 /*
  * This reads a file, loads the contents into info and

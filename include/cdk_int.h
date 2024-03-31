@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.30 2024/03/30 00:19:06 tom Exp $
+ * $Id: cdk_int.h,v 1.31 2024/03/31 15:02:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -38,6 +38,10 @@ extern "C" {
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
+
+#ifdef HAVE_WORDEXP
+#include <wordexp.h>
+#endif
 
 /* Solaris xpg4 curses uses these symbols; everyone else follows SVr4 */
 #if !defined(KEY_MIN) && defined(__KEY_MIN)

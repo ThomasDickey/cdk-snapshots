@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2024/03/30 00:07:08 $
- * $Revision: 1.227 $
+ * $Date: 2024/03/31 16:54:49 $
+ * $Revision: 1.229 $
  */
 
 #define L_MARKER '<'
@@ -277,6 +277,46 @@ int lenChtypeList (const chtype **list)
    return result;
 }
 
+int CDKchdir (const char *directory)
+{
+   int result;
+
+#ifdef HAVE_WORDEXP
+   wordexp_t expanded;
+   if (wordexp (directory, &expanded, WRDE_NOCMD) == 0)
+   {
+      if (expanded.we_wordc == 1 && strcmp (expanded.we_wordv[0], directory))
+	 result = chdir (expanded.we_wordv[0]);
+      else
+	 result = chdir (directory);
+      wordfree (&expanded);
+   }
+   else
+#endif
+      result = chdir (directory);
+   return result;
+}
+
+FILE *CDKopenFile (const char *filename, const char *mode)
+{
+   FILE *result;
+
+#ifdef HAVE_WORDEXP
+   wordexp_t expanded;
+   if (wordexp (filename, &expanded, WRDE_NOCMD) == 0)
+   {
+      if (expanded.we_wordc == 1 && strcmp (expanded.we_wordv[0], filename))
+	 result = fopen (expanded.we_wordv[0], mode);
+      else
+	 result = fopen (filename, mode);
+      wordfree (&expanded);
+   }
+   else
+#endif
+      result = fopen (filename, mode);
+   return result;
+}
+
 /*
  * This reads a file and sticks it into the char *** provided.
  */
@@ -288,7 +328,7 @@ int CDKreadFile (const char *filename, char ***array)
    unsigned used = 0;
 
    /* Can we open the file?  */
-   if ((fd = fopen (filename, "r")) == 0)
+   if ((fd = CDKopenFile (filename, "r")) == 0)
    {
       return (-1);
    }

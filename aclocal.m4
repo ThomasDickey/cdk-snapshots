@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.120 2024/03/30 00:11:16 tom Exp $
+dnl $Id: aclocal.m4,v 1.121 2024/03/31 13:33:35 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2023,2024 Thomas E. Dickey
@@ -1608,6 +1608,27 @@ AC_TRY_LINK([$ac_includes_default],
 AC_MSG_RESULT($ac_cv_func_lstat )
 if test "$ac_cv_func_lstat" = yes; then
 	AC_DEFINE(HAVE_LSTAT,1,[Define to 1 if we have lstat])
+fi
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl CF_FUNC_WORDEXP version: 1 updated: 2024/03/31 09:33:13
+dnl ---------------
+AC_DEFUN([CF_FUNC_WORDEXP],
+[
+AC_MSG_CHECKING(for wordexp)
+AC_CACHE_VAL(ac_cv_func_wordexp,[
+AC_TRY_LINK([$ac_includes_default
+#include <wordexp.h>],[
+	wordexp_t result;
+	int flags = 0;
+	if (wordexp("~", &result, flags))
+		wordfree(&result)],
+	   [ac_cv_func_wordexp=yes],
+	   [ac_cv_func_wordexp=no])
+	   ])
+AC_MSG_RESULT($ac_cv_func_wordexp)
+if test "$ac_cv_func_wordexp" = yes; then
+	AC_DEFINE(HAVE_WORDEXP,1,[Define to 1 if we have wordexp])
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
