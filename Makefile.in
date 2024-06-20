@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.137 2024/03/29 07:41:33 tom Exp $
+# $Id: Makefile.in,v 1.146 2024/06/19 18:43:55 tom Exp $
 #
 # Copyright 2001-2022,2024 Thomas E. Dickey
 # Copyright 1999, Mike Glover
@@ -30,6 +30,7 @@ SHELL		= /bin/sh
 MAKE_RECUR	= @cf_cv_makeflags@ prefix=$(prefix)
 
 PACKAGE		= @PACKAGE@
+PC_FILE		= @PACKAGE@.pc
 
 CFG_ROOTNAME	= @CFG_ROOTNAME@
 HDR_ROOTNAME	= @HDR_ROOTNAME@
@@ -64,7 +65,6 @@ x		= @EXEEXT@
 o		= .@OBJEXT@
 a		= $(LIB_SUFFIX)
 
-DESTDIR		=
 bindir		= @bindir@
 includedir	= @includedir@
 libdir		= @libdir@
@@ -72,6 +72,7 @@ shlibdir	= @shlibdir@
 datarootdir	= @datarootdir@
 datadir		= @datadir@
 mandir		= @mandir@
+pkgconfig_dir	= @PKG_CONFIG_LIBDIR@
 
 DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(HDR_ROOTNAME)
 BIN_DIR		= $(DESTDIR)$(bindir)
@@ -79,6 +80,7 @@ INCLUDE_DIR	= $(DESTDIR)$(includedir)
 INCLUDE_SUBDIR	= $(DESTDIR)$(includedir)/$(HDR_ROOTNAME)
 SHLIB_DIR	= $(DESTDIR)$(shlibdir)
 LIB_DIR		= $(DESTDIR)$(libdir)
+PKGCONFIG_DIR	= $(DESTDIR)$(pkgconfig_dir)
 MAN1_DIR	= $(DESTDIR)$(mandir)/man1
 MAN1SECT	= 1
 MAN3_DIR	= $(DESTDIR)$(mandir)/man@MAN_TAG@
@@ -122,6 +124,8 @@ UNINSTALL_LIB	= $(LIBTOOL_UNINSTALL) $(RM)
 .SUFFIXES: .c .o .lo .os .i
 
 @MAKE_PHONY@.PHONY: all cdklib check clean cli default demos distclean examples lint manpages realclean sources
+@MAKE_PHONY@.PHONY: install install.libs
+@MAKE_PHONY@.PHONY: uninstall uninstall.libs
 @MAKE_PHONY@.PHONY: installCDKHeaderFiles installCDKLibrary installCDKManPages installCDKReadme
 @MAKE_PHONY@.PHONY: uninstallCDKHeaderFiles uninstallCDKLibrary uninstallCDKManPages uninstallCDKReadme
 
@@ -436,14 +440,19 @@ uninstallCDKHeaderFiles ::
 install \
 install.libs :: $(SHLIB_DIR) $(CDKLIB)
 @MAKE_STATIC@	@echo "Installing CDK library"
-@MAKE_STATIC@		@$(INSTALL_LIB) $(CDKLIB) $(SHLIB_DIR)/$(CDKLIB)
+@MAKE_STATIC@	@$(INSTALL_LIB) $(CDKLIB) $(SHLIB_DIR)/$(CDKLIB)
+
+@MAKE_PC_FILES@install \
+@MAKE_PC_FILES@install.libs::	$(PC_FILE) $(PKGCONFIG_DIR)
+@MAKE_PC_FILES@	$(INSTALL_DATA) $(PC_FILE) $(PKGCONFIG_DIR)/$(PC_FILE)
 
 installCDKLibrary : install.libs
 
 uninstall \
 uninstall.libs ::
-@MAKE_STATIC@		@echo "Uninstalling CDK library"
-@MAKE_STATIC@		@- $(UNINSTALL_LIB) $(SHLIB_DIR)/$(CDKLIB)
+@MAKE_STATIC@	@echo "Uninstalling CDK library"
+@MAKE_STATIC@	@- $(UNINSTALL_LIB) $(SHLIB_DIR)/$(CDKLIB)
+@MAKE_PC_FILES@	$(RM) $(PKGCONFIG_DIR)/$(PC_FILE)
 
 uninstallCDKLibrary : uninstall.libs
 
@@ -502,6 +511,9 @@ manpage.sed :
 @MAKE_LOWER_TAGS@TAGS :
 @MAKE_LOWER_TAGS@	$(ETAGS) *.[ch] */*.[ch]
 
+$(PC_FILE) : gen-pkgconfig 
+	$(SHELL) gen-pkgconfig $(PC_FILE)
+
 lint: $(AUTO_HDR) $(AUTO_SRC) $(CDKSRC)
 	$(LINT) $(LINT_OPTS) $(CPPFLAGS) $(AUTO_SRC) $(CDKSRC)
 
@@ -541,6 +553,7 @@ distclean :: realclean
 	$(RM) include/cdk_version.h
 	$(RM) Makefile
 	$(RM) cdk-config
+	$(RM) gen-pkgconfig @PACKAGE@.pc
 	$(RM) headers
 	$(RM) mk_shared_lib.sh
 	@- $(SHELL) -c 'if test "$(srcdir)" != . ; then \
@@ -575,6 +588,7 @@ $(DOCUMENT_DIR) \
 $(INCLUDE_DIR) \
 $(INCLUDE_SUBDIR) \
 $(LIB_DIR) \
+$(PKGCONFIG_DIR) \
 $(MAN1_DIR) \
 $(MAN3_DIR) : ; mkdir -p $@
 

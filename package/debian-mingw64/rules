@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.4 2021/03/24 22:30:29 tom Exp $
+# $Id: rules,v 1.7 2024/06/20 00:19:38 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -16,7 +16,7 @@ CC_STRICT = $(CC_NORMAL) -W -Wbad-function-cast -Wcast-align -Wcast-qual -Wmissi
 
 TARGET    = amd64-mingw32msvc
 MINGW_TOP = /usr/$(TARGET)
-MINGW_TMP = $(CURDIR)/debian/mingw64-libcdk5
+MINGW_USE = $(CURDIR)/debian/mingw64-libcdk5
 MINGW_DEV = $(CURDIR)/debian/mingw64-libcdk5-dev
 
 CFLAGS = $(CC_NORMAL)
@@ -25,9 +25,12 @@ CONFIG_OPTIONS = \
 	--disable-echo \
 	--verbose \
 	--with-shared \
+	--enable-pc-files \
 	--enable-warnings \
 	--enable-stdnoreturn \
-	--enable-const
+	--enable-const \
+	--with-screen=ncursesw6td \
+	--with-pkg-config-libdir=$(MINGW_TOP)/lib/pkgconfig
 
 verbose = # -v
 
@@ -79,11 +82,13 @@ install: install-stamp
 install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
-	dh_clean -k     $(verbose)
-	dh_installdirs  $(verbose)
+	dh_clean -k	     $(verbose)
+	dh_installdirs	     $(verbose)
 
-	$(MAKE) installCDKLibrary DESTDIR=$(MINGW_TMP)
-	rm -f $(MINGW_TMP)/$(MINGW_TOP)/bin/cdk5-config
+	$(MAKE) installCDKLibrary DESTDIR=$(MINGW_DEV)
+	mkdir $(verbose) -p $(MINGW_USE)$(MINGW_TOP)/lib
+	mv $(verbose) $(MINGW_DEV)$(MINGW_TOP)/lib/*.dll $(MINGW_USE)$(MINGW_TOP)/lib/
+	chmod -x $(verbose) $(MINGW_USE)$(MINGW_TOP)/lib/*.dll
 	$(MAKE) installImportLibrary DESTDIR=$(MINGW_DEV)
 	$(MAKE) installCDKHeaderFiles DESTDIR=$(MINGW_DEV)
 
@@ -97,15 +102,15 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
+	dh_installdocs       $(verbose)
 	dh_installchangelogs $(verbose)
-	# dh_strip
-	dh_compress     $(verbose)
-	dh_fixperms     $(verbose)
-	dh_installdeb   $(verbose)
-	dh_shlibdeps    $(verbose)
-	dh_gencontrol   $(verbose)
-	dh_md5sums      $(verbose)
-	dh_builddeb     $(verbose)
+	dh_compress          $(verbose)
+	dh_fixperms	     $(verbose)
+	dh_installdeb	     $(verbose)
+	dh_shlibdeps	     $(verbose)
+	dh_gencontrol	     $(verbose)
+	dh_md5sums	     $(verbose)
+	dh_builddeb	     $(verbose)
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install install-stamp

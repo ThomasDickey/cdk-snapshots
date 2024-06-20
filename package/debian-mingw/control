@@ -3,12 +3,12 @@ Maintainer: Thomas E. Dickey <dickey@invisible-island.net>
 Section: misc
 Priority: optional
 Standards-Version: 3.8.4
-Build-Depends: debhelper (>= 5), mingw32-ncurses6 (>= 5.9), groff-base
+Build-Depends: debhelper (>= 5), mingw32-ncurses6td (>= 5.9), groff-base
 Homepage: http://invisible-island.net/cdk/
 
 Package: mingw32-libcdk5
 Architecture: any
-Depends: mingw32-ncurses6 (>= 5.9)
+Depends: mingw32-ncurses6td (>= 5.9)
 Description: Cdk - Curses Development Kit
  Cdk stands for "Curses Development Kit".  It contains a large number of ready
  to use widgets which facilitate the speedy development of full-screen curses
@@ -20,7 +20,7 @@ Description: Cdk - Curses Development Kit
 
 Package: mingw32-libcdk5-dev
 Architecture: any
-Depends: mingw32-ncurses6 (>= 5.9), mingw32-libcdk5
+Depends: mingw32-ncurses6td (>= 5.9), mingw32-libcdk5
 Suggests: libcdk-doc
 Description: Cdk - Curses Development Kit
  Cdk stands for "Curses Development Kit".  It contains a large number of ready

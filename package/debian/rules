@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules,v 1.39 2024/03/29 08:18:59 tom Exp $
+# $Id: rules,v 1.46 2024/06/19 21:28:03 tom Exp $
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -20,10 +20,6 @@ DEB_HOST_MULTIARCH  ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 # packages
 PACKAGES.indep = libcdk5-doc
 PACKAGES.arch  = libcdk5-dev libcdk5
-
-CPPFLAGS	:= $(shell dpkg-buildflags --get CPPFLAGS)
-CFLAGS		:= $(shell dpkg-buildflags --get CFLAGS)
-LDFLAGS		:= $(shell dpkg-buildflags --get LDFLAGS)
 
 SCREEN = ncursesw6
 TARGET = $(CURDIR)/debian
@@ -50,6 +46,7 @@ configure = \
 		--with-versioned-syms \
 		--with-libname=cdk \
 		--disable-rpath-hack \
+		--enable-pc-files \
 		--enable-warnings \
 		--enable-stdnoreturn \
 		--enable-const
@@ -165,8 +162,8 @@ install-libcdk5-stamp      : build-libcdk5-stamp
 	$(MAKE) -C $(P_SHARED) DESTDIR=$(TARGET)/libcdk5 install.libs
 	find $(TARGET)/libcdk5/usr/lib -type l -name '*.so*' -exec rm -f {} \;
 
-	# remove -config file also in -dev package
-	rm -rf $(TARGET)/libcdk5/usr/bin
+	# remove ".pc" and *-config files also in -dev package
+	rm -rf $(TARGET)/libcdk5/usr/bin "`find $(TARGET)/libcdk5/usr/lib -type d -name pkgconfig`"
 
 	touch $@
 

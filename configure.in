@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.84 2024/03/31 13:23:25 tom Exp $
+dnl $Id: configure.in,v 1.88 2024/06/19 17:51:47 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2023,2024 Thomas E. Dickey
@@ -76,6 +76,7 @@ CF_WITH_CURSES_DIR
 CF_WITH_SCREEN_PDCURSES
 CF_ENABLE_WARNINGS
 CF_PKG_CONFIG
+CF_ENABLE_PC_FILES
 
 CF_ENABLE_RPATH
 CF_DISABLE_RPATH_HACK
@@ -209,12 +210,14 @@ CF_WITH_NC_ALLOC_H
 CF_CURSES_SETBEGYX
 
 CF__DEFINE_SHLIB_VARS
+CF_LD_SEARCHPATH
 
 dnl
 dnl Set pre-processor compile time variables.
 dnl
 AC_OUTPUT(
 	cdk-config
+	gen-pkgconfig
 	headers
 	include/cdk_version.h:include/cdk_version.hin
 	Makefile
