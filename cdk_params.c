@@ -4,8 +4,8 @@
  * Useful functions for command-line parsing.
  *
  * $Author: tom $
- * $Date: 2016/11/20 18:32:53 $
- * $Revision: 1.12 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.13 $
  */
 
 #define OPTION_ON	((char *)1)
@@ -24,7 +24,7 @@ static void usage (char **argv,
    for (n = 1; n < MAX_CDK_PARAMS; ++n)
    {
       if (n != ':'
-	  && (str = (strchr) (options, n)) != 0)
+	  && (str = (strchr) (options, n)) != NULL)
       {
 	 int value = (str[1] == ':');
 	 fprintf (stderr, "  -%c", n);
@@ -70,7 +70,7 @@ int CDKparsePosition (const char *string)
 {
    int result;
 
-   if (string == 0)
+   if (string == NULL)
    {
       result = NONE;
    }
@@ -119,7 +119,7 @@ void CDKparseParams (int argc,
    {
       const char *str;
 
-      if (code == '?' || (str = (strchr) (options, code)) == 0)
+      if (code == '?' || (str = (strchr) (options, code)) == NULL)
       {
 	 usage (argv, params, options);
       }
@@ -181,7 +181,7 @@ int CDKparamNumber2 (CDK_PARAMS * params, int option, int missing)
  */
 char *CDKparamString (CDK_PARAMS * params, int option)
 {
-   return CDKparamString2 (params, option, 0);
+   return CDKparamString2 (params, option, NULL);
 }
 
 /*
@@ -191,8 +191,8 @@ char *CDKparamString2 (CDK_PARAMS * params, int option, const char *missing)
 {
    char *value = ((option > 0 && option < MAX_CDK_PARAMS)
 		  ? params->allParams[option]
-		  : 0);
-   if (value == 0)
+		  : NULL);
+   if (value == NULL)
       value = copyChar (missing);
    return value;
 }
@@ -206,11 +206,11 @@ int CDKparamValue (CDK_PARAMS * params, int option, int missing)
    int result;
    char *value = CDKparamString (params, option);
 
-   if (value == 0)
+   if (value == NULL)
    {
       result = missing;
    }
-   else if (strchr (CDK_CLI_PARAMS, option) != 0)
+   else if (strchr (CDK_CLI_PARAMS, option) != NULL)
    {
       switch (option)
       {

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/20 09:54:37 $
- * $Revision: 1.4 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.5 $
  */
 
 /*
@@ -31,14 +31,14 @@ EDisplayType char2DisplayType (const char *string)
       { "UHMIXED",	vUHMIXED },
       { "LHMIXED",	vLHMIXED },
       { "VIEWONLY",	vVIEWONLY },
-      { 0,		vINVALID },
+      { NULL,		vINVALID },
    };
    /* *INDENT-ON* */
 
-   if (string != 0)
+   if (string != NULL)
    {
       int n;
-      for (n = 0; table[n].name != 0; n++)
+      for (n = 0; table[n].name != NULL; n++)
       {
 	 if (!strcmp (string, table[n].name))
 	    return table[n].code;

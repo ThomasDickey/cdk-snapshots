@@ -1,4 +1,4 @@
-/* $Id: cdkentry.c,v 1.16 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkentry.c,v 1.17 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -22,21 +22,21 @@ static const char *FPUsage = "-f Field Width [-d Display Type] [-F Field Charact
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKENTRY *widget             = 0;
-   CDKBUTTONBOX *buttonWidget   = 0;
-   chtype *holder               = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKENTRY *widget             = NULL;
+   CDKBUTTONBOX *buttonWidget   = NULL;
+   chtype *holder               = NULL;
    chtype fieldAttr             = A_NORMAL;
-   char *answer                 = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *temp                   = 0;
+   char *answer                 = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *temp                   = NULL;
    char filler                  = '.';
    EDisplayType dType           = vMIXED;
    int buttonCount              = 0;
    int selection                = 0;
    int shadowHeight             = 0;
    FILE *fp                     = stderr;
-   char **buttonList            = 0;
+   char **buttonList            = NULL;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
    outputFile   = CDKparamString (&params, 'O');
    title        = CDKparamString (&params, 'T');
 
-   if ((temp = CDKparamString (&params, 'd')) != 0)
+   if ((temp = CDKparamString (&params, 'd')) != NULL)
       dType = char2DisplayType (temp);
 
    /* Make sure all the command line parameters were provided. */
@@ -82,9 +82,9 @@ int main (int argc, char **argv)
    }
 
    /* If the user asked for an output file, try to open it. */
-   if (outputFile != 0)
+   if (outputFile != NULL)
    {
-      if ((fp = fopen (outputFile, "w")) == 0)
+      if ((fp = fopen (outputFile, "w")) == NULL)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
 	 ExitProgram (CLI_ERROR);
@@ -97,7 +97,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -106,13 +106,13 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* If the set the filler character, set it now. */
-   if (tempFiller != 0)
+   if (tempFiller != NULL)
    {
       holder = char2Chtype (tempFiller, &j1, &j2);
       fieldAttr = A_ATTRIBUTES & holder[0];
@@ -130,7 +130,7 @@ int main (int argc, char **argv)
 			 boxWidget, FALSE);
 
    /* Check to make sure we created the dialog box. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
@@ -144,7 +144,7 @@ int main (int argc, char **argv)
    }
 
    /* Split the buttons if they supplied some. */
-   if (buttons != 0)
+   if (buttons != NULL)
    {
       buttonList = CDKsplitString (buttons, '\n');
       buttonCount = (int)CDKcountStrings ((CDK_CSTRING2)buttonList);
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 				      (getbegy (widget->win)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 1,
-				      0, 1, buttonCount,
+				      NULL, 1, buttonCount,
 				      (CDK_CSTRING2)buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
@@ -195,7 +195,7 @@ int main (int argc, char **argv)
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
-      shadowHeight = (buttonWidget == 0 ?
+      shadowHeight = (buttonWidget == NULL ?
 		      widget->boxHeight :
 		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
@@ -206,7 +206,7 @@ int main (int argc, char **argv)
 				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
-      if (widget->shadowWin != 0)
+      if (widget->shadowWin != NULL)
       {
 	 widget->shadow = TRUE;
 
@@ -225,16 +225,16 @@ int main (int argc, char **argv)
    setCDKEntryBackgroundColor (widget, CDK_WIDGET_COLOR);
 
    /* If there was an initial value, set it. */
-   if (initValue != 0)
+   if (initValue != NULL)
    {
       setCDKEntryValue (widget, initValue);
    }
 
    /* Activate the widget. */
-   answer = copyChar (activateCDKEntry (widget, 0));
+   answer = copyChar (activateCDKEntry (widget, NULL));
 
    /* If there were buttons, get the button selected. */
-   if (buttonWidget != 0)
+   if (buttonWidget != NULL)
    {
       selection = buttonWidget->currentButton;
       destroyCDKButtonbox (buttonWidget);
@@ -246,7 +246,7 @@ int main (int argc, char **argv)
    endCDK ();
 
    /* Print the value from the widget. */
-   if (answer != 0)
+   if (answer != NULL)
    {
       fprintf (fp, "%s\n", answer);
       freeChar (answer);

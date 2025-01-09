@@ -1,4 +1,4 @@
-/* $Id: cdkscreen_ex.c,v 1.9 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkscreen_ex.c,v 1.10 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -112,7 +112,7 @@ int main (void)
 
       /* Draw the fourth screen. */
       drawCDKScreen (cdkScreen5);
-      answer = activateCDKDialog (dialog, 0);
+      answer = activateCDKDialog (dialog, NULL);
 
       /* Check the users answer. */
       if (answer == 1)

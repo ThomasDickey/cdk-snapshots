@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:09:14 $
- * $Revision: 1.200 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.201 $
  */
 
 /*
@@ -22,7 +22,7 @@ static void drawEachRowTitle (CDKMATRIX *matrix);
 static void drawOldCDKMatrixCell (CDKMATRIX *matrix);
 static void redrawTitles (CDKMATRIX *matrix, int row, int col);
 
-#define emptyString(s) ((s) == 0 || *(s) == '\0')
+#define emptyString(s) ((s) == NULL || *(s) == '\0')
 
 #define CurMatrixCell(matrix) \
 	    MATRIX_CELL (matrix, matrix->crow, matrix->ccol)
@@ -82,7 +82,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 			 boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKMATRIX *matrix    = 0;
+   CDKMATRIX *matrix    = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxHeight        = 0;
@@ -96,7 +96,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    int begx             = 0;
    int begy             = 0;
    int cellWidth        = 0;
-   char **temp          = 0;
+   char **temp          = NULL;
    int x, y;
    int borderw          = 0;
    bool have_rowtitles  = FALSE;
@@ -108,9 +108,9 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
-   if ((matrix = newCDKObject (CDKMATRIX, &my_funcs)) == 0)
+   if ((matrix = newCDKObject (CDKMATRIX, &my_funcs)) == NULL)
    {
-      return (0);
+      return (NULL);
    }
 
    setCDKMatrixBox (matrix, Box);
@@ -120,7 +120,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    if (rows <= 0 || cols <= 0 || vrows <= 0 || vcols <= 0)
    {
       destroyCDKObject (matrix);
-      return (0);
+      return (NULL);
    }
 #if NEW_CDKMATRIX
    matrix->cell = typeCallocN (WINDOW *, (rows + 1) * (cols + 1));
@@ -180,7 +180,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    {
       if (rowtitles && !emptyString (rowtitles[x]))	/*VR */
 	 have_rowtitles = TRUE;
-      matrix->rowtitle[x] = char2Chtype (rowtitles ? rowtitles[x] : 0,	/*VR */
+      matrix->rowtitle[x] = char2Chtype (rowtitles ? rowtitles[x] : NULL,	/*VR */
 					 &matrix->rowtitleLen[x],
 					 &matrix->rowtitlePos[x]);
       maxRowTitleWidth = MAXIMUM (maxRowTitleWidth, matrix->rowtitleLen[x]);
@@ -227,10 +227,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    /* Make the pop-up window. */
    matrix->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
-   if (matrix->win == 0)
+   if (matrix->win == NULL)
    {
       destroyCDKObject (matrix);
-      return (0);
+      return (NULL);
    }
 
    /* Make the subwindows in the pop-up. */
@@ -246,7 +246,7 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
    {
       if (coltitles && !emptyString (coltitles[x]))	/*VR */
 	 have_coltitles = TRUE;
-      matrix->coltitle[x] = char2Chtype (coltitles ? coltitles[x] : 0,	/*VR */
+      matrix->coltitle[x] = char2Chtype (coltitles ? coltitles[x] : NULL,	/*VR */
 					 &matrix->coltitleLen[x],
 					 &matrix->coltitlePos[x]);
       matrix->coltitlePos[x] = (BorderOf (matrix) +
@@ -268,10 +268,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 					      begy,
 					      begx);
 
-	 if (MATRIX_CELL (matrix, 0, x) == 0)
+	 if (MATRIX_CELL (matrix, 0, x) == NULL)
 	 {
 	    destroyCDKObject (matrix);
-	    return (0);
+	    return (NULL);
 	 }
 	 begx += cellWidth + colSpace - 1;
       }
@@ -288,10 +288,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 					      3, matrix->maxrt,
 					      begy, xpos + borderw);
 
-	 if (MATRIX_CELL (matrix, x, 0) == 0)
+	 if (MATRIX_CELL (matrix, x, 0) == NULL)
 	 {
 	    destroyCDKObject (matrix);
-	    return (0);
+	    return (NULL);
 	 }
       }
 
@@ -306,10 +306,10 @@ CDKMATRIX *newCDKMatrix (CDKSCREEN *cdkscreen,
 					      3, cellWidth,
 					      begy, begx);
 
-	 if (MATRIX_CELL (matrix, x, y) == 0)
+	 if (MATRIX_CELL (matrix, x, y) == NULL)
 	 {
 	    destroyCDKObject (matrix);
-	    return (0);
+	    return (NULL);
 	 }
 	 begx += cellWidth + colSpace - 1;
 	 keypad (MATRIX_CELL (matrix, x, y), TRUE);
@@ -388,7 +388,7 @@ int activateCDKMatrix (CDKMATRIX *matrix, chtype *actions)
    /* Draw the matrix */
    drawCDKMatrix (matrix, ObjOf (matrix)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       boolean functionKey;
 
@@ -462,7 +462,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
    highlightCDKMatrixCell (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vMATRIX,
@@ -738,7 +738,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	    break;
 
 	 case CDK_PASTE:
-	    if (GPasteBuffer == 0 ||
+	    if (GPasteBuffer == NULL ||
 		(int)strlen (GPasteBuffer) > widget->colwidths[widget->ccol])
 	    {
 	       Beep ();
@@ -877,7 +877,7 @@ static int _injectCDKMatrix (CDKOBJS *object, chtype input)
 	 }
 
 	 /* Should we call a post-process? */
-	 if (PostProcessFuncOf (widget) != 0)
+	 if (PostProcessFuncOf (widget) != NULL)
 	 {
 	    PostProcessFuncOf (widget) (vMATRIX,
 					widget,
@@ -1266,7 +1266,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
    CDKMATRIX *matrix = (CDKMATRIX *)object;
 
    /* Did we ask for a shadow??? */
-   if (matrix->shadowWin != 0)
+   if (matrix->shadowWin != NULL)
    {
       drawShadow (matrix->shadowWin);
    }
@@ -1296,7 +1296,7 @@ static void _drawCDKMatrix (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKMatrix (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMATRIX *matrix = (CDKMATRIX *)object;
       int x = 0;
@@ -1436,11 +1436,11 @@ void setCDKMatrixCells (CDKMATRIX *matrix,
 	    const char *source = info[(x * maxcols) + y];
 
 	    /* Copy in the new information. */
-	    if (source != 0)
+	    if (source != NULL)
 	    {
 	       char *target = MATRIX_INFO (matrix, x, y);
 
-	       if (target == 0)	/* this should not happen... */
+	       if (target == NULL)	/* this should not happen... */
 	       {
 		  target = typeCallocN (char, matrix->colwidths[y] + 1);
 		  MATRIX_INFO (matrix, x, y) = target;
@@ -1501,7 +1501,7 @@ void cleanCDKMatrixCell (CDKMATRIX *matrix, int row, int col)
  */
 int jumpToCell (CDKMATRIX *matrix, int row, int col)
 {
-   CDKSCALE *scale = 0;
+   CDKSCALE *scale = NULL;
    int newRow = row;
    int newCol = col;
 
@@ -1518,7 +1518,7 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
 			   1, 1, matrix->rows, 1, 1, TRUE, FALSE);
 
       /* Activate the scale and get the row. */
-      newRow = activateCDKScale (scale, 0);
+      newRow = activateCDKScale (scale, NULL);
       destroyCDKScale (scale);
    }
 
@@ -1535,7 +1535,7 @@ int jumpToCell (CDKMATRIX *matrix, int row, int col)
 			   1, 1, matrix->cols, 1, 1, TRUE, FALSE);
 
       /* Activate the scale and get the column. */
-      newCol = activateCDKScale (scale, 0);
+      newCol = activateCDKScale (scale, NULL);
       destroyCDKScale (scale);
    }
 
@@ -1731,7 +1731,7 @@ char *getCDKMatrixCell (CDKMATRIX *matrix, int row, int col)
    /* Make sure the row/col combination is within the matrix. */
    if (row > matrix->rows || col > matrix->cols || row <= 0 || col <= 0)
    {
-      return 0;
+      return NULL;
    }
    return MATRIX_INFO (matrix, row, col);
 }
@@ -1753,7 +1753,7 @@ int getCDKMatrixRow (CDKMATRIX *matrix)
  */
 static void _setBKattrMatrix (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMATRIX *widget = (CDKMATRIX *)object;
       int x, y;

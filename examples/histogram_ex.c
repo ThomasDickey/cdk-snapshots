@@ -1,4 +1,4 @@
-/* $Id: histogram_ex.c,v 1.12 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: histogram_ex.c,v 1.13 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -13,10 +13,10 @@ char *XCursesProgramName = "histogram_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKHISTOGRAM *volume         = 0;
-   CDKHISTOGRAM *bass           = 0;
-   CDKHISTOGRAM *treble         = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKHISTOGRAM *volume         = NULL;
+   CDKHISTOGRAM *bass           = NULL;
+   CDKHISTOGRAM *treble         = NULL;
    const char *volumeTitle      = "<C></5>Volume<!5>";
    const char *bassTitle        = "<C></5>Bass  <!5>";
    const char *trebleTitle      = "<C></5>Treble<!5>";
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 			     HORIZONTAL, volumeTitle,
 			     Box,
 			     CDKparamValue (&params, 'S', FALSE));
-   if (volume == 0)
+   if (volume == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 			   HORIZONTAL, bassTitle,
 			   Box,
 			   CDKparamValue (&params, 'S', FALSE));
-   if (bass == 0)
+   if (bass == NULL)
    {
       /* Exit CDK. */
       destroyCDKHistogram (volume);
@@ -78,7 +78,7 @@ int main (int argc, char **argv)
 			     HORIZONTAL, trebleTitle,
 			     Box,
 			     CDKparamValue (&params, 'S', FALSE));
-   if (treble == 0)
+   if (treble == NULL)
    {
       /* Exit CDK. */
       destroyCDKHistogram (volume);

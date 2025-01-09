@@ -1,5 +1,5 @@
 /*
- * $Id: gen-scale.h,v 1.9 2012/03/20 21:59:39 tom Exp $
+ * $Id: gen-scale.h,v 1.10 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2004,2012 Thomas E. Dickey
+ * Copyright 2012,2025 Thomas E. Dickey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -185,7 +185,7 @@ boolean getCDK<MIXED>Box (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDK<MIXED>BackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

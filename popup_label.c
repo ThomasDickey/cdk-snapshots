@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:44:22 $
- * $Revision: 1.4 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.5 $
  */
 
 /*
@@ -11,7 +11,7 @@
  */
 void popupLabel (CDKSCREEN *screen, CDK_CSTRING2 mesg, int count)
 {
-   CDKLABEL *popup = 0;
+   CDKLABEL *popup = NULL;
    int oldCursState;
    boolean functionKey;
 
@@ -40,7 +40,7 @@ void popupLabel (CDKSCREEN *screen, CDK_CSTRING2 mesg, int count)
  */
 void popupLabelAttrib (CDKSCREEN *screen, CDK_CSTRING2 mesg, int count, chtype attrib)
 {
-   CDKLABEL *popup = 0;
+   CDKLABEL *popup = NULL;
    int oldCursState;
    boolean functionKey;
 

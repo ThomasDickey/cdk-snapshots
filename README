@@ -1,7 +1,7 @@
--- $Id: README,v 1.20 2024/03/11 23:35:06 tom Exp $
+-- $Id: README,v 1.21 2025/01/09 00:30:38 tom Exp $
 -------------------------------------------------------------------------------
 
-Copyright Thomas E. Dickey 1999-2023,2024
+Copyright Thomas E. Dickey 1999-2024,2025
 
 This is a modified/enhanced version of Cdk.  The original README contents are
 given below.
@@ -9,7 +9,7 @@ given below.
 This version of Cdk is found at
 
 	https://invisible-island.net/cdk/
-	ftp://ftp.invisible-island.net/cdk/
+	https://invisible-mirror.net/cdk/
 
 The intent of the modifications is to preserve nominal compatibility with the
 original Cdk, while fixing bugs and design limitations.  Some macros such as

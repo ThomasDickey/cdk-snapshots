@@ -6,8 +6,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/12/04 15:41:50 $
- * $Revision: 1.91 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.92 $
  */
 
 typedef struct _all_screens
@@ -32,7 +32,7 @@ static boolean validObjType (CDKOBJS *obj, EObjectType type)
 {
    bool valid = FALSE;
 
-   if (obj != 0 && ObjTypeOf (obj) == type)
+   if (obj != NULL && ObjTypeOf (obj) == type)
    {
       switch (type)
       {
@@ -90,11 +90,11 @@ static void setScreenIndex (CDKSCREEN *screen, int number, CDKOBJS *obj)
 bool validCDKObject (CDKOBJS *obj)
 {
    bool result = FALSE;
-   if (obj != 0)
+   if (obj != NULL)
    {
       ALL_OBJECTS *ptr;
 
-      for (ptr = all_objects; ptr != 0; ptr = ptr->link)
+      for (ptr = all_objects; ptr != NULL; ptr = ptr->link)
       {
 	 if (ptr->object == obj)
 	 {
@@ -113,10 +113,10 @@ bool validCDKObject (CDKOBJS *obj)
 void *_newCDKObject (unsigned size, const CDKFUNCS * funcs)
 {
    ALL_OBJECTS *item;
-   CDKOBJS *result = 0;
-   if ((item = typeCalloc (ALL_OBJECTS)) != 0)
+   CDKOBJS *result = NULL;
+   if ((item = typeCalloc (ALL_OBJECTS)) != NULL)
    {
-      if ((result = (CDKOBJS *)calloc (1, size)) != 0)
+      if ((result = (CDKOBJS *)calloc (1, size)) != NULL)
       {
 	 result->fn = funcs;
 	 result->hasFocus = TRUE;
@@ -153,12 +153,12 @@ void _destroyCDKObject (CDKOBJS *obj)
    {
       ALL_OBJECTS *p, *q;
 
-      for (p = all_objects, q = 0; p != 0; q = p, p = p->link)
+      for (p = all_objects, q = NULL; p != NULL; q = p, p = p->link)
       {
 	 if (p->object == obj)
 	 {
 	    /* delink it first, to avoid problems with recursion */
-	    if (q != 0)
+	    if (q != NULL)
 	       q->link = p->link;
 	    else
 	       all_objects = p->link;
@@ -178,10 +178,10 @@ void _destroyCDKObject (CDKOBJS *obj)
 CDKSCREEN *initCDKScreen (WINDOW *window)
 {
    ALL_SCREENS *item;
-   CDKSCREEN *screen = 0;
+   CDKSCREEN *screen = NULL;
 
    /* initialization, for the first time */
-   if (all_screens == 0 || stdscr == 0 || window == 0)
+   if (all_screens == NULL || stdscr == NULL || window == NULL)
    {
       /* Set up basic curses settings. */
 #ifdef HAVE_SETLOCALE
@@ -190,7 +190,7 @@ CDKSCREEN *initCDKScreen (WINDOW *window)
       /* Initialize curses after setting the locale, since curses depends
        * on having a correct locale to reflect the terminal's encoding.
        */
-      if (stdscr == 0 || window == 0)
+      if (stdscr == NULL || window == NULL)
       {
 	 window = initscr ();
       }
@@ -198,9 +198,9 @@ CDKSCREEN *initCDKScreen (WINDOW *window)
       cbreak ();
    }
 
-   if ((item = typeMalloc (ALL_SCREENS)) != 0)
+   if ((item = typeMalloc (ALL_SCREENS)) != NULL)
    {
-      if ((screen = typeCalloc (CDKSCREEN)) != 0)
+      if ((screen = typeCalloc (CDKSCREEN)) != NULL)
       {
 	 item->link = all_screens;
 	 item->screen = screen;
@@ -262,7 +262,7 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
    {
       CDKSCREEN *screen = (obj)->screen;
 
-      if (screen != 0)
+      if (screen != NULL)
       {
 	 int Index = (obj)->screenIndex;
 	 int x;
@@ -287,7 +287,7 @@ void unregisterCDKObject (EObjectType cdktype, void *object)
 	 else
 	 {
 	    /* Reduce the list by one object. */
-	    screen->object[screen->objectCount--] = 0;
+	    screen->object[screen->objectCount--] = NULL;
 
 	    /*
 	     * Update the object-focus
@@ -474,11 +474,11 @@ void destroyCDKScreen (CDKSCREEN *screen)
 {
    ALL_SCREENS *p, *q;
 
-   for (p = all_screens, q = 0; p != 0; q = p, p = p->link)
+   for (p = all_screens, q = NULL; p != NULL; q = p, p = p->link)
    {
       if (screen == p->screen)
       {
-	 if (q != 0)
+	 if (q != NULL)
 	    q->link = p->link;
 	 else
 	    all_screens = p->link;

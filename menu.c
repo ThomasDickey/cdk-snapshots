@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:45:55 $
- * $Revision: 1.106 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.107 $
  */
 
 #define TITLELINES 1
@@ -28,7 +28,7 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
 		     chtype subtitleAttr)
 {
    /* *INDENT-EQLS* */
-   CDKMENU *menu        = 0;
+   CDKMENU *menu        = NULL;
    int rightcount;
    int rightloc         = getmaxx (cdkscreen->window);
    int leftloc          = 0;
@@ -37,8 +37,8 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
    int ypos             = getbegy (cdkscreen->window);
    int ymax             = getmaxy (cdkscreen->window);
 
-   if ((menu = newCDKObject (CDKMENU, &my_funcs)) == 0)
-        return (0);
+   if ((menu = newCDKObject (CDKMENU, &my_funcs)) == NULL)
+        return (NULL);
 
    /* *INDENT-EQLS* Start making a copy of the information. */
    ScreenOf (menu)              = cdkscreen;
@@ -106,10 +106,10 @@ CDKMENU *newCDKMenu (CDKSCREEN *cdkscreen,
 				   max                + 2,
 				   ypos               + y2,
 				   xpos               + x2);
-      if (menu->titleWin[x1] == 0 || menu->pullWin[x1] == 0)
+      if (menu->titleWin[x1] == NULL || menu->pullWin[x1] == NULL)
       {
 	 destroyCDKMenu (menu);
-	 return (0);
+	 return (NULL);
       }
 
       leftloc += menu->titleLen[x] + 1;
@@ -144,7 +144,7 @@ int activateCDKMenu (CDKMENU *menu, chtype *actions)
    drawCDKMenuSubwin (menu);
 
    /* If the input string is null, this is an interactive activate. */
-   if (actions == 0)
+   if (actions == NULL)
    {
       ObjOf (menu)->inputWindow = menu->titleWin[menu->currentTitle];
 
@@ -289,7 +289,7 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vMENU,
@@ -358,7 +358,7 @@ static int _injectCDKMenu (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vMENU,
 				     widget,
@@ -516,7 +516,7 @@ static void _moveCDKMenu (CDKOBJS *object,
  */
 static void _setBKattrMenu (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMENU *widget = (CDKMENU *)object;
       int x;
@@ -534,7 +534,7 @@ static void _setBKattrMenu (CDKOBJS *object, chtype attrib)
  */
 static void _destroyCDKMenu (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMENU *menu = (CDKMENU *)object;
       int x, y;

@@ -1,4 +1,4 @@
-/* $Id: viewer_ex.c,v 1.22 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: viewer_ex.c,v 1.23 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,10 +12,10 @@ char *XCursesProgramName = "viewer_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKVIEWER *example   = 0;
-   CDKFSELECT *fSelect  = 0;
-   char **info          = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKVIEWER *example   = NULL;
+   CDKFSELECT *fSelect  = NULL;
+   char **info          = NULL;
    const char *button[5];
    char vTitle[256];
    const char *mesg[4];
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Get the filename. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       const char *title = "<C>Pick\n<C>A\n<C>File";
       const char *label = "File:  ";
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 			       "</5>", "</48>", "</N>", "</N>",
 			       CDKparamValue (&params, 'N', TRUE),
 			       CDKparamValue (&params, 'S', FALSE));
-      if (fSelect == 0)
+      if (fSelect == NULL)
       {
 	 destroyCDKScreen (cdkscreen);
 	 endCDK ();
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
 		     "</5>", "</48>", "</N>", "</N>", ObjOf (fSelect)->box);
 
       /* Activate the file selector. */
-      filename = activateCDKFselect (fSelect, 0);
+      filename = activateCDKFselect (fSelect, NULL);
 
       /* Check how the person exited from the widget. */
       if (fSelect->exitType == vESCAPE_HIT)
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 			   CDKparamValue (&params, 'S', FALSE));
 
    /* Could we create the viewer widget? */
-   if (example == 0)
+   if (example == NULL)
    {
       /* Exit CDK. */
       destroyCDKFselect (fSelect);
@@ -127,7 +127,7 @@ int main (int argc, char **argv)
    }
    else
    {
-      setCDKViewer (example, "reading...", 0, 0, A_REVERSE, TRUE, TRUE, TRUE);
+      setCDKViewer (example, "reading...", NULL, 0, A_REVERSE, TRUE, TRUE, TRUE);
       /* Open the file and read the contents. */
       lines = CDKreadFile (filename, &info);
       if (lines == -1)
@@ -150,7 +150,7 @@ int main (int argc, char **argv)
    destroyCDKFselect (fSelect);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (example, 0);
+   selected = activateCDKViewer (example, NULL);
 
    /* Check how the person exited from the widget. */
    if (example->exitType == vESCAPE_HIT)

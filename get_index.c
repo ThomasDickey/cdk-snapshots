@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:43:33 $
- * $Revision: 1.3 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.4 $
  */
 
 /*
@@ -16,7 +16,7 @@ int getListIndex (CDKSCREEN *screen,
 		  boolean numbers)
 {
    /* *INDENT-EQLS* */
-   CDKSCROLL *scrollp   = 0;
+   CDKSCROLL *scrollp   = NULL;
    int selected         = -1;
    int height           = 10;
    int width            = -1;
@@ -26,7 +26,7 @@ int getListIndex (CDKSCREEN *screen,
    /* Determine the height of the list. */
    if (listSize < 10)
    {
-      height = listSize + (title == 0 ? 2 : 3);
+      height = listSize + (title == NULL ? 2 : 3);
    }
 
    /* Determine the width of the list. */
@@ -35,7 +35,7 @@ int getListIndex (CDKSCREEN *screen,
       int temp = (int)strlen (list[x]) + 10;
       width = MAXIMUM (width, temp);
    }
-   if (title != 0)
+   if (title != NULL)
    {
       len = (int)strlen (title);
    }
@@ -49,14 +49,14 @@ int getListIndex (CDKSCREEN *screen,
 			   A_REVERSE, TRUE, FALSE);
 
    /* Check if we made the list. */
-   if (scrollp == 0)
+   if (scrollp == NULL)
    {
       refreshCDKScreen (screen);
       return -1;
    }
 
    /* Let the user play. */
-   selected = activateCDKScroll (scrollp, 0);
+   selected = activateCDKScroll (scrollp, NULL);
 
    /* Check how they exited. */
    if (scrollp->exitType != vNORMAL)

@@ -1,14 +1,14 @@
-# $Id: cdk.spec,v 1.79 2024/06/19 09:54:00 tom Exp $
+# $Id: cdk.spec,v 1.81 2025/01/09 00:30:38 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20240619
+%define AppRelease 20250108
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
 License:  MIT-X11
 Group:  Development/Libraries
-URL:  http://invisible-island.net/%{name}/
+URL:  https://invisible-island.net/%{name}/
 Source0:  %{name}-%{version}-%{release}.tgz
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  ncurses6

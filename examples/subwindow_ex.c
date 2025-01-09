@@ -1,4 +1,4 @@
-/* $Id: subwindow_ex.c,v 1.13 2016/12/04 16:20:33 tom Exp $ */
+/* $Id: subwindow_ex.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
    /* Let the user play. */
-   pick = activateCDKScroll (dowList, 0);
+   pick = activateCDKScroll (dowList, NULL);
 
    /* Clean up. */
    destroyCDKScroll (dowList);

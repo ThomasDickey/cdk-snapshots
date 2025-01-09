@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
 
    while (scrollList->exitType != vNORMAL)
    {
-      activateCDKScroll (scrollList, 0);
+      activateCDKScroll (scrollList, NULL);
    }
 
    destroyCDKScroll (scrollList);

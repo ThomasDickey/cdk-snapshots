@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:05:27 $
- * $Revision: 1.86 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.87 $
  */
 
 DeclareCDKObjects (GRAPH, Graph, setCdk, Unknown);
@@ -23,7 +23,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
 		       const char *ytitle)
 {
    /* *INDENT-EQLS* */
-   CDKGRAPH *widget     = 0;
+   CDKGRAPH *widget     = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -31,8 +31,8 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
    int xpos             = xplace;
    int ypos             = yplace;
 
-   if ((widget = newCDKObject (CDKGRAPH, &my_funcs)) == 0)
-        return (0);
+   if ((widget = newCDKObject (CDKGRAPH, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKGraphBox (widget, FALSE);
 
@@ -60,15 +60,15 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
    widget->count        = 0;
    widget->displayType  = vLINE;
 
-   if (widget->win == 0)
+   if (widget->win == NULL)
    {
       destroyCDKObject (widget);
-      return (0);
+      return (NULL);
    }
    keypad (widget->win, TRUE);
 
    /* Translate the X Axis title char * to a chtype * */
-   if (xtitle != 0)
+   if (xtitle != NULL)
    {
       widget->xtitle = char2Chtype (xtitle, &widget->xtitleLen, &widget->xtitlePos);
       widget->xtitlePos = justifyString (widget->boxHeight,
@@ -84,7 +84,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
    }
 
    /* Translate the Y Axis title char * to a chtype * */
-   if (ytitle != 0)
+   if (ytitle != NULL)
    {
       widget->ytitle = char2Chtype (ytitle, &widget->ytitleLen, &widget->ytitlePos);
       widget->ytitlePos = justifyString (widget->boxWidth,
@@ -99,7 +99,7 @@ CDKGRAPH *newCDKGraph (CDKSCREEN *cdkscreen,
 					 widget->ytitlePos);
    }
 
-   widget->graphChar = 0;
+   widget->graphChar = NULL;
 
    registerCDKObject (cdkscreen, vGRAPH, widget);
 
@@ -162,13 +162,13 @@ int setCDKGraphValues (CDKGRAPH *widget, int *values, int count, boolean startAt
    if (count < 0)
       return (FALSE);
 
-   if (widget->values != 0)
+   if (widget->values != NULL)
    {
       free (widget->values);
-      widget->values = 0;
+      widget->values = NULL;
       widget->count = 0;
    }
-   if ((widget->values = typeCallocN (int, count + 1)) == 0)
+   if ((widget->values = typeCallocN (int, count + 1)) == NULL)
         return FALSE;
 
    /* Copy the X values. */
@@ -239,7 +239,7 @@ int getCDKGraphValue (CDKGRAPH *widget, int Index)
  */
 int setCDKGraphCharacters (CDKGRAPH *widget, const char *characters)
 {
-   chtype *newTokens = 0;
+   chtype *newTokens = NULL;
    int charCount, junk;
 
    newTokens = char2Chtype (characters, &charCount, &junk);
@@ -264,7 +264,7 @@ chtype *getCDKGraphCharacters (CDKGRAPH *widget)
  */
 int setCDKGraphCharacter (CDKGRAPH *widget, int Index, const char *character)
 {
-   chtype *newTokens = 0;
+   chtype *newTokens = NULL;
    int charCount, junk;
 
    /* Make sure the index is within range. */
@@ -313,7 +313,7 @@ EGraphDisplayType getCDKGraphDisplayType (CDKGRAPH *widget)
  */
 static void _setBKattrGraph (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKGRAPH *widget = (CDKGRAPH *)object;
 
@@ -390,7 +390,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
 {
    /* *INDENT-EQLS* */
    CDKGRAPH *widget     = (CDKGRAPH *)object;
-   int adj              = 2 + (widget->xtitle == 0 ? 0 : 1);
+   int adj              = 2 + (widget->xtitle == NULL ? 0 : 1);
    int spacing          = 0;
    chtype attrib        = ' ' | A_REVERSE;
    char temp[100];
@@ -421,7 +421,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
    drawCdkTitle (widget->win, object);
 
    /* Draw in the X axis title. */
-   if (widget->xtitle != 0)
+   if (widget->xtitle != NULL)
    {
       writeChtype (widget->win,
 		   0,
@@ -458,7 +458,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
 		    len);
 
    /* Draw in the Y axis title. */
-   if (widget->ytitle != 0)
+   if (widget->ytitle != NULL)
    {
       writeChtype (widget->win,
 		   widget->ytitlePos,
@@ -548,7 +548,7 @@ static void _drawCDKGraph (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKGraph (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKGRAPH *widget = (CDKGRAPH *)object;
 

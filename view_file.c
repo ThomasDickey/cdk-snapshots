@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:39:54 $
- * $Revision: 1.4 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.5 $
  */
 
 /*
@@ -17,7 +17,7 @@ int viewFile (CDKSCREEN *screen,
 {
    /* *INDENT-EQLS* */
    int lines            = 0;
-   char **info          = 0;
+   char **info          = NULL;
    int result;
 
    /* Open the file and read the contents. */

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.127 2024/06/19 13:45:04 tom Exp $
+dnl $Id: aclocal.m4,v 1.128 2024/12/21 13:44:12 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2023,2024 Thomas E. Dickey
@@ -713,7 +713,7 @@ if test "x$ifelse([$2],,CLANG_COMPILER,[$2])" = "xyes" ; then
 fi
 ])
 dnl ---------------------------------------------------------------------------
-dnl CF_CONST_X_STRING version: 8 updated: 2023/12/01 17:22:50
+dnl CF_CONST_X_STRING version: 9 updated: 2024/12/04 03:49:57
 dnl -----------------
 dnl The X11R4-X11R6 Xt specification uses an ambiguous String type for most
 dnl character-strings.
@@ -740,7 +740,7 @@ CF_SAVE_XTRA_FLAGS([CF_CONST_X_STRING])
 
 AC_TRY_COMPILE(
 [
-#include <stdlib.h>
+$ac_includes_default
 #include <X11/Intrinsic.h>
 ],
 [String foo = malloc(1); free((void*)foo)],[
@@ -751,7 +751,7 @@ AC_CACHE_CHECK(for X11/Xt const-feature,cf_cv_const_x_string,[
 #undef  _CONST_X_STRING
 #define _CONST_X_STRING	/* X11R7.8 (perhaps) */
 #undef  XTSTRINGDEFINES	/* X11R5 and later */
-#include <stdlib.h>
+$ac_includes_default
 #include <X11/Intrinsic.h>
 		],[String foo = malloc(1); *foo = 0],[
 			cf_cv_const_x_string=no
@@ -1812,7 +1812,7 @@ CF_INTEL_COMPILER(GCC,INTEL_COMPILER,CFLAGS)
 CF_CLANG_COMPILER(GCC,CLANG_COMPILER,CFLAGS)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_GCC_WARNINGS version: 41 updated: 2021/01/01 16:53:59
+dnl CF_GCC_WARNINGS version: 43 updated: 2024/12/21 08:44:12
 dnl ---------------
 dnl Check if the compiler supports useful warning options.  There's a few that
 dnl we don't use, simply because they're too noisy:
@@ -1926,13 +1926,14 @@ rm -rf ./conftest*
 AC_SUBST(EXTRA_CFLAGS)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_GETOPT_HEADER version: 8 updated: 2021/06/19 19:16:16
+dnl CF_GETOPT_HEADER version: 9 updated: 2024/08/10 10:30:39
 dnl ----------------
 dnl Check for getopt's variables which are commonly defined in stdlib.h,
 dnl unistd.h or (nonstandard) in getopt.h
 AC_DEFUN([CF_GETOPT_HEADER],
-[
-AC_HAVE_HEADERS(unistd.h getopt.h)
+[AC_REQUIRE([AC_HEADER_STDC])
+
+AC_CHECK_HEADERS(getopt.h)
 AC_CACHE_CHECK(for header declaring getopt variables,cf_cv_getopt_header,[
 cf_cv_getopt_header=none
 for cf_header in stdio.h stdlib.h unistd.h getopt.h
@@ -1950,6 +1951,26 @@ fi
 if test "$cf_cv_getopt_header" = getopt.h ; then
 	AC_DEFINE(NEED_GETOPT_H,1,[Define to 1 if we must include getopt.h])
 fi
+])dnl
+dnl ---------------------------------------------------------------------------
+dnl CF_GLOB_FULLPATH version: 2 updated: 2024/08/03 12:34:02
+dnl ----------------
+dnl Use this in case-statements to check for pathname syntax, i.e., absolute
+dnl pathnames.  The "x" is assumed since we provide an alternate form for DOS.
+AC_DEFUN([CF_GLOB_FULLPATH],[
+AC_REQUIRE([CF_WITH_SYSTYPE])dnl
+case "$cf_cv_system_name" in
+(cygwin*|msys*|mingw32*|mingw64|os2*)
+	GLOB_FULLPATH_POSIX='/*'
+	GLOB_FULLPATH_OTHER='[[a-zA-Z]]:[[\\/]]*'
+	;;
+(*)
+	GLOB_FULLPATH_POSIX='/*'
+	GLOB_FULLPATH_OTHER=$GLOB_FULLPATH_POSIX
+	;;
+esac
+AC_SUBST(GLOB_FULLPATH_POSIX)
+AC_SUBST(GLOB_FULLPATH_OTHER)
 ])dnl
 dnl ---------------------------------------------------------------------------
 dnl CF_GNU_SOURCE version: 10 updated: 2018/12/10 20:09:41
@@ -3026,13 +3047,12 @@ CF_UPPER(cf_nculib_ROOT,HAVE_LIB$cf_nculib_root)
 AC_DEFINE_UNQUOTED($cf_nculib_ROOT)
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_PTHREADS version: 2 updated: 2016/04/22 05:07:41
+dnl CF_NCURSES_PTHREADS version: 3 updated: 2024/07/06 13:57:42
 dnl -------------------
-dnl Use this followup check to ensure that we link with pthreads if ncurses
-dnl uses it.
+dnl Use this followup check, e.g., in CF_WITH_NCURSES_ETC, to ensure that we
+dnl link with pthreads if ncurses uses it.
 AC_DEFUN([CF_NCURSES_PTHREADS],[
-: ${cf_nculib_root:=ifelse($1,,ncurses,$1)}
-AC_CHECK_LIB($cf_nculib_root,_nc_init_pthreads,
+AC_CHECK_FUNC(_nc_init_pthreads,
 	cf_cv_ncurses_pthreads=yes,
 	cf_cv_ncurses_pthreads=no)
 if test "$cf_cv_ncurses_pthreads" = yes
@@ -3163,35 +3183,35 @@ else
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_PATH_SYNTAX version: 18 updated: 2020/12/31 18:40:20
+dnl CF_PATH_SYNTAX version: 19 updated: 2024/08/03 13:08:58
 dnl --------------
 dnl Check the argument to see that it looks like a pathname.  Rewrite it if it
 dnl begins with one of the prefix/exec_prefix variables, and then again if the
 dnl result begins with 'NONE'.  This is necessary to work around autoconf's
 dnl delayed evaluation of those symbols.
 AC_DEFUN([CF_PATH_SYNTAX],[
+AC_REQUIRE([CF_GLOB_FULLPATH])dnl
+
 if test "x$prefix" != xNONE; then
 	cf_path_syntax="$prefix"
 else
 	cf_path_syntax="$ac_default_prefix"
 fi
 
-case ".[$]$1" in
-(.\[$]\(*\)*|.\'*\'*)
+case "x[$]$1" in
+(x\[$]\(*\)*|x\'*\'*)
 	;;
-(..|./*|.\\*)
+(x.|x$GLOB_FULLPATH_POSIX|x$GLOB_FULLPATH_OTHER)
 	;;
-(.[[a-zA-Z]]:[[\\/]]*) # OS/2 EMX
-	;;
-(.\[$]\{*prefix\}*|.\[$]\{*dir\}*)
+(x\[$]\{*prefix\}*|x\[$]\{*dir\}*)
 	eval $1="[$]$1"
-	case ".[$]$1" in
-	(.NONE/*)
+	case "x[$]$1" in
+	(xNONE/*)
 		$1=`echo "[$]$1" | sed -e s%NONE%$cf_path_syntax%`
 		;;
 	esac
 	;;
-(.no|.NONE/*)
+(xno|xNONE/*)
 	$1=`echo "[$]$1" | sed -e s%NONE%$cf_path_syntax%`
 	;;
 (*)
@@ -3503,14 +3523,17 @@ AC_SUBST(PROG_EXT)
 test -n "$PROG_EXT" && AC_DEFINE_UNQUOTED(PROG_EXT,"$PROG_EXT",[Define to the program extension (normally blank)])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_PROG_LINT version: 5 updated: 2022/08/20 15:44:13
+dnl CF_PROG_LINT version: 7 updated: 2024/11/30 14:37:45
 dnl ------------
 AC_DEFUN([CF_PROG_LINT],
 [
 AC_CHECK_PROGS(LINT, lint cppcheck splint)
 case "x$LINT" in
+(xlint|x*/lint) # NetBSD 10
+	test -z "$LINT_OPTS" && LINT_OPTS="-chapbrxzgFS -v -Ac11"
+	;;
 (xcppcheck|x*/cppcheck)
-	test -z "$LINT_OPTS" && LINT_OPTS="--enable=all"
+	test -z "$LINT_OPTS" && LINT_OPTS="--enable=all -D__CPPCHECK__"
 	;;
 esac
 AC_SUBST(LINT_OPTS)
@@ -3728,7 +3751,7 @@ do
 done
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_SHARED_OPTS version: 111 updated: 2024/03/29 20:08:49
+dnl CF_SHARED_OPTS version: 112 updated: 2024/12/14 16:09:34
 dnl --------------
 dnl --------------
 dnl Attempt to determine the appropriate CC/LD options for creating a shared
@@ -4244,7 +4267,7 @@ cat > conftest.$ac_ext <<EOF
 int main(int argc, char *argv[[]])
 {
 	printf("hello\\n");
-	return (argv[[argc-1]] == 0) ;
+	return (argv[[argc-1]] == NULL) ;
 }
 EOF
 		cf_save_CFLAGS="$CFLAGS"
@@ -4464,12 +4487,12 @@ AC_DEFUN([CF_UPPER],
 $1=`echo "$2" | sed y%abcdefghijklmnopqrstuvwxyz./-%ABCDEFGHIJKLMNOPQRSTUVWXYZ___%`
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_UTF8_LIB version: 10 updated: 2023/01/11 04:05:23
+dnl CF_UTF8_LIB version: 11 updated: 2024/08/10 10:23:45
 dnl -----------
 dnl Check for multibyte support, and if not found, utf8 compatibility library
 AC_DEFUN([CF_UTF8_LIB],
 [
-AC_HAVE_HEADERS(wchar.h)
+AC_CHECK_HEADERS(wchar.h)
 AC_CACHE_CHECK(for multibyte character support,cf_cv_utf8_lib,[
 	cf_save_LIBS="$LIBS"
 	AC_TRY_LINK([
@@ -4953,7 +4976,7 @@ fi
 esac
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_PKG_CONFIG_LIBDIR version: 23 updated: 2023/11/22 20:48:30
+dnl CF_WITH_PKG_CONFIG_LIBDIR version: 25 updated: 2024/08/03 13:34:29
 dnl -------------------------
 dnl Allow the choice of the pkg-config library directory to be overridden.
 dnl
@@ -4967,6 +4990,7 @@ dnl pkgconf (used with some systems such as FreeBSD in place of pkg-config)
 dnl optionally ignores $PKG_CONFIG_LIBDIR.  Very old versions of pkg-config,
 dnl e.g., Solaris 10 also do not recognize $PKG_CONFIG_LIBDIR.
 AC_DEFUN([CF_WITH_PKG_CONFIG_LIBDIR],[
+AC_REQUIRE([CF_GLOB_FULLPATH])dnl
 
 case "$PKG_CONFIG" in
 (no|none|yes)
@@ -5000,10 +5024,10 @@ case "x$cf_search_path" in
 	;;
 (x)
 	;;
-(x/*\ *)
+(x$GLOB_FULLPATH_POSIX\ *|x$GLOB_FULLPATH_OTHER\ *)
 	PKG_CONFIG_LIBDIR=
 	;;
-(x/*)
+(x$GLOB_FULLPATH_POSIX|x$GLOB_FULLPATH_OTHER)
 	PKG_CONFIG_LIBDIR="$cf_search_path"
 	AC_MSG_RESULT($PKG_CONFIG_LIBDIR)
 	cf_search_path=
@@ -5022,7 +5046,15 @@ case "x$cf_search_path" in
 			pkg-config \
 			pkgconf
 		do
-			cf_search_path=`"$PKG_CONFIG" --variable=pc_path "$cf_pkg_program" 2>/dev/null | tr : ' '`
+			cf_raw_search_path=`"$PKG_CONFIG" --variable=pc_path "$cf_pkg_program" 2>/dev/null`
+			case "$cf_raw_search_path" in
+			(*\\*)
+				cf_search_path=`echo "$cf_raw_search_path" | tr ';' ' ' | tr '\' '/'`
+				;;
+			(*/*)
+				cf_search_path=`echo "$cf_raw_search_path" | tr : ' '`
+				;;
+			esac
 			test -n "$cf_search_path" && break
 		done
 
@@ -5222,6 +5254,26 @@ AC_SUBST(MAKE_SHARED)
 AC_SUBST(MAKE_STATIC)
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl CF_WITH_SYSTYPE version: 1 updated: 2013/01/26 16:26:12
+dnl ---------------
+dnl For testing, override the derived host system-type which is used to decide
+dnl things such as the linker commands used to build shared libraries.  This is
+dnl normally chosen automatically based on the type of system which you are
+dnl building on.  We use it for testing the configure script.
+dnl
+dnl This is different from the --host option: it is used only for testing parts
+dnl of the configure script which would not be reachable with --host since that
+dnl relies on the build environment being real, rather than mocked up.
+AC_DEFUN([CF_WITH_SYSTYPE],[
+CF_CHECK_CACHE([AC_CANONICAL_SYSTEM])
+AC_ARG_WITH(system-type,
+	[  --with-system-type=XXX  test: override derived host system-type],
+[AC_MSG_WARN(overriding system type to $withval)
+	cf_cv_system_name=$withval
+	host_os=$withval
+])
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl CF_WITH_VALGRIND version: 1 updated: 2006/12/14 18:00:21
 dnl ----------------
 AC_DEFUN([CF_WITH_VALGRIND],[
@@ -5230,7 +5282,7 @@ CF_NO_LEAKS_OPTION(valgrind,
 	[USE_VALGRIND])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_VERSIONED_SYMS version: 13 updated: 2023/12/03 09:24:04
+dnl CF_WITH_VERSIONED_SYMS version: 14 updated: 2024/08/03 12:34:02
 dnl ----------------------
 dnl Use this when building shared library with ELF, to markup symbols with the
 dnl version identifier from the given input file.  Generally that identifier is
@@ -5240,6 +5292,7 @@ dnl $1 = basename of the ".map" file (default $PACKAGE)
 AC_DEFUN([CF_WITH_VERSIONED_SYMS],
 [AC_REQUIRE([AC_PROG_FGREP])dnl
 AC_REQUIRE([AC_PROG_EGREP])dnl
+AC_REQUIRE([CF_GLOB_FULLPATH])dnl
 
 AC_MSG_CHECKING(if versioned-symbols file should be used)
 AC_ARG_WITH(versioned-syms,
@@ -5253,7 +5306,7 @@ case "x$with_versioned_syms" in
 	;;
 (xno)
 	;;
-(x/*)
+(x$GLOB_FULLPATH_POSIX|x$GLOB_FULLPATH_OTHER)
 	test -f "$with_versioned_syms" || AC_MSG_ERROR(expected a filename: $with_versioned_syms)
 	;;
 (*)
@@ -5435,7 +5488,7 @@ esac
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_XOPEN_SOURCE version: 67 updated: 2023/09/06 18:55:27
+dnl CF_XOPEN_SOURCE version: 68 updated: 2024/11/09 18:07:29
 dnl ---------------
 dnl Try to get _XOPEN_SOURCE defined properly that we can use POSIX functions,
 dnl or adapt to the vendor's definitions to get equivalent functionality,
@@ -5497,6 +5550,9 @@ case "$host_os" in
 	;;
 (linux*gnu|linux*gnuabi64|linux*gnuabin32|linux*gnueabi|linux*gnueabihf|linux*gnux32|uclinux*|gnu*|mint*|k*bsd*-gnu|cygwin|msys|mingw*|linux*uclibc)
 	CF_GNU_SOURCE($cf_XOPEN_SOURCE)
+	;;
+linux*musl)
+	cf_xopen_source="-D_BSD_SOURCE"
 	;;
 (minix*)
 	cf_xopen_source="-D_NETBSD_SOURCE" # POSIX.1-2001 features are ifdef'd with this...

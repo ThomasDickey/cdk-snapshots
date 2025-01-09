@@ -1,4 +1,4 @@
-/* $Id: command.c,v 1.22 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: command.c,v 1.23 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -39,10 +39,10 @@ static BINDFN_PROTO (jumpWindowCB);
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKSWINDOW *commandOutput    = 0;
-   CDKENTRY *commandEntry       = 0;
-   chtype *convert              = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKSWINDOW *commandOutput    = NULL;
+   CDKENTRY *commandEntry       = NULL;
+   chtype *convert              = NULL;
    const char *prompt           = "</B/24>Command >";
    const char *title            = "<C></B/5>Command Output Window";
    int promptLen                = 0;
@@ -96,7 +96,7 @@ int main (int argc, char **argv)
 
    /* Create the entry field. */
    commandEntry = newCDKEntry (cdkscreen, CENTER, BOTTOM,
-			       0, prompt,
+			       NULL, prompt,
 			       A_BOLD | COLOR_PAIR (8),
 			       COLOR_PAIR (24) | '_',
 			       vMIXED, commandFieldWidth, 1, 512, FALSE, FALSE);
@@ -118,12 +118,12 @@ int main (int argc, char **argv)
    /* Do this forever. */
    for (;;)
    {
-      char *command = 0;
+      char *command = NULL;
       char *upper;
 
       /* Get the command. */
       drawCDKEntry (commandEntry, ObjOf (commandEntry)->box);
-      command = activateCDKEntry (commandEntry, 0);
+      command = activateCDKEntry (commandEntry, NULL);
       upper = uc (command);
 
       /* Check the output of the command. */
@@ -277,7 +277,7 @@ static int viewHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
    CDKENTRY *entry = (CDKENTRY *)object;
 
    /* Let them play... */
-   activateCDKSwindow (swindow, 0);
+   activateCDKSwindow (swindow, NULL);
 
    /* Redraw the entry field. */
    drawCDKEntry (entry, ObjOf (entry)->box);
@@ -293,7 +293,7 @@ static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object,
 {
    CDKENTRY *entry = (CDKENTRY *)object;
    CDKSWINDOW *swindow = (CDKSWINDOW *)clientData;
-   CDKSCALE *scale = 0;
+   CDKSCALE *scale = NULL;
    int line;
 
    /* Ask them which line they want to jump to. */
@@ -304,7 +304,7 @@ static int jumpWindowCB (EObjectType cdktype GCC_UNUSED, void *object,
 			0, 0, swindow->listSize, 1, 2, TRUE, FALSE);
 
    /* Get the line. */
-   line = activateCDKScale (scale, 0);
+   line = activateCDKScale (scale, NULL);
 
    /* Clean up. */
    destroyCDKScale (scale);
@@ -358,7 +358,7 @@ static int listHistoryCB (EObjectType cdktype GCC_UNUSED, void *object,
 			      NUMBERS, A_REVERSE, TRUE, FALSE);
 
    /* Get the command to execute. */
-   selection = activateCDKScroll (scrollList, 0);
+   selection = activateCDKScroll (scrollList, NULL);
    destroyCDKScroll (scrollList);
 
    /* Check the results of the selection. */
@@ -410,20 +410,20 @@ void help (CDKENTRY *entry)
  */
 char *uc (char *word)
 {
-   char *upper = 0;
+   char *upper = NULL;
    int length = 0;
    int x;
 
    /* Make sure the word is not null. */
-   if (word == 0)
+   if (word == NULL)
    {
-      return 0;
+      return NULL;
    }
    length = (int)strlen (word);
 
    /* Get the memory for the new word. */
    upper = (char *)malloc (sizeof (char) * (size_t) (length + 2));
-   if (upper == 0)
+   if (upper == NULL)
    {
       return (word);
    }

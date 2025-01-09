@@ -1,4 +1,4 @@
-/* $Id: cdkdialog.c,v 1.16 2024/03/12 17:47:29 tom Exp $ */
+/* $Id: cdkdialog.c,v 1.17 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,18 +17,18 @@ static const char *FPUsage = "-m Message String | -f filename [-B Buttons] [-O O
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKDIALOG *widget            = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *button                 = 0;
-   char *temp                   = 0;
-   chtype *holder               = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKDIALOG *widget            = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *button                 = NULL;
+   char *temp                   = NULL;
+   chtype *holder               = NULL;
    int answer                   = 0;
    int messageLines             = -1;
    int buttonCount              = 0;
    FILE *fp                     = stderr;
-   char **messageList           = 0;
-   char **buttonList            = 0;
+   char **messageList           = NULL;
+   char **buttonList            = NULL;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -54,9 +54,9 @@ int main (int argc, char **argv)
    outputFile   = CDKparamString (&params, 'O');
 
    /* If the user asked for an output file, try to open it. */
-   if (outputFile != 0)
+   if (outputFile != NULL)
    {
-      if ((fp = fopen (outputFile, "w")) == 0)
+      if ((fp = fopen (outputFile, "w")) == NULL)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
 	 ExitProgram (CLI_ERROR);
@@ -64,10 +64,10 @@ int main (int argc, char **argv)
    }
 
    /* Make sure we have a message to display. */
-   if (message == 0)
+   if (message == NULL)
    {
       /* No message, maybe they provided a file to read. */
-      if (filename != 0)
+      if (filename != NULL)
       {
 	 /* Read the file in. */
 	 messageLines = CDKreadFile (filename, &messageList);
@@ -94,7 +94,7 @@ int main (int argc, char **argv)
    }
 
    /* Set up the buttons for the dialog box. */
-   if (buttons == 0)
+   if (buttons == NULL)
    {
       buttonList = calloc(3, sizeof(char *));
       buttonList[0] = copyChar ("OK");
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -123,9 +123,9 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* Create the dialog box. */
@@ -136,7 +136,7 @@ int main (int argc, char **argv)
 			  boxWidget, boxWidget, shadowWidget);
 
    /* Check to make sure we created the dialog box. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       CDKfreeStrings (messageList);
       CDKfreeStrings (buttonList);
@@ -155,7 +155,7 @@ int main (int argc, char **argv)
    setCDKDialogBackgroundColor (widget, CDK_WIDGET_COLOR);
 
    /* Activate the dialog box. */
-   answer = activateCDKDialog (widget, 0);
+   answer = activateCDKDialog (widget, NULL);
 
    /* End CDK. */
    destroyCDKDialog (widget);

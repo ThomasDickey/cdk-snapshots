@@ -1,5 +1,5 @@
 /*
- * $Id: scroll.h,v 1.34 2013/09/01 18:06:41 tom Exp $
+ * $Id: scroll.h,v 1.35 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -22,7 +22,7 @@ extern "C" {
 #include <scroller.h>
 
 /*
- * Copyright 1999-2012,2013 Thomas E. Dickey
+ * Copyright 1999-2013,2025 Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -181,12 +181,12 @@ boolean getCDKScrollBox (
 
 /*
  * This sets the background color of the widget.
- */ 
+ */
 #define setCDKScrollBackgroundColor(w,c) setCDKObjectBackgroundColor(ObjOf(w),c)
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKScrollBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

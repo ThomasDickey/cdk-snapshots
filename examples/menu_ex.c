@@ -1,4 +1,4 @@
-/* $Id: menu_ex.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: menu_ex.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -37,9 +37,9 @@ static const char *menuInfo[3][4] =
 int main (void)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKLABEL *infoBox    = 0;
-   CDKMENU *menu        = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKLABEL *infoBox    = NULL;
+   CDKMENU *menu        = NULL;
    int submenusize[3], menuloc[4];
    const char *mesg[5];
    char temp[256];
@@ -93,7 +93,7 @@ int main (void)
    refreshCDKScreen (cdkscreen);
 
    /* Activate the menu. */
-   selection = activateCDKMenu (menu, 0);
+   selection = activateCDKMenu (menu, NULL);
 
    /* Determine how the user exited from the widget. */
    if (menu->exitType == vEARLY_EXIT)

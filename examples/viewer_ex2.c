@@ -1,4 +1,4 @@
-/* $Id: viewer_ex2.c,v 1.9 2019/02/20 02:09:15 tom Exp $ */
+/* $Id: viewer_ex2.c,v 1.10 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,8 +12,8 @@ char *XCursesProgramName = "viewer_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKFSELECT *fSelect  = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKFSELECT *fSelect  = NULL;
    const char *button[5];
    char vTitle[256];
    const char *mesg[4];
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Get the filename. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       const char *title = "<C>Pick\n<C>A\n<C>File";
       const char *label = "File: ";
@@ -56,7 +56,7 @@ int main (int argc, char **argv)
 			       "</5>", "</48>", "</N>", "</N>",
 			       CDKparamValue (&params, 'N', TRUE),
 			       CDKparamValue (&params, 'S', FALSE));
-      if (fSelect == 0)
+      if (fSelect == NULL)
       {
 	 destroyCDKScreen (cdkscreen);
 	 endCDK ();
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
 		     "</5>", "</48>", "</N>", "</N>", ObjOf (fSelect)->box);
 
       /* Activate the file selector. */
-      filename = activateCDKFselect (fSelect, 0);
+      filename = activateCDKFselect (fSelect, NULL);
 
       /* Check how the person exited from the widget. */
       if (fSelect->exitType == vESCAPE_HIT)

@@ -1,4 +1,4 @@
-/* $Id: calendar_ex.c,v 1.17 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: calendar_ex.c,v 1.18 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -15,8 +15,8 @@ static BINDFN_PROTO (removeCalendarMarkCB);
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen		= 0;
-   CDKCALENDAR *calendar	= 0;
+   CDKSCREEN *cdkscreen		= NULL;
+   CDKCALENDAR *calendar	= NULL;
    const char *mesg[5];
    char temp[256];
    struct tm *dateInfo;
@@ -60,7 +60,7 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'S', FALSE));
 
    /* Is the widget null? */
-   if (calendar == 0)
+   if (calendar == NULL)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
    drawCDKCalendar (calendar, ObjOf (calendar)->box);
 
    /* Let the user play with the widget. */
-   retVal = activateCDKCalendar (calendar, 0);
+   retVal = activateCDKCalendar (calendar, NULL);
 
    /* Check which day they selected. */
    if (calendar->exitType == vESCAPE_HIT)

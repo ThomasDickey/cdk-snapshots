@@ -1,4 +1,4 @@
-/* $Id: alphalist_ex.c,v 1.30 2016/12/04 15:38:55 tom Exp $ */
+/* $Id: alphalist_ex.c,v 1.31 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,8 +12,8 @@ char *XCursesProgramName = "alphalist_ex";
  * Options (in addition to normal CLI parameters):
  *	-c	create the data after the widget
  */
-static CDKSCREEN *cdkscreen = 0;
-static char **myUserList = 0;
+static CDKSCREEN *cdkscreen = NULL;
+static char **myUserList = NULL;
 static int userSize;
 
 typedef struct
@@ -39,7 +39,7 @@ static int getUserList (char ***list)
    unsigned used = 0;
 
 #if defined (HAVE_PWD_H)
-   while ((ent = getpwent ()) != 0)
+   while ((ent = getpwent ()) != NULL)
    {
       used = CDKallocStrings (list, ent->pw_name, (unsigned)x++, used);
    }
@@ -136,7 +136,7 @@ static int do_help (CB_PARAMS)
       "F3 = delete previous item",
       "F4 = reload all items",
       "F5 = undo deletion",
-      0
+      NULL
    };
    popupLabel (cdkscreen,
 	       (CDK_CSTRING2)message,
@@ -172,7 +172,7 @@ static int do_undo (CB_PARAMS)
       char **newlist = (char **)malloc ((size_t) (++size + 1) * sizeof (char *));
 
       --undoSize;
-      newlist[size] = 0;
+      newlist[size] = NULL;
       for (n = size - 1; n > myUndoList[undoSize].deleted; --n)
       {
 	 newlist[n] = copyChar (oldlist[n - 1]);
@@ -196,11 +196,11 @@ static int do_undo (CB_PARAMS)
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKALPHALIST *alphaList      = 0;
+   CDKALPHALIST *alphaList      = NULL;
    const char *title            = "<C></B/24>Alpha List\n<C>Title";
    const char *label            = "</B>Account: ";
-   char *word                   = 0;
-   char **userList              = 0;
+   char *word                   = NULL;
+   char **userList              = NULL;
    const char *mesg[5];
    char temp[256];
 
@@ -232,7 +232,7 @@ int main (int argc, char **argv)
 				CDKparamValue (&params, 'W', 0),
 				title, label,
 				(CDKparamNumber (&params, 'c')
-				 ? 0
+				 ? NULL
 				 : (CDK_CSTRING *)userList),
 				(CDKparamNumber (&params, 'c')
 				 ? 0
@@ -240,7 +240,7 @@ int main (int argc, char **argv)
 				'_', A_REVERSE,
 				CDKparamValue (&params, 'N', TRUE),
 				CDKparamValue (&params, 'S', FALSE));
-   if (alphaList == 0)
+   if (alphaList == NULL)
    {
       destroyCDKScreen (cdkscreen);
       endCDK ();
@@ -262,7 +262,7 @@ int main (int argc, char **argv)
    }
 
    /* Let them play with the alpha list. */
-   word = activateCDKAlphalist (alphaList, 0);
+   word = activateCDKAlphalist (alphaList, NULL);
 
    /* Determine what the user did. */
    if (alphaList->exitType == vESCAPE_HIT)

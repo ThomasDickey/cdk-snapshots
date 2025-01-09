@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/21 08:45:41 $
- * $Revision: 1.3 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.4 $
  */
 
 /*
@@ -12,7 +12,7 @@
 int popupDialog (CDKSCREEN *screen, CDK_CSTRING2 mesg, int mesgCount, CDK_CSTRING2 buttons, int buttonCount)
 {
    /* Declare local variables. */
-   CDKDIALOG *popup	= 0;
+   CDKDIALOG *popup	= NULL;
    int choice;
 
    /* Create the dialog box. */
@@ -26,7 +26,7 @@ int popupDialog (CDKSCREEN *screen, CDK_CSTRING2 mesg, int mesgCount, CDK_CSTRIN
    drawCDKDialog (popup, TRUE);
 
    /* Get the choice. */
-   choice = activateCDKDialog (popup, 0);
+   choice = activateCDKDialog (popup, NULL);
 
    /* Destroy the dialog box. */
    destroyCDKDialog (popup);

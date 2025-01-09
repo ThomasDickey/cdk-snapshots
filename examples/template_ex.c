@@ -1,4 +1,4 @@
-/* $Id: template_ex.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: template_ex.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,8 +12,8 @@ char *XCursesProgramName = "template_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKTEMPLATE *phoneNumber     = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKTEMPLATE *phoneNumber     = NULL;
    const char *title            = "<C>Title";
    const char *label            = "</5>Phone Number:<!5>";
    const char *Overlay          = "</B/6>(___)<!6> </5>___-____";
@@ -42,7 +42,7 @@ int main (int argc, char **argv)
 				 CDKparamValue (&params, 'S', FALSE));
 
    /* Is the template pointer null? */
-   if (phoneNumber == 0)
+   if (phoneNumber == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the template. */
-   info = activateCDKTemplate (phoneNumber, 0);
+   info = activateCDKTemplate (phoneNumber, NULL);
 
    /* Tell them what they typed. */
    if (phoneNumber->exitType == vESCAPE_HIT)

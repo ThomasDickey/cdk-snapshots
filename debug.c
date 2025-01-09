@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2024/03/31 15:47:01 $
- * $Revision: 1.12 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.13 $
  */
 
 FILE *CDKDEBUG;
@@ -17,7 +17,7 @@ FILE *startCDKDebug (const char *filename)
    const char *defFile = "cdkdebug.log";
 
    /* Check if the filename is null. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       filename = defFile;
    }
@@ -35,7 +35,7 @@ void writeCDKDebugMessage (FILE * fd,
 			   int line, const char *message)
 {
    /* Print the message as long as the file pointer is not null. */
-   if (fd != 0)
+   if (fd != NULL)
    {
       fprintf (fd, "%s::%s (Line %d) %s\n", filename, function, line, message);
    }
@@ -46,7 +46,7 @@ void writeCDKDebugMessage (FILE * fd,
  */
 void stopCDKDebug (FILE * fd)
 {
-   if (fd != 0)
+   if (fd != NULL)
    {
       fclose (fd);
    }

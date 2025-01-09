@@ -1,4 +1,4 @@
-/* $Id: bind_ex.c,v 1.20 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: bind_ex.c,v 1.21 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
    const char	*buttons[40];
    const char	*message[40];
    const char	*info[5];
-   char		*loginName = 0;
+   char		*loginName = NULL;
    char		temp[256];
    int		selection;
    time_t	clck;
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
    }
 
    /* Create the key binding. */
-   bindCDKObject (vDIALOG, question, '?', dialogHelpCB, 0);
+   bindCDKObject (vDIALOG, question, '?', dialogHelpCB, NULL);
 
    /* Activate the dialog box. */
    selection = 0;

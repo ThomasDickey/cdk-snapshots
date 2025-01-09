@@ -1,4 +1,4 @@
-/* $Id: fileview.c,v 1.15 2021/01/09 22:41:39 tom Exp $ */
+/* $Id: fileview.c,v 1.16 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,12 +12,12 @@ char *XCursesProgramName = "codeViewer";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen  = 0;
-   CDKVIEWER *example    = 0;
-   CDKFSELECT *fSelect   = 0;
+   CDKSCREEN *cdkscreen  = NULL;
+   CDKVIEWER *example    = NULL;
+   CDKFSELECT *fSelect   = NULL;
    const char *directory = ".";
-   char *filename        = 0;
-   char **info           = 0;
+   char *filename        = NULL;
+   char **info           = NULL;
    const char *button[5];
    const char *mesg[4];
    char vtitle[256];
@@ -54,7 +54,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Get the filename. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       const char *title = "<C>Pick a file.";
       const char *label = "File:  ";
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
 		     "</5>", "</48>", "</N>", "</N>", ObjOf (fSelect)->box);
 
       /* Activate the file selector. */
-      filename = copyChar (activateCDKFselect (fSelect, 0));
+      filename = copyChar (activateCDKFselect (fSelect, NULL));
 
       /* Check how the person exited from the widget. */
       if (fSelect->exitType == vESCAPE_HIT)
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 			   A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
-   if (example == 0)
+   if (example == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -128,7 +128,7 @@ int main (int argc, char **argv)
 		 A_REVERSE, TRUE, TRUE, TRUE);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (example, 0);
+   selected = activateCDKViewer (example, NULL);
 
    /* Check how the person exited from the widget. */
    if (example->exitType == vESCAPE_HIT)

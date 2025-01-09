@@ -1,4 +1,4 @@
-/* $Id: mentry_ex2.c,v 1.2 2019/02/20 21:45:57 tom Exp $ */
+/* $Id: mentry_ex2.c,v 1.3 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,9 +9,9 @@ char *XCursesProgramName = "mentry_ex2";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKMENTRY *widget    = 0;
-   char *info           = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKMENTRY *widget    = NULL;
+   char *info           = NULL;
    const char *label    = "</R>Message";
    const char *title    =
    "<C></5>Enter a message (\".\" to exit).<!5>\n"
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 			  CDKparamValue (&params, 'S', FALSE));
 
    /* Is the object null? */
-   if (widget == 0)
+   if (widget == NULL)
    {
       /* Shut down CDK. */
       destroyCDKScreen (cdkscreen);
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
       setCDKMentry (widget, info, 0, TRUE);
       free (info);
 
-      activateCDKMentry (widget, 0);
+      activateCDKMentry (widget, NULL);
       if (strlen (widget->info) > 1)
       {
 	 setCdkTitle (ObjOf (widget), widget->info, getmaxx (widget->win));

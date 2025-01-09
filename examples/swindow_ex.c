@@ -1,4 +1,4 @@
-/* $Id: swindow_ex.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: swindow_ex.c,v 1.15 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -16,8 +16,8 @@ char *XCursesProgramName = "swindow_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKSWINDOW *swindow  = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKSWINDOW *swindow  = NULL;
    const char *title    = "<C></5>Error Log";
    const char *mesg[5];
 
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 			    CDKparamValue (&params, 'S', FALSE));
 
    /* Is the window null. */
-   if (swindow == 0)
+   if (swindow == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -89,7 +89,7 @@ int main (int argc, char **argv)
    addCDKSwindow (swindow, "<C>This is being added to the top.", TOP);
 
    /* Activate the scrolling window. */
-   activateCDKSwindow (swindow, 0);
+   activateCDKSwindow (swindow, NULL);
 
    /* Check how the user exited this widget. */
    if (swindow->exitType == vESCAPE_HIT)

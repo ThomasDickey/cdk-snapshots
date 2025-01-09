@@ -1,4 +1,4 @@
-/* $Id: cdkmatrix.c,v 1.19 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkmatrix.c,v 1.20 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -24,13 +24,13 @@ static const char *FPUsage = "-r Row Titles -c Column Titles -v Visible Rows -w 
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKMATRIX *widget            = 0;
-   CDKBUTTONBOX *buttonWidget   = 0;
-   chtype *holder               = 0;
-   char *buttons                = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *temp                   = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKMATRIX *widget            = NULL;
+   CDKBUTTONBOX *buttonWidget   = NULL;
+   chtype *holder               = NULL;
+   char *buttons                = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *temp                   = NULL;
    chtype filler                = A_NORMAL | '.';
    int rows                     = -1;
    int cols                     = -1;
@@ -40,10 +40,10 @@ int main (int argc, char **argv)
    FILE *fp                     = stderr;
    char **rowTitles;
    char **colTitles;
-   char **rowTemp               = 0;
-   char **colTemp               = 0;
-   char **kolTemp               = 0;
-   char **buttonList            = 0;
+   char **rowTemp               = NULL;
+   char **colTemp               = NULL;
+   char **kolTemp               = NULL;
+   char **buttonList            = NULL;
    int *colWidths;
    int *colTypes;
    int count, infoLines, x, y, j1, j2;
@@ -82,9 +82,9 @@ int main (int argc, char **argv)
    title        = CDKparamString (&params, 'T');
 
    /* If the user asked for an output file, try to open it. */
-   if (outputFile != 0)
+   if (outputFile != NULL)
    {
-      if ((fp = fopen (outputFile, "w")) == 0)
+      if ((fp = fopen (outputFile, "w")) == NULL)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
 	 ExitProgram (CLI_ERROR);
@@ -92,9 +92,9 @@ int main (int argc, char **argv)
    }
 
    /* Make sure all the needed command line parameters were provided. */
-   if ((myRowTitles == 0) ||
-       (myColTitles == 0) ||
-       (myColWidths == 0) ||
+   if ((myRowTitles == NULL) ||
+       (myColTitles == NULL) ||
+       (myColWidths == NULL) ||
        (vrows == -1))
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
@@ -128,7 +128,7 @@ int main (int argc, char **argv)
    }
 
    /* If they passed in the column types, convert them. */
-   if (myColTypes != 0)
+   if (myColTypes != NULL)
    {
       char **ss = CDKsplitString (myColTypes, '\n');
       count = (int)CDKcountStrings ((CDK_CSTRING2)ss);
@@ -155,7 +155,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -164,13 +164,13 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* If the set the filler character, set it now. */
-   if (myFiller != 0)
+   if (myFiller != NULL)
    {
       holder = char2Chtype (myFiller, &j1, &j2);
       filler = holder[0];
@@ -188,7 +188,7 @@ int main (int argc, char **argv)
    free (colTitles);
 
    /* Make sure we could create the widget. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       /* Shut down curses and CDK. */
       destroyCDKScreen (cdkScreen);
@@ -205,11 +205,11 @@ int main (int argc, char **argv)
     * If the user sent in a file of default values, read it and
     * stick the values read in from the file into the matrix.
     */
-   if (defaultValue != 0)
+   if (defaultValue != NULL)
    {
       size_t limit = (size_t) ((rows + 1) * (cols + 1));
       char **info = (char **)calloc (limit, sizeof (char *));
-      char **lineTemp = 0;
+      char **lineTemp = NULL;
 
       /* Read the file. */
       infoLines = CDKreadFile (defaultValue, &lineTemp);
@@ -245,7 +245,7 @@ int main (int argc, char **argv)
    }
 
    /* Split the buttons if they supplied some. */
-   if (buttons != 0)
+   if (buttons != NULL)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
@@ -308,7 +308,7 @@ int main (int argc, char **argv)
 				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
-      if (widget->shadowWin != 0)
+      if (widget->shadowWin != NULL)
       {
 	 widget->shadow = TRUE;
 
@@ -327,7 +327,7 @@ int main (int argc, char **argv)
    setCDKMatrixBackgroundColor (widget, CDK_WIDGET_COLOR);
 
    /* Let them play. */
-   activateCDKMatrix (widget, 0);
+   activateCDKMatrix (widget, NULL);
 
    /* Print out the matrix cells. */
    if (widget->exitType == vNORMAL)
@@ -337,7 +337,7 @@ int main (int argc, char **argv)
 	 for (y = 0; y < widget->cols; y++)
 	 {
 	    char *data = getCDKMatrixCell (widget, x, y);
-	    if (data != 0)
+	    if (data != NULL)
 	    {
 	       fprintf (fp, "%s%c", data, CTRL ('V'));
 	    }
@@ -351,7 +351,7 @@ int main (int argc, char **argv)
    }
 
    /* If there were buttons, get the button selected. */
-   if (buttonWidget != 0)
+   if (buttonWidget != NULL)
    {
       selection = buttonWidget->currentButton;
       destroyCDKButtonbox (buttonWidget);

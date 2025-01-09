@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:12:07 $
- * $Revision: 1.100 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.101 $
  */
 
 #define YEAR2INDEX(year) (((year) >= 1900) ? ((year) - 1900) : (year))
@@ -80,7 +80,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 			     boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKCALENDAR *calendar = 0;
+   CDKCALENDAR *calendar = NULL;
    int parentWidth       = getmaxx (cdkscreen->window);
    int parentHeight      = getmaxy (cdkscreen->window);
    int boxWidth          = 24;
@@ -102,8 +102,8 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
-   if ((calendar = newCDKObject (CDKCALENDAR, &my_funcs)) == 0)
-        return (0);
+   if ((calendar = newCDKObject (CDKCALENDAR, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKCalendarBox (calendar, Box);
 
@@ -124,10 +124,10 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    calendar->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    /* Is the window null? */
-   if (calendar->win == 0)
+   if (calendar->win == NULL)
    {
       destroyCDKObject (calendar);
-      return (0);
+      return (NULL);
    }
    keypad (calendar->win, TRUE);
 
@@ -145,7 +145,7 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
    /* *INDENT-EQLS* Set the rest of the widget values. */
    ScreenOf (calendar)                  = cdkscreen;
    calendar->parent                     = cdkscreen->window;
-   calendar->shadowWin                  = 0;
+   calendar->shadowWin                  = NULL;
    calendar->xpos                       = xpos;
    calendar->ypos                       = ypos;
    calendar->boxWidth                   = boxWidth;
@@ -167,29 +167,29 @@ CDKCALENDAR *newCDKCalendar (CDKSCREEN *cdkscreen,
 				1, calendar->fieldWidth,
 				ypos + TitleLinesOf (calendar) + 1,
 				xpos + 1 + BorderOf (calendar));
-   if (calendar->labelWin == 0)
+   if (calendar->labelWin == NULL)
    {
       destroyCDKObject (calendar);
-      return (0);
+      return (NULL);
    }
 
    calendar->fieldWin = subwin (calendar->win,
 				7, 20,
 				ypos + TitleLinesOf (calendar) + 3,
 				xpos + calendar->xOffset);
-   if (calendar->fieldWin == 0)
+   if (calendar->fieldWin == NULL)
    {
       destroyCDKObject (calendar);
-      return (0);
+      return (NULL);
    }
 
    setCDKCalendarBox (calendar, Box);
 
    calendar->marker = typeCallocN (chtype, CALENDAR_LIMIT);
-   if (calendar->marker == 0)
+   if (calendar->marker == NULL)
    {
       destroyCDKObject (calendar);
-      return (0);
+      return (NULL);
    }
 
    /* If the day/month/year values were 0, then use today's date. */
@@ -241,7 +241,7 @@ time_t activateCDKCalendar (CDKCALENDAR *calendar, chtype *actions)
    /* Draw the widget. */
    drawCDKCalendar (calendar, ObjOf (calendar)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -291,7 +291,7 @@ static int _injectCDKCalendar (CDKOBJS *object, chtype input)
    drawCDKCalendarField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vCALENDAR,
@@ -382,7 +382,7 @@ static int _injectCDKCalendar (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vCALENDAR,
 				     widget,
@@ -462,7 +462,7 @@ static void _drawCDKCalendar (CDKOBJS *object, boolean Box)
    int col;
 
    /* Is there a shadow? */
-   if (calendar->shadowWin != 0)
+   if (calendar->shadowWin != NULL)
    {
       drawShadow (calendar->shadowWin);
    }
@@ -547,7 +547,7 @@ static void drawCDKCalendarField (CDKCALENDAR *calendar)
    wrefresh (calendar->fieldWin);
 
    /* Draw the month in. */
-   if (calendar->labelWin != 0)
+   if (calendar->labelWin != NULL)
    {
       int yearLen = 0;
 
@@ -700,13 +700,13 @@ boolean getCDKCalendarBox (CDKCALENDAR *calendar)
  */
 static void _setBKattrCalendar (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKCALENDAR *widget = (CDKCALENDAR *)object;
 
       wbkgd (widget->win, attrib);
       wbkgd (widget->fieldWin, attrib);
-      if (widget->labelWin != 0)
+      if (widget->labelWin != NULL)
       {
 	 wbkgd (widget->labelWin, attrib);
       }
@@ -734,7 +734,7 @@ static void _eraseCDKCalendar (CDKOBJS *object)
  */
 static void _destroyCDKCalendar (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKCALENDAR *calendar = (CDKCALENDAR *)object;
       int x;
@@ -791,7 +791,7 @@ chtype getCDKCalendarMarker (CDKCALENDAR *calendar, int day, int month, int year
    chtype result = 0;
 
    year = YEAR2INDEX (year);
-   if (calendar->marker != 0)
+   if (calendar->marker != NULL)
       result = CALENDAR_CELL (calendar, day, month, year);
    return result;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: graph.h,v 1.23 2012/03/21 21:15:30 tom Exp $
+ * $Id: graph.h,v 1.24 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2000-2004,2012 Thomas E. Dickey
+ * Copyright 2000-2012,2025 Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -190,7 +190,7 @@ boolean getCDKGraphBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKGraphBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

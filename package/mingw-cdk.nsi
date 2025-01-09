@@ -1,4 +1,4 @@
-; $Id: mingw-cdk.nsi,v 1.52 2024/06/19 09:54:00 tom Exp $
+; $Id: mingw-cdk.nsi,v 1.54 2025/01/09 00:30:38 tom Exp $
 
 ; TODO add examples
 
@@ -8,8 +8,8 @@
 
 !define VERSION_MAJOR "5"
 !define VERSION_MINOR "0"
-!define VERSION_YYYY  "2024"
-!define VERSION_MMDD  "619"
+!define VERSION_YYYY  "2025"
+!define VERSION_MMDD  "108"
 !define VERSION_PATCH ${VERSION_YYYY}${VERSION_MMDD}
 
 !define SUBKEY "libcdk5"
@@ -28,8 +28,8 @@ CRCCheck on
 SetCompressor /SOLID lzma
 
 VIAddVersionKey ProductName "${SUBKEY}"
-VIAddVersionKey CompanyName "http://invisible-island.net"
-VIAddVersionKey LegalCopyright "© 1999-2022,2024, Thomas E. Dickey"
+VIAddVersionKey CompanyName "https://invisible-island.net"
+VIAddVersionKey LegalCopyright "© 1999-2024,2025, Thomas E. Dickey"
 VIAddVersionKey FileDescription "Cdk Installer (MinGW)"
 VIAddVersionKey FileVersion ${VERSION_FULL}
 VIAddVersionKey ProductVersion ${VERSION_FULL}

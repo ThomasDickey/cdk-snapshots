@@ -1,4 +1,4 @@
-/* $Id: matrix_ex.c,v 1.19 2016/12/10 13:29:08 tom Exp $ */
+/* $Id: matrix_ex.c,v 1.20 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,9 +14,9 @@ char *XCursesProgramName = "matrix_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKMATRIX *courseList = 0;
-   const char *title    = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKMATRIX *courseList = NULL;
+   const char *title    = NULL;
    int rows             = 8;
    int cols             = 5;
    int vrows            = 3;
@@ -45,9 +45,9 @@ int main (int argc, char **argv)
    /* cancel the default title, or supply a new one */
    if (CDKparamValue (&params, 't', FALSE))
    {
-      title = 0;
+      title = NULL;
    }
-   else if ((title = CDKparamString (&params, 'T')) == 0)
+   else if ((title = CDKparamString (&params, 'T')) == NULL)
    {
       title = "<C>This is the CDK\n<C>matrix widget.\n<C><#LT><#HL(30)><#RT>";
    }
@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 
    /* Create the horizontal and vertical matrix labels. */
 #define set_col(n, width, string) \
-   coltitle[n] = use_coltitles ? string : 0 ;\
+   coltitle[n] = use_coltitles ? string : NULL ;\
    colwidth[n] = width ;\
    colvalue[n] = vUMIXED
 
@@ -76,7 +76,7 @@ int main (int argc, char **argv)
    set_col (5, 1, "</B/7>Flag");
 
 #define set_row(n, string) \
-   rowtitle[n] = use_rowtitles ? "<C></B/6>" string : 0
+   rowtitle[n] = use_rowtitles ? "<C></B/6>" string : NULL
 
    set_row (1, "Course 1");
    set_row (2, "Course 2");
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 			      params.Shadow);
 
    /* Check to see if the matrix is null. */
-   if (courseList == 0)
+   if (courseList == NULL)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -114,7 +114,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the matrix. */
-   activateCDKMatrix (courseList, 0);
+   activateCDKMatrix (courseList, NULL);
 
    /* Check if the user hit escape or not. */
    if (courseList->exitType == vESCAPE_HIT)

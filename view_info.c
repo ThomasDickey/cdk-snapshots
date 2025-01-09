@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 18:35:56 $
- * $Revision: 1.3 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.4 $
  */
 
 /*
@@ -17,7 +17,7 @@ int viewInfo (CDKSCREEN *screen,
 	      int buttonCount,
 	      boolean interpret)
 {
-   CDKVIEWER *viewer = 0;
+   CDKVIEWER *viewer = NULL;
    int selected;
 
    /* Create the file viewer to view the file selected. */
@@ -29,7 +29,7 @@ int viewInfo (CDKSCREEN *screen,
    setCDKViewer (viewer, title, info, count, A_REVERSE, interpret, TRUE, TRUE);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (viewer, 0);
+   selected = activateCDKViewer (viewer, NULL);
 
    /* Make sure they exited normally. */
    if (viewer->exitType != vNORMAL)

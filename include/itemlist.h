@@ -1,5 +1,5 @@
 /*
- * $Id: itemlist.h,v 1.25 2012/03/21 21:15:30 tom Exp $
+ * $Id: itemlist.h,v 1.26 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 1999-2004,2012 Thomas E. Dickey
+ * Copyright 1999-2012,2025 Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -172,7 +172,7 @@ boolean getCDKItemlistBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKItemlistBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

@@ -1,4 +1,4 @@
-/* $Id: itemlist_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: itemlist_ex.c,v 1.16 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -17,8 +17,8 @@ char *XCursesProgramName = "itemlist_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKITEMLIST *monthlist       = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKITEMLIST *monthlist       = NULL;
    const char *title            = "<C>Pick A Month";
    const char *label            = "</U/5>Month:";
    const char *info[MONTHS];
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
 			       title,
 			       label,
 			       (CDKparamNumber (&params, 'c')
-				? 0
+				? NULL
 				: (CDK_CSTRING2) info),
 			       (CDKparamNumber (&params, 'c')
 				? 0
@@ -77,7 +77,7 @@ int main (int argc, char **argv)
 			       CDKparamValue (&params, 'S', FALSE));
 
    /* Is the widget null? */
-   if (monthlist == 0)
+   if (monthlist == NULL)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the widget. */
-   choice = activateCDKItemlist (monthlist, 0);
+   choice = activateCDKItemlist (monthlist, NULL);
 
    /* Check how they exited from the widget. */
    if (monthlist->exitType == vESCAPE_HIT)

@@ -1,4 +1,4 @@
-/* $Id: position_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: position_ex.c,v 1.16 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,10 +12,10 @@ char *XCursesProgramName = "position_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKENTRY *directory  = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKENTRY *directory  = NULL;
    const char *label    = "</U/5>Directory:<!U!5> ";
-   char *info           = 0;
+   char *info           = NULL;
    const char *mesg[10];
    char temp[256];
 
@@ -32,14 +32,14 @@ int main (int argc, char **argv)
    directory = newCDKEntry (cdkscreen,
 			    CDKparamValue (&params, 'X', CENTER),
 			    CDKparamValue (&params, 'Y', CENTER),
-			    0, label, A_NORMAL, '.', vMIXED,
+			    NULL, label, A_NORMAL, '.', vMIXED,
 			    CDKparamValue (&params, 'w', 40),
 			    0, 256,
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', FALSE));
 
    /* Is the widget null? */
-   if (directory == 0)
+   if (directory == NULL)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -54,7 +54,7 @@ int main (int argc, char **argv)
    positionCDKEntry (directory);
 
    /* Activate the entry field. */
-   info = activateCDKEntry (directory, 0);
+   info = activateCDKEntry (directory, NULL);
 
    /* Tell them what they typed. */
    if (directory->exitType == vESCAPE_HIT)

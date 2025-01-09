@@ -2,14 +2,14 @@
 
 /*
  * $Author: tom $
- * $Date: 2024/03/31 16:54:49 $
- * $Revision: 1.229 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.230 $
  */
 
 #define L_MARKER '<'
 #define R_MARKER '>'
 
-char *GPasteBuffer = 0;
+char *GPasteBuffer = NULL;
 
 /*
  * This beeps then flushes the stdout stream.
@@ -25,7 +25,7 @@ void Beep (void)
  */
 void cleanChar (char *s, int len, char character)
 {
-   if (s != 0)
+   if (s != NULL)
    {
       int x;
       for (x = 0; x < len; x++)
@@ -38,7 +38,7 @@ void cleanChar (char *s, int len, char character)
 
 void cleanChtype (chtype *s, int len, chtype character)
 {
-   if (s != 0)
+   if (s != NULL)
    {
       int x;
       for (x = 0; x < len; x++)
@@ -160,24 +160,24 @@ void freeChtype (chtype *string)
  */
 void freeCharList (char **list, unsigned size)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       while (size-- != 0)
       {
 	 freeChar (list[size]);
-	 list[size] = 0;
+	 list[size] = NULL;
       }
    }
 }
 
 void freeChtypeList (chtype **list, unsigned size)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       while (size-- != 0)
       {
 	 freeChtype (list[size]);
-	 list[size] = 0;
+	 list[size] = NULL;
       }
    }
 }
@@ -188,11 +188,11 @@ void freeChtypeList (chtype **list, unsigned size)
  */
 char *copyChar (const char *original)
 {
-   char *newstring = 0;
+   char *newstring = NULL;
 
-   if (original != 0)
+   if (original != NULL)
    {
-      if ((newstring = typeMallocN (char, strlen (original) + 1)) != 0)
+      if ((newstring = typeMallocN (char, strlen (original) + 1)) != NULL)
 	   strcpy (newstring, original);
    }
    return (newstring);
@@ -200,13 +200,13 @@ char *copyChar (const char *original)
 
 chtype *copyChtype (const chtype *original)
 {
-   chtype *newstring = 0;
+   chtype *newstring = NULL;
 
-   if (original != 0)
+   if (original != NULL)
    {
       int len = chlen (original);
 
-      if ((newstring = typeMallocN (chtype, len + 4)) != 0)
+      if ((newstring = typeMallocN (chtype, len + 4)) != NULL)
       {
 	 int x;
 
@@ -229,7 +229,7 @@ char **copyCharList (const char **list)
    size_t size = (size_t)lenCharList (list) + 1;
    char **result = typeMallocN (char *, size);
 
-   if (result != 0)
+   if (result != NULL)
    {
       unsigned n;
       for (n = 0; n < size; ++n)
@@ -243,7 +243,7 @@ chtype **copyChtypeList (const chtype **list)
    size_t size = (size_t)lenChtypeList (list) + 1;
    chtype **result = typeMallocN (chtype *, size);
 
-   if (result != 0)
+   if (result != NULL)
    {
       unsigned n;
       for (n = 0; n < size; ++n)
@@ -258,9 +258,9 @@ chtype **copyChtypeList (const chtype **list)
 int lenCharList (const char **list)
 {
    int result = 0;
-   if (list != 0)
+   if (list != NULL)
    {
-      while (*list++ != 0)
+      while (*list++ != NULL)
 	 ++result;
    }
    return result;
@@ -269,9 +269,9 @@ int lenCharList (const char **list)
 int lenChtypeList (const chtype **list)
 {
    int result = 0;
-   if (list != 0)
+   if (list != NULL)
    {
-      while (*list++ != 0)
+      while (*list++ != NULL)
 	 ++result;
    }
    return result;
@@ -328,12 +328,12 @@ int CDKreadFile (const char *filename, char ***array)
    unsigned used = 0;
 
    /* Can we open the file?  */
-   if ((fd = CDKopenFile (filename, "r")) == 0)
+   if ((fd = CDKopenFile (filename, "r")) == NULL)
    {
       return (-1);
    }
 
-   while ((fgets (temp, sizeof (temp), fd) != 0))
+   while ((fgets (temp, sizeof (temp), fd) != NULL))
    {
       size_t len = strlen (temp);
       if (len != 0 && temp[len - 1] == '\n')
@@ -426,7 +426,7 @@ static unsigned decodeAttribute (char *string,
    /* *INDENT-ON* */
 
    char temp[80];
-   char *result = (string != 0) ? (string + from) : temp;
+   char *result = (string != NULL) ? (string + from) : temp;
    char *base = result;
    chtype tmpattr = oldattr & A_ATTRIBUTES;
 
@@ -500,13 +500,13 @@ static unsigned decodeAttribute (char *string,
  */
 chtype *char2Chtype (const char *string, int *to, int *align)
 {
-   chtype *result = 0;
+   chtype *result = NULL;
    chtype mask;
 
    (*to) = 0;
    *align = LEFT;
 
-   if (string != 0 && *string != 0)
+   if (string != NULL && *string != 0)
    {
       int len = (int)strlen (string);
       int pass;
@@ -526,7 +526,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 
 	 if (pass != 0)
 	 {
-	    if ((result = typeMallocN (chtype, used + 2)) == 0)
+	    if ((result = typeMallocN (chtype, used + 2)) == NULL)
 	    {
 	       used = 0;
 	       break;
@@ -557,7 +557,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	    else if (string[1] == 'B' && string[2] == '=')
 	    {
 	       /* Set the item index value in the string.       */
-	       if (result != 0)
+	       if (result != NULL)
 	       {
 		  result[0] = ' ';
 		  result[1] = ' ';
@@ -567,7 +567,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	       /* Pull out the bullet marker.  */
 	       while (string[x] != R_MARKER && string[x] != 0)
 	       {
-		  if (result != 0)
+		  if (result != NULL)
 		     result[x] = (chtype)string[x] | A_BOLD;
 		  x++;
 	       }
@@ -597,7 +597,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 
 	 while (adjust-- > 0)
 	 {
-	    if (result != 0)
+	    if (result != NULL)
 	       result[used] = ' ';
 	    used++;
 	 }
@@ -621,7 +621,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	       else if (string[from] == '\\' && string[from + 1] == L_MARKER)
 	       {
 		  from++;
-		  if (result != 0)
+		  if (result != NULL)
 		     result[used] = CharOf (string[from]) | attrib;
 		  used++;
 		  from++;
@@ -630,7 +630,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	       {
 		  do
 		  {
-		     if (result != 0)
+		     if (result != NULL)
 			result[used] = ' ';
 		     used++;
 		  }
@@ -638,7 +638,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	       }
 	       else
 	       {
-		  if (result != 0)
+		  if (result != NULL)
 		     result[used] = CharOf (string[from]) | attrib;
 		  used++;
 	       }
@@ -779,7 +779,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 		     }
 		     for (x = 0; x < adjust; x++)
 		     {
-			if (result != 0)
+			if (result != NULL)
 			   result[used] = lastChar | attrib;
 			used++;
 		     }
@@ -797,7 +797,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	    }
 	 }
 
-	 if (result != 0)
+	 if (result != NULL)
 	 {
 	    result[used] = 0;
 	    result[used + 1] = 0;
@@ -808,7 +808,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	  * the first character of the array.
 	  */
 	 if (used == 0
-	     && result != 0)
+	     && result != NULL)
 	 {
 	    result[0] = attrib;
 	 }
@@ -834,7 +834,7 @@ int chlen (const chtype *string)
 {
    int result = 0;
 
-   if (string != 0)
+   if (string != NULL)
    {
       while (string[result] != 0)
 	 result++;
@@ -889,13 +889,13 @@ void chstrncpy (char *dest, const chtype *src, int maxcount)
  */
 char *chtype2Char (const chtype *string)
 {
-   char *newstring = 0;
+   char *newstring = NULL;
 
-   if (string != 0)
+   if (string != NULL)
    {
       int len = chlen (string);
 
-      if ((newstring = typeMallocN (char, len + 1)) != 0)
+      if ((newstring = typeMallocN (char, len + 1)) != NULL)
       {
 	 int x;
 
@@ -915,9 +915,9 @@ char *chtype2Char (const chtype *string)
  */
 char *chtype2String (const chtype *string)
 {
-   char *newstring = 0;
+   char *newstring = NULL;
 
-   if (string != 0)
+   if (string != NULL)
    {
       int pass;
       int len = chlen (string);
@@ -934,7 +934,7 @@ char *chtype2String (const chtype *string)
 	    unsigned next = ((this_ch & 0xff) < 32) ? 5 : 1;
 
 	    need = decodeAttribute (newstring, need, last_ch, this_ch);
-	    if (newstring != 0)
+	    if (newstring != NULL)
 	    {
 	       if (next == 1)
 	       {
@@ -960,7 +960,7 @@ char *chtype2String (const chtype *string)
 	 ++need;
 	 if (!pass)
 	 {
-	    if ((newstring = typeCallocN (char, need)) == 0)
+	    if ((newstring = typeCallocN (char, need)) == NULL)
 	         break;
 	 }
       }
@@ -988,7 +988,7 @@ void stripWhiteSpace (EStripType stripType, char *string)
    size_t stringLength = 0;
 
    /* Make sure the string is not null.  */
-   if (string != 0
+   if (string != NULL
        && (stringLength = strlen (string)) != 0)
    {
       /* Strip leading whitespace */
@@ -1039,13 +1039,13 @@ static unsigned countChar (const char *string, int separator)
  */
 char **CDKsplitString (const char *string, int separator)
 {
-   char **result = 0;
+   char **result = NULL;
    char *temp;
 
-   if (string != 0 && *string != 0)
+   if (string != NULL && *string != 0)
    {
       unsigned need = countChar (string, separator) + 2;
-      if ((result = typeMallocN (char *, need)) != 0)
+      if ((result = typeMallocN (char *, need)) != NULL)
       {
 	 unsigned item = 0;
 	 const char *first = string;
@@ -1055,7 +1055,7 @@ char **CDKsplitString (const char *string, int separator)
 	       string++;
 
 	    need = (unsigned)(string - first);
-	    if ((temp = typeMallocN (char, need + 1)) == 0)
+	    if ((temp = typeMallocN (char, need + 1)) == NULL)
 	         break;
 
 	    memcpy (temp, first, need);
@@ -1066,7 +1066,7 @@ char **CDKsplitString (const char *string, int separator)
 	       break;
 	    first = string;
 	 }
-	 result[item] = 0;
+	 result[item] = NULL;
       }
    }
    return result;
@@ -1085,7 +1085,7 @@ unsigned CDKallocStrings (char ***list, char *item, unsigned length, unsigned us
    if (need > used)
    {
       used = need;
-      if (*list == 0)
+      if (*list == NULL)
       {
 	 *list = typeMallocN (char *, used);
       }
@@ -1095,7 +1095,7 @@ unsigned CDKallocStrings (char ***list, char *item, unsigned length, unsigned us
       }
    }
    (*list)[length++] = copyChar (item);
-   (*list)[length] = 0;
+   (*list)[length] = NULL;
    return used;
 }
 
@@ -1105,9 +1105,9 @@ unsigned CDKallocStrings (char ***list, char *item, unsigned length, unsigned us
 unsigned CDKcountStrings (CDK_CSTRING2 list)
 {
    unsigned result = 0;
-   if (list != 0)
+   if (list != NULL)
    {
-      while (*list++ != 0)
+      while (*list++ != NULL)
 	 result++;
    }
    return result;
@@ -1118,10 +1118,10 @@ unsigned CDKcountStrings (CDK_CSTRING2 list)
  */
 void CDKfreeStrings (char **list)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       void *base = (void *)list;
-      while (*list != 0)
+      while (*list != NULL)
 	 free (*list++);
       free (base);
    }
@@ -1132,10 +1132,10 @@ void CDKfreeStrings (char **list)
  */
 void CDKfreeChtypes (chtype **list)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       void *base = (void *)list;
-      while (*list != 0)
+      while (*list != NULL)
       {
 	 freeChtype (*list++);
       }
@@ -1280,13 +1280,13 @@ int CDKgetDirectoryContents (const char *directory, char ***list)
    dp = opendir (directory);
 
    /* Could we open the directory?  */
-   if (dp == 0)
+   if (dp == NULL)
    {
       return -1;
    }
 
    /* Read the directory.  */
-   while ((dirStruct = readdir (dp)) != 0)
+   while ((dirStruct = readdir (dp)) != NULL)
    {
       if (strcmp (dirStruct->d_name, "."))
 	 used = CDKallocStrings (list, dirStruct->d_name,
@@ -1311,7 +1311,7 @@ int searchList (CDK_CSTRING2 list, int listSize, const char *pattern)
    int Index = -1;
 
    /* Make sure the pattern isn't null. */
-   if (pattern != 0)
+   if (pattern != NULL)
    {
       size_t len = strlen (pattern);
       int x;
@@ -1327,7 +1327,7 @@ int searchList (CDK_CSTRING2 list, int listSize, const char *pattern)
 	  * less than the provided word.  At this point we will set the index
 	  * to the current position.  If 'ret' is greater than 0, then the
 	  * current word is alphabetically greater than the given word.  We
-	  * should return with index, which might contain the last best match. 
+	  * should return with index, which might contain the last best match.
 	  * If they are equal, then we've found it.
 	  */
 	 if (ret < 0)
@@ -1354,7 +1354,7 @@ int checkForLink (const char *line, char *filename)
    int fPos = 0;
 
    /* Make sure the line isn't null. */
-   if (line == 0)
+   if (line == NULL)
    {
       return -1;
    }
@@ -1387,11 +1387,11 @@ int checkForLink (const char *line, char *filename)
  */
 char *baseName (char *pathname)
 {
-   char *base = 0;
+   char *base = NULL;
 
-   if (pathname != 0
+   if (pathname != NULL
        && *pathname != '\0'
-       && (base = copyChar (pathname)) != 0)
+       && (base = copyChar (pathname)) != NULL)
    {
       size_t pathLen;
 
@@ -1419,12 +1419,12 @@ char *baseName (char *pathname)
  */
 char *dirName (char *pathname)
 {
-   char *dir = 0;
+   char *dir = NULL;
    size_t pathLen;
 
    /* Check if the string is null.  */
-   if (pathname != 0
-       && (dir = copyChar (pathname)) != 0
+   if (pathname != NULL
+       && (dir = copyChar (pathname)) != NULL
        && (pathLen = strlen (pathname)) != 0)
    {
       size_t x = pathLen;
@@ -1482,7 +1482,7 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
  */
 void eraseCursesWindow (WINDOW *window)
 {
-   if (window != 0)
+   if (window != NULL)
    {
       werase (window);
       wrefresh (window);
@@ -1494,7 +1494,7 @@ void eraseCursesWindow (WINDOW *window)
  */
 void deleteCursesWindow (WINDOW *window)
 {
-   if (window != 0)
+   if (window != NULL)
    {
       eraseCursesWindow (window);
       delwin (window);
@@ -1507,7 +1507,7 @@ void deleteCursesWindow (WINDOW *window)
  */
 void moveCursesWindow (WINDOW *window, int xdiff, int ydiff)
 {
-   if (window != 0)
+   if (window != NULL)
    {
       int xpos, ypos;
 

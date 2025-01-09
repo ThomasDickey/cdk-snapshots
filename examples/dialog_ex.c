@@ -1,4 +1,4 @@
-/* $Id: dialog_ex.c,v 1.14 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: dialog_ex.c,v 1.15 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,8 +12,8 @@ char *XCursesProgramName = "dialog_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKDIALOG *question  = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKDIALOG *question  = NULL;
    const char *buttons[] =
    {"</B/24>Ok", "</B16>Cancel"};
    const char *message[10];
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 			    CDKparamValue (&params, 'S', FALSE));
 
    /* Check if we got a null value back. */
-   if (question == 0)
+   if (question == NULL)
    {
       /* Shut down Cdk. */
       destroyCDKScreen (cdkscreen);
@@ -62,7 +62,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the dialog box. */
-   selection = activateCDKDialog (question, 0);
+   selection = activateCDKDialog (question, NULL);
 
    /* Tell them what was selected. */
    if (question->exitType == vESCAPE_HIT)

@@ -4,7 +4,7 @@ Section: libs
 Priority: optional
 Standards-Version: 3.8.4
 Build-Depends: debhelper (>= 5), libncursesw5-dev (>= 5.3), groff-base
-Homepage: http://invisible-island.net/cdk/
+Homepage: https://invisible-island.net/cdk/
 
 Package: libcdk5
 Architecture: any

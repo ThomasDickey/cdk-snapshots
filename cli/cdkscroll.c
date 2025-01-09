@@ -1,4 +1,4 @@
-/* $Id: cdkscroll.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdkscroll.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -22,12 +22,12 @@ static const char *FPUsage = "-l List | -f filename [-s Scroll Bar Position] [-n
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKSCROLL *widget            = 0;
-   CDKBUTTONBOX *buttonWidget   = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *temp                   = 0;
-   chtype *holder               = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKSCROLL *widget            = NULL;
+   CDKBUTTONBOX *buttonWidget   = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *temp                   = NULL;
+   chtype *holder               = NULL;
    int answer                   = 0;
    int spos                     = NONE;
    int buttonCount              = 0;
@@ -35,8 +35,8 @@ int main (int argc, char **argv)
    int scrollLines              = -1;
    int shadowHeight             = 0;
    FILE *fp                     = stderr;
-   char **scrollList            = 0;
-   char **buttonList            = 0;
+   char **scrollList            = NULL;
+   char **buttonList            = NULL;
    int j1, j2;
 
    CDK_PARAMS params;
@@ -74,9 +74,9 @@ int main (int argc, char **argv)
    spos = CDKparsePosition (CDKparamString (&params, 's'));
 
    /* If the user asked for an output file, try to open it. */
-   if (outputFile != 0)
+   if (outputFile != NULL)
    {
-      if ((fp = fopen (outputFile, "w")) == 0)
+      if ((fp = fopen (outputFile, "w")) == NULL)
       {
 	 fprintf (stderr, "%s: Can not open output file %s\n", argv[0], outputFile);
 	 ExitProgram (CLI_ERROR);
@@ -84,10 +84,10 @@ int main (int argc, char **argv)
    }
 
    /* Did they provide a list of items. */
-   if (list == 0)
+   if (list == NULL)
    {
       /* Maybe they gave a filename to use to read. */
-      if (filename != 0)
+      if (filename != NULL)
       {
 	 /* Read the file in. */
 	 scrollLines = CDKreadFile (filename, &scrollList);
@@ -119,7 +119,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -128,9 +128,9 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* Create the scrolling list. */
@@ -141,7 +141,7 @@ int main (int argc, char **argv)
 			  boxWidget, shadowWidget);
 
    /* Make sure we could create the widget. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       CDKfreeStrings (scrollList);
 
@@ -156,7 +156,7 @@ int main (int argc, char **argv)
    }
 
    /* Split the buttons if they supplied some. */
-   if (buttons != 0)
+   if (buttons != NULL)
    {
       /* Split the button list up. */
       buttonList = CDKsplitString (buttons, '\n');
@@ -168,7 +168,7 @@ int main (int argc, char **argv)
 				      (getbegy (widget->win)
 				       + widget->boxHeight - 1),
 				      1, widget->boxWidth - 1,
-				      0, 1, buttonCount,
+				      NULL, 1, buttonCount,
 				      (CDK_CSTRING2) buttonList, buttonCount,
 				      A_REVERSE, boxWidget, FALSE);
       CDKfreeStrings (buttonList);
@@ -209,7 +209,7 @@ int main (int argc, char **argv)
    if (shadowWidget == TRUE)
    {
       /* Determine the height of the shadow window. */
-      shadowHeight = (buttonWidget == 0 ?
+      shadowHeight = (buttonWidget == NULL ?
 		      widget->boxHeight :
 		      widget->boxHeight + buttonWidget->boxHeight - 1);
 
@@ -220,7 +220,7 @@ int main (int argc, char **argv)
 				  getbegx (widget->win) + 1);
 
       /* Make sure we could have created the shadow window. */
-      if (widget->shadowWin != 0)
+      if (widget->shadowWin != NULL)
       {
 	 widget->shadow = TRUE;
 
@@ -239,10 +239,10 @@ int main (int argc, char **argv)
    setCDKScrollBackgroundColor (widget, CDK_WIDGET_COLOR);
 
    /* Activate the scrolling list. */
-   answer = activateCDKScroll (widget, 0);
+   answer = activateCDKScroll (widget, NULL);
 
    /* If there were buttons, get the button selected. */
-   if (buttonWidget != 0)
+   if (buttonWidget != NULL)
    {
       selection = buttonWidget->currentButton;
       destroyCDKButtonbox (buttonWidget);

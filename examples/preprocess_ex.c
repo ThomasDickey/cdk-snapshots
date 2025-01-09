@@ -1,4 +1,4 @@
-/* $Id: preprocess_ex.c,v 1.20 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: preprocess_ex.c,v 1.21 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,8 +14,8 @@ static BINDFN_PROTO (entryPreProcessCB);
 int main (void)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKENTRY *widget     = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKENTRY *widget     = NULL;
    const char *title    = "<C>Type in anything you want\n<C>but the dreaded letter </B>G<!B>!";
    char *info;
    const char *mesg[10];
@@ -28,11 +28,11 @@ int main (void)
 
    /* Create the entry field widget. */
    widget = newCDKEntry (cdkscreen, CENTER, CENTER,
-			 title, 0, A_NORMAL, '.', vMIXED,
+			 title, NULL, A_NORMAL, '.', vMIXED,
 			 40, 0, 256, TRUE, FALSE);
 
    /* Is the widget null? */
-   if (widget == 0)
+   if (widget == NULL)
    {
       /* Clean up. */
       destroyCDKScreen (cdkscreen);
@@ -42,10 +42,10 @@ int main (void)
       ExitProgram (EXIT_FAILURE);
    }
 
-   setCDKEntryPreProcess (widget, entryPreProcessCB, 0);
+   setCDKEntryPreProcess (widget, entryPreProcessCB, NULL);
 
    /* Activate the entry field. */
-   info = activateCDKEntry (widget, 0);
+   info = activateCDKEntry (widget, NULL);
 
    /* Tell them what they typed. */
    if (widget->exitType == vESCAPE_HIT)
@@ -82,7 +82,7 @@ static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object,
    if ((input == 'g') || (input == 'G'))
    {
       /* *INDENT-EQLS* */
-      CDKDIALOG *widget     = 0;
+      CDKDIALOG *widget     = NULL;
       int buttonCount       = 1;
       int lines             = 0;
       const char *buttons[] =
@@ -99,7 +99,7 @@ static int entryPreProcessCB (EObjectType cdkType GCC_UNUSED, void *object,
 			     (CDK_CSTRING2)mesg, lines,
 			     (CDK_CSTRING2)buttons, buttonCount,
 			     A_REVERSE, FALSE, TRUE, FALSE);
-      activateCDKDialog (widget, 0);
+      activateCDKDialog (widget, NULL);
       destroyCDKDialog (widget);
       drawCDKEntry (entry, ObjOf (entry)->box);
       return 0;

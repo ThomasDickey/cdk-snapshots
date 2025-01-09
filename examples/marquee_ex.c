@@ -1,4 +1,4 @@
-/* $Id: marquee_ex.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: marquee_ex.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -30,7 +30,7 @@ static void help (char *programName)
 
 static void myParseAttr (CDK_PARAMS * params, int lower, int upper)
 {
-   if (CDKparamString (params, lower) != 0)
+   if (CDKparamString (params, lower) != NULL)
    {
       char starting[3];
       char ending[3];
@@ -71,7 +71,7 @@ int main (int argc, char **argv)
    delay = CDKparamNumber2 (&params, 'd', 5);
    mesg = CDKparamString (&params, 'm');
 
-   if (CDKparamString (&params, 'h') != 0)
+   if (CDKparamString (&params, 'h') != NULL)
       help (argv[0]);
 
    /* Clean up the strings. */
@@ -101,7 +101,7 @@ int main (int argc, char **argv)
 				  CDKparamValue (&params, 'S', TRUE));
 
    /* Check if the marquee is null. */
-   if (scrollMessage == 0)
+   if (scrollMessage == NULL)
    {
       /* Exit Cdk. */
       destroyCDKScreen (cdkscreen);
@@ -115,7 +115,7 @@ int main (int argc, char **argv)
    refreshCDKScreen (cdkscreen);
 
    /* Create the marquee message. */
-   if (mesg == 0)
+   if (mesg == NULL)
    {
       char *currentTime;
 

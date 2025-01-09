@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:38:44 $
- * $Revision: 1.26 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.27 $
  */
 
 /*
@@ -35,7 +35,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 			   boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDK<UPPER> *widget   = 0;
+   CDK<UPPER> *widget   = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxHeight;
@@ -58,17 +58,17 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    /* *INDENT-ON* */
 
 
-   if ((widget = newCDKObject (CDK<UPPER>, &my_funcs)) == 0)
-      return (0);
+   if ((widget = newCDKObject (CDK<UPPER>, &my_funcs)) == NULL)
+      return (NULL);
 
    setCDK<MIXED>Box (widget, Box);
 
    boxHeight = (BorderOf (widget) * 2) + 1;
 
    /* Set some basic values of the widget's data field. */
-   widget->label = 0;
+   widget->label = NULL;
    widget->labelLen = 0;
-   widget->labelWin = 0;
+   widget->labelWin = NULL;
 
    /*
     * If the fieldWidth is a negative value, the fieldWidth will
@@ -79,7 +79,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    boxWidth = fieldWidth + 2 * BorderOf (widget);
 
    /* Translate the label char *pointer to a chtype pointer. */
-   if (label != 0)
+   if (label != NULL)
    {
       widget->label = char2Chtype (label, &widget->labelLen, &junk);
       boxWidth = widget->labelLen + fieldWidth + 2;
@@ -107,23 +107,23 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    widget->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    /* Is the main window null??? */
-   if (widget->win == 0)
+   if (widget->win == NULL)
    {
       destroyCDKObject (widget);
-      return (0);
+      return (NULL);
    }
 
    /* Create the widget's label window. */
-   if (widget->label != 0)
+   if (widget->label != NULL)
    {
       widget->labelWin = subwin (widget->win,
 				 1, widget->labelLen,
 				 ypos + TitleLinesOf (widget) + BorderOf (widget),
 				 xpos + horizontalAdjust + BorderOf (widget));
-      if (widget->labelWin == 0)
+      if (widget->labelWin == NULL)
       {
 	 destroyCDKObject (widget);
-	 return (0);
+	 return (NULL);
       }
    }
 
@@ -135,10 +135,10 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
 			       + widget->labelLen
 			       + horizontalAdjust
 			       + BorderOf (widget)));
-   if (widget->fieldWin == 0)
+   if (widget->fieldWin == NULL)
    {
       destroyCDKObject (widget);
-      return (0);
+      return (NULL);
    }
    keypad (widget->fieldWin, TRUE);
    keypad (widget->win, TRUE);
@@ -146,7 +146,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    /* *INDENT-EQLS* Create the widget's data field. */
    ScreenOf (widget)            = cdkscreen;
    widget->parent               = cdkscreen->window;
-   widget->shadowWin            = 0;
+   widget->shadowWin            = NULL;
    widget->boxWidth             = boxWidth;
    widget->boxHeight            = boxHeight;
    widget->fieldWidth           = fieldWidth;
@@ -169,10 +169,10 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    if (shadow)
    {
       widget->shadowWin = newwin (boxHeight, boxWidth, ypos + 1, xpos + 1);
-      if (widget->shadowWin == 0)
+      if (widget->shadowWin == NULL)
       {
 	 destroyCDKObject (widget);
-	 return (0);
+	 return (NULL);
       }
    }
 
@@ -199,7 +199,7 @@ CDK<UPPER> *newCDK<MIXED> (CDKSCREEN *cdkscreen,
    /* Draw the widget. */
    drawCDK<MIXED> (widget, ObjOf (widget)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       boolean functionKey;
 
@@ -350,7 +350,7 @@ static bool performEdit (CDK<UPPER> * widget, chtype input)
 #define SCANF_FMT "%<PRINT>%c"
 #endif <INT>
 
-   if (temp != 0)
+   if (temp != NULL)
    {
       bool modify = TRUE;
       int base = 0;
@@ -408,7 +408,7 @@ static int _injectCDK<MIXED> (CDKOBJS *object, chtype input)
    drawCDK<MIXED>Field (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (v<UPPER>,
@@ -518,7 +518,7 @@ static int _injectCDK<MIXED> (CDKOBJS *object, chtype input)
       limitCurrentValue (widget);
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (v<UPPER>,
 				     widget,
@@ -595,7 +595,7 @@ static void _drawCDK<MIXED> (CDKOBJS *object, boolean Box)
    CDK<UPPER> *widget = (CDK<UPPER> *) object;
 
    /* Draw the shadow. */
-   if (widget->shadowWin != 0)
+   if (widget->shadowWin != NULL)
    {
       drawShadow (widget->shadowWin);
    }
@@ -609,7 +609,7 @@ static void _drawCDK<MIXED> (CDKOBJS *object, boolean Box)
    drawCdkTitle (widget->win, object);
 
    /* Draw the label. */
-   if (widget->labelWin != 0)
+   if (widget->labelWin != NULL)
    {
       writeChtype (widget->labelWin, 0, 0,
 		   widget->label,
@@ -662,13 +662,13 @@ static void drawCDK<MIXED>Field (CDK<UPPER> * widget)
  */
 static void _setBKattr<MIXED> (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDK<UPPER> *widget = (CDK<UPPER> *) object;
 
       wbkgd (widget->win, attrib);
       wbkgd (widget->fieldWin, attrib);
-      if (widget->labelWin != 0)
+      if (widget->labelWin != NULL)
       {
 	 wbkgd (widget->labelWin, attrib);
       }
@@ -680,7 +680,7 @@ static void _setBKattr<MIXED> (CDKOBJS *object, chtype attrib)
  */
 static void _destroyCDK<MIXED> (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDK<UPPER> *widget = (CDK<UPPER> *) object;
 

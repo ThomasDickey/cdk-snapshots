@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:09:14 $
- * $Revision: 1.149 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.150 $
  */
 
 /*
@@ -47,7 +47,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
 		       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKRADIO *radio      = 0;
+   CDKRADIO *radio      = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -68,9 +68,9 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
-   if ((radio = newCDKObject (CDKRADIO, &my_funcs)) == 0)
+   if ((radio = newCDKObject (CDKRADIO, &my_funcs)) == NULL)
    {
-      return (0);
+      return (NULL);
    }
 
    setCDKRadioBox (radio, Box);
@@ -127,7 +127,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    else if (listSize)
    {
       destroyCDKObject (radio);
-      return (0);
+      return (NULL);
    }
 
    /* Rejustify the x and y positions if we need to. */
@@ -137,10 +137,10 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    radio->win = newwin (radio->boxHeight, radio->boxWidth, ypos, xpos);
 
    /* Is the window null??? */
-   if (radio->win == 0)
+   if (radio->win == NULL)
    {
       destroyCDKObject (radio);
-      return (0);
+      return (NULL);
    }
 
    /* Turn on the keypad. */
@@ -166,7 +166,7 @@ CDKRADIO *newCDKRadio (CDKSCREEN *cdkscreen,
    }
    else
    {
-      radio->scrollbarWin = 0;
+      radio->scrollbarWin = NULL;
    }
 
    /* *INDENT-EQLS* Set the rest of the variables */
@@ -225,7 +225,7 @@ int activateCDKRadio (CDKRADIO *radio, chtype *actions)
    /* Draw the radio list. */
    drawCDKRadio (radio, ObjOf (radio)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       boolean functionKey;
 
@@ -284,7 +284,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
    drawCDKRadioList (radio, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vRADIO,
@@ -379,7 +379,7 @@ static int _injectCDKRadio (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vRADIO,
 				     widget,
@@ -470,7 +470,7 @@ static void _drawCDKRadio (CDKOBJS *object, boolean Box GCC_UNUSED)
    CDKRADIO *radio = (CDKRADIO *)object;
 
    /* Do we need to draw in the shadow??? */
-   if (radio->shadowWin != 0)
+   if (radio->shadowWin != NULL)
    {
       drawShadow (radio->shadowWin);
    }
@@ -575,12 +575,12 @@ static void drawCDKRadioList (CDKRADIO *radio, boolean Box)
  */
 static void _setBKattrRadio (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKRADIO *widget = (CDKRADIO *)object;
 
       wbkgd (widget->win, attrib);
-      if (widget->scrollbarWin != 0)
+      if (widget->scrollbarWin != NULL)
       {
 	 wbkgd (widget->scrollbarWin, attrib);
       }
@@ -590,7 +590,7 @@ static void _setBKattrRadio (CDKOBJS *object, chtype attrib)
 static void destroyInfo (CDKRADIO *widget)
 {
    CDKfreeChtypes (widget->item);
-   widget->item = 0;
+   widget->item = NULL;
 
    freeAndNull (widget->itemLen);
    freeAndNull (widget->itemPos);
@@ -601,7 +601,7 @@ static void destroyInfo (CDKRADIO *widget)
  */
 static void _destroyCDKRadio (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKRADIO *radio = (CDKRADIO *)object;
 
@@ -678,7 +678,7 @@ void setCDKRadioItems (CDKRADIO *radio, CDK_CSTRING2 list, int listSize)
 }
 int getCDKRadioItems (CDKRADIO *radio, char **list)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       int j;
 
@@ -800,7 +800,7 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
    if (radio->listSize > 0)
    {
       CDKfreeChtypes (radio->item);
-      radio->item = 0;
+      radio->item = NULL;
       freeAndNull (radio->itemLen);
       freeAndNull (radio->itemPos);
    }
@@ -812,9 +812,9 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
       int *newLen      = typeCallocN (int, listSize + 1);
       int *newPos      = typeCallocN (int, listSize + 1);
 
-      if (newList != 0
-	  && newLen != 0
-	  && newPos != 0)
+      if (newList != NULL
+	  && newLen != NULL
+	  && newPos != NULL)
       {
 	 int j;
 
@@ -824,7 +824,7 @@ static int createList (CDKRADIO *radio, CDK_CSTRING2 list, int listSize, int box
 	 for (j = 0; j < listSize; j++)
 	 {
 	    newList[j] = char2Chtype (list[j], &newLen[j], &newPos[j]);
-	    if (newList[j] == 0)
+	    if (newList[j] == NULL)
 	    {
 	       status = 0;
 	       break;

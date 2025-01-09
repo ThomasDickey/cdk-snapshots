@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_test.h,v 1.7 2021/03/24 22:32:00 tom Exp $
+ * $Id: cdk_test.h,v 1.8 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2005-2008,2021 Thomas E. Dickey
+ * Copyright 2005-2021,2025 Thomas E. Dickey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -41,7 +41,7 @@ extern "C" {
 
 /*
  * The whole point of this header is to define ExitProgram(), which is used for
- * leak-checking when ncurses's _nc_free_and_exit() function is available. 
+ * leak-checking when ncurses's _nc_free_and_exit() function is available.
  * Invoking that rather than 'exit()' tells ncurses to free all of the
  * "permanent" memory leaks, making analysis much simpler.
  */

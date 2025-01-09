@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:09:14 $
- * $Revision: 1.159 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.160 $
  */
 
 /*
@@ -47,7 +47,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
 			       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKSELECTION *selection      = 0;
+   CDKSELECTION *selection      = NULL;
    int widestItem               = -1;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
@@ -70,12 +70,12 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    /* *INDENT-ON* */
 
    if (choiceCount <= 0
-       || (selection = newCDKObject (CDKSELECTION, &my_funcs)) == 0
-       || (selection->choice = typeCallocN (chtype *, choiceCount + 1)) == 0
-       || (selection->choicelen = typeCallocN (int, choiceCount + 1)) == 0)
+       || (selection = newCDKObject (CDKSELECTION, &my_funcs)) == NULL
+       || (selection->choice = typeCallocN (chtype *, choiceCount + 1)) == NULL
+       || (selection->choicelen = typeCallocN (int, choiceCount + 1)) == NULL)
    {
       destroyCDKObject (selection);
-      return (0);
+      return (NULL);
    }
 
    setCDKSelectionBox (selection, Box);
@@ -132,10 +132,10 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    selection->win = newwin (selection->boxHeight, selection->boxWidth, ypos, xpos);
 
    /* Is the window null?? */
-   if (selection->win == 0)
+   if (selection->win == NULL)
    {
       destroyCDKObject (selection);
-      return (0);
+      return (NULL);
    }
 
    /* Turn the keypad on for this window. */
@@ -161,7 +161,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    }
    else
    {
-      selection->scrollbarWin = 0;
+      selection->scrollbarWin = NULL;
    }
 
    /* *INDENT-EQLS* Set the rest of the variables */
@@ -198,7 +198,7 @@ CDKSELECTION *newCDKSelection (CDKSCREEN *cdkscreen,
    else if (listSize)
    {
       destroyCDKObject (selection);
-      return (0);
+      return (NULL);
    }
 
    /* Do we need to create a shadow. */
@@ -238,7 +238,7 @@ int activateCDKSelection (CDKSELECTION *selection, chtype *actions)
    /* Draw the selection list */
    drawCDKSelection (selection, ObjOf (selection)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       boolean functionKey;
 
@@ -297,7 +297,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
    drawCDKSelectionList (selection, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vSELECTION,
@@ -406,7 +406,7 @@ static int _injectCDKSelection (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vSELECTION,
 				     widget,
@@ -484,7 +484,7 @@ static void _drawCDKSelection (CDKOBJS *object, boolean Box)
    CDKSELECTION *selection = (CDKSELECTION *)object;
 
    /* Draw in the shadow if we need to. */
-   if (selection->shadowWin != 0)
+   if (selection->shadowWin != NULL)
    {
       drawShadow (selection->shadowWin);
    }
@@ -592,12 +592,12 @@ static void drawCDKSelectionList (CDKSELECTION *selection, boolean Box GCC_UNUSE
  */
 static void _setBKattrSelection (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKSELECTION *widget = (CDKSELECTION *)object;
 
       wbkgd (widget->win, attrib);
-      if (widget->scrollbarWin != 0)
+      if (widget->scrollbarWin != NULL)
       {
 	 wbkgd (widget->scrollbarWin, attrib);
       }
@@ -607,7 +607,7 @@ static void _setBKattrSelection (CDKOBJS *object, chtype attrib)
 static void destroyInfo (CDKSELECTION *widget)
 {
    CDKfreeChtypes (widget->item);
-   widget->item = 0;
+   widget->item = NULL;
 
    freeAndNull (widget->itemPos);
    freeAndNull (widget->itemLen);
@@ -620,7 +620,7 @@ static void destroyInfo (CDKSELECTION *widget)
  */
 static void _destroyCDKSelection (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKSELECTION *selection = (CDKSELECTION *)object;
 
@@ -697,7 +697,7 @@ void setCDKSelectionItems (CDKSELECTION *selection, CDK_CSTRING2 list, int listS
 }
 int getCDKSelectionItems (CDKSELECTION *selection, char **list)
 {
-   if (list != 0)
+   if (list != NULL)
    {
       int j;
 
@@ -715,7 +715,7 @@ int getCDKSelectionItems (CDKSELECTION *selection, char **list)
 void setCDKSelectionTitle (CDKSELECTION *selection, const char *title)
 {
    /* Make sure the title isn't null. */
-   if (title == 0)
+   if (title == NULL)
    {
       return;
    }
@@ -827,7 +827,7 @@ void setCDKSelectionModes (CDKSELECTION *selection, int *modes)
    int j;
 
    /* Make sure the widget pointer is not null. */
-   if (selection == 0)
+   if (selection == NULL)
    {
       return;
    }
@@ -849,7 +849,7 @@ int *getCDKSelectionModes (CDKSELECTION *selection)
 void setCDKSelectionMode (CDKSELECTION *selection, int Index, int mode)
 {
    /* Make sure the widget pointer is not null. */
-   if (selection == 0)
+   if (selection == NULL)
    {
       return;
    }
@@ -936,7 +936,7 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
    if (selection->listSize > 0)
    {
       CDKfreeChtypes (selection->item);
-      selection->item = 0;
+      selection->item = NULL;
       freeAndNull (selection->itemLen);
       freeAndNull (selection->itemPos);
       freeAndNull (selection->selections);
@@ -952,11 +952,11 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
       int *newSel       = typeCallocN (int, listSize + 1);
       int *newMode      = typeCallocN (int, listSize + 1);
 
-      if (newList != 0
-	  && newLen != 0
-	  && newPos != 0
-	  && newSel != 0
-	  && newMode != 0)
+      if (newList != NULL
+	  && newLen != NULL
+	  && newPos != NULL
+	  && newSel != NULL
+	  && newMode != NULL)
       {
 	 int boxWidth = AvailableWidth (selection);
 	 int adjust = selection->maxchoicelen + BorderOf (selection);
@@ -966,7 +966,7 @@ static int createList (CDKSELECTION *selection, CDK_CSTRING2 list, int listSize)
 	 for (j = 0; j < listSize; j++)
 	 {
 	    newList[j] = char2Chtype (list[j], &newLen[j], &newPos[j]);
-	    if (newList[j] == 0)
+	    if (newList[j] == NULL)
 	    {
 	       status = 0;
 	       break;

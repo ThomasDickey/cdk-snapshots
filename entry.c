@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:34:02 $
- * $Revision: 1.225 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.226 $
  */
 
 /*
@@ -32,7 +32,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 		       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKENTRY *entry      = 0;
+   CDKENTRY *entry      = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int fieldWidth       = fWidth;
@@ -43,8 +43,8 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    int junk             = 0;
    int horizontalAdjust, oldWidth;
 
-   if ((entry = newCDKObject (CDKENTRY, &my_funcs)) == 0)
-        return (0);
+   if ((entry = newCDKObject (CDKENTRY, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKEntryBox (entry, Box);
    boxHeight = (BorderOf (entry) * 2) + 1;
@@ -58,12 +58,12 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    boxWidth = fieldWidth + 2 * BorderOf (entry);
 
    /* Set some basic values of the entry field. */
-   entry->label = 0;
+   entry->label = NULL;
    entry->labelLen = 0;
-   entry->labelWin = 0;
+   entry->labelWin = NULL;
 
    /* Translate the label char *pointer to a chtype pointer. */
-   if (label != 0)
+   if (label != NULL)
    {
       entry->label = char2Chtype (label, &entry->labelLen, &junk);
       boxWidth += entry->labelLen;
@@ -88,10 +88,10 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 
    /* Make the label window. */
    entry->win = newwin (boxHeight, boxWidth, ypos, xpos);
-   if (entry->win == 0)
+   if (entry->win == NULL)
    {
       destroyCDKObject (entry);
-      return (0);
+      return (NULL);
    }
    keypad (entry->win, TRUE);
 
@@ -101,15 +101,15 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 			     (xpos + entry->labelLen
 			      + horizontalAdjust
 			      + BorderOf (entry)));
-   if (entry->fieldWin == 0)
+   if (entry->fieldWin == NULL)
    {
       destroyCDKObject (entry);
-      return (0);
+      return (NULL);
    }
    keypad (entry->fieldWin, TRUE);
 
    /* Make the label win, if we need to. */
-   if (label != 0)
+   if (label != NULL)
    {
       entry->labelWin = subwin (entry->win, 1, entry->labelLen,
 				ypos + TitleLinesOf (entry) + BorderOf (entry),
@@ -118,10 +118,10 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 
    /* Make room for the info char * pointer. */
    entry->info = typeMallocN (char, max + 3);
-   if (entry->info == 0)
+   if (entry->info == NULL)
    {
       destroyCDKObject (entry);
-      return (0);
+      return (NULL);
    }
    cleanChar (entry->info, max + 3, '\0');
    entry->infoWidth = max + 3;
@@ -129,7 +129,7 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
    /* *INDENT-EQLS* Set up the rest of the structure. */
    ScreenOf (entry)             = cdkscreen;
    entry->parent                = cdkscreen->window;
-   entry->shadowWin             = 0;
+   entry->shadowWin             = NULL;
    entry->fieldAttr             = fieldAttr;
    entry->fieldWidth            = fieldWidth;
    entry->filler                = filler;
@@ -171,12 +171,12 @@ CDKENTRY *newCDKEntry (CDKSCREEN *cdkscreen,
 char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
 {
    boolean functionKey;
-   char *ret = 0;
+   char *ret = NULL;
 
    /* Draw the widget. */
    drawCDKEntry (entry, ObjOf (entry)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -213,7 +213,7 @@ char *activateCDKEntry (CDKENTRY *entry, chtype *actions)
    }
    else
    {
-      return 0;
+      return NULL;
    }
 }
 
@@ -260,7 +260,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
    drawCDKEntryField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       ppReturn = PreProcessFuncOf (widget) (vENTRY,
 					    widget,
@@ -440,7 +440,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
 	    break;
 
 	 case CDK_PASTE:
-	    if (GPasteBuffer != 0)
+	    if (GPasteBuffer != NULL)
 	    {
 	       setCDKEntryValue (widget, GPasteBuffer);
 	       drawCDKEntryField (widget);
@@ -482,7 +482,7 @@ static int _injectCDKEntry (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vENTRY,
 				     widget,
@@ -625,7 +625,7 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
    CDKENTRY *entry = (CDKENTRY *)object;
 
    /* Did we ask for a shadow? */
-   if (entry->shadowWin != 0)
+   if (entry->shadowWin != NULL)
    {
       drawShadow (entry->shadowWin);
    }
@@ -641,7 +641,7 @@ static void _drawCDKEntry (CDKOBJS *object, boolean Box)
    wrefresh (entry->win);
 
    /* Draw in the label to the widget. */
-   if (entry->labelWin != 0)
+   if (entry->labelWin != NULL)
    {
       writeChtype (entry->labelWin, 0, 0, entry->label, HORIZONTAL, 0, entry->labelLen);
       wrefresh (entry->labelWin);
@@ -664,7 +664,7 @@ static void drawCDKEntryField (CDKENTRY *entry)
    (void)mvwhline (entry->fieldWin, 0, x, entry->filler | entry->fieldAttr, entry->fieldWidth);
 
    /* If there is information in the field. Then draw it in. */
-   if (entry->info != 0)
+   if (entry->info != NULL)
    {
       int infoLength = (int)strlen (entry->info);
 
@@ -712,7 +712,7 @@ static void _eraseCDKEntry (CDKOBJS *object)
  */
 static void _destroyCDKEntry (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKENTRY *entry = (CDKENTRY *)object;
 
@@ -758,7 +758,7 @@ void setCDKEntryValue (CDKENTRY *entry, const char *newValue)
    if (entry->info != newValue)
    {
       /* Just to be sure, if lets make sure the new value isn't null. */
-      if (newValue == 0)
+      if (newValue == NULL)
       {
 	 /* Then we want to just erase the old value. */
 	 cleanChar (entry->info, entry->infoWidth, '\0');
@@ -852,13 +852,13 @@ boolean getCDKEntryBox (CDKENTRY *entry)
  */
 static void _setBKattrEntry (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKENTRY *widget = (CDKENTRY *)object;
 
       wbkgd (widget->win, attrib);
       wbkgd (widget->fieldWin, attrib);
-      if (widget->labelWin != 0)
+      if (widget->labelWin != NULL)
       {
 	 wbkgd (widget->labelWin, attrib);
       }

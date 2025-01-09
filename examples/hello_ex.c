@@ -1,4 +1,4 @@
-/* $Id: hello_ex.c,v 1.12 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: hello_ex.c,v 1.13 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -35,7 +35,7 @@ int main (int argc, char **argv)
 		       CDKparamValue (&params, 'S', TRUE));
 
    /* Is the label null? */
-   if (demo == 0)
+   if (demo == NULL)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);

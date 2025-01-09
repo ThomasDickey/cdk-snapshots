@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:40:47 $
- * $Revision: 1.69 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.70 $
  */
 
 DeclareCDKObjects (BUTTONBOX, Buttonbox, setCdk, Int);
@@ -26,7 +26,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen,
 			       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKBUTTONBOX *buttonbox      = 0;
+   CDKBUTTONBOX *buttonbox      = NULL;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
    int boxWidth                 = 0;
@@ -39,14 +39,14 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen,
    int x, y, junk;
 
    if (buttonCount <= 0
-       || (buttonbox = newCDKObject (CDKBUTTONBOX, &my_funcs)) == 0
-       || (buttonbox->button = typeCallocN (chtype *, buttonCount + 1)) == 0
-       || (buttonbox->buttonLen = typeCallocN (int, buttonCount + 1)) == 0
-       || (buttonbox->buttonPos = typeCallocN (int, buttonCount + 1)) == 0
-       || (buttonbox->columnWidths = typeCallocN (int, buttonCount + 1)) == 0)
+       || (buttonbox = newCDKObject (CDKBUTTONBOX, &my_funcs)) == NULL
+       || (buttonbox->button = typeCallocN (chtype *, buttonCount + 1)) == NULL
+       || (buttonbox->buttonLen = typeCallocN (int, buttonCount + 1)) == NULL
+       || (buttonbox->buttonPos = typeCallocN (int, buttonCount + 1)) == NULL
+       || (buttonbox->columnWidths = typeCallocN (int, buttonCount + 1)) == NULL)
    {
       destroyCDKObject (buttonbox);
-      return (0);
+      return (NULL);
    }
 
    setCDKButtonboxBox (buttonbox, Box);
@@ -113,7 +113,7 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen,
    ScreenOf (buttonbox)            = cdkscreen;
    buttonbox->parent               = cdkscreen->window;
    buttonbox->win                  = newwin (boxHeight, boxWidth, ypos, xpos);
-   buttonbox->shadowWin            = 0;
+   buttonbox->shadowWin            = NULL;
    buttonbox->buttonCount          = buttonCount;
    buttonbox->currentButton        = 0;
    buttonbox->rows                 = rows;
@@ -143,10 +143,10 @@ CDKBUTTONBOX *newCDKButtonbox (CDKSCREEN *cdkscreen,
    }
 
    /* If we couldn't create the window, we should return a null value. */
-   if (buttonbox->win == 0)
+   if (buttonbox->win == NULL)
    {
       destroyCDKObject (buttonbox);
-      return (0);
+      return (NULL);
    }
    keypad (buttonbox->win, TRUE);
 
@@ -174,7 +174,7 @@ int activateCDKButtonbox (CDKBUTTONBOX *buttonbox, chtype *actions)
    /* Draw the buttonbox box. */
    drawCDKButtonbox (buttonbox, ObjOf (buttonbox)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -225,7 +225,7 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       ppReturn = PreProcessFuncOf (widget) (vBUTTONBOX,
 					    widget,
@@ -323,7 +323,7 @@ static int _injectCDKButtonbox (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vBUTTONBOX,
 				     widget,
@@ -381,7 +381,7 @@ boolean getCDKButtonboxBox (CDKBUTTONBOX *buttonbox)
  */
 static void _setBKattrButtonbox (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKBUTTONBOX *widget = (CDKBUTTONBOX *)object;
 
@@ -397,7 +397,7 @@ static void _drawCDKButtonbox (CDKOBJS *object, boolean Box)
    CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
 
    /* Is there a shadow? */
-   if (buttonbox->shadowWin != 0)
+   if (buttonbox->shadowWin != NULL)
    {
       drawShadow (buttonbox->shadowWin);
    }
@@ -529,7 +529,7 @@ static void _moveCDKButtonbox (CDKOBJS *object,
  */
 static void _destroyCDKButtonbox (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKBUTTONBOX *buttonbox = (CDKBUTTONBOX *)object;
 

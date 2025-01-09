@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2019/02/25 00:53:17 $
- * $Revision: 1.24 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.25 $
  */
 
 #define MARKUP_CENTER  "<C>"
@@ -72,11 +72,11 @@ void setCdkBXattr (CDKOBJS *obj, chtype ch)
  */
 void setCDKObjectBackgroundColor (CDKOBJS *obj, const char *color)
 {
-   chtype *holder = 0;
+   chtype *holder = NULL;
    int junk1, junk2;
 
    /* Make sure the color isn't null. */
-   if (color == 0)
+   if (color == NULL)
    {
       return;
    }
@@ -119,14 +119,14 @@ static char *convert_NL (const char *source)
  */
 int setCdkTitle (CDKOBJS *obj, const char *title, int boxWidth)
 {
-   if (obj != 0)
+   if (obj != NULL)
    {
       cleanCdkTitle (obj);
 
-      if (title != 0)
+      if (title != NULL)
       {
 	 char *retitle = convert_NL (title);
-	 char **temp = 0;
+	 char **temp = NULL;
 	 int titleWidth;
 	 int x;
 	 int len;
@@ -178,19 +178,19 @@ char *getCdkTitle (CDKOBJS *obj)
 {
    int x;
    int pass;
-   char *result = 0;
+   char *result = NULL;
    for (pass = 0; pass < 2; ++pass)
    {
       size_t need = (size_t) (obj->titleLines + 1);
       for (x = 0; x < obj->titleLines; x++)
       {
 	 char *title = chtype2String (obj->title[x]);
-	 char *check = 0;
-	 const char *format = 0;
-	 if (title == 0)
+	 char *check = NULL;
+	 const char *format = NULL;
+	 if (title == NULL)
 	    continue;
 	 need += strlen (title);
-	 if ((check = chtype2Char (obj->title[x])) != 0)
+	 if ((check = chtype2Char (obj->title[x])) != NULL)
 	 {
 	    /* FIXME - we could infer <R> as well */
 	    if (isspace (*check) || obj->titlePos[x] > 0)
@@ -224,7 +224,7 @@ char *getCdkTitle (CDKOBJS *obj)
  */
 void drawCdkTitle (WINDOW *win, CDKOBJS *obj)
 {
-   if (obj != 0)
+   if (obj != NULL)
    {
       int x;
 
@@ -245,10 +245,10 @@ void drawCdkTitle (WINDOW *win, CDKOBJS *obj)
  */
 void cleanCdkTitle (CDKOBJS *obj)
 {
-   if (obj != 0)
+   if (obj != NULL)
    {
       CDKfreeChtypes (obj->title);
-      obj->title = 0;
+      obj->title = NULL;
 
       freeAndNull (obj->titlePos);
       freeAndNull (obj->titleLen);

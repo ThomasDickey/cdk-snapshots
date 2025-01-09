@@ -6,7 +6,7 @@ extern "C"
 #include <cdk.h>
 }
 
-class CDKScreen 
+class CDKScreen
 {
   // The window which curses uses.
   WINDOW *cursesWin;

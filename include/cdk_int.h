@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_int.h,v 1.31 2024/03/31 15:02:21 tom Exp $
+ * $Id: cdk_int.h,v 1.32 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -13,7 +13,7 @@ extern "C" {
 #include <cdk.h>
 
 /*
- * Copyright 2003-2021,2024 Thomas E. Dickey
+ * Copyright 2003-2024,2025 Thomas E. Dickey
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -60,8 +60,8 @@ extern "C" {
 #define typeMallocN(type,n)     (type*)malloc((size_t)(n) * sizeof(type))
 #define typeMalloc(type)        typeMallocN(type,1)
 
-#define freeChecked(p)          if ((p) != 0) free (p)
-#define freeAndNull(p)          if ((p) != 0) { free (p); p = 0; }
+#define freeChecked(p)          if ((p) != NULL) free (p)
+#define freeAndNull(p)          if ((p) != NULL) { free (p); p = NULL; }
 
 #define isChar(c)               ((int)(c) >= 0 && (int)(c) < KEY_MIN)
 #define CharOf(c)               ((unsigned char)(c))

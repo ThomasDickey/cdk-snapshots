@@ -1,4 +1,4 @@
-/* $Id: uslider_ex.c,v 1.5 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: uslider_ex.c,v 1.6 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -12,8 +12,8 @@ char *XCursesProgramName = "uslider_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKUSLIDER *widget   = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKUSLIDER *widget   = NULL;
    char title[256];
    const char *label    = "</B>Current Value:";
    const char *mesg[5];
@@ -51,7 +51,7 @@ int main (int argc, char **argv)
 			   CDKparamValue (&params, 'S', FALSE));
 
    /* Is the widget null? */
-   if (widget == 0)
+   if (widget == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -62,7 +62,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the widget. */
-   selection = activateCDKUSlider (widget, 0);
+   selection = activateCDKUSlider (widget, NULL);
 
    /* Check the exit value of the widget. */
    if (widget->exitType == vESCAPE_HIT)

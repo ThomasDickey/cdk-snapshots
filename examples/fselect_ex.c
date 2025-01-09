@@ -1,4 +1,4 @@
-/* $Id: fselect_ex.c,v 1.27 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: fselect_ex.c,v 1.28 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,8 +9,8 @@ char *XCursesProgramName = "fselect_ex";
 /*
  * This program demonstrates the file selector and the viewer widget.
  */
-static CDKSCREEN *cdkscreen = 0;
-static char **myUserList = 0;
+static CDKSCREEN *cdkscreen = NULL;
+static char **myUserList = NULL;
 static int userSize;
 
 typedef struct
@@ -112,7 +112,7 @@ static int do_help (CB_PARAMS)
       "F3 = delete previous item",
       "F4 = reload all items",
       "F5 = undo deletion",
-      0
+      NULL
    };
    popupLabel (cdkscreen,
 	       (CDK_CSTRING2)message,
@@ -148,7 +148,7 @@ static int do_undo (CB_PARAMS)
       char **newlist = (char **)malloc ((size_t) (++size + 1) * sizeof (char *));
 
       --undoSize;
-      newlist[size] = 0;
+      newlist[size] = NULL;
       for (n = size - 1; n > myUndoList[undoSize].deleted; --n)
       {
 	 newlist[n] = copyChar (oldlist[n - 1]);
@@ -172,11 +172,11 @@ static int do_undo (CB_PARAMS)
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKVIEWER *example   = 0;
-   CDKFSELECT *fSelect  = 0;
+   CDKVIEWER *example   = NULL;
+   CDKFSELECT *fSelect  = NULL;
    const char *title    = "<C>Pick\n<C>A\n<C>File";
    const char *label    = "File: ";
-   char **info          = 0;
+   char **info          = NULL;
    const char *button[5];
    const char *mesg[4];
    char *filename;
@@ -210,7 +210,7 @@ int main (int argc, char **argv)
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', FALSE));
 
-   if (fSelect == 0)
+   if (fSelect == NULL)
    {
       destroyCDKScreen (cdkscreen);
       endCDK ();
@@ -237,7 +237,7 @@ int main (int argc, char **argv)
    undoSize = 0;
 
    /* Activate the file selector. */
-   filename = activateCDKFselect (fSelect, 0);
+   filename = activateCDKFselect (fSelect, NULL);
 
    /* Check how the person exited from the widget. */
    if (fSelect->exitType == vESCAPE_HIT)
@@ -261,7 +261,7 @@ int main (int argc, char **argv)
 			   (CDK_CSTRING2)button, 2, A_REVERSE, TRUE, FALSE);
 
    /* Could we create the viewer widget? */
-   if (example == 0)
+   if (example == NULL)
    {
       /* Exit CDK. */
       destroyCDKFselect (fSelect);
@@ -299,7 +299,7 @@ int main (int argc, char **argv)
    destroyCDKFselect (fSelect);
 
    /* Activate the viewer widget. */
-   selected = activateCDKViewer (example, 0);
+   selected = activateCDKViewer (example, NULL);
 
    /* Check how the person exited from the widget. */
    if (example->exitType == vESCAPE_HIT)

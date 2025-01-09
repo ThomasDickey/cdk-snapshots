@@ -1,4 +1,4 @@
-/* $Id: selection_ex.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: selection_ex.c,v 1.22 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -25,11 +25,11 @@ int main (int argc, char **argv)
       "-->"
    };
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen    = 0;
-   CDKSELECTION *selection = 0;
+   CDKSCREEN *cdkscreen    = NULL;
+   CDKSELECTION *selection = NULL;
    const char *title       = "<C></5>Pick one or more accounts.";
-   char *title_string      = 0;
-   char **item             = 0;
+   char *title_string      = NULL;
+   char **item             = NULL;
    char temp[256];
    const char *mesg[200];
 #if defined (HAVE_PWD_H)
@@ -46,7 +46,7 @@ int main (int argc, char **argv)
    /* Use the account names to create a list. */
    count = 0;
 #if defined (HAVE_PWD_H)
-   while ((ent = getpwent ()) != 0)
+   while ((ent = getpwent ()) != NULL)
    {
       used = CDKallocStrings (&item, ent->pw_name, count++, used);
    }
@@ -59,38 +59,38 @@ int main (int argc, char **argv)
    /* Set up CDK Colors. */
    initCDKColor ();
 
-   if ((title_string = CDKparamString2 (&params, 'h', 0)) != 0)
+   if ((title_string = CDKparamString2 (&params, 'h', NULL)) != NULL)
    {
       const char *list[2];
       CDKLABEL *header;
 
       list[0] = title_string;
-      list[1] = 0;
+      list[1] = NULL;
       header = newCDKLabel (cdkscreen,
 			    CDKparamValue (&params, 'X', CENTER),
 			    CDKparamValue (&params, 'Y', TOP),
 			    (CDK_CSTRING2)list, 1,
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', TRUE));
-      if (header != 0)
-	 activateCDKLabel (header, 0);
+      if (header != NULL)
+	 activateCDKLabel (header, NULL);
    }
 
-   if ((title_string = CDKparamString2 (&params, 'f', 0)) != 0)
+   if ((title_string = CDKparamString2 (&params, 'f', NULL)) != NULL)
    {
       const char *list[2];
       CDKLABEL *footer;
 
       list[0] = title_string;
-      list[1] = 0;
+      list[1] = NULL;
       footer = newCDKLabel (cdkscreen,
 			    CDKparamValue (&params, 'X', CENTER),
 			    CDKparamValue (&params, 'Y', BOTTOM),
 			    (CDK_CSTRING2)list, 1,
 			    CDKparamValue (&params, 'N', TRUE),
 			    CDKparamValue (&params, 'S', TRUE));
-      if (footer != 0)
-	 activateCDKLabel (footer, 0);
+      if (footer != NULL)
+	 activateCDKLabel (footer, NULL);
    }
    /* Create the selection list. */
    selection = newCDKSelection (cdkscreen,
@@ -102,7 +102,7 @@ int main (int argc, char **argv)
 				CDKparamValue (&params, 'W', 50),
 				CDKparamString2 (&params, 't', title),
 				(CDKparamNumber (&params, 'c')
-				 ? 0
+				 ? NULL
 				 : (CDK_CSTRING2)item),
 				(CDKparamNumber (&params, 'c')
 				 ? 0
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
 				CDKparamValue (&params, 'S', FALSE));
 
    /* Is the selection list null? */
-   if (selection == 0)
+   if (selection == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -130,7 +130,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the selection list. */
-   activateCDKSelection (selection, 0);
+   activateCDKSelection (selection, NULL);
 
    /* Check the exit status of the widget. */
    if (selection->exitType == vESCAPE_HIT)

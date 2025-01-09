@@ -1,4 +1,4 @@
-/* $Id: rolodex.h,v 1.10 2012/03/21 00:59:17 tom Exp $ */
+/* $Id: rolodex.h,v 1.11 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 #include <time.h>
@@ -11,9 +11,9 @@
 /*
  * Declare some global variables.
  */
-static char *GCurrentGroup	= 0;
-static char *GRCFile		= 0;
-static char *GDBMDir		= 0;
+static char *GCurrentGroup	= NULL;
+static char *GRCFile		= NULL;
+static char *GDBMDir		= NULL;
 static int GGroupModified	= FALSE;
 static const char *GLineType[]	= {
    "Voice",

@@ -1,4 +1,4 @@
-/* $Id: stopSign.c,v 1.13 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: stopSign.c,v 1.14 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,9 +9,9 @@ char *XCursesProgramName = "sillyness_ex";
 int main (void)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKLABEL *stopSign   = 0;
-   CDKLABEL *title      = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKLABEL *stopSign   = NULL;
+   CDKLABEL *title      = NULL;
    const char *mesg[5];
    const char *sign[4];
    chtype key;

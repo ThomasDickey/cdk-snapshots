@@ -1,4 +1,4 @@
-/* $Id: appointment.c,v 1.30 2021/01/09 22:42:07 tom Exp $ */
+/* $Id: appointment.c,v 1.31 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -68,11 +68,11 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo);
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKCALENDAR *calendar        = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKCALENDAR *calendar        = NULL;
    const char *title            = "<C></U>CDK Appointment Book\n<C><#HL(30)>\n";
-   char *filename               = 0;
-   struct tm *dateInfo          = 0;
+   char *filename               = NULL;
+   struct tm *dateInfo          = NULL;
    time_t clck                  = 0;
    struct AppointmentInfo appointmentInfo;
    int day, month, year, x;
@@ -124,11 +124,11 @@ int main (int argc, char **argv)
    }
 
    /* Create the appointment book filename. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       char temp[1000];
       char *home = getenv ("HOME");
-      if (home != 0)
+      if (home != NULL)
       {
 	 sprintf (temp, "%.*s/.appointment", (int)sizeof (temp) - 20, home);
       }
@@ -155,7 +155,7 @@ int main (int argc, char **argv)
 			      TRUE, FALSE);
 
    /* Is the widget null? */
-   if (calendar == 0)
+   if (calendar == NULL)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);
@@ -193,7 +193,7 @@ int main (int argc, char **argv)
    drawCDKCalendar (calendar, ObjOf (calendar)->box);
 
    /* Let the user play with the widget. */
-   activateCDKCalendar (calendar, 0);
+   activateCDKCalendar (calendar, NULL);
 
    /* Save the appointment information. */
    saveAppointmentFile (filename, &appointmentInfo);
@@ -216,7 +216,7 @@ void readAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* *INDENT-EQLS* */
    int appointments     = 0;
    int linesRead        = 0;
-   char **lines         = 0;
+   char **lines         = NULL;
    int x;
 
    /* Read the appointment file. */
@@ -267,7 +267,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    int x;
 
    /* Can we open the file? */
-   if ((fd = fopen (filename, "w")) == 0)
+   if ((fd = fopen (filename, "w")) == NULL)
    {
       return;
    }
@@ -275,7 +275,7 @@ void saveAppointmentFile (char *filename, struct AppointmentInfo *appInfo)
    /* Start writing. */
    for (x = 0; x < appInfo->appointmentCount; x++)
    {
-      if (appInfo->appointment[x].description != 0)
+      if (appInfo->appointment[x].description != NULL)
       {
 	 fprintf (fd, "%d%c%d%c%d%c%d%c%s\n",
 		  appInfo->appointment[x].day, CTRL ('V'),
@@ -299,8 +299,8 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
 {
    /* *INDENT-EQLS* */
    CDKCALENDAR *calendar                        = (CDKCALENDAR *)object;
-   CDKENTRY *entry                              = 0;
-   CDKITEMLIST *itemlist                        = 0;
+   CDKENTRY *entry                              = NULL;
+   CDKITEMLIST *itemlist                        = NULL;
    const char *items[]                          =
    {
       "Birthday",
@@ -308,7 +308,7 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
       "Appointment",
       "Other"
    };
-   char *description                            = 0;
+   char *description                            = NULL;
    struct AppointmentInfo *appointmentInfo      = (struct AppointmentInfo *)clientData;
    int current                                  = appointmentInfo->appointmentCount;
    chtype marker;
@@ -316,13 +316,13 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
 
    /* Create the itemlist widget. */
    itemlist = newCDKItemlist (ScreenOf (calendar),
-			      CENTER, CENTER, 0,
+			      CENTER, CENTER, NULL,
 			      "Select Appointment Type: ",
 			      (CDK_CSTRING2)items, 4, 0,
 			      TRUE, FALSE);
 
    /* Get the appointment type from the user. */
-   selection = activateCDKItemlist (itemlist, 0);
+   selection = activateCDKItemlist (itemlist, NULL);
 
    /* They hit escape, kill the itemlist widget and leave. */
    if (selection == -1)
@@ -347,8 +347,8 @@ static int createCalendarMarkCB (EObjectType objectType GCC_UNUSED, void *object
 			TRUE, FALSE);
 
    /* Get the description. */
-   description = activateCDKEntry (entry, 0);
-   if (description == 0)
+   description = activateCDKEntry (entry, NULL);
+   if (description == NULL)
    {
       destroyCDKEntry (entry);
       drawCDKCalendar (calendar, ObjOf (calendar)->box);
@@ -398,7 +398,7 @@ static int removeCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
 	  (appointmentInfo->appointment[x].year == calendar->year))
       {
 	 freeChar (appointmentInfo->appointment[x].description);
-	 appointmentInfo->appointment[x].description = 0;
+	 appointmentInfo->appointment[x].description = NULL;
 	 break;
       }
    }
@@ -422,11 +422,11 @@ static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
 {
    /* *INDENT-EQLS* */
    CDKCALENDAR *calendar                   = (CDKCALENDAR *)object;
-   CDKLABEL *label                         = 0;
+   CDKLABEL *label                         = NULL;
    struct AppointmentInfo *appointmentInfo = (struct AppointmentInfo *)clientData;
    int found                               = 0;
    int mesgLines                           = 0;
-   const char *type                        = 0;
+   const char *type                        = NULL;
    char *mesg[10], temp[256];
    int x;
 
@@ -461,7 +461,7 @@ static int displayCalendarMarkCB (EObjectType objectType GCC_UNUSED, void
       if ((day == calendar->day) &&
 	  (month == calendar->month) &&
 	  (year == calendar->year) &&
-	  (appointmentInfo->appointment[x].description != 0))
+	  (appointmentInfo->appointment[x].description != NULL))
       {
 	 /* Create the message for the label widget. */
 	 sprintf (temp, "<C>Appointment Date: %02d/%02d/%d", day, month, year);

@@ -3,11 +3,11 @@
 
 DISTNAME=		cdk-5.0-20180306
 CATEGORIES=		devel
-MASTER_SITES=		ftp://ftp.invisible-island.net/cdk/
+MASTER_SITES=		https://invisible-island.net/archives/cdk/
 EXTRACT_SUFX=		.tgz
 
 MAINTAINER=		pkgsrc-users@NetBSD.org
-HOMEPAGE=		http://invisible-island.net/cdk/
+HOMEPAGE=		https://invisible-island.net/cdk/
 COMMENT=		Curses Development Kit
 
 WRKSRC=			${WRKDIR}/${PKGNAME_NOREV}

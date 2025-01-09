@@ -3,20 +3,20 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 19:14:46 $
- * $Revision: 1.82 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.83 $
  */
 
 DeclareCDKObjects (MARQUEE, Marquee, setCdk, Unknown);
 
 static void discardWin (WINDOW **winp)
 {
-   if (*winp != 0)
+   if (*winp != NULL)
    {
       werase (*winp);
       wrefresh (*winp);
       delwin (*winp);
-      *winp = 0;
+      *winp = NULL;
    }
 }
 
@@ -41,7 +41,7 @@ static void layoutWidget (CDKMARQUEE *widget,
    alignxy (cdkscreen->window, &xpos, &ypos, boxWidth, boxHeight);
    window = newwin (boxHeight, boxWidth, ypos, xpos);
 
-   if (window != 0)
+   if (window != NULL)
    {
       /* *INDENT-EQLS* */
       widget->win          = window;
@@ -71,10 +71,10 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
 			   boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKMARQUEE *widget   = 0;
+   CDKMARQUEE *widget   = NULL;
 
-   if ((widget = newCDKObject (CDKMARQUEE, &my_funcs)) == 0)
-        return (0);
+   if ((widget = newCDKObject (CDKMARQUEE, &my_funcs)) == NULL)
+        return (NULL);
 
    /* *INDENT-EQLS* Create the widget pointer. */
    ScreenOf (widget)    = cdkscreen;
@@ -87,10 +87,10 @@ CDKMARQUEE *newCDKMarquee (CDKSCREEN *cdkscreen,
    setCDKMarqueeBox (widget, Box);
 
    /* Is the window null??? */
-   if (widget->win == 0)
+   if (widget->win == NULL)
    {
       destroyCDKObject (widget);
-      return (0);
+      return (NULL);
    }
 
    registerCDKObject (cdkscreen, vMARQUEE, widget);
@@ -121,7 +121,7 @@ int activateCDKMarquee (CDKMARQUEE *widget,
    bool firstTime       = TRUE;
 
    /* Make sure the message has some content. */
-   if (mesg == 0 || *mesg == '\0')
+   if (mesg == NULL || *mesg == '\0')
    {
       return (-1);
    }
@@ -303,7 +303,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
    ObjOf (widget)->box = Box;
 
    /* Do we need to draw a shadow??? */
-   if (widget->shadowWin != 0)
+   if (widget->shadowWin != NULL)
    {
       drawShadow (widget->shadowWin);
    }
@@ -327,7 +327,7 @@ static void _drawCDKMarquee (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKMarquee (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMARQUEE *widget = (CDKMARQUEE *)object;
 
@@ -380,7 +380,7 @@ boolean getCDKMarqueeBox (CDKMARQUEE *widget)
  */
 static void _setBKattrMarquee (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMARQUEE *widget = (CDKMARQUEE *)object;
 

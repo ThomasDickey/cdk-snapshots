@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2019/02/19 10:12:38 $
- * $Revision: 1.57 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.58 $
  *
  * Notes:
  *
@@ -20,7 +20,7 @@ static CDKOBJS *bindableObject (EObjectType * cdktype, void *object)
 {
    CDKOBJS *obj = (CDKOBJS *)object;
 
-   if (obj != 0 && *cdktype == ObjTypeOf (obj))
+   if (obj != NULL && *cdktype == ObjTypeOf (obj))
    {
       if (*cdktype == vFSELECT)
       {
@@ -35,7 +35,7 @@ static CDKOBJS *bindableObject (EObjectType * cdktype, void *object)
    }
    else
    {
-      object = 0;
+      object = NULL;
    }
    return (CDKOBJS *)object;
 }
@@ -51,13 +51,13 @@ void bindCDKObject (EObjectType cdktype,
 {
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if ((key < KEY_MAX) && obj != 0)
+   if ((key < KEY_MAX) && obj != NULL)
    {
       if (key != 0 && (unsigned)key >= obj->bindingCount)
       {
 	 unsigned next = (unsigned) (key + 1);
 
-	 if (obj->bindingList != 0)
+	 if (obj->bindingList != NULL)
 	    obj->bindingList = typeReallocN (CDKBINDING, obj->bindingList, next);
 	 else
 	    obj->bindingList = typeMallocN (CDKBINDING, next);
@@ -67,7 +67,7 @@ void bindCDKObject (EObjectType cdktype,
 	 obj->bindingCount = next;
       }
 
-      if (obj->bindingList != 0)
+      if (obj->bindingList != NULL)
       {
 	 obj->bindingList[key].bindFunction = function;
 	 obj->bindingList[key].bindData = data;
@@ -82,10 +82,10 @@ void unbindCDKObject (EObjectType cdktype, void *object, chtype key)
 {
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (obj != 0 && ((unsigned)key < obj->bindingCount))
+   if (obj != NULL && ((unsigned)key < obj->bindingCount))
    {
-      obj->bindingList[key].bindFunction = 0;
-      obj->bindingList[key].bindData = 0;
+      obj->bindingList[key].bindFunction = NULL;
+      obj->bindingList[key].bindData = NULL;
    }
 }
 
@@ -96,14 +96,14 @@ void cleanCDKObjectBindings (EObjectType cdktype, void *object)
 {
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (obj != 0 && obj->bindingList != 0)
+   if (obj != NULL && obj->bindingList != NULL)
    {
       unsigned x;
 
       for (x = 0; x < obj->bindingCount; x++)
       {
-	 (obj)->bindingList[x].bindFunction = 0;
-	 (obj)->bindingList[x].bindData = 0;
+	 (obj)->bindingList[x].bindFunction = NULL;
+	 (obj)->bindingList[x].bindData = NULL;
       }
       freeAndNull ((obj)->bindingList);
    }
@@ -119,9 +119,9 @@ int checkCDKObjectBind (EObjectType cdktype, void *object, chtype key)
 {
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (obj != 0 && ((unsigned)key < obj->bindingCount))
+   if (obj != NULL && ((unsigned)key < obj->bindingCount))
    {
-      if ((obj)->bindingList[key].bindFunction != 0)
+      if ((obj)->bindingList[key].bindFunction != NULL)
       {
 	 BINDFN function = obj->bindingList[key].bindFunction;
 	 void *data = obj->bindingList[key].bindData;
@@ -140,9 +140,9 @@ bool isCDKObjectBind (EObjectType cdktype, void *object, chtype key)
    bool result = FALSE;
    CDKOBJS *obj = bindableObject (&cdktype, object);
 
-   if (obj != 0 && ((unsigned)key < obj->bindingCount))
+   if (obj != NULL && ((unsigned)key < obj->bindingCount))
    {
-      if ((obj)->bindingList[key].bindFunction != 0)
+      if ((obj)->bindingList[key].bindFunction != NULL)
 	 result = TRUE;
    }
    return (result);
@@ -170,15 +170,15 @@ int getcCDKObject (CDKOBJS *obj)
    int result = wgetch (InputWindowOf (obj));
 
    if (result >= 0
-       && test != 0
+       && test != NULL
        && (unsigned)result < test->bindingCount
        && test->bindingList[result].bindFunction == getcCDKBind)
    {
       result = (int)(long)test->bindingList[result].bindData;
    }
-   else if (test == 0
+   else if (test == NULL
 	    || (unsigned)result >= test->bindingCount
-	    || test->bindingList[result].bindFunction == 0)
+	    || test->bindingList[result].bindFunction == NULL)
    {
       switch (result)
       {

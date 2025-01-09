@@ -1,17 +1,17 @@
 %?mingw_package_header
 
-# $Id: mingw-cdk.spec,v 1.48 2024/06/19 09:54:00 tom Exp $
+# $Id: mingw-cdk.spec,v 1.50 2025/01/09 00:30:38 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram mingw32-cdk
 %define AppVersion 5.0
-%define AppRelease 20240619
+%define AppRelease 20250108
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
 License:  MIT-X11
 Group: Development/Libraries
 Source: cdk-%{version}-%{release}.tgz
-URL: http://invisible-island.net/cdk/
+URL: https://invisible-island.net/cdk/
 
 BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw32-gcc

@@ -1,4 +1,4 @@
-/* $Id: vinstall.c,v 1.22 2019/02/20 02:13:54 tom Exp $ */
+/* $Id: vinstall.c,v 1.23 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -29,24 +29,24 @@ static int verifyDirectory (CDKSCREEN *screen, char *directory);
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKSWINDOW *installOutput    = 0;
-   CDKENTRY *sourceEntry        = 0;
-   CDKENTRY *destEntry          = 0;
-   CDKLABEL *titleWin           = 0;
-   CDKHISTOGRAM *progressBar    = 0;
-   char *sourcePath             = 0;
-   char *destPath               = 0;
-   char *sourceDir              = 0;
-   char *destDir                = 0;
-   char *filename               = 0;
-   char *title                  = 0;
-   char *output                 = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKSWINDOW *installOutput    = NULL;
+   CDKENTRY *sourceEntry        = NULL;
+   CDKENTRY *destEntry          = NULL;
+   CDKLABEL *titleWin           = NULL;
+   CDKHISTOGRAM *progressBar    = NULL;
+   char *sourcePath             = NULL;
+   char *destPath               = NULL;
+   char *sourceDir              = NULL;
+   char *destDir                = NULL;
+   char *filename               = NULL;
+   char *title                  = NULL;
+   char *output                 = NULL;
    int quiet                    = FALSE;
    int errors                   = 0;
    int sWindowHeight            = 0;
    char *titleMessage[10];
-   char **fileList              = 0;
+   char **fileList              = NULL;
    const char *mesg[20];
    char oldPath[512], newPath[512], temp[2000];
    int count, ret, x;
@@ -88,7 +88,7 @@ int main (int argc, char **argv)
    }
 
    /* Make sure have everything we need. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
       ExitProgram (EXIT_FAILURE);
@@ -118,7 +118,7 @@ int main (int argc, char **argv)
 
    /* Create the title label. */
    titleMessage[0] = copyChar ("<C></32/B><#HL(30)>");
-   if (title == 0)
+   if (title == NULL)
    {
       sprintf (temp, "<C></32/B>CDK Installer");
    }
@@ -134,25 +134,25 @@ int main (int argc, char **argv)
    freeCharList (titleMessage, 3);
 
    /* Allow them to change the install directory. */
-   if (sourcePath == 0)
+   if (sourcePath == NULL)
    {
       sourceEntry = newCDKEntry (cdkScreen, CENTER, 8,
-				 0, "Source Directory        :",
+				 NULL, "Source Directory        :",
 				 A_NORMAL, '.', vMIXED,
 				 40, 0, 256, TRUE, FALSE);
    }
-   if (destPath == 0)
+   if (destPath == NULL)
    {
       destEntry = newCDKEntry (cdkScreen, CENTER, 11,
-			       0, "Destination Directory:", A_NORMAL,
+			       NULL, "Destination Directory:", A_NORMAL,
 			       '.', vMIXED, 40, 0, 256, TRUE, FALSE);
    }
 
    /* Get the source install path. */
-   if (sourceEntry != 0)
+   if (sourceEntry != NULL)
    {
       drawCDKScreen (cdkScreen);
-      sourceDir = copyChar (activateCDKEntry (sourceEntry, 0));
+      sourceDir = copyChar (activateCDKEntry (sourceEntry, NULL));
    }
    else
    {
@@ -160,10 +160,10 @@ int main (int argc, char **argv)
    }
 
    /* Get the destination install path. */
-   if (destEntry != 0)
+   if (destEntry != NULL)
    {
       drawCDKScreen (cdkScreen);
-      destDir = copyChar (activateCDKEntry (destEntry, 0));
+      destDir = copyChar (activateCDKEntry (destEntry, NULL));
    }
    else
    {
@@ -171,11 +171,11 @@ int main (int argc, char **argv)
    }
 
    /* Destroy the path entry fields. */
-   if (sourceEntry != 0)
+   if (sourceEntry != NULL)
    {
       destroyCDKEntry (sourceEntry);
    }
-   if (destEntry != 0)
+   if (destEntry != NULL)
    {
       destroyCDKEntry (destEntry);
    }
@@ -335,7 +335,7 @@ int main (int argc, char **argv)
 			 (CDK_CSTRING2)buttons, 3);
       if (ret == 0)
       {
-	 activateCDKSwindow (installOutput, 0);
+	 activateCDKSwindow (installOutput, NULL);
       }
       else if (ret == 1)
       {
@@ -348,7 +348,7 @@ int main (int argc, char **argv)
        * If they specified the name of an output file, then save the
        * results of the installation to that file.
        */
-      if (output != 0)
+      if (output != NULL)
       {
 	 dumpCDKSwindow (installOutput, output);
       }
@@ -395,7 +395,7 @@ static ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *des
    FILE *fd;
 
    /* Make sure we can open the source file. */
-   if ((fd = fopen (src, "r")) == 0)
+   if ((fd = fopen (src, "r")) == NULL)
    {
       return vCanNotOpenSource;
    }
@@ -409,7 +409,7 @@ static ECopyFile copyFile (CDKSCREEN *cdkScreen GCC_UNUSED, char *src, char *des
    system (command);
 
    /* Try to open the destination. */
-   if ((fd = fopen (dest, "w")) == 0)
+   if ((fd = fopen (dest, "w")) == NULL)
    {
       return vCanNotOpenDest;
    }

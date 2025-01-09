@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2014/11/06 10:06:46 $
- * $Revision: 1.91 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.92 $
  */
 
 DeclareCDKObjects (LABEL, Label, setCdk, Unknown);
@@ -20,7 +20,7 @@ CDKLABEL *newCDKLabel (CDKSCREEN *cdkscreen,
 		       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKLABEL *label      = 0;
+   CDKLABEL *label      = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth         = INT_MIN;
@@ -30,13 +30,13 @@ CDKLABEL *newCDKLabel (CDKSCREEN *cdkscreen,
    int x                = 0;
 
    if (rows <= 0
-       || (label = newCDKObject (CDKLABEL, &my_funcs)) == 0
-       || (label->info = typeCallocN (chtype *, rows + 1)) == 0
-       || (label->infoLen = typeCallocN (int, rows + 1)) == 0
-       || (label->infoPos = typeCallocN (int, rows + 1)) == 0)
+       || (label = newCDKObject (CDKLABEL, &my_funcs)) == NULL
+       || (label->info = typeCallocN (chtype *, rows + 1)) == NULL
+       || (label->infoLen = typeCallocN (int, rows + 1)) == NULL
+       || (label->infoPos = typeCallocN (int, rows + 1)) == NULL)
    {
       destroyCDKObject (label);
-      return (0);
+      return (NULL);
    }
 
    setCDKLabelBox (label, Box);
@@ -74,7 +74,7 @@ CDKLABEL *newCDKLabel (CDKSCREEN *cdkscreen,
    ScreenOf (label)     = cdkscreen;
    label->parent        = cdkscreen->window;
    label->win           = newwin (boxHeight, boxWidth, ypos, xpos);
-   label->shadowWin     = 0;
+   label->shadowWin     = NULL;
    label->xpos          = xpos;
    label->ypos          = ypos;
    label->rows          = rows;
@@ -85,10 +85,10 @@ CDKLABEL *newCDKLabel (CDKSCREEN *cdkscreen,
    label->shadow        = shadow;
 
    /* Is the window null? */
-   if (label->win == 0)
+   if (label->win == NULL)
    {
       destroyCDKObject (label);
-      return (0);
+      return (NULL);
    }
    keypad (label->win, TRUE);
 
@@ -134,7 +134,7 @@ void setCDKLabelMessage (CDKLABEL *label, CDK_CSTRING2 info, int infoSize)
    for (x = 0; x < label->rows; x++)
    {
       freeChtype (label->info[x]);
-      label->info[x] = 0;
+      label->info[x] = NULL;
       label->infoPos[x] = 0;
       label->infoLen[x] = 0;
    }
@@ -184,7 +184,7 @@ boolean getCDKLabelBox (CDKLABEL *label)
  */
 static void _setBKattrLabel (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKLABEL *widget = (CDKLABEL *)object;
 
@@ -201,7 +201,7 @@ static void _drawCDKLabel (CDKOBJS *object, boolean Box GCC_UNUSED)
    int x = 0;
 
    /* Is there a shadow? */
-   if (label->shadowWin != 0)
+   if (label->shadowWin != NULL)
    {
       drawShadow (label->shadowWin);
    }
@@ -296,7 +296,7 @@ static void _moveCDKLabel (CDKOBJS *object,
  */
 static void _destroyCDKLabel (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKLABEL *label = (CDKLABEL *)object;
 

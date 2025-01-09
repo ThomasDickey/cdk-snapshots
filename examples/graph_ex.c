@@ -1,4 +1,4 @@
-/* $Id: graph_ex.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: graph_ex.c,v 1.16 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,13 +9,13 @@ char *XCursesProgramName = "graph_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKGRAPH *graph              = 0;
-   CDKLABEL *pausep             = 0;
-   const char *title            = 0;
-   const char *xtitle           = 0;
-   const char *ytitle           = 0;
-   const char *graphChars       = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKGRAPH *graph              = NULL;
+   CDKLABEL *pausep             = NULL;
+   const char *title            = NULL;
+   const char *xtitle           = NULL;
+   const char *ytitle           = NULL;
+   const char *graphChars       = NULL;
    const char *mesg[2];
    int values[20];
    int count;
@@ -59,7 +59,7 @@ int main (int argc, char **argv)
 			title, xtitle, ytitle);
 
    /* Is the graph null? */
-   if (graph == 0)
+   if (graph == NULL)
    {
       /* Shut down CDK. */
       destroyCDKScreen (cdkscreen);
@@ -73,7 +73,7 @@ int main (int argc, char **argv)
    pausep = newCDKLabel (cdkscreen, CENTER, BOTTOM,
 			 (CDK_CSTRING2) mesg, 1,
 			 TRUE, FALSE);
-   if (pausep == 0)
+   if (pausep == NULL)
    {
       /* Shut down CDK. */
       destroyCDKGraph (graph);

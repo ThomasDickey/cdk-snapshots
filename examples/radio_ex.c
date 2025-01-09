@@ -1,4 +1,4 @@
-/* $Id: radio_ex.c,v 1.21 2021/01/09 22:42:29 tom Exp $ */
+/* $Id: radio_ex.c,v 1.22 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -18,10 +18,10 @@ char *XCursesProgramName = "radio_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKRADIO *radio      = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKRADIO *radio      = NULL;
    const char *title    = "<C></5>Select a filename";
-   char **item          = 0;
+   char **item          = NULL;
    const char *mesg[5];
    char temp[256];
    int count;
@@ -53,7 +53,7 @@ int main (int argc, char **argv)
 			CDKparamValue (&params, 'H', 10),
 			CDKparamValue (&params, 'W', 40),
 			CDKparamString2 (&params, 't', title),
-			CDKparamNumber (&params, 'c') ? 0 : (CDK_CSTRING2)item,
+			CDKparamNumber (&params, 'c') ? NULL : (CDK_CSTRING2)item,
 			CDKparamNumber (&params, 'c') ? 0 : count,
 			'#' | A_REVERSE, 1,
 			A_REVERSE,
@@ -61,7 +61,7 @@ int main (int argc, char **argv)
 			CDKparamValue (&params, 'S', FALSE));
 
    /* Check if the radio list is null. */
-   if (radio == 0)
+   if (radio == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -80,7 +80,7 @@ int main (int argc, char **argv)
    for (;;)
    {
       /* Activate the radio list. */
-      int selection = activateCDKRadio (radio, 0);
+      int selection = activateCDKRadio (radio, NULL);
 
       /* Check the exit status of the widget. */
       if (radio->exitType == vESCAPE_HIT)
@@ -98,7 +98,7 @@ int main (int argc, char **argv)
 	 if (stat (item[selection], &sb) == 0
 	     && (sb.st_mode & S_IFMT) == S_IFDIR)
 	 {
-	    char **nitem = 0;
+	    char **nitem = NULL;
 
 	    mesg[0] = "<C>You selected a directory";
 	    sprintf (temp, "<C>%.*s", (int)(sizeof (temp) - 20), item[selection]);

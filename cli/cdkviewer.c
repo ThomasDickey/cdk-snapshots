@@ -1,4 +1,4 @@
-/* $Id: cdkviewer.c,v 1.16 2024/03/12 17:48:15 tom Exp $ */
+/* $Id: cdkviewer.c,v 1.17 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -24,17 +24,17 @@ static const char *FPUsage = "-f filename [-i Interpret] [-l Show Line Stats] [-
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKVIEWER *widget            = 0;
-   char *filename               = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *temp                   = 0;
-   chtype *holder               = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKVIEWER *widget            = NULL;
+   char *filename               = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *temp                   = NULL;
+   chtype *holder               = NULL;
    int answer                   = 0;
    int messageLines             = -1;
    int buttonCount              = 0;
-   char **messageList           = 0;
-   char **buttonList            = 0;
+   char **messageList           = NULL;
+   char **buttonList            = NULL;
    char tempTitle[256];
    int j1, j2;
 
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
    title           = CDKparamString (&params, 'T');
 
    /* Make sure they gave us a file to read. */
-   if (filename == 0)
+   if (filename == NULL)
    {
       fprintf (stderr, "Usage: %s %s\n", argv[0], FPUsage);
       ExitProgram (CLI_ERROR);
@@ -83,7 +83,7 @@ int main (int argc, char **argv)
    }
 
    /* Set up the buttons of the viewer. */
-   if (buttons == 0)
+   if (buttons == NULL)
    {
       /* *INDENT-EQLS* */
       buttonList        = calloc(3, sizeof(char *));
@@ -99,7 +99,7 @@ int main (int argc, char **argv)
    }
 
    /* Set up the title of the viewer. */
-   if (title == 0)
+   if (title == NULL)
    {
       sprintf (tempTitle, "<C>Filename: </U>%s<!U>", filename);
       title = copyChar (tempTitle);
@@ -111,7 +111,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -120,9 +120,9 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* Create the viewer widget. */
@@ -131,7 +131,7 @@ int main (int argc, char **argv)
 			  boxWidget, shadowWidget);
 
    /* Check to make sure we created the file viewer. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       CDKfreeStrings (messageList);
       CDKfreeStrings (buttonList);
@@ -151,14 +151,14 @@ int main (int argc, char **argv)
    setCDKViewerBackgroundColor (widget, CDK_WIDGET_COLOR);
 
    /* Set a binding for saving the info. */
-   bindCDKObject (vVIEWER, widget, 'S', widgetCB, 0);
+   bindCDKObject (vVIEWER, widget, 'S', widgetCB, NULL);
 
    /* Set the information needed for the viewer. */
    setCDKViewer (widget, title, (CDK_CSTRING2)messageList, messageLines,
 		 A_REVERSE, interpret, showInfoLine, TRUE);
 
    /* Activate the viewer. */
-   answer = activateCDKViewer (widget, 0);
+   answer = activateCDKViewer (widget, NULL);
 
    CDKfreeStrings (messageList);
    CDKfreeStrings (buttonList);
@@ -178,8 +178,8 @@ int main (int argc, char **argv)
 static void saveInformation (CDKVIEWER *widget)
 {
    /* *INDENT-EQLS* */
-   CDKENTRY *entry      = 0;
-   char *filename       = 0;
+   CDKENTRY *entry      = NULL;
+   char *filename       = NULL;
    char temp[256];
    const char *mesg[10];
    int linesSaved;
@@ -193,7 +193,7 @@ static void saveInformation (CDKVIEWER *widget)
 			TRUE, FALSE);
 
    /* Get the filename. */
-   filename = activateCDKEntry (entry, 0);
+   filename = activateCDKEntry (entry, NULL);
 
    /* Did they hit escape? */
    if (entry->exitType == vESCAPE_HIT)
@@ -250,14 +250,14 @@ static void saveInformation (CDKVIEWER *widget)
 static int dumpViewer (CDKVIEWER *widget, char *filename)
 {
    /* *INDENT-EQLS* */
-   FILE *outputFile     = 0;
-   char *rawLine        = 0;
+   FILE *outputFile     = NULL;
+   char *rawLine        = NULL;
    int listSize;
    chtype **list        = getCDKViewerInfo (widget, &listSize);
    int x;
 
    /* Try to open the file. */
-   if ((outputFile = fopen (filename, "w")) == 0)
+   if ((outputFile = fopen (filename, "w")) == NULL)
    {
       return -1;
    }

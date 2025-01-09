@@ -4,8 +4,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:37:00 $
- * $Revision: 1.39 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.40 $
  */
 
 DeclareCDKObjects (BUTTON, Button, setCdk, Int);
@@ -22,7 +22,7 @@ CDKBUTTON *newCDKButton (CDKSCREEN *cdkscreen,
 			 boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKBUTTON *button    = 0;
+   CDKBUTTON *button    = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth         = 0;
@@ -30,8 +30,8 @@ CDKBUTTON *newCDKButton (CDKSCREEN *cdkscreen,
    int xpos             = xplace;
    int ypos             = yplace;
 
-   if ((button = newCDKObject (CDKBUTTON, &my_funcs)) == 0)
-        return (0);
+   if ((button = newCDKObject (CDKBUTTON, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKButtonBox (button, Box);
    boxHeight = 1 + 2 * BorderOf (button);
@@ -75,7 +75,7 @@ CDKBUTTON *newCDKButton (CDKSCREEN *cdkscreen,
    if (button->win == (WINDOW *)NULL)
    {
       destroyCDKObject (button);
-      return (0);
+      return (NULL);
    }
 
    keypad (button->win, TRUE);
@@ -101,7 +101,7 @@ int activateCDKButton (CDKBUTTON *button, chtype *actions)
 
    drawCDKButton (button, ObjOf (button)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -190,7 +190,7 @@ boolean getCDKButtonBox (CDKBUTTON *button)
  */
 static void _setBKattrButton (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKBUTTON *widget = (CDKBUTTON *)object;
 
@@ -471,7 +471,7 @@ void positionCDKButton (CDKBUTTON *button)
  */
 static void _destroyCDKButton (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKBUTTON *button = (CDKBUTTON *)object;
 

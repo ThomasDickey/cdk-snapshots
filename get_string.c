@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2013/06/16 15:07:05 $
- * $Revision: 1.3 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.4 $
  */
 
 /*
@@ -15,8 +15,8 @@ char *getString (CDKSCREEN *screen,
 		 const char *initValue)
 {
    /* *INDENT-EQLS* */
-   CDKENTRY *widget     = 0;
-   char *value          = 0;
+   CDKENTRY *widget     = NULL;
+   char *value          = NULL;
 
    /* Create the widget. */
    widget = newCDKEntry (screen, CENTER, CENTER, title, label,
@@ -27,13 +27,13 @@ char *getString (CDKSCREEN *screen,
    setCDKEntryValue (widget, initValue);
 
    /* Get the string. */
-   (void)activateCDKEntry (widget, 0);
+   (void)activateCDKEntry (widget, NULL);
 
    /* Make sure they exited normally. */
    if (widget->exitType != vNORMAL)
    {
       destroyCDKEntry (widget);
-      return 0;
+      return NULL;
    }
 
    /* Return a copy of the string typed in. */

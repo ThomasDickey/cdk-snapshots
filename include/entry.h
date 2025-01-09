@@ -1,5 +1,5 @@
 /*
- * $Id: entry.h,v 1.30 2016/11/20 14:41:44 tom Exp $
+ * $Id: entry.h,v 1.31 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2015,2016 copyright Thomas E. Dickey
+ * Changes 1999-2016,2025 copyright Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -203,7 +203,7 @@ boolean getCDKEntryBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKEntryBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 19:12:46 $
- * $Revision: 1.92 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.93 $
  */
 
 DeclareCDKObjects (HISTOGRAM, Histogram, setCdk, Unknown);
@@ -22,7 +22,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
 			       boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKHISTOGRAM *widget = 0;
+   CDKHISTOGRAM *widget = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -32,8 +32,8 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
    int oldWidth         = 0;
    int oldHeight        = 0;
 
-   if ((widget = newCDKObject (CDKHISTOGRAM, &my_funcs)) == 0)
-        return (0);
+   if ((widget = newCDKObject (CDKHISTOGRAM, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKHistogramBox (widget, Box);
 
@@ -61,7 +61,7 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
    ScreenOf (widget)    = cdkscreen;
    widget->parent       = cdkscreen->window;
    widget->win          = newwin (boxHeight, boxWidth, ypos, xpos);
-   widget->shadowWin    = 0;
+   widget->shadowWin    = NULL;
    widget->boxWidth     = boxWidth;
    widget->boxHeight    = boxHeight;
    widget->fieldWidth   = boxWidth - 2 * BorderOf (widget);
@@ -70,10 +70,10 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
    widget->shadow       = shadow;
 
    /* Is the window null. */
-   if (widget->win == 0)
+   if (widget->win == NULL)
    {
       destroyCDKObject (widget);
-      return (0);
+      return (NULL);
    }
    keypad (widget->win, TRUE);
 
@@ -91,9 +91,9 @@ CDKHISTOGRAM *newCDKHistogram (CDKSCREEN *cdkscreen,
    widget->highy        = 0;
    widget->curx         = 0;
    widget->cury         = 0;
-   widget->lowString    = 0;
-   widget->highString   = 0;
-   widget->curString    = 0;
+   widget->lowString    = NULL;
+   widget->highString   = NULL;
+   widget->curString    = NULL;
 
    /* Do we want a shadow? */
    if (shadow)
@@ -501,7 +501,7 @@ boolean getCDKHistogramBox (CDKHISTOGRAM *widget)
  */
 static void _setBKattrHistogram (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKHISTOGRAM *widget = (CDKHISTOGRAM *)object;
       wbkgd (widget->win, attrib);
@@ -581,7 +581,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    }
 
    /* Do we have a shadow to draw? */
-   if (widget->shadowWin != 0)
+   if (widget->shadowWin != NULL)
    {
       drawShadow (widget->shadowWin);
    }
@@ -592,7 +592,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
    if (widget->viewType != vNONE)
    {
       /* Draw in the low label. */
-      if (widget->lowString != 0)
+      if (widget->lowString != NULL)
       {
 	 int len = (int)strlen (widget->lowString);
 	 writeCharAttrib (widget->win,
@@ -605,7 +605,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       }
 
       /* Draw in the current value label. */
-      if (widget->curString != 0)
+      if (widget->curString != NULL)
       {
 	 int len = (int)strlen (widget->curString);
 	 writeCharAttrib (widget->win,
@@ -618,7 +618,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
       }
 
       /* Draw in the high label. */
-      if (widget->highString != 0)
+      if (widget->highString != NULL)
       {
 	 int len = (int)strlen (widget->highString);
 	 writeCharAttrib (widget->win,
@@ -665,7 +665,7 @@ static void _drawCDKHistogram (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKHistogram (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKHISTOGRAM *widget = (CDKHISTOGRAM *)object;
 

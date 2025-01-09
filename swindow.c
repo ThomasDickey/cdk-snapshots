@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2024/03/31 15:46:26 $
- * $Revision: 1.128 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.129 $
  */
 
 /*
@@ -28,7 +28,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
 			   boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKSWINDOW *swindow          = 0;
+   CDKSWINDOW *swindow          = NULL;
    int parentWidth              = getmaxx (cdkscreen->window);
    int parentHeight             = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -50,8 +50,8 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
-   if ((swindow = newCDKObject (CDKSWINDOW, &my_funcs)) == 0)
-        return (0);
+   if ((swindow = newCDKObject (CDKSWINDOW, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKSwindowBox (swindow, Box);
 
@@ -88,10 +88,10 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
 
    /* Make the scrolling window */
    swindow->win = newwin (boxHeight, boxWidth, ypos, xpos);
-   if (swindow->win == 0)
+   if (swindow->win == NULL)
    {
       destroyCDKObject (swindow);
-      return (0);
+      return (NULL);
    }
    keypad (swindow->win, TRUE);
 
@@ -106,7 +106,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
    /* *INDENT-EQLS* Set the rest of the variables */
    ScreenOf (swindow)           = cdkscreen;
    swindow->parent              = cdkscreen->window;
-   swindow->shadowWin           = 0;
+   swindow->shadowWin           = NULL;
    swindow->boxHeight           = boxHeight;
    swindow->boxWidth            = boxWidth;
    swindow->viewSize            = boxHeight - TitleLinesOf (swindow) - 2;
@@ -125,7 +125,7 @@ CDKSWINDOW *newCDKSwindow (CDKSCREEN *cdkscreen,
    if (!createList (swindow, saveLines))
    {
       destroyCDKObject (swindow);
-      return (0);
+      return (NULL);
    }
 
    /* Do we need to create a shadow??? */
@@ -219,7 +219,7 @@ static void freeLine (CDKSWINDOW *swindow, int x)
    if (x < swindow->listSize)
    {
       freeChtype (swindow->list[x]);
-      swindow->list[x] = 0;
+      swindow->list[x] = NULL;
    }
 }
 
@@ -249,7 +249,7 @@ void addCDKSwindow (CDKSWINDOW *swindow, const char *list, int insertPos)
       }
 
       /* *INDENT-EQLS* Clean out the last position. */
-      swindow->list[swindow->listSize]    = 0;
+      swindow->list[swindow->listSize]    = NULL;
       swindow->listLen[swindow->listSize] = 0;
       swindow->listPos[swindow->listSize] = 0;
       swindow->listSize--;
@@ -386,7 +386,7 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
 {
    int start, finish, lines, x;
 
-   /* 
+   /*
     * Do nothing if the list is empty, the interval is empty,
     * or the entire interval lies outside of the list.
     */
@@ -443,7 +443,7 @@ void trimCDKSwindow (CDKSWINDOW *swindow, int begin, int end)
       swindow->listLen[x] = swindow->listLen[x + lines];
 
       /* Zero out the moved line's original entries. */
-      swindow->list[x + lines] = 0;
+      swindow->list[x + lines] = NULL;
       swindow->listPos[x + lines] = 0;
       swindow->listLen[x + lines] = 0;
    }
@@ -479,7 +479,7 @@ void activateCDKSwindow (CDKSWINDOW *swindow, chtype *actions)
    /* Draw the scrolling list */
    drawCDKSwindow (swindow, ObjOf (swindow)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       boolean functionKey;
 
@@ -534,7 +534,7 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
    drawCDKSwindow (widget, ObjOf (widget)->box);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vSWINDOW,
@@ -695,7 +695,7 @@ static int _injectCDKSwindow (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vSWINDOW,
 				     widget,
@@ -771,7 +771,7 @@ static void _drawCDKSwindow (CDKOBJS *object, boolean Box)
    CDKSWINDOW *swindow = (CDKSWINDOW *)object;
 
    /* Do we need to draw in the shadow. */
-   if (swindow->shadowWin != 0)
+   if (swindow->shadowWin != NULL)
    {
       drawShadow (swindow->shadowWin);
    }
@@ -846,7 +846,7 @@ static void drawCDKSwindowList (CDKSWINDOW *swindow, boolean Box GCC_UNUSED)
  */
 static void _setBKattrSwindow (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKSWINDOW *widget = (CDKSWINDOW *)object;
 
@@ -864,9 +864,9 @@ static void destroyInfo (CDKSWINDOW *swindow)
    freeChecked (swindow->listPos);
    freeChecked (swindow->listLen);
 
-   swindow->list = 0;
-   swindow->listPos = 0;
-   swindow->listLen = 0;
+   swindow->list = NULL;
+   swindow->listPos = NULL;
+   swindow->listLen = NULL;
 }
 
 /*
@@ -874,7 +874,7 @@ static void destroyInfo (CDKSWINDOW *swindow)
  */
 static void _destroyCDKSwindow (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKSWINDOW *swindow = (CDKSWINDOW *)object;
 
@@ -919,12 +919,12 @@ int execCDKSwindow (CDKSWINDOW *swindow, const char *command, int insertPos)
 
    endwin ();
    /* Try to open the command. */
-   if ((ps = popen (command, "r")) != 0)
+   if ((ps = popen (command, "r")) != NULL)
    {
       char temp[BUFSIZ];
 
       /* Start reading. */
-      while (fgets (temp, sizeof (temp), ps) != 0)
+      while (fgets (temp, sizeof (temp), ps) != NULL)
       {
 	 size_t len = strlen (temp);
 	 if (len != 0 && temp[len - 1] == '\n')
@@ -966,8 +966,8 @@ static void showMessage2 (CDKSWINDOW *swindow,
  */
 void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 {
-   CDKENTRY *entry = 0;
-   char *filename = 0;
+   CDKENTRY *entry = NULL;
+   char *filename = NULL;
    int linesSaved;
 
    /* Create the entry field to get the filename. */
@@ -979,7 +979,7 @@ void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 			TRUE, FALSE);
 
    /* Get the filename. */
-   filename = activateCDKEntry (entry, 0);
+   filename = activateCDKEntry (entry, NULL);
 
    /* Did they hit escape? */
    if (entry->exitType == vESCAPE_HIT)
@@ -1035,10 +1035,10 @@ void saveCDKSwindowInformation (CDKSWINDOW *swindow)
 void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 {
    /* *INDENT-EQLS* */
-   CDKFSELECT *fselect  = 0;
-   char *filename       = 0;
+   CDKFSELECT *fselect  = NULL;
+   char *filename       = NULL;
    const char *mesg[15];
-   char **fileInfo      = 0;
+   char **fileInfo      = NULL;
    int lines;
 
    /* Create the file selector to choose the file. */
@@ -1051,7 +1051,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 			    TRUE, FALSE);
 
    /* Get the filename to load. */
-   (void)activateCDKFselect (fselect, 0);
+   (void)activateCDKFselect (fselect, NULL);
 
    /* Make sure they selected a file. */
    if (fselect->exitType == vESCAPE_HIT)
@@ -1077,7 +1077,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
     */
    if (swindow->listSize > 0)
    {
-      CDKDIALOG *dialog = 0;
+      CDKDIALOG *dialog = NULL;
       const char *button[5];
       int answer;
 
@@ -1096,7 +1096,7 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
 			     TRUE, TRUE, FALSE);
 
       /* Activate the widget. */
-      answer = activateCDKDialog (dialog, 0);
+      answer = activateCDKDialog (dialog, NULL);
       destroyCDKDialog (dialog);
 
       /* Check the answer. */
@@ -1137,11 +1137,11 @@ void loadCDKSwindowInformation (CDKSWINDOW *swindow)
  */
 int dumpCDKSwindow (CDKSWINDOW *swindow, const char *filename)
 {
-   FILE *outputFile = 0;
+   FILE *outputFile = NULL;
    int x;
 
    /* Try to open the file. */
-   if ((outputFile = CDKopenFile (filename, "w")) == 0)
+   if ((outputFile = CDKopenFile (filename, "w")) == NULL)
    {
       return -1;
    }
@@ -1183,9 +1183,9 @@ static int createList (CDKSWINDOW *swindow, int listSize)
       int *newPos = typeCallocN (int, listSize + 1);
       int *newLen = typeCallocN (int, listSize + 1);
 
-      if (newList != 0
-	  && newPos != 0
-	  && newLen != 0)
+      if (newList != NULL
+	  && newPos != NULL
+	  && newLen != NULL)
       {
 	 status = 1;
 	 destroyInfo (swindow);

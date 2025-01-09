@@ -1,4 +1,4 @@
-/* $Id: scroll_ex.c,v 1.27 2021/01/09 22:42:39 tom Exp $ */
+/* $Id: scroll_ex.c,v 1.28 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -64,10 +64,10 @@ static int delItemCB (EObjectType cdktype GCC_UNUSED, void *object,
 int main (int argc, char **argv)
 {
    /* Declare variables. */
-   CDKSCREEN *cdkscreen = 0;
-   CDKSCROLL *scrollList = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKSCROLL *scrollList = NULL;
    const char *title = "<C></5>Pick a file";
-   char **item = 0;
+   char **item = NULL;
    const char *mesg[5];
    char temp[256];
    int selection, count;
@@ -95,7 +95,7 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'W', 50),
 			      CDKparamString2 (&params, 't', title),
 			      (CDKparamNumber (&params, 'c')
-			       ? 0
+			       ? NULL
 			       : (CDK_CSTRING2)item),
 			      (CDKparamNumber (&params, 'c')
 			       ? 0
@@ -106,7 +106,7 @@ int main (int argc, char **argv)
 			      CDKparamValue (&params, 'S', FALSE));
 
    /* Is the scrolling list null? */
-   if (scrollList == 0)
+   if (scrollList == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -146,7 +146,7 @@ int main (int argc, char **argv)
 
    /* Activate the scrolling list. */
 
-   selection = activateCDKScroll (scrollList, 0);
+   selection = activateCDKScroll (scrollList, NULL);
 
    /* Determine how the widget was exited. */
    if (scrollList->exitType == vESCAPE_HIT)

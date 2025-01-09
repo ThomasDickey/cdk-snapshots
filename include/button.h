@@ -1,5 +1,5 @@
 /*
- * $Id: button.h,v 1.14 2016/01/31 21:08:37 tom Exp $
+ * $Id: button.h,v 1.15 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -18,7 +18,7 @@
 #endif
 
 /*
- * Changes 2002-2012,2016 copyright Thomas E. Dickey
+ * Changes 2002-2025,2025 copyright Thomas E. Dickey
  * Copyright 1999, Grant Edwards
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -174,7 +174,7 @@ boolean getCDKButtonBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKButtonBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2024/03/31 15:36:33 $
- * $Revision: 1.87 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.88 $
  */
 
 /*
@@ -51,7 +51,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
 			   boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKFSELECT *fselect  = 0;
+   CDKFSELECT *fselect  = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int boxWidth;
@@ -75,8 +75,8 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    };
    /* *INDENT-ON* */
 
-   if ((fselect = newCDKObject (CDKFSELECT, &my_funcs)) == 0)
-        return (0);
+   if ((fselect = newCDKObject (CDKFSELECT, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKFselectBox (fselect, Box);
 
@@ -105,10 +105,10 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    fselect->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    /* Is the window null? */
-   if (fselect->win == 0)
+   if (fselect->win == NULL)
    {
       destroyCDKObject (fselect);
-      return (0);
+      return (NULL);
    }
    keypad (fselect->win, TRUE);
 
@@ -125,11 +125,11 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    fselect->boxHeight           = boxHeight;
    fselect->boxWidth            = boxWidth;
    fselect->fileCounter         = 0;
-   fselect->pwd                 = 0;
+   fselect->pwd                 = NULL;
    initExitType (fselect);
    ObjOf (fselect)->inputWindow = fselect->win;
    fselect->shadow              = shadow;
-   fselect->shadowWin           = 0;
+   fselect->shadowWin           = NULL;
 
    /* Get the present working directory. */
    setPWD (fselect);
@@ -152,10 +152,10 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
 				      Box, FALSE);
 
    /* Make sure the widget was created. */
-   if (fselect->entryField == 0)
+   if (fselect->entryField == NULL)
    {
       destroyCDKObject (fselect);
-      return (0);
+      return (NULL);
    }
 
    /* Set the lower left/right characters of the entry field. */
@@ -208,7 +208,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
 					RIGHT,
 					boxHeight - tempHeight,
 					tempWidth,
-					0,
+					NULL,
 					(CDK_CSTRING2)fselect->dirContents,
 					fselect->fileCounter,
 					NONUMBERS, fselect->highlight,
@@ -337,7 +337,7 @@ static void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
    CDKFSELECT *fselect = (CDKFSELECT *)object;
 
    /* Draw in the shadow if we need to. */
-   if (fselect->shadowWin != 0)
+   if (fselect->shadowWin != NULL)
    {
       drawShadow (fselect->shadowWin);
    }
@@ -357,12 +357,12 @@ static void _drawCDKFselect (CDKOBJS *object, boolean Box GCC_UNUSED)
 char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
 {
    boolean functionKey;
-   char *ret = 0;
+   char *ret = NULL;
 
    /* Draw the widget. */
    drawCDKFselect (fselect, ObjOf (fselect)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -394,7 +394,7 @@ char *activateCDKFselect (CDKFSELECT *fselect, chtype *actions)
 
    /* Set the exit type and exit. */
    setExitType (fselect, 0);
-   return 0;
+   return NULL;
 }
 
 /*
@@ -475,7 +475,7 @@ void setCDKFselect (CDKFSELECT *fselect,
    /* *INDENT-EQLS* */
    CDKSCROLL *fscroll   = fselect->scrollField;
    CDKENTRY *fentry     = fselect->entryField;
-   char *tempDir        = 0;
+   char *tempDir        = NULL;
 
    /* Keep the info sent to us. */
    fselect->fieldAttribute = fieldAttrib;
@@ -487,12 +487,12 @@ void setCDKFselect (CDKFSELECT *fselect,
    setCDKScrollHighlight (fscroll, highlight);
 
    /* Only do the directory stuff if the directory is not null. */
-   if (directory != 0)
+   if (directory != NULL)
    {
       char *newDirectory;
 
       /* Try to expand the directory if it starts with a ~ */
-      if ((tempDir = expandTilde (directory)) != 0)
+      if ((tempDir = expandTilde (directory)) != NULL)
       {
 	 newDirectory = tempDir;
       }
@@ -586,7 +586,7 @@ void setCDKFselect (CDKFSELECT *fselect,
 int setCDKFselectDirContents (CDKFSELECT *fselect)
 {
    struct stat fileStat;
-   char **dirList = 0;
+   char **dirList = NULL;
    int fileCount;
    int x = 0;
 
@@ -951,7 +951,7 @@ static void _setMyBXattr (CDKOBJS *object, chtype character)
  */
 static void _setBKattrFselect (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKFSELECT *widget = (CDKFSELECT *)object;
 
@@ -965,7 +965,7 @@ static void _setBKattrFselect (CDKOBJS *object, chtype attrib)
  */
 static void _destroyCDKFselect (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKFSELECT *fselect = (CDKFSELECT *)object;
 
@@ -1115,7 +1115,7 @@ static char *make_pathname (const char *directory, const char *filename)
 
    if (!root)
       need += strlen (directory);
-   if ((result = (char *)malloc (need)) != 0)
+   if ((result = (char *)malloc (need)) != NULL)
    {
       if (root)
 	 sprintf (result, "/%s", filename);
@@ -1162,13 +1162,13 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    CDKENTRY *entry      = fselect->entryField;
    char *filename       = copyChar (entry->info);
    char *mydirname      = dirName (filename);
-   char *newFilename    = 0;
+   char *newFilename    = NULL;
    size_t filenameLen   = 0;
    int isDirectory;
    char **list;
 
    /* Make sure the filename is not null/empty. */
-   if (filename == 0 ||
+   if (filename == NULL ||
        (filenameLen = strlen (filename)) == 0)
    {
       Beep ();
@@ -1178,7 +1178,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    }
 
    /* Try to expand the filename if it starts with a ~ */
-   if ((newFilename = expandTilde (filename)) != 0)
+   if ((newFilename = expandTilde (filename)) != NULL)
    {
       freeChar (filename);
       filename = newFilename;
@@ -1219,7 +1219,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    }
 
    /* Create the file list. */
-   if ((list = typeMallocN (char *, fselect->fileCounter)) != 0)
+   if ((list = typeMallocN (char *, fselect->fileCounter)) != NULL)
    {
       int Index, x;
 
@@ -1259,7 +1259,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 
 	 /* Ok, we found a match, is the next item similar? */
 	 if (Index + 1 < fselect->fileCounter &&
-	     0 != list[Index + 1] &&
+	     NULL != list[Index + 1] &&
 	     0 == strncmp (list[Index + 1], filename, filenameLen))
 	 {
 	    int currentIndex = Index;
@@ -1269,7 +1269,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 	    /* Determine the number of files which match. */
 	    while (currentIndex < fselect->fileCounter)
 	    {
-	       if (list[currentIndex] != 0)
+	       if (list[currentIndex] != NULL)
 	       {
 		  if (strncmp (list[currentIndex], filename, filenameLen) == 0)
 		  {
@@ -1348,7 +1348,7 @@ void deleteFileCB (EObjectType objectType GCC_UNUSED, void *object, void *client
    freeCharList (mesg, 2);
 
    /* If the said yes then try to nuke it. */
-   if (activateCDKDialog (question, 0) == 1)
+   if (activateCDKDialog (question, NULL) == 1)
    {
       /* If we were successful, reload the scrolling list. */
       if (unlink (filename) == 0)
@@ -1456,7 +1456,7 @@ static char *format1Date (const char *format, time_t value)
    char *result;
    char *temp = ctime (&value);
 
-   if ((result = (char *)malloc (strlen (format) + strlen (temp) + 1)) != 0)
+   if ((result = (char *)malloc (strlen (format) + strlen (temp) + 1)) != NULL)
    {
       sprintf (result, format, trim1Char (temp));
    }
@@ -1467,7 +1467,7 @@ static char *format1Number (const char *format, long value)
 {
    char *result;
 
-   if ((result = (char *)malloc (strlen (format) + 20)) != 0)
+   if ((result = (char *)malloc (strlen (format) + 20)) != NULL)
       sprintf (result, format, value);
    return result;
 }
@@ -1482,7 +1482,7 @@ static char *format3String (const char *format,
    if ((result = (char *)malloc (strlen (format) +
 				 strlen (s1) +
 				 strlen (s2) +
-				 strlen (s3))) != 0)
+				 strlen (s3))) != NULL)
       sprintf (result, format, s1, s2, s3);
    return result;
 }
@@ -1491,7 +1491,7 @@ static char *format1String (const char *format, const char *string)
 {
    char *result;
 
-   if ((result = (char *)malloc (strlen (format) + strlen (string))) != 0)
+   if ((result = (char *)malloc (strlen (format) + strlen (string))) != NULL)
       sprintf (result, format, string);
    return result;
 }
@@ -1500,7 +1500,7 @@ static char *format1StrVal (const char *format, const char *string, int value)
 {
    char *result;
 
-   if ((result = (char *)malloc (strlen (format) + strlen (string) + 20)) != 0)
+   if ((result = (char *)malloc (strlen (format) + strlen (string) + 20)) != NULL)
       sprintf (result, format, string, value);
    return result;
 }
@@ -1521,17 +1521,17 @@ static char *errorMessage (const char *format)
  */
 static char *expandTilde (const char *filename)
 {
-   char *result = 0;
+   char *result = NULL;
    char *account;
    char *pathname;
    int len;
 
    /* Make sure the filename is not null/empty, and begins with a tilde */
-   if ((filename != 0) &&
+   if ((filename != NULL) &&
        (len = (int)strlen (filename)) != 0 &&
        filename[0] == '~' &&
-       (account = copyChar (filename)) != 0 &&
-       (pathname = copyChar (filename)) != 0)
+       (account = copyChar (filename)) != NULL &&
+       (pathname = copyChar (filename)) != NULL)
    {
       bool slash = FALSE;
       const char *home;
@@ -1559,17 +1559,17 @@ static char *expandTilde (const char *filename)
       account[len_a] = '\0';
       pathname[len_p] = '\0';
 
-      home = 0;
+      home = NULL;
 #ifdef HAVE_PWD_H
       if (strlen (account) != 0 &&
-	  (accountInfo = getpwnam (account)) != 0)
+	  (accountInfo = getpwnam (account)) != NULL)
       {
 	 home = accountInfo->pw_dir;
       }
 #endif
-      if (home == 0 || *home == '\0')
+      if (home == NULL || *home == '\0')
 	 home = getenv ("HOME");
-      if (home == 0 || *home == '\0')
+      if (home == NULL || *home == '\0')
 	 home = "/";
 
       /*
@@ -1592,7 +1592,7 @@ static void setPWD (CDKFSELECT *fselect)
 {
    char buffer[512];
    freeChar (fselect->pwd);
-   if (getcwd (buffer, sizeof (buffer)) == 0)
+   if (getcwd (buffer, sizeof (buffer)) == NULL)
       strcpy (buffer, ".");
    fselect->pwd = copyChar (buffer);
 }
@@ -1600,7 +1600,7 @@ static void setPWD (CDKFSELECT *fselect)
 static void destroyInfo (CDKFSELECT *widget)
 {
    CDKfreeStrings (widget->dirContents);
-   widget->dirContents = 0;
+   widget->dirContents = NULL;
 
    widget->fileCounter = 0;
 }
@@ -1613,7 +1613,7 @@ static int createList (CDKFSELECT *widget, CDK_CSTRING2 list, int listSize)
    {
       char **newlist = typeCallocN (char *, listSize + 1);
 
-      if (newlist != 0)
+      if (newlist != NULL)
       {
 	 int x;
 
@@ -1621,7 +1621,7 @@ static int createList (CDKFSELECT *widget, CDK_CSTRING2 list, int listSize)
 	 status = 1;
 	 for (x = 0; x < listSize; x++)
 	 {
-	    if ((newlist[x] = copyChar (list[x])) == 0)
+	    if ((newlist[x] = copyChar (list[x])) == NULL)
 	    {
 	       status = 0;
 	       break;

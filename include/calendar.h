@@ -1,5 +1,5 @@
 /*
- * $Id: calendar.h,v 1.32 2012/03/21 21:15:30 tom Exp $
+ * $Id: calendar.h,v 1.33 2025/01/09 00:20:21 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 /*
- * Copyright 2000-2011,2012 Thomas E. Dickey
+ * Copyright 2000-2025,2025 Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -223,7 +223,7 @@ boolean getCDKCalendarBox (
 
 /*
  * This sets the background attribute of the widget.
- */ 
+ */
 #define setCDKCalendarBackgroundAttrib(w,c) setBKAttrOf(w,c)
 
 /*

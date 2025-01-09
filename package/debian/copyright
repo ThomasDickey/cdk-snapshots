@@ -1,4 +1,4 @@
-Upstream source http://invisible-island.net/cdk/cdk.html
+Upstream source https://invisible-island.net/cdk/cdk.html
 
 Current cdk upstream maintainer: Thomas Dickey <dickey@invisible-island.net>
 
@@ -6,7 +6,7 @@ Current cdk upstream maintainer: Thomas Dickey <dickey@invisible-island.net>
 
 Files: * */* */*/*
 License: MIT-X11
-Copyright: 1999-2024 Thomas E. Dickey
+Copyright: 1999-2025 Thomas E. Dickey
 Copyright: 2013 Corentin Delorme
 Copyright: 1999 Grant Edwards
     Permission is hereby granted, free of charge, to any person obtaining a

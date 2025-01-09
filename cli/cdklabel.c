@@ -1,4 +1,4 @@
-/* $Id: cdklabel.c,v 1.15 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: cdklabel.c,v 1.16 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -21,13 +21,13 @@ static const char *FPUsage = "-m Message String | -f filename [-c Command] [-p P
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkScreen         = 0;
-   CDKLABEL *widget             = 0;
-   char *CDK_WIDGET_COLOR       = 0;
-   char *temp                   = 0;
-   chtype *holder               = 0;
+   CDKSCREEN *cdkScreen         = NULL;
+   CDKLABEL *widget             = NULL;
+   char *CDK_WIDGET_COLOR       = NULL;
+   char *temp                   = NULL;
+   chtype *holder               = NULL;
    int messageLines             = -1;
-   char **messageList           = 0;
+   char **messageList           = NULL;
    char tempCommand[1000];
    int j1, j2;
 
@@ -54,14 +54,14 @@ int main (int argc, char **argv)
    filename     = CDKparamString (&params, 'f');
    message      = CDKparamString (&params, 'm');
 
-   if ((temp = CDKparamString (&params, 'p')) != 0)
+   if ((temp = CDKparamString (&params, 'p')) != NULL)
       waitChar = *temp;
 
    /* Make sure we have a message to display. */
-   if (message == 0)
+   if (message == NULL)
    {
       /* No message, maybe they provided a file to read. */
-      if (filename != 0)
+      if (filename != NULL)
       {
 	 /* Read the file in. */
 	 messageLines = CDKreadFile (filename, &messageList);
@@ -93,7 +93,7 @@ int main (int argc, char **argv)
    initCDKColor ();
 
    /* Check if the user wants to set the background of the main screen. */
-   if ((temp = getenv ("CDK_SCREEN_COLOR")) != 0)
+   if ((temp = getenv ("CDK_SCREEN_COLOR")) != NULL)
    {
       holder = char2Chtype (temp, &j1, &j2);
       wbkgd (cdkScreen->window, holder[0]);
@@ -102,9 +102,9 @@ int main (int argc, char **argv)
    }
 
    /* Get the widget color background color. */
-   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == 0)
+   if ((CDK_WIDGET_COLOR = getenv ("CDK_WIDGET_COLOR")) == NULL)
    {
-      CDK_WIDGET_COLOR = 0;
+      CDK_WIDGET_COLOR = NULL;
    }
 
    /* Create the label widget. */
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
 			 boxWidget, shadowWidget);
 
    /* Make sure we could create the widget. */
-   if (widget == 0)
+   if (widget == NULL)
    {
       CDKfreeStrings (messageList);
 
@@ -134,7 +134,7 @@ int main (int argc, char **argv)
    drawCDKLabel (widget, boxWidget);
 
    /* If they supplied a command, run it. */
-   if (command != 0)
+   if (command != NULL)
    {
       const char *fmt = "(sh -c %.*s) >/dev/null 2>&1";
       sprintf (tempCommand, fmt, (int)(sizeof (tempCommand) - strlen (fmt)), command);

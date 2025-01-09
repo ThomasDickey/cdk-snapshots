@@ -1,4 +1,4 @@
-/* $Id: fscale_ex.c,v 1.9 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: fscale_ex.c,v 1.10 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -11,7 +11,7 @@ static float myFloatParam (CDK_PARAMS * params, int code, double missing)
    char *opt = CDKparamString (params, code);
    double result = missing;
 
-   if (opt != 0)
+   if (opt != NULL)
       result = atof (opt);
    return (float)result;
 }
@@ -22,8 +22,8 @@ static float myFloatParam (CDK_PARAMS * params, int code, double missing)
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKFSCALE *scale     = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKFSCALE *scale     = NULL;
    const char *title    = "<C>Select a value";
    const char *label    = "</5>Current value";
    char temp[256];
@@ -58,7 +58,7 @@ int main (int argc, char **argv)
 			 CDKparamValue (&params, 'S', FALSE));
 
    /* Is the scale null? */
-   if (scale == 0)
+   if (scale == NULL)
    {
       /* Exit CDK. */
       destroyCDKScreen (cdkscreen);
@@ -69,7 +69,7 @@ int main (int argc, char **argv)
    }
 
    /* Activate the scale. */
-   selection = activateCDKFScale (scale, 0);
+   selection = activateCDKFScale (scale, NULL);
 
    /* Check the exit value of the scale widget. */
    if (scale->exitType == vESCAPE_HIT)

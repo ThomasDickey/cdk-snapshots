@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 00:31:08 $
- * $Revision: 1.103 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.104 $
  */
 
 DeclareCDKObjects (DIALOG, Dialog, setCdk, Int);
@@ -24,7 +24,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen,
 			 boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKDIALOG *dialog    = 0;
+   CDKDIALOG *dialog    = NULL;
    int boxHeight;
    int boxWidth         = MIN_DIALOG_WIDTH;
    int maxmessagewidth  = -1;
@@ -37,16 +37,16 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen,
 
    if (rows <= 0
        || buttonCount <= 0
-       || (dialog = newCDKObject (CDKDIALOG, &my_funcs)) == 0
-       || (dialog->info = typeCallocN (chtype *, rows + 1)) == 0
-       || (dialog->infoLen = typeCallocN (int, rows + 1)) == 0
-       || (dialog->infoPos = typeCallocN (int, rows + 1)) == 0
-       || (dialog->buttonLabel = typeCallocN (chtype *, buttonCount + 1)) == 0
-       || (dialog->buttonLen = typeCallocN (int, buttonCount + 1)) == 0
-       || (dialog->buttonPos = typeCallocN (int, buttonCount + 1)) == 0)
+       || (dialog = newCDKObject (CDKDIALOG, &my_funcs)) == NULL
+       || (dialog->info = typeCallocN (chtype *, rows + 1)) == NULL
+       || (dialog->infoLen = typeCallocN (int, rows + 1)) == NULL
+       || (dialog->infoPos = typeCallocN (int, rows + 1)) == NULL
+       || (dialog->buttonLabel = typeCallocN (chtype *, buttonCount + 1)) == NULL
+       || (dialog->buttonLen = typeCallocN (int, buttonCount + 1)) == NULL
+       || (dialog->buttonPos = typeCallocN (int, buttonCount + 1)) == NULL)
    {
       destroyCDKObject (dialog);
-      return (0);
+      return (NULL);
    }
 
    setCDKDialogBox (dialog, Box);
@@ -84,7 +84,7 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen,
    ScreenOf (dialog)            = cdkscreen;
    dialog->parent               = cdkscreen->window;
    dialog->win                  = newwin (boxHeight, boxWidth, ypos, xpos);
-   dialog->shadowWin            = 0;
+   dialog->shadowWin            = NULL;
    dialog->buttonCount          = buttonCount;
    dialog->currentButton        = 0;
    dialog->messageRows          = rows;
@@ -98,10 +98,10 @@ CDKDIALOG *newCDKDialog (CDKSCREEN *cdkscreen,
    dialog->shadow               = shadow;
 
    /* If we couldn't create the window, we should return a null value. */
-   if (dialog->win == 0)
+   if (dialog->win == NULL)
    {
       destroyCDKObject (dialog);
-      return (0);
+      return (NULL);
    }
    keypad (dialog->win, TRUE);
 
@@ -155,7 +155,7 @@ int activateCDKDialog (CDKDIALOG *dialog, chtype *actions)
 		      0, dialog->buttonLen[dialog->currentButton]);
    wrefresh (dialog->win);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -206,7 +206,7 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
    setExitType (widget, 0);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       ppReturn = PreProcessFuncOf (widget) (vDIALOG,
 					    widget,
@@ -287,7 +287,7 @@ static int _injectCDKDialog (CDKOBJS *object, chtype input)
       }
 
       /* Should we call a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vDIALOG,
 				     widget,
@@ -365,7 +365,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
    int x = 0;
 
    /* Is there a shadow? */
-   if (dialog->shadowWin != 0)
+   if (dialog->shadowWin != NULL)
    {
       drawShadow (dialog->shadowWin);
    }
@@ -397,7 +397,7 @@ static void _drawCDKDialog (CDKOBJS *object, boolean Box)
  */
 static void _destroyCDKDialog (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKDIALOG *dialog = (CDKDIALOG *)object;
 
@@ -487,7 +487,7 @@ boolean getCDKDialogBox (CDKDIALOG *dialog)
  */
 static void _setBKattrDialog (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKDIALOG *widget = (CDKDIALOG *)object;
 

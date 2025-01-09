@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2012/03/22 00:38:13 $
- * $Revision: 1.2 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.3 $
  */
 
 /*
@@ -12,9 +12,9 @@
 char *selectFile (CDKSCREEN *screen, const char *title)
 {
    /* *INDENT-EQLS* */
-   CDKFSELECT *fselect  = 0;
-   char *filename       = 0;
-   char *holder         = 0;
+   CDKFSELECT *fselect  = NULL;
+   char *filename       = NULL;
+   char *holder         = NULL;
 
    /* Create the file selector. */
    fselect = newCDKFselect (screen, CENTER, CENTER, -4, -20,
@@ -24,14 +24,14 @@ char *selectFile (CDKSCREEN *screen, const char *title)
 			    TRUE, FALSE);
 
    /* Let the user play. */
-   holder = activateCDKFselect (fselect, 0);
+   holder = activateCDKFselect (fselect, NULL);
 
    /* Check the way the user exited the selector. */
    if (fselect->exitType != vNORMAL)
    {
       destroyCDKFselect (fselect);
       refreshCDKScreen (screen);
-      return (0);
+      return (NULL);
    }
 
    /* Otherwise... */

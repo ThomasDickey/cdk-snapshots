@@ -1,4 +1,4 @@
-/* $Id: buttonbox_ex.c,v 1.21 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: buttonbox_ex.c,v 1.22 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -14,15 +14,15 @@ static BINDFN_PROTO (entryCB);
 int main (void)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen         = 0;
-   CDKBUTTONBOX *buttonWidget   = 0;
-   CDKENTRY *entry              = 0;
+   CDKSCREEN *cdkscreen         = NULL;
+   CDKBUTTONBOX *buttonWidget   = NULL;
+   CDKENTRY *entry              = NULL;
    const char *buttons[]        =
    {
       " OK ",
       " Cancel "
    };
-   char *info                   = 0;
+   char *info                   = NULL;
    int selection;
 
    cdkscreen = initCDKScreen (NULL);
@@ -34,7 +34,7 @@ int main (void)
    entry = newCDKEntry (cdkscreen, CENTER, CENTER,
 			"<C>Enter a name", "Name ", A_NORMAL, '.', vMIXED,
 			40, 0, 256, TRUE, FALSE);
-   if (entry == 0)
+   if (entry == NULL)
    {
       destroyCDKScreen (cdkscreen);
       endCDK ();
@@ -49,10 +49,10 @@ int main (void)
 				   getbegx (entry->win),
 				   getbegy (entry->win) + entry->boxHeight - 1,
 				   1, entry->boxWidth - 1,
-				   0, 1, 2,
+				   NULL, 1, 2,
 				   (CDK_CSTRING2) buttons, 2, A_REVERSE,
 				   TRUE, FALSE);
-   if (buttonWidget == 0)
+   if (buttonWidget == NULL)
    {
       destroyCDKScreen (cdkscreen);
       endCDK ();
@@ -75,7 +75,7 @@ int main (void)
 
    /* Activate the entry field. */
    drawCDKButtonbox (buttonWidget, TRUE);
-   info = copyChar (activateCDKEntry (entry, 0));
+   info = copyChar (activateCDKEntry (entry, NULL));
    selection = buttonWidget->currentButton;
 
    /* Clean up. */
@@ -85,7 +85,7 @@ int main (void)
    endCDK ();
 
    printf ("You typed in (%s) and selected button (%s)\n",
-	   (info != 0) ? info : "<null>",
+	   (info != NULL) ? info : "<null>",
 	   buttons[selection]);
 
    freeChar (info);

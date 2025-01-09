@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2021/12/16 01:08:29 $
- * $Revision: 1.170 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.171 $
  */
 
 /*
@@ -32,7 +32,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
 			 boolean shadow)
 {
    /* *INDENT-EQLS* */
-   CDKMENTRY *mentry    = 0;
+   CDKMENTRY *mentry    = NULL;
    int parentWidth      = getmaxx (cdkscreen->window);
    int parentHeight     = getmaxy (cdkscreen->window);
    int fieldWidth       = fWidth;
@@ -44,8 +44,8 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
    int ypos             = yplace;
    int junk;
 
-   if ((mentry = newCDKObject (CDKMENTRY, &my_funcs)) == 0)
-        return (0);
+   if ((mentry = newCDKObject (CDKMENTRY, &my_funcs)) == NULL)
+        return (NULL);
 
    setCDKMentryBox (mentry, Box);
 
@@ -65,12 +65,12 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
    boxHeight = fieldRows + 2;
 
    /* *INDENT-EQLS* Set some basic values of the mentry field. */
-   mentry->label        = 0;
+   mentry->label        = NULL;
    mentry->labelLen     = 0;
-   mentry->labelWin     = 0;
+   mentry->labelWin     = NULL;
 
    /* We need to translate the char * label to a chtype * */
-   if (label != 0)
+   if (label != NULL)
    {
       mentry->label = char2Chtype (label, &mentry->labelLen, &junk);
    }
@@ -101,14 +101,14 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
    mentry->win = newwin (boxHeight, boxWidth, ypos, xpos);
 
    /* Is the window null??? */
-   if (mentry->win == 0)
+   if (mentry->win == NULL)
    {
       destroyCDKObject (mentry);
-      return (0);
+      return (NULL);
    }
 
    /* Create the label window. */
-   if (mentry->label != 0)
+   if (mentry->label != NULL)
    {
       mentry->labelWin = subwin (mentry->win, fieldRows,
 				 mentry->labelLen + 2,
@@ -135,7 +135,7 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
 
    /* *INDENT-EQLS* Set up the rest of the widget information. */
    ScreenOf (mentry)            = cdkscreen;
-   mentry->shadowWin            = 0;
+   mentry->shadowWin            = NULL;
    mentry->fieldAttr            = fieldAttr;
    mentry->fieldWidth           = fieldWidth;
    mentry->rows                 = fieldRows;
@@ -174,12 +174,12 @@ CDKMENTRY *newCDKMentry (CDKSCREEN *cdkscreen,
 char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 {
    boolean functionKey;
-   char *ret = 0;
+   char *ret = NULL;
 
    /* Draw the mentry widget. */
    drawCDKMentry (mentry, ObjOf (mentry)->box);
 
-   if (actions == 0)
+   if (actions == NULL)
    {
       for (;;)
       {
@@ -211,7 +211,7 @@ char *activateCDKMentry (CDKMENTRY *mentry, chtype *actions)
 
    /* Set the exit type and exit. */
    setExitType (mentry, 0);
-   return 0;
+   return NULL;
 }
 
 static bool setTopRow (CDKMENTRY *widget, int row)
@@ -296,7 +296,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
    drawCDKMentryField (widget);
 
    /* Check if there is a pre-process function to be called. */
-   if (PreProcessFuncOf (widget) != 0)
+   if (PreProcessFuncOf (widget) != NULL)
    {
       /* Call the pre-process function. */
       ppReturn = PreProcessFuncOf (widget) (vMENTRY,
@@ -494,7 +494,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
 	    break;
 
 	 case CDK_PASTE:
-	    if (GPasteBuffer == 0)
+	    if (GPasteBuffer == NULL)
 	    {
 	       Beep ();
 	    }
@@ -559,7 +559,7 @@ static int _injectCDKMentry (CDKOBJS *object, chtype input)
       }
 
       /* Should we do a post-process? */
-      if (!complete && (PostProcessFuncOf (widget) != 0))
+      if (!complete && (PostProcessFuncOf (widget) != NULL))
       {
 	 PostProcessFuncOf (widget) (vMENTRY,
 				     widget,
@@ -640,7 +640,7 @@ void drawCDKMentryField (CDKMENTRY *mentry)
    int x, y;
 
    /* Check the value of info. */
-   if (mentry->info == 0)
+   if (mentry->info == NULL)
    {
       return;
    }
@@ -757,13 +757,13 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
    }
 
    /* Do we need to draw in the shadow??? */
-   if (mentry->shadowWin != 0)
+   if (mentry->shadowWin != NULL)
    {
       drawShadow (mentry->shadowWin);
    }
 
    /* Draw in the label to the widget. */
-   if (mentry->labelWin != 0)
+   if (mentry->labelWin != NULL)
    {
       writeChtype (mentry->labelWin, 0, 0,
 		   mentry->label,
@@ -781,13 +781,13 @@ static void _drawCDKMentry (CDKOBJS *object, boolean Box)
  */
 static void _setBKattrMentry (CDKOBJS *object, chtype attrib)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMENTRY *widget = (CDKMENTRY *)object;
 
       wbkgd (widget->win, attrib);
       wbkgd (widget->fieldWin, attrib);
-      if (widget->labelWin != 0)
+      if (widget->labelWin != NULL)
       {
 	 wbkgd (widget->labelWin, attrib);
       }
@@ -815,7 +815,7 @@ static void _eraseCDKMentry (CDKOBJS *object)
  */
 static void _destroyCDKMentry (CDKOBJS *object)
 {
-   if (object != 0)
+   if (object != NULL)
    {
       CDKMENTRY *mentry = (CDKMENTRY *)object;
 
@@ -859,7 +859,7 @@ void setCDKMentryValue (CDKMENTRY *mentry, const char *newValue)
    int copychars        = 0;
 
    /* Just to be sure, if lets make sure the new value isn't null. */
-   if (newValue == 0)
+   if (newValue == NULL)
    {
       /* Then we want to just erase the old value. */
       cleanChar (mentry->info, mentry->totalWidth, '\0');

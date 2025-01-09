@@ -1,4 +1,4 @@
-/* $Id: clock.c,v 1.11 2016/12/04 15:22:16 tom Exp $ */
+/* $Id: clock.c,v 1.12 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -9,8 +9,8 @@ char *XCursesProgramName = "label_ex";
 int main (int argc, char **argv)
 {
    /* *INDENT-EQLS* */
-   CDKSCREEN *cdkscreen = 0;
-   CDKLABEL *demo       = 0;
+   CDKSCREEN *cdkscreen = NULL;
+   CDKLABEL *demo       = NULL;
    int boxLabel         = 0;
    const char *mesg[4];
    char temp[256];
@@ -41,7 +41,7 @@ int main (int argc, char **argv)
 		       boxLabel, FALSE);
 
    /* Is the label null??? */
-   if (demo == 0)
+   if (demo == NULL)
    {
       /* Clean up the memory. */
       destroyCDKScreen (cdkscreen);

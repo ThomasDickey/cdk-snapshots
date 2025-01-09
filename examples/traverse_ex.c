@@ -1,4 +1,4 @@
-/* $Id: traverse_ex.c,v 1.26 2017/12/09 19:03:36 tom Exp $ */
+/* $Id: traverse_ex.c,v 1.27 2025/01/09 00:20:21 tom Exp $ */
 
 #include <cdk_test.h>
 
@@ -265,7 +265,7 @@ static CDKOBJS *make_marquee (CDKSCREEN *cdkscreen, int x, int y)
 				       TRUE);
    activateCDKMarquee (widget, "This is a message", 5, 3, TRUE);
    destroyCDKMarquee (widget);
-   return 0;
+   return NULL;
 }
 
 static CDKOBJS *make_matrix (CDKSCREEN *cdkscreen, int x, int y)
@@ -427,7 +427,7 @@ static CDKOBJS *make_swindow (CDKSCREEN *cdkscreen, int x, int y)
       sprintf (temp, "Line %d", n);
       addCDKSwindow (widget, temp, BOTTOM);
    }
-   activateCDKSwindow (widget, 0);
+   activateCDKSwindow (widget, NULL);
    return ObjPtr (widget);
 }
 
@@ -442,7 +442,7 @@ static CDKOBJS *make_template (CDKSCREEN *cdkscreen, int x, int y)
 					 plate, Overlay,
 					 TRUE,
 					 FALSE);
-   activateCDKTemplate (widget, 0);
+   activateCDKTemplate (widget, NULL);
    return ObjPtr (widget);
 }
 
@@ -498,7 +498,7 @@ static CDKOBJS *make_viewer (CDKSCREEN *cdkscreen, int x, int y)
    setCDKViewer (widget, "Viewer",
 		 (CDK_CSTRING2)months, NumElements (months),
 		 A_REVERSE, FALSE, TRUE, TRUE);
-   activateCDKViewer (widget, 0);
+   activateCDKViewer (widget, NULL);
    return ObjPtr (widget);
 }
 
@@ -509,8 +509,8 @@ static void rebind_esc (CDKOBJS *obj)
 
 static void make_any (CDKSCREEN *cdkscreen, int menu, EObjectType type)
 {
-   CDKOBJS *(*func) (CDKSCREEN *, int, int) = 0;
-   CDKOBJS *prior = 0;
+   CDKOBJS *(*func) (CDKSCREEN *, int, int) = NULL;
+   CDKOBJS *prior = NULL;
    int x;
    int y;
 
@@ -627,18 +627,18 @@ static void make_any (CDKSCREEN *cdkscreen, int menu, EObjectType type)
    }
 
    /* erase the old widget */
-   if ((prior = all_objects[menu]) != 0)
+   if ((prior = all_objects[menu]) != NULL)
    {
       EraseObj (prior);
       _destroyCDKObject (prior);
-      all_objects[menu] = 0;
+      all_objects[menu] = NULL;
    }
 
    /* create the new widget */
-   if (func != 0)
+   if (func != NULL)
    {
       CDKOBJS *widget = func (cdkscreen, x, y);
-      if (widget != 0)
+      if (widget != NULL)
       {
 	 all_objects[menu] = widget;
 	 rebind_esc (widget);
@@ -722,7 +722,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
 
    menu = newCDKMenu (cdkscreen, menulist, MY_MAX, submenusize, menuloc,
 		      TOP, A_UNDERLINE, A_REVERSE);
-   if (menu == 0)
+   if (menu == NULL)
    {
       destroyCDKScreen (cdkscreen);
       endCDK ();
@@ -732,7 +732,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    }
    rebind_esc (ObjOf (menu));
 
-   setCDKMenuPreProcess (menu, preHandler, 0);
+   setCDKMenuPreProcess (menu, preHandler, NULL);
 
    /* setup the initial display */
    make_any (cdkscreen, 0, vENTRY);
@@ -757,7 +757,7 @@ int main (int argc GCC_UNUSED, char **argv GCC_UNUSED)
    /* Clean up and exit. */
    for (j = 0; j < MY_MAX; ++j)
    {
-      if (all_objects[j] != 0)
+      if (all_objects[j] != NULL)
 	 _destroyCDKObject (all_objects[j]);
    }
    destroyCDKMenu (menu);

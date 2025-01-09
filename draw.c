@@ -1,9 +1,9 @@
 #include <cdk_int.h>
 
 /*
- * $Author: aleahmad $
- * $Date: 2019/02/15 23:58:59 $
- * $Revision: 1.63 $
+ * $Author: tom $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.64 $
  */
 
 /*
@@ -216,7 +216,7 @@ void drawLine (WINDOW *window, int startx, int starty, int endx, int endy, chtyp
  */
 void drawShadow (WINDOW *shadowWin)
 {
-   if (shadowWin != 0)
+   if (shadowWin != NULL)
    {
       int x_hi = getmaxx (shadowWin) - 1;
       int y_hi = getmaxy (shadowWin) - 1;
@@ -244,7 +244,7 @@ void writeBlanks (WINDOW *window, int xpos, int ypos, int align, int start, int 
       unsigned want = (unsigned)(end - start) + 1000;
       char *blanks = (char *)malloc (want);
 
-      if (blanks != 0)
+      if (blanks != NULL)
       {
 	 cleanChar (blanks, (int)(want - 1), ' ');
 	 writeChar (window, xpos, ypos, blanks, align, start, end);

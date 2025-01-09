@@ -1,7 +1,7 @@
-dnl $Id: configure.in,v 1.88 2024/06/19 17:51:47 tom Exp $
+dnl $Id: configure.in,v 1.89 2025/01/09 00:11:28 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
-dnl Copyright 1999-2023,2024 Thomas E. Dickey
+dnl Copyright 1999-2024,2025 Thomas E. Dickey
 dnl
 dnl Permission is hereby granted, free of charge, to any person obtaining a
 dnl copy of this software and associated documentation files (the "Software"),
@@ -33,6 +33,7 @@ AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
 CF_CHECK_CACHE
 CF_VERSION_INFO(cdk)
 CF_TOP_BUILDDIR(.)
+CF_WITH_SYSTYPE
 
 dnl
 dnl Checks for programs.

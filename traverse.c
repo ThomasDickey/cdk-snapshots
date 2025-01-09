@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2016/11/20 18:28:30 $
- * $Revision: 1.24 $
+ * $Date: 2025/01/09 00:20:21 $
+ * $Revision: 1.25 $
  */
 
 #define limitFocusIndex(screen, value) \
@@ -26,7 +26,7 @@ static void setFocusIndex (CDKSCREEN *screen, int value)
 static void unsetFocus (CDKOBJS *obj)
 {
    curs_set (0);
-   if (obj != 0)
+   if (obj != NULL)
    {
       HasFocusObj (obj) = FALSE;
       UnfocusObj (obj);
@@ -35,7 +35,7 @@ static void unsetFocus (CDKOBJS *obj)
 
 static void setFocus (CDKOBJS *obj)
 {
-   if (obj != 0)
+   if (obj != NULL)
    {
       HasFocusObj (obj) = TRUE;
       FocusObj (obj);
@@ -91,7 +91,7 @@ static CDKOBJS *handleMenu (CDKSCREEN *screen, CDKOBJS *menu, CDKOBJS *oldobj)
       }
    }
 
-   if ((newobj = getCDKFocusCurrent (screen)) == 0)
+   if ((newobj = getCDKFocusCurrent (screen)) == NULL)
       newobj = setCDKFocusNext (screen);
 
    return switchFocus (newobj, menu);
@@ -160,7 +160,7 @@ void resetCDKScreenOf (CDKOBJS *obj)
  */
 CDKOBJS *getCDKFocusCurrent (CDKSCREEN *screen)
 {
-   CDKOBJS *result = 0;
+   CDKOBJS *result = NULL;
    int n = screen->objectFocus;
 
    if (n >= 0 && n < screen->objectCount)
@@ -173,7 +173,7 @@ CDKOBJS *getCDKFocusCurrent (CDKSCREEN *screen)
  */
 CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
 {
-   CDKOBJS *result = 0;
+   CDKOBJS *result = NULL;
    CDKOBJS *curobj;
    int n = getFocusIndex (screen);
    int first = n;
@@ -183,7 +183,7 @@ CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
       if (++n >= screen->objectCount)
 	 n = 0;
       curobj = screen->object[n];
-      if (curobj != 0 && AcceptsFocusObj (curobj))
+      if (curobj != NULL && AcceptsFocusObj (curobj))
       {
 	 result = curobj;
 	 break;
@@ -197,7 +197,7 @@ CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
       }
    }
 
-   setFocusIndex (screen, (result != 0) ? n : -1);
+   setFocusIndex (screen, (result != NULL) ? n : -1);
    return result;
 }
 
@@ -206,7 +206,7 @@ CDKOBJS *setCDKFocusNext (CDKSCREEN *screen)
  */
 CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
 {
-   CDKOBJS *result = 0;
+   CDKOBJS *result = NULL;
    CDKOBJS *curobj;
    int n = getFocusIndex (screen);
    int first = n;
@@ -216,7 +216,7 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
       if (--n < 0)
 	 n = screen->objectCount - 1;
       curobj = screen->object[n];
-      if (curobj != 0 && AcceptsFocusObj (curobj))
+      if (curobj != NULL && AcceptsFocusObj (curobj))
       {
 	 result = curobj;
 	 break;
@@ -227,7 +227,7 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
       }
    }
 
-   setFocusIndex (screen, (result != 0) ? n : -1);
+   setFocusIndex (screen, (result != NULL) ? n : -1);
    return result;
 }
 
@@ -237,7 +237,7 @@ CDKOBJS *setCDKFocusPrevious (CDKSCREEN *screen)
  */
 CDKOBJS *setCDKFocusCurrent (CDKSCREEN *screen, CDKOBJS *newobj)
 {
-   CDKOBJS *result = 0;
+   CDKOBJS *result = NULL;
    CDKOBJS *curobj;
    int n = getFocusIndex (screen);
    int first = n;
@@ -259,7 +259,7 @@ CDKOBJS *setCDKFocusCurrent (CDKSCREEN *screen, CDKOBJS *newobj)
       }
    }
 
-   setFocusIndex (screen, (result != 0) ? n : -1);
+   setFocusIndex (screen, (result != NULL) ? n : -1);
    return result;
 }
 
@@ -269,7 +269,7 @@ CDKOBJS *setCDKFocusCurrent (CDKSCREEN *screen, CDKOBJS *newobj)
 CDKOBJS *setCDKFocusFirst (CDKSCREEN *screen)
 {
    setFocusIndex (screen, screen->objectCount - 1);
-   return switchFocus (setCDKFocusNext (screen), 0);
+   return switchFocus (setCDKFocusNext (screen), NULL);
 }
 
 /*
@@ -278,7 +278,7 @@ CDKOBJS *setCDKFocusFirst (CDKSCREEN *screen)
 CDKOBJS *setCDKFocusLast (CDKSCREEN *screen)
 {
    setFocusIndex (screen, 0);
-   return switchFocus (setCDKFocusPrevious (screen), 0);
+   return switchFocus (setCDKFocusPrevious (screen), NULL);
 }
 
 void traverseCDKOnce (CDKSCREEN *screen,
@@ -320,7 +320,7 @@ void traverseCDKOnce (CDKSCREEN *screen,
 
    default:
       /* not everyone wants menus, so we make them optional here */
-      if (funcMenuKey != 0 && funcMenuKey (keyCode, functionKey))
+      if (funcMenuKey != NULL && funcMenuKey (keyCode, functionKey))
       {
 	 /* find and enable drop down menu */
 	 int j;
@@ -348,13 +348,13 @@ int traverseCDKScreen (CDKSCREEN *screen)
    int result = 0;
    CDKOBJS *curobj = setCDKFocusFirst (screen);
 
-   if (curobj != 0)
+   if (curobj != NULL)
    {
       refreshDataCDKScreen (screen);
 
       screen->exitStatus = CDKSCREEN_NOEXIT;
 
-      while (((curobj = getCDKFocusCurrent (screen)) != 0)
+      while (((curobj = getCDKFocusCurrent (screen)) != NULL)
 	     && (screen->exitStatus == CDKSCREEN_NOEXIT))
       {
 	 int key;

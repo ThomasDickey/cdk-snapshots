@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_compat.c,v 1.5 2005/12/28 21:43:35 tom Exp $
+ * $Id: cdk_compat.c,v 1.6 2025/01/09 00:20:21 tom Exp $
  * These are functions that are obsolete, but provided as a porting aid.
  * The obsolete functions use fixed limits, and inconsistent data handling.
  */
@@ -10,7 +10,7 @@
  */
 int getDirectoryContents (char *directory, char **list, int maxListSize)
 {
-   char **temp = 0;
+   char **temp = NULL;
    int counter = CDKgetDirectoryContents (directory, &temp);
    int n;
 
@@ -28,7 +28,7 @@ int getDirectoryContents (char *directory, char **list, int maxListSize)
  */
 int readFile (char *filename, char **array, int maxlines)
 {
-   char **temp = 0;
+   char **temp = NULL;
    int lines = CDKreadFile (filename, &temp);
    int n;
 
@@ -57,7 +57,7 @@ int splitString (char *string, char **items, char splitChar)
    char **temp = CDKsplitString (string, splitChar);
    int chunks = 0;
 
-   for (chunks = 0; chunks < MAX_LINES && temp[chunks] != 0; ++chunks)
+   for (chunks = 0; chunks < MAX_LINES && temp[chunks] != NULL; ++chunks)
    {
       items[chunks] = copyChar (temp[chunks]);
    }
