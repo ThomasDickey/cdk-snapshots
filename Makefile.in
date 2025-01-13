@@ -1,6 +1,6 @@
-# $Id: Makefile.in,v 1.146 2024/06/19 18:43:55 tom Exp $
+# $Id: Makefile.in,v 1.147 2025/01/10 00:49:48 tom Exp $
 #
-# Copyright 2001-2022,2024 Thomas E. Dickey
+# Copyright 2001-2024,2025 Thomas E. Dickey
 # Copyright 1999, Mike Glover
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -74,6 +74,7 @@ datadir		= @datadir@
 mandir		= @mandir@
 pkgconfig_dir	= @PKG_CONFIG_LIBDIR@
 
+DESTDIR		= @DESTDIR@
 DOCUMENT_DIR	= $(DESTDIR)$(datadir)/doc/$(HDR_ROOTNAME)
 BIN_DIR		= $(DESTDIR)$(bindir)
 INCLUDE_DIR	= $(DESTDIR)$(includedir)

@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.89 2025/01/09 00:11:28 tom Exp $
+dnl $Id: configure.in,v 1.90 2025/01/10 00:44:50 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -73,6 +73,7 @@ MAN_TAG=`echo $MANSECT | sed -e 's/^\(.\).*/\1/'`
 AC_SUBST(MAN_TAG)
 AC_SUBST(MANSECT)
 
+CF_WITH_INSTALL_PREFIX
 CF_WITH_CURSES_DIR
 CF_WITH_SCREEN_PDCURSES
 CF_ENABLE_WARNINGS

@@ -1,7 +1,7 @@
 #!@SHELL@
-# $Id: cdk-config.in,v 1.8 2024/06/19 10:24:46 tom Exp $
+# $Id: cdk-config.in,v 1.12 2025/01/12 21:26:39 tom Exp $
 ##############################################################################
-# Copyright (c) 2007-2015,2024 Thomas E. Dickey                              #
+# Copyright (c) 2007-2024,2025 Thomas E. Dickey                              #
 #                                                                            #
 # Permission is hereby granted, free of charge, to any person obtaining a    #
 # copy of this software and associated documentation files (the "Software"), #
@@ -62,7 +62,13 @@ while [ $# -gt 0 ]; do
 	eval includedir='"@includedir@"'
 	eval mandir='"@mandir@"'
 
-	[ -z "$includedir" ] && includedir="${prefix}/include" 
+	[ -z "$includedir" ] && includedir="${prefix}/include"
+
+	need_include=
+	if [ "$includedir" != /usr/include ]
+	then
+		need_include="-I$includedir"
+	fi
 
 	eval LDFLAGS='"@LDFLAGS@"'
 	eval LIBS='"@LIBS@"'
@@ -199,44 +205,44 @@ while [ $# -gt 0 ]; do
 			case "x$opt" in
 			x-[DIU]*)
 				OPTS="$OPTS $opt"
+				[ "x$opt" = "x$need_include" ] && need_include=
 				;;
 			x-Wl,*)
 				OPTS="$OPTS $opt"
 				;;
-			x-[OW]*)
+			x-[OQW]*|x-g)
 				;;
 			*)
 				OPTS="$OPTS $opt"
 				;;
 			esac
 		done
-		printf "%s\n" "$OPTS"
+		printf "%s\n" "$OPTS $need_include"
 		;;
 	--cflags-only-I)
 		OPTS=
 		for opt in @CFLAGS@ @CPPFLAGS@
 		do
 			case "x$opt" in
-			x-[DIU]*)
+			x-I*)
 				OPTS="$OPTS $opt"
+				[ "x$opt" = "x$need_include" ] && need_include=
 				;;
 			*)
 				;;
 			esac
 		done
-		printf "%s\n" "$OPTS"
+		printf "%s\n" "$OPTS $need_include"
 		;;
 	--cflags-only-other)
 		OPTS=
 		for opt in @CFLAGS@ @CPPFLAGS@
 		do
 			case "x$opt" in
-			x-[DIU]*)
-				;;
 			x-Wl,*)
 				OPTS="$OPTS $opt"
 				;;
-			x-[OW]*)
+			x-[IOQW]*|x-g)
 				;;
 			*)
 				OPTS="$OPTS $opt"
@@ -333,7 +339,7 @@ Options:
   --exec-prefix       echos the executable-prefix of ${THIS}
   --exec-prefix=ARG   sets the executable-prefix of ${THIS}
 
-  --cflags	      echos the C compiler flags needed to compile for ${THIS}
+  --cflags            echos the C compiler flags needed to compile for ${THIS}
   --cflags-only-I     echos only -I C compiler flags needed with ${THIS}
   --cflags-only-other echos only C compiler flags other than -I for ${THIS}
   --libs              echos the libraries needed to link with ${THIS}

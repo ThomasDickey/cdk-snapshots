@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.348 2025/01/09 00:30:38 tom Exp $
+-- $Id: CHANGES,v 1.351 2025/01/13 01:24:13 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2024, 2025
@@ -8,6 +8,13 @@ Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2025/01/12
+	+ further improvements to matching output from *-config and ".pc"
+	+ improve gen-pkgconfig.in to mark the screen library, e.g., ncurses,
+	  as "Required" and filter the cflags/libs from required packages out
+	  of the ".pc" file, because pkg-config will add those automatically.
+	+ add --with-install-prefix option to configure script
 
 2025/01/08
 	+ drop obsolete ftp-url from sample build-scripts.

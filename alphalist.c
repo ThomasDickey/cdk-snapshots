@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/01/09 00:20:21 $
- * $Revision: 1.112 $
+ * $Date: 2025/01/09 21:05:43 $
+ * $Revision: 1.113 $
  */
 
 /*
@@ -649,7 +649,7 @@ static int preProcessEntryField (EObjectType cdktype GCC_UNUSED, void
    }
    else if ((isChar (input) &&
 	     (isalnum (CharOf (input)) ||
-	      ispunct (input))) ||
+	      ispunct (CharOf (input)))) ||
 	    input == KEY_BACKSPACE ||
 	    input == KEY_DC)
    {
