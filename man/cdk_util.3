@@ -1,6 +1,6 @@
 '\" t
-.\" $Id: cdk_util.3,v 1.18 2024/03/31 18:27:59 tom Exp $
-.TH cdk_util 3 2024-03-31 "" "Library calls"
+.\" $Id: cdk_util.3,v 1.20 2025/01/14 09:18:07 tom Exp $
+.TH cdk_util 3 2025-01-14 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -28,6 +28,7 @@
 .XX checkForLink
 .XX chtype2String
 .XX deleteCursesWindow
+.XX enableCursesMarkup
 .XX eraseCursesWindow
 .XX getListIndex
 .XX getString
@@ -92,6 +93,9 @@ cdk_util \-
 .TP 15
 .B "void deleteCursesWindow ("
 .BI "WINDOW *" "window");
+.TP 15
+.B "void enableCursesMarkup ("
+.BI "boolean" "flag");
 .TP 15
 .B "void eraseCursesWindow ("
 .BI "WINDOW *" "window");
@@ -207,7 +211,7 @@ See cdk_position (3) for the interpretation of the
 parameters.
 .TP 5
 .B char2Chtype
-Translate a character \fIstring\fP with embedded format markers
+Translate a character \fIstring\fP with embedded HTML-like format markers
 (e.g., \*(``</X/Y>Blah Blah\*('')
 to a null-terminated array of chtype's.
 .RS
@@ -224,7 +228,7 @@ See \fBcdk_display\fP(3) for details on formatting.
 .TP 5
 .B char2DisplayType
 Lookup the given name in \fIstring\fP and return the equivalent display type.
-See also cdk_display (3).
+See also \fBcdk_display\fP(3).
 .TP 5
 .B checkForLink
 Check if the given \fIline\fP is of the form
@@ -252,6 +256,11 @@ allow Cdk to display the string in a text field.
 .B deleteCursesWindow
 Safely delete a given window,
 i.e., first check if the \fIwindow\fP parameter is nonnull.
+.TP 5
+.B enableCursesMarkup
+Normally Cdk checks for HTML-like markup in character strings which
+it translates to curses strings with \fBchar2Chtype\fP.
+Use this function to disable the feature temporarily.
 .TP 5
 .B eraseCursesWindow
 Safely erase a given window,

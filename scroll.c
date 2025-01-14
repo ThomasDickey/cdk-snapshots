@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/01/09 00:20:21 $
- * $Revision: 1.168 $
+ * $Date: 2025/01/14 00:58:49 $
+ * $Revision: 1.169 $
  */
 
 /*
@@ -59,6 +59,7 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
    int xpos                     = xplace;
    int ypos                     = yplace;
    int scrollAdjust             = 0;
+   int boxAdjust                = Box ? 0 : 1;
    int x;
    /* *INDENT-OFF* */
    static const struct { int from; int to; } bindings[] = {
@@ -167,9 +168,9 @@ CDKSCROLL *newCDKScroll (CDKSCREEN *cdkscreen,
    /* create the list window */
 
    scrollp->listWin = subwin (scrollp->win,
-			      maxViewSize (scrollp),
+			      maxViewSize (scrollp) - boxAdjust,
 			      scrollp->boxWidth
-			      - 2 * BorderOf (scrollp) - scrollAdjust,
+			      - 2 * BorderOf (scrollp) - scrollAdjust - boxAdjust,
 			      SCREEN_YPOS (scrollp, ypos),
 			      SCREEN_XPOS (scrollp, xpos)
 			      + (splace == LEFT ? 1 : 0));

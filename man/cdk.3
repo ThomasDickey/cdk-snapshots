@@ -1,6 +1,6 @@
 '\" t
-.\" $Id: cdk.3,v 1.19 2024/03/28 22:46:23 tom Exp $
-.TH Cdk 3 2024-03-28 "" "Library calls"
+.\" $Id: cdk.3,v 1.21 2025/01/14 09:13:50 tom Exp $
+.TH Cdk 3 2025-01-14 "" "Library calls"
 .de It
 .br
 .ie \\n(.$>=3 .ne \\$3
@@ -40,34 +40,34 @@ l l
 l l .
 \fBWidget Type/Manual Page Name\fR
 =
-Alphalist/cdk_alphalist (3)
-Button/cdk_button (3)
-Buttonbox/cdk_buttonbox (3)
-Calendar/cdk_calendar (3)
-Dialog/cdk_dialog (3)
-DoubleFloat Scale/cdk_dscale (3)
-Entry Field/cdk_entry (3)
-File Selector/cdk_fselect (3)
-File Viewer/cdk_viewer (3)
-Floating Scale/cdk_fscale (3)
-Floating Slider/cdk_fslider (3)
-Graph/cdk_graph (3)
-Histogram/cdk_histogram (3)
-Integer Scale/cdk_scale (3)
-Integer Slider/cdk_slider (3)
-Item List/cdk_itemlist (3)
-Label/cdk_label (3)
-Marquee/cdk_marquee (3)
-Matrix/cdk_matrix (3)
-Multiple Line Entry Field/cdk_mentry (3)
-Pulldown Menu/cdk_menu (3)
-Radio List/cdk_radio (3)
-Scrolling List/cdk_scroll (3)
-Scrolling Selection List/cdk_selection (3)
-Scrolling Window/cdk_swindow (3)
-Template/cdk_template (3)
-Unsigned Scale/cdk_uscale (3)
-Unsigned Slider/cdk_uslider (3)
+Alphalist/\fBcdk_alphalist\fP(3)
+Button/\fBcdk_button\fP(3)
+Buttonbox/\fBcdk_buttonbox\fP(3)
+Calendar/\fBcdk_calendar\fP(3)
+Dialog/\fBcdk_dialog\fP(3)
+DoubleFloat Scale/\fBcdk_dscale\fP(3)
+Entry Field/\fBcdk_entry\fP(3)
+File Selector/\fBcdk_fselect\fP(3)
+File Viewer/\fBcdk_viewer\fP(3)
+Floating Scale/\fBcdk_fscale\fP(3)
+Floating Slider/\fBcdk_fslider\fP(3)
+Graph/\fBcdk_graph\fP(3)
+Histogram/\fBcdk_histogram\fP(3)
+Integer Scale/\fBcdk_scale\fP(3)
+Integer Slider/\fBcdk_slider\fP(3)
+Item List/\fBcdk_itemlist\fP(3)
+Label/\fBcdk_label\fP(3)
+Marquee/\fBcdk_marquee\fP(3)
+Matrix/\fBcdk_matrix\fP(3)
+Multiple Line Entry Field/\fBcdk_mentry\fP(3)
+Pulldown Menu/\fBcdk_menu\fP(3)
+Radio List/\fBcdk_radio\fP(3)
+Scrolling List/\fBcdk_scroll\fP(3)
+Scrolling Selection List/\fBcdk_selection\fP(3)
+Scrolling Window/\fBcdk_swindow\fP(3)
+Template/\fBcdk_template\fP(3)
+Unsigned Scale/\fBcdk_uscale\fP(3)
+Unsigned Slider/\fBcdk_uslider\fP(3)
 .TE
 .LP
 The rest of the manual pages describe supporting functions:
@@ -79,23 +79,23 @@ l l
 lw18 lw35 .
 \fBManual Page Name/Description\fR
 =
-cdk_binding (3)/T{
+\fBcdk_binding\fP(3)/T{
 Outlines how to create user definable key bindings.
 T}
-cdk_display (3)/T{
+\fBcdk_display\fP(3)/T{
 Shows how to add special display attributes,
 colors, and justification into a widget.
 T}
-cdk_draw (3)/T{
+\fBcdk_draw\fP(3)/T{
 Outlines functions used for drawing text and lines.
 T}
-cdk_screen (3)/T{
+\fBcdk_screen\fP(3)/T{
 Demonstrates the use of screens within Cdk.
 T}
-cdk_misc (3)/T{
+\fBcdk_misc\fP(3)/T{
 Outlines miscellaneous functions provided with the Cdk library.
 T}
-cdk_process (3)/T{
+\fBcdk_process\fP(3)/T{
 Demonstrates the use of the pre- and post-process function class.
 T}
 .TE
@@ -108,17 +108,17 @@ following features:
 Instead of using the standard curses library, Cdk can take advantage of the
 colors that Ncurses provides.
 To learn how to take advantage of Cdk's color
-capabilities, see \fIcdk_display (3)\fR.
+capabilities, see \fBcdk_display\fP(3).
 .It "\(bu Key Bindings." 5
 Individual keys can be overridden with a callback.
 The callback is set up using
 the \fBbindCDKObject\fR function.
-To learn more about this see \fIcdk_binding (3)\fR.
+To learn more about this see \fBcdk_binding\fR(3).
 .It "\(bu Pre and Post Processing." 5
 Certain widgets allow the user to trap a character before and after the
 character has been applied to the widget.
 This allows programmers to \*(``filter\*('' character input.
-To learn more about this see \fIcdk_process (3)\fR.
+To learn more about this see \fBcdk_process\fR(3).
 .It "\(bu Self Test Widgets." 5
 With the use of the inject function class and the activate function,
 programmers can have the widgets test themselves.

@@ -4,8 +4,8 @@
  * Default method-functions for CDK objects.
  *
  * $Author: tom $
- * $Date: 2025/01/09 00:20:21 $
- * $Revision: 1.25 $
+ * $Date: 2025/01/14 21:25:46 $
+ * $Revision: 1.26 $
  */
 
 #define MARKUP_CENTER  "<C>"
@@ -193,7 +193,7 @@ char *getCdkTitle (CDKOBJS *obj)
 	 if ((check = chtype2Char (obj->title[x])) != NULL)
 	 {
 	    /* FIXME - we could infer <R> as well */
-	    if (isspace (*check) || obj->titlePos[x] > 0)
+	    if (isspace (CharOf(*check)) || obj->titlePos[x] > 0)
 	       format = MARKUP_CENTER;
 	    free (check);
 	 }

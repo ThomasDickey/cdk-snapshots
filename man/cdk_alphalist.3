@@ -1,6 +1,6 @@
 '\" t
-.\" $Id: cdk_alphalist.3,v 1.33 2024/03/28 23:17:31 tom Exp $"
-.TH cdk_alphalist 3 2024-03-28 "" "Library calls"
+.\" $Id: cdk_alphalist.3,v 1.35 2025/01/14 09:15:31 tom Exp $"
+.TH cdk_alphalist 3 2025-01-14 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -373,7 +373,7 @@ widget could not be created then a \fINULL\fR pointer is returned.
 .TP 5
 .B positionCDKAlphalist
 allows the user to move the widget around the screen via the cursor/keypad keys.
-See \fBcdk_position (3)\fR for key bindings.
+See \fBcdk_position\fR(3) for key bindings.
 .TP 5
 .B setCDKAlphalist
 lets the programmer modify certain elements of an existing alphalist widget.
@@ -391,7 +391,7 @@ sets the background color of the widget.
 .IP
 The parameter \fBcolor\fR
 is in the format of the Cdk format strings.
-See \fBcdk_display (3)\fR.
+See \fBcdk_display\fR(3).
 .TP 5
 .B setCDKAlphalistBox
 sets whether the widget will be drawn with a box around it.
@@ -435,7 +435,7 @@ The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 .RE
 .IP
-To learn more about post-processing see \fIcdk_process (3)\fR.
+To learn more about post-processing see \fBcdk_process\fR(3).
 .TP 5
 .B setCDKAlphalistPreProcess
 allows the user to have the widget call a function after a key
@@ -447,7 +447,7 @@ The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 .RE
 .IP
-To learn more about pre-processing see \fIcdk_process (3)\fR.
+To learn more about pre-processing see \fBcdk_process\fR(3).
 .TP 5
 .B setCDKAlphalistULChar
 sets the upper left hand corner of the widget's box to

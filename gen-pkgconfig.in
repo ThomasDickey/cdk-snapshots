@@ -1,5 +1,5 @@
 #!@SHELL@
-# $Id: gen-pkgconfig.in,v 1.6 2025/01/12 20:44:57 tom Exp $
+# $Id: gen-pkgconfig.in,v 1.8 2025/01/14 23:26:03 tom Exp $
 ##############################################################################
 # Copyright 2023-2024,2025 Thomas E. Dickey                                  #
 #                                                                            #
@@ -48,7 +48,7 @@ datadir="@datadir@"
 libdir="@libdir@"
 
 [ $# != 1 ] && usage
-LIB_NAME=`echo "$1" | sed -e 's,^.*/,,' -e 's,[_.].*,,'`
+LIB_NAME="@LIB_ROOTNAME@"
 PKG_NAME=`echo "$1" | sed -e 's,^.*/,,' -e 's,[.].*,,'`
 
 [ "@SUB_INC@" = yes ] && includedir="$includedir/$LIB_NAME"
@@ -57,9 +57,9 @@ echo "** includedir: $includedir"
 echo "** libdir:     $libdir"
 
 pkg_need=
-for opt in @REQUIRE_PKG@
+for opt in "" @REQUIRE_PKG@
 do
-	pkg_need="$pkg_need $opt"
+	[ -n "$opt" ] && pkg_need="$pkg_need $opt"
 done
 
 c_flags=
@@ -67,8 +67,9 @@ for opt in @CFLAGS@ @CPPFLAGS@
 do
 	if [ -n "@REQUIRE_PKG@" ]
 	then
-		for require in @REQUIRE_PKG@
+		for require in "" @REQUIRE_PKG@
 		do
+			[ -n "$require" ] || continue
 			for check in `pkg-config --cflags "$require"`
 			do
 				if [ "$opt" = "$check" ]
@@ -107,8 +108,9 @@ for opt in -L$libdir @LDFLAGS@ @LIBS@
 do
 	if [ -n "@REQUIRE_PKG@" ]
 	then
-		for require in @REQUIRE_PKG@
+		for require in "" @REQUIRE_PKG@
 		do
+			[ -n "$require" ] || continue
 			for check in `pkg-config --libs "$require"`
 			do
 				if [ "x$opt" = "x$check" ]

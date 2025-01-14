@@ -1,5 +1,5 @@
 #!@SHELL@
-# $Id: cdk-config.in,v 1.12 2025/01/12 21:26:39 tom Exp $
+# $Id: cdk-config.in,v 1.13 2025/01/13 09:10:56 tom Exp $
 ##############################################################################
 # Copyright (c) 2007-2024,2025 Thomas E. Dickey                              #
 #                                                                            #
@@ -40,7 +40,7 @@ datarootdir="@datarootdir@"
 same_prefix=yes
 same_exec_prefix=yes
 
-THIS="@PACKAGE@"
+THIS="@LIB_ROOTNAME@"
 
 [ $# = 0 ] && exec @SHELL@ "$0" --error
 

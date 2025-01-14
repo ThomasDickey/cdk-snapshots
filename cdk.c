@@ -2,14 +2,16 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/01/09 00:20:21 $
- * $Revision: 1.230 $
+ * $Date: 2025/01/14 21:32:41 $
+ * $Revision: 1.232 $
  */
 
 #define L_MARKER '<'
 #define R_MARKER '>'
 
 char *GPasteBuffer = NULL;
+
+static boolean usingMarkup = TRUE;
 
 /*
  * This beeps then flushes the stdout stream.
@@ -389,7 +391,7 @@ static int encodeAttribute (const char *string, int from, chtype *mask)
 	 pair += DigitOf (string[++from]);
       }
 #ifdef HAVE_START_COLOR
-#define MAX_PAIR (int) (A_COLOR / (((~A_COLOR) << 1) & A_COLOR))
+#define MAX_PAIR (int) (A_COLOR / (((unsigned)(~A_COLOR) << 1) & A_COLOR))
       if (pair > MAX_PAIR)
 	 pair = MAX_PAIR;
       *mask = (chtype)COLOR_PAIR (pair);
@@ -538,7 +540,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	 used = 0;
 
 	 /* Look for an alignment marker.  */
-	 if (*string == L_MARKER)
+	 if (usingMarkup && (*string == L_MARKER))
 	 {
 	    if (string[1] == 'C' && string[2] == R_MARKER)
 	    {
@@ -611,14 +613,17 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 	    /* Are we inside a format marker?  */
 	    if (!insideMarker)
 	    {
-	       if (string[from] == L_MARKER
+	       if (usingMarkup
+		   && string[from] == L_MARKER
 		   && (string[from + 1] == '/'
 		       || string[from + 1] == '!'
 		       || string[from + 1] == '#'))
 	       {
 		  insideMarker = TRUE;
 	       }
-	       else if (string[from] == '\\' && string[from + 1] == L_MARKER)
+	       else if (usingMarkup
+			&& string[from] == '\\'
+			&& string[from + 1] == L_MARKER)
 	       {
 		  from++;
 		  if (result != NULL)
@@ -1361,7 +1366,10 @@ int checkForLink (const char *line, char *filename)
    len = (int)strlen (line);
 
    /* Strip out the filename. */
-   if (line[0] == L_MARKER && line[1] == 'F' && line[2] == '=')
+   if (usingMarkup
+       && line[0] == L_MARKER
+       && line[1] == 'F'
+       && line[2] == '=')
    {
       int x = 3;
 
@@ -1475,6 +1483,11 @@ int setWidgetDimension (int parentDim, int proposedDim, int adjustment)
       }
    }
    return dimension;
+}
+
+void enableCursesMarkup (boolean flag)
+{
+   usingMarkup = flag;
 }
 
 /*

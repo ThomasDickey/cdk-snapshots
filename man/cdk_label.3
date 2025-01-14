@@ -1,5 +1,5 @@
-.\" $Id: cdk_label.3,v 1.23 2024/03/28 23:14:39 tom Exp $
-.TH cdk_label 3 2024-03-28 "" "Library calls"
+.\" $Id: cdk_label.3,v 1.25 2025/01/14 09:15:31 tom Exp $
+.TH cdk_label 3 2025-01-14 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -212,7 +212,7 @@ It may be an integer or one of the pre-defined values
 \fBmessage\fR
 is the message to be displayed in the window.
 It may contain any of the standard Cdk display format commands.
-To learn more about this see \fIcdk_display (3)\fR.
+To learn more about this see \fBcdk_display\fR(3).
 .TP 5
 \fBrows\fR
 is the number of message rows that were passed in the \fBmessage\fR parameter.
@@ -242,7 +242,7 @@ The parameter \fBattribute\fR is a curses attribute, e.g., A_BOLD.
 .B setCDKLabelBackgroundColor
 sets the background color of the widget.
 The parameter \fBcolor\fR is in the format of the Cdk format strings.
-For more information see \fIcdk_display (3)\fR.
+For more information see \fBcdk_display\fR(3).
 .TP 5
 .B setCDKLabelBox
 sets whether the widget will be drawn with a box around it.

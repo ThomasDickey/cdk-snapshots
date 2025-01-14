@@ -1,5 +1,5 @@
 /*
- * $Id: cdk_util.h,v 1.38 2024/03/31 15:31:53 tom Exp $
+ * $Id: cdk_util.h,v 1.39 2025/01/14 08:58:34 tom Exp $
  */
 
 #ifndef CDKINCLUDES
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 /*
- * Changes 1999-2014,2024 copyright Thomas E. Dickey
+ * Changes 1999-2024,2025 copyright Thomas E. Dickey
  * Copyright 1999, Mike Glover
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -409,6 +409,13 @@ int setWidgetDimension (
 		int		/* parentDim */,
 		int		/* proposedDim */,
 		int		/* adjustment */);
+
+/*
+ * This disables/re-enables conversion of embedded markup in strings to
+ * curses attributes.
+ */
+void enableCursesMarkup (
+		boolean		/* flag */);
 
 /*
  * This safely erases a given window.

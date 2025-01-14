@@ -1,4 +1,4 @@
-@comment $NetBSD: PLIST,v 1.3 2009/06/14 17:48:37 joerg Exp $
+@comment $NetBSD: PLIST,v 1.6 2024/06/26 16:23:34 wiz Exp $
 bin/cdk5-config
 include/cdk.h
 include/cdk/alphalist.h
@@ -6,6 +6,7 @@ include/cdk/binding.h
 include/cdk/button.h
 include/cdk/buttonbox.h
 include/cdk/calendar.h
+include/cdk/cdk.h
 include/cdk/cdk_compat.h
 include/cdk/cdk_config.h
 include/cdk/cdk_objs.h
@@ -43,12 +44,15 @@ include/cdk/uscale.h
 include/cdk/uslider.h
 include/cdk/viewer.h
 lib/libcdk.a
+man/man1/cdk5-config.1
 man/man3/Beep.3
 man/man3/CDKallocStrings.3
+man/man3/CDKchdir.3
 man/man3/CDKcountStrings.3
 man/man3/CDKfreeChtypes.3
 man/man3/CDKfreeStrings.3
 man/man3/CDKgetDirectoryContents.3
+man/man3/CDKopenFile.3
 man/man3/CDKparamNumber.3
 man/man3/CDKparamNumber2.3
 man/man3/CDKparamString.3
@@ -226,6 +230,7 @@ man/man3/drawCDKUSlider.3
 man/man3/drawCDKViewer.3
 man/man3/drawCdkTitle.3
 man/man3/dumpCDKSwindow.3
+man/man3/enableCursesMarkup.3
 man/man3/endCDK.3
 man/man3/eraseCDKAlphalist.3
 man/man3/eraseCDKButton.3
@@ -405,6 +410,7 @@ man/man3/getCDKViewerHighlight.3
 man/man3/getCDKViewerInfo.3
 man/man3/getCDKViewerInfoLine.3
 man/man3/getCDKViewerTitle.3
+man/man3/getCdkTitle.3
 man/man3/getDirectoryContents.3
 man/man3/getListIndex.3
 man/man3/getString.3
@@ -1013,11 +1019,7 @@ man/man3/viewFile.3
 man/man3/viewInfo.3
 man/man3/waitCDKLabel.3
 share/doc/cdk/COPYING
-share/doc/cdk/EXPANDING
-share/doc/cdk/INSTALL
-share/doc/cdk/NOTES
 share/doc/cdk/README
-share/doc/cdk/TODO
 share/examples/cdk/Makefile
 share/examples/cdk/alphalist_ex.c
 share/examples/cdk/bind_ex.c
@@ -1038,6 +1040,7 @@ share/examples/cdk/lowerCDKObject_ex.c
 share/examples/cdk/marquee_ex.c
 share/examples/cdk/matrix_ex.c
 share/examples/cdk/mentry_ex.c
+share/examples/cdk/mentry_ex2.c
 share/examples/cdk/menu_ex.c
 share/examples/cdk/position_ex.c
 share/examples/cdk/preprocess_ex.c
@@ -1046,6 +1049,7 @@ share/examples/cdk/radio_ex.c
 share/examples/cdk/raiseCDKObject_ex.c
 share/examples/cdk/scale_ex.c
 share/examples/cdk/scroll_ex.c
+share/examples/cdk/scroll_ex2.c
 share/examples/cdk/selection_ex.c
 share/examples/cdk/slider_ex.c
 share/examples/cdk/subwindow_ex.c

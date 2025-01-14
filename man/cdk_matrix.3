@@ -1,6 +1,6 @@
 '\" t
-.\" $Id: cdk_matrix.3,v 1.33 2024/03/28 23:09:04 tom Exp $
-.TH cdk_matrix 3 2024-03-28 "" "Library calls"
+.\" $Id: cdk_matrix.3,v 1.35 2025/01/14 09:15:31 tom Exp $
+.TH cdk_matrix 3 2025-01-14 "" "Library calls"
 .de bP
 .ie n  .IP \(bu 4
 .el    .IP \(bu 2
@@ -382,7 +382,7 @@ is an array of integers stating how wide the individual columns are to be.
 is an array of integers
 which correspond to the individual column display types.
 The values of the array should be assigned a value of type \fIEDisplayType\fR.
-See \fBcdk_display (3)\fR for legal values of \fIEDisplayType\fR.
+See \fBcdk_display\fR(3) for legal values of \fIEDisplayType\fR.
 .TP 5
 \fBrowSpace\fR and
 .TP 5
@@ -502,7 +502,7 @@ The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 .RE
 .IP
-To learn more about post-processing see \fIcdk_process (3)\fR.
+To learn more about post-processing see \fBcdk_process\fR(3).
 .TP 5
 .B setCDKMatrixPreProcess
 allows the user to have the widget call a function after a key
@@ -514,7 +514,7 @@ The parameter \fBfunction\fR is the callback function.
 The parameter \fBdata\fR points to data passed to the callback function.
 .RE
 .IP
-To learn more about pre-processing see \fIcdk_process (3)\fR.
+To learn more about pre-processing see \fBcdk_process\fR(3).
 .TP 5
 .B setCDKMatrixULChar
 sets the upper left hand corner of the widget's box to

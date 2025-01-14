@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.351 2025/01/13 01:24:13 tom Exp $
+-- $Id: CHANGES,v 1.354 2025/01/14 09:11:39 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2024, 2025
@@ -8,6 +8,15 @@ Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2025/01/14
+	+ add enableCursesMarkup(), to provide a way to temporarily suppress
+	  conversion of embedded markup to curses attributes (request by
+	  Henry Qin).
+	+ modify newCDKScroll to avoid creating a too-large list window when
+	  the box is disabled (report by "systemdlete").
+	+ use $ LIB_ROOTNAME, e.g., set by --with-libname, in generating
+	  *-config and ".pc" files (prompted by patch by Zhixu Liu).
 
 2025/01/12
 	+ further improvements to matching output from *-config and ".pc"
@@ -81,7 +90,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 2021/08/25
 	+ build-fix for HP-UX curses, which provides only part of the ACS_xxx
 	  definitions compatible with chtype's.
-	+ correct calls on SetViewSize in scroll.c, overlooked in 2005/04/24 
+	+ correct calls on SetViewSize in scroll.c, overlooked in 2005/04/24
 	  (report by Brad Hines).
 	+ updated configure macros from xterm and ncurses development:
 	  CF_C11_NORETURN CF_CHECK_LIBTOOL_VERSION CF_CONST_X_STRING
@@ -237,7 +246,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  as passing arguments to callback function.
 
 2016/11/19
-	+ add reRegisterCDKObject() 
+	+ add reRegisterCDKObject()
 
 2016/01/31
 	+ fix a few of the lintian errors in package/debian
@@ -250,7 +259,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  (patch by Manuel Schmitz).
 	+ add highlight and callbackData members to CDKBUTTON, as well as
 	  macros for setting/getting the highlight value.  Use the highlight to
-	  override the default A_REVERSE used in CDK button (patch by Aarian P. 
+	  override the default A_REVERSE used in CDK button (patch by Aarian P.
 	  Aleahmad).
 	+ fix two bugs in template.c (patch by Aarian P. Aleahmad):
 	  + in cleanCDKTemplate, fill all of the info string with nulls
@@ -314,10 +323,10 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	  + CF_CURSES_FUNCS -
 	    + improve workaround for weak-linkage, seems to fix tests with
 	      NetBSD 6.1
-	  + CF_GETOPT_HEADER - 
+	  + CF_GETOPT_HEADER -
 	    + add NEED_GETOPT_H definition, since that's the only interesting
 	      special case
-	  + CF_INTEL_COMPILER - 
+	  + CF_INTEL_COMPILER -
 	    + cleanup the -no-gcc option which was leftover from testing - prcs
 	      does not build with this option.
 	  + CF_LIB_SUFFIX -
@@ -339,7 +348,7 @@ Thereafter, changes have been recorded by Thomas E. Dickey.
 	      unspecified header breakage which is triggered by the duplicate
 	      definition.
 	  + CF_X_TOOLKIT -
-	    + add workaround for breakage in XQuartz upgrades. 
+	    + add workaround for breakage in XQuartz upgrades.
 	    + add 3rd parameter to AC_DEFINE for autoheader.
 	+ modify spec-file to work with OpenSUSE's customization of
 	  _defaultdocdir, which puts documentation for most packages in
