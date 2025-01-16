@@ -1,5 +1,5 @@
 #!@SHELL@
-# $Id: cdk-config.in,v 1.13 2025/01/13 09:10:56 tom Exp $
+# $Id: cdk-config.in,v 1.14 2025/01/16 21:29:50 tom Exp $
 ##############################################################################
 # Copyright (c) 2007-2024,2025 Thomas E. Dickey                              #
 #                                                                            #
@@ -65,10 +65,10 @@ while [ $# -gt 0 ]; do
 	[ -z "$includedir" ] && includedir="${prefix}/include"
 
 	need_include=
-	if [ "$includedir" != /usr/include ]
-	then
-		need_include="-I$includedir"
-	fi
+	[ "$includedir" != /usr/include ] && need_include="-I$includedir"
+
+	need_subinclude=
+	[ "@SUB_INC@" = yes ] && need_subinclude="-I$includedir/$THIS"
 
 	eval LDFLAGS='"@LDFLAGS@"'
 	eval LIBS='"@LIBS@"'
@@ -200,7 +200,7 @@ while [ $# -gt 0 ]; do
 	# compile/link
 	--cflags)
 		OPTS=
-		for opt in @CFLAGS@ @CPPFLAGS@
+		for opt in @CFLAGS@ @CPPFLAGS@ $need_subinclude
 		do
 			case "x$opt" in
 			x-[DIU]*)
@@ -221,7 +221,7 @@ while [ $# -gt 0 ]; do
 		;;
 	--cflags-only-I)
 		OPTS=
-		for opt in @CFLAGS@ @CPPFLAGS@
+		for opt in @CFLAGS@ @CPPFLAGS@ $need_subinclude
 		do
 			case "x$opt" in
 			x-I*)

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.132 2025/01/12 18:42:10 tom Exp $
+dnl $Id: aclocal.m4,v 1.133 2025/01/15 22:12:32 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -5217,7 +5217,7 @@ then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_SHARED_OR_LIBTOOL version: 7 updated: 2014/11/02 16:11:49
+dnl CF_WITH_SHARED_OR_LIBTOOL version: 8 updated: 2025/01/15 17:07:11
 dnl -------------------------
 dnl Provide shared libraries using either autoconf macros (--with-shared) or
 dnl using the external libtool script (--with-libtool).
@@ -5274,7 +5274,7 @@ else
 		LIB_MODEL=shared
 		DFT_LWR_MODEL=$LIB_MODEL
 		CF_SHARED_OPTS
-		CF_WITH_VERSIONED_SYMS
+		dnl CF_WITH_VERSIONED_SYMS was here...
 		LIB_PREP=:
 		LIB_CREATE="[$]MK_SHARED_LIB"
 		CFLAGS="$CFLAGS $CC_SHARED_OPTS"
@@ -5329,7 +5329,7 @@ CF_NO_LEAKS_OPTION(valgrind,
 	[USE_VALGRIND])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_VERSIONED_SYMS version: 14 updated: 2024/08/03 12:34:02
+dnl CF_WITH_VERSIONED_SYMS version: 15 updated: 2025/01/15 17:07:11
 dnl ----------------------
 dnl Use this when building shared library with ELF, to markup symbols with the
 dnl version identifier from the given input file.  Generally that identifier is
@@ -5341,6 +5341,9 @@ AC_DEFUN([CF_WITH_VERSIONED_SYMS],
 AC_REQUIRE([AC_PROG_EGREP])dnl
 AC_REQUIRE([CF_GLOB_FULLPATH])dnl
 
+if test "$with_libtool" = "yes" ; then
+	:
+elif test "$with_shared" = "yes" ; then
 AC_MSG_CHECKING(if versioned-symbols file should be used)
 AC_ARG_WITH(versioned-syms,
 	[[  --with-versioned-syms[=MAP-FILE] version ELF shared library symbols per MAP-FILE]],
@@ -5463,6 +5466,8 @@ EOF
 		AC_MSG_RESULT($WILDCARD_SYMS)
 		rm -f conftest.*
 	fi
+fi
+
 fi
 AC_SUBST(RESULTING_SYMS)
 AC_SUBST(VERSIONED_SYMS)

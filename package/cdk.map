@@ -1,5 +1,5 @@
 /*
- * $Id: cdk.map,v 1.5 2019/02/20 23:30:50 tom Exp $
+ * $Id: cdk.map,v 1.6 2025/01/15 21:00:01 tom Exp $
  * script for shared library versioning
  */
 
@@ -575,3 +575,9 @@ CDK_6.2.4 {
 	global:
 		getCdkTitle;
 } CDK_6.1.4;
+
+/* 2025/01/16 */
+CDK_6.2.5 {
+	global:
+		enableCursesMarkup;
+} CDK_6.2.4;

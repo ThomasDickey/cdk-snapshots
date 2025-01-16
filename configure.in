@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.92 2025/01/14 00:13:43 tom Exp $
+dnl $Id: configure.in,v 1.93 2025/01/15 22:03:51 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -88,6 +88,7 @@ CF_ENABLE_RPATH
 CF_DISABLE_RPATH_HACK
 CF_PIC_HACK
 CF_WITH_SHARED_OR_LIBTOOL(CDK,${VERSION_MAJOR}.${VERSION_MINOR},`echo "$VERSION" |sed -e 's/:/./g'`)
+CF_WITH_VERSIONED_SYMS(cdk)
 
 dnl
 dnl Checks for libraries.
