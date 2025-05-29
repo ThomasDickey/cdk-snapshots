@@ -44,6 +44,7 @@ include/cdk/uscale.h
 include/cdk/uslider.h
 include/cdk/viewer.h
 lib/libcdk.a
+lib/pkgconfig/libcdk.pc
 man/man1/cdk5-config.1
 man/man3/Beep.3
 man/man3/CDKallocStrings.3
@@ -230,8 +231,8 @@ man/man3/drawCDKUSlider.3
 man/man3/drawCDKViewer.3
 man/man3/drawCdkTitle.3
 man/man3/dumpCDKSwindow.3
-man/man3/enableCursesMarkup.3
 man/man3/endCDK.3
+man/man3/enableCursesMarkup.3
 man/man3/eraseCDKAlphalist.3
 man/man3/eraseCDKButton.3
 man/man3/eraseCDKButtonbox.3

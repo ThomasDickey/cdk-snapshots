@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.133 2025/01/15 22:12:32 tom Exp $
+dnl $Id: aclocal.m4,v 1.134 2025/01/19 20:27:13 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -5217,14 +5217,14 @@ then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_SHARED_OR_LIBTOOL version: 8 updated: 2025/01/15 17:07:11
+dnl CF_WITH_SHARED_OR_LIBTOOL version: 9 updated: 2025/01/19 05:13:05
 dnl -------------------------
 dnl Provide shared libraries using either autoconf macros (--with-shared) or
 dnl using the external libtool script (--with-libtool).
 dnl
 dnl $1 = program name (all caps preferred)
-dnl $1 = release version
-dnl $2 = ABI version
+dnl $2 = release version
+dnl $3 = ABI version
 define([CF_WITH_SHARED_OR_LIBTOOL],[
 
 REL_VERSION=$2
@@ -5329,7 +5329,7 @@ CF_NO_LEAKS_OPTION(valgrind,
 	[USE_VALGRIND])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_VERSIONED_SYMS version: 15 updated: 2025/01/15 17:07:11
+dnl CF_WITH_VERSIONED_SYMS version: 16 updated: 2025/01/19 15:27:13
 dnl ----------------------
 dnl Use this when building shared library with ELF, to markup symbols with the
 dnl version identifier from the given input file.  Generally that identifier is
@@ -5378,11 +5378,13 @@ then
 		VERSIONED_SYMS="-Wl,--version-script,\${RESULTING_SYMS}"
 		MK_SHARED_LIB=`echo "$MK_SHARED_LIB" | sed -e "s%-Wl,%\\[$]{VERSIONED_SYMS} -Wl,%"`
 		CF_VERBOSE(MK_SHARED_LIB:  $MK_SHARED_LIB)
+		LIB_CREATE="[$]MK_SHARED_LIB"
 		;;
 	(*-dy\ *)
 		VERSIONED_SYMS="-Wl,-M,\${RESULTING_SYMS}"
 		MK_SHARED_LIB=`echo "$MK_SHARED_LIB" | sed -e "s%-dy%\\[$]{VERSIONED_SYMS} -dy%"`
 		CF_VERBOSE(MK_SHARED_LIB:  $MK_SHARED_LIB)
+		LIB_CREATE="[$]MK_SHARED_LIB"
 		;;
 	(*)
 		AC_MSG_WARN(this system does not support versioned-symbols)
