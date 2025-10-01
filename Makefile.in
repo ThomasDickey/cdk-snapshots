@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.147 2025/01/10 00:49:48 tom Exp $
+# $Id: Makefile.in,v 1.148 2025/10/01 21:42:33 tom Exp $
 #
 # Copyright 2001-2024,2025 Thomas E. Dickey
 # Copyright 1999, Mike Glover
@@ -288,7 +288,7 @@ CDKMAN3		= \
 
 CDKREADME	= COPYING README
 
-OBJECTS		= $(CDKSRC:.c=.o)
+OBJECTS		= $(CDKSRC:.c=$o)
 CDKSHOBJS	= $(CDKSRC:.c=.os)
 LIB_OBJECT	= @LIB_OBJECT@
 

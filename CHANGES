@@ -1,4 +1,4 @@
--- $Id: CHANGES,v 1.361 2025/05/29 21:59:17 tom Exp $
+-- $Id: CHANGES,v 1.363 2025/10/01 08:25:45 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
 Copyright Thomas E. Dickey 1999-2024, 2025
@@ -8,6 +8,10 @@ Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2025/10/01
+	+ update configure script
+	+ update config.guess, config.sub
 
 2025/05/29
 	+ updated pkgsrc files, for test-builds with cdk-perl

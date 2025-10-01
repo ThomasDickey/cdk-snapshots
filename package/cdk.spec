@@ -1,12 +1,12 @@
-# $Id: cdk.spec,v 1.87 2025/05/29 20:59:17 tom Exp $
+# $Id: cdk.spec,v 1.89 2025/10/01 22:59:51 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20250529
+%define AppRelease 20251001
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
-License:  MIT-X11
+License:  X11 License Distribution Modification Variant
 Group:  Development/Libraries
 URL:  https://invisible-island.net/%{name}/
 Source0:  %{name}-%{version}-%{release}.tgz
@@ -91,6 +91,9 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{_defaultdocdir}/%{name}/*
 
 %changelog
+
+* Wed Oct 01 2025 Thomas E. Dickey
+- testing cdk 5.0-20251001
 
 * Tue Oct 25 2022 Thomas E. Dickey
 - use ncursesw6 test-package as in Debian, ensuring wide-characters.

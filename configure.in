@@ -1,4 +1,4 @@
-dnl $Id: configure.in,v 1.93 2025/01/15 22:03:51 tom Exp $
+dnl $Id: configure.in,v 1.94 2025/10/01 08:23:02 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -41,7 +41,7 @@ dnl
 CF_PROG_CC
 AC_PROG_CPP
 AC_PROG_RANLIB 
-AC_PROG_INSTALL
+CF_PROG_INSTALL
 CF_PROG_LN_S
 CF_PROG_LINT
 
