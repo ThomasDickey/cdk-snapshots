@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/01/09 00:20:21 $
- * $Revision: 1.88 $
+ * $Date: 2025/10/14 01:03:23 $
+ * $Revision: 1.89 $
  */
 
 /*
@@ -1538,7 +1538,9 @@ static char *expandTilde (const char *filename)
       int x;
       int len_a = 0;
       int len_p = 0;
+#ifdef HAVE_PWD_H
       struct passwd *accountInfo;
+#endif
 
       /* Find the account name in the filename. */
       for (x = 1; x < len; x++)

@@ -1,4 +1,4 @@
-dnl $Id: aclocal.m4,v 1.137 2025/10/01 22:06:19 tom Exp $
+dnl $Id: aclocal.m4,v 1.138 2025/10/14 20:09:24 tom Exp $
 dnl macros used for CDK configure script
 dnl ---------------------------------------------------------------------------
 dnl Copyright 1999-2024,2025 Thomas E. Dickey
@@ -3520,6 +3520,15 @@ AC_TRY_COMPILE([#include <stdio.h>],[
 ])
 ])dnl
 dnl ---------------------------------------------------------------------------
+dnl CF_PROG_AWK version: 1 updated: 2006/09/16 11:40:59
+dnl -----------
+dnl Check for awk, ensure that the check found something.
+AC_DEFUN([CF_PROG_AWK],
+[
+AC_PROG_AWK
+test -z "$AWK" && AC_MSG_ERROR(No awk program found)
+])dnl
+dnl ---------------------------------------------------------------------------
 dnl CF_PROG_CC version: 5 updated: 2019/12/31 08:53:54
 dnl ----------
 dnl standard check for CC, plus followup sanity checks
@@ -4500,22 +4509,6 @@ AC_DEFUN([CF_TOP_BUILDDIR],
 top_builddir=ifelse($1,,`pwd`,$1)
 AC_SUBST(top_builddir)
 ])dnl
-dnl ---------------------------------------------------------------------------
-dnl CF_TRIM_X_LIBS version: 3 updated: 2015/04/12 15:39:00
-dnl --------------
-dnl Trim extra base X libraries added as a workaround for inconsistent library
-dnl dependencies returned by "new" pkg-config files.
-AC_DEFUN([CF_TRIM_X_LIBS],[
-	for cf_trim_lib in Xmu Xt X11
-	do
-		case "$LIBS" in
-		(*-l$cf_trim_lib\ *-l$cf_trim_lib*)
-			LIBS=`echo "$LIBS " | sed -e 's/  / /g' -e 's%-l'"$cf_trim_lib"' %%' -e 's/ $//'`
-			CF_VERBOSE(..trimmed $LIBS)
-			;;
-		esac
-	done
-])
 dnl ---------------------------------------------------------------------------
 dnl CF_TRY_PKG_CONFIG version: 7 updated: 2025/01/10 19:55:54
 dnl -----------------

@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 1.148 2025/10/01 21:42:33 tom Exp $
+# $Id: Makefile.in,v 1.150 2025/10/14 22:52:31 tom Exp $
 #
 # Copyright 2001-2024,2025 Thomas E. Dickey
 # Copyright 1999, Mike Glover
@@ -116,6 +116,7 @@ LIBTOOL_INSTALL	= @LIB_INSTALL@
 LIBTOOL_UNINSTALL = @LIB_UNINSTALL@
 LIBTOOL_VERSION = @LIBTOOL_VERSION@
 
+AWK		= @AWK@
 INSTALL		= @INSTALL@
 INSTALL_PROGRAM	= $(LIBTOOL_INSTALL) @INSTALL_PROGRAM@
 INSTALL_DATA	= @INSTALL_DATA@
@@ -304,7 +305,7 @@ $(OBJECTS) :	$(MY_HDR)
 all cdklib :: $(CDKLIB)
 
 @MAKE_NORMAL@cdkshlib $(OLD_SHLIB_FILE) :: $(CDKSHOBJS)
-@MAKE_NORMAL@	gcc -shared -Wl,-soname=$(OLD_SONAME) $(LDFLAGS) $(LIBS) -o $(OLD_SHLIB_FILE) $(CDKSHOBJS)
+@MAKE_NORMAL@	$(CC) -shared -Wl,-soname=$(OLD_SONAME) $(LDFLAGS) $(LIBS) -o $(OLD_SHLIB_FILE) $(CDKSHOBJS)
 
 #
 # Make the examples directory.
@@ -596,70 +597,70 @@ $(MAN3_DIR) : ; mkdir -p $@
 #
 # Files generated from templates:
 #
-GEN_SCALE	= $(SHELL) $(srcdir)/gen-scale.sh
+GEN_SCALE	= $(AWK) -f $(srcdir)/gen-scale.awk
 
 SCALE_H		= $(srcdir)/include/gen-scale.h
 SCALE_C		= $(srcdir)/gen-scale.c
 SCALE_M		= $(srcdir)/man/gen-scale.3
 
-MKDIR_MAN	= test -d man || mkdir man
+MKDIR_MAN	= mkdir -p man
 
 include/dscale.h :	$(SCALE_H)
-	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_H) >$@
+	$(GEN_SCALE) -v MIXED=DScale  -v DTYPE=Double   < $(SCALE_H) >$@
 dscale.c :		$(SCALE_C) $(AUTO_HDR)
-	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_C) >$@
-man/cdk_dscale.3 :	$(SCALE_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) DSCALE DScale Double double $(SCALE_M) >$@
+	$(GEN_SCALE) -v MIXED=DScale  -v DTYPE=Double   < $(SCALE_C) >$@
+man/cdk_dscale.3 :	$(SCALE_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=DScale  -v DTYPE=Double   < $(SCALE_M) >$@
 
 include/fscale.h :	$(SCALE_H)
-	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_H) >$@
+	$(GEN_SCALE) -v MIXED=FScale  -v DTYPE=Float    < $(SCALE_H) >$@
 fscale.c :		$(SCALE_C) $(AUTO_HDR)
-	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_C) >$@
-man/cdk_fscale.3 :	$(SCALE_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) FSCALE FScale Float float $(SCALE_M) >$@
+	$(GEN_SCALE) -v MIXED=FScale  -v DTYPE=Float    < $(SCALE_C) >$@
+man/cdk_fscale.3 :	$(SCALE_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=FScale  -v DTYPE=Float    < $(SCALE_M) >$@
 
 include/scale.h :	$(SCALE_H)
-	$(GEN_SCALE) SCALE Scale Int int $(SCALE_H) >$@
+	$(GEN_SCALE) -v MIXED=Scale   -v DTYPE=Int      < $(SCALE_H) >$@
 scale.c :		$(SCALE_C) $(AUTO_HDR)
-	$(GEN_SCALE) SCALE Scale Int int $(SCALE_C) >$@
-man/cdk_scale.3 :	$(SCALE_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) SCALE Scale Int int $(SCALE_M) >$@
+	$(GEN_SCALE) -v MIXED=Scale   -v DTYPE=Int      < $(SCALE_C) >$@
+man/cdk_scale.3 :	$(SCALE_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=Scale   -v DTYPE=Int      < $(SCALE_M) >$@
 
 include/uscale.h :	$(SCALE_H)
-	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_H) >$@
+	$(GEN_SCALE) -v MIXED=UScale  -v DTYPE=Unsigned < $(SCALE_H) >$@
 uscale.c :		$(SCALE_C) $(AUTO_HDR)
-	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_C) >$@
-man/cdk_uscale.3 :	$(SCALE_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) USCALE UScale Unsigned unsigned $(SCALE_M) >$@
+	$(GEN_SCALE) -v MIXED=UScale  -v DTYPE=Unsigned < $(SCALE_C) >$@
+man/cdk_uscale.3 :	$(SCALE_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=UScale  -v DTYPE=Unsigned < $(SCALE_M) >$@
 
 SLIDER_H	= $(srcdir)/include/gen-slider.h
 SLIDER_C	= $(srcdir)/gen-slider.c
 SLIDER_M	= $(srcdir)/man/gen-slider.3
 
 include/fslider.h :	$(SLIDER_H)
-	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_H) >$@
+	$(GEN_SCALE) -v MIXED=FSlider -v DTYPE=Float    < $(SLIDER_H) >$@
 fslider.c :		$(SLIDER_C) $(AUTO_HDR)
-	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_C) >$@
-man/cdk_fslider.3 :	$(SLIDER_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) FSLIDER FSlider Float float $(SLIDER_M) >$@
+	$(GEN_SCALE) -v MIXED=FSlider -v DTYPE=Float    < $(SLIDER_C) >$@
+man/cdk_fslider.3 :	$(SLIDER_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=FSlider -v DTYPE=Float    < $(SLIDER_M) >$@
 
 include/slider.h :	$(SLIDER_H)
-	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_H) >$@
+	$(GEN_SCALE) -v MIXED=Slider  -v DTYPE=Int      < $(SLIDER_H) >$@
 slider.c :		$(SLIDER_C) $(AUTO_HDR)
-	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_C) >$@
-man/cdk_slider.3 :	$(SLIDER_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) SLIDER Slider Int int $(SLIDER_M) >$@
+	$(GEN_SCALE) -v MIXED=Slider  -v DTYPE=Int      < $(SLIDER_C) >$@
+man/cdk_slider.3 :	$(SLIDER_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=Slider  -v DTYPE=Int      < $(SLIDER_M) >$@
 
 include/uslider.h :	$(SLIDER_H)
-	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_H) >$@
+	$(GEN_SCALE) -v MIXED=USlider -v DTYPE=Unsigned < $(SLIDER_H) >$@
 uslider.c :		$(SLIDER_C) $(AUTO_HDR)
-	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_C) >$@
-man/cdk_uslider.3 :	$(SLIDER_M) man
-	-$(MKDIR_MAN)
-	$(GEN_SCALE) USLIDER USlider Unsigned unsigned $(SLIDER_M) >$@
+	$(GEN_SCALE) -v MIXED=USlider -v DTYPE=Unsigned < $(SLIDER_C) >$@
+man/cdk_uslider.3 :	$(SLIDER_M)
+	-@$(MKDIR_MAN)
+	$(GEN_SCALE) -v MIXED=USlider -v DTYPE=Unsigned < $(SLIDER_M) >$@

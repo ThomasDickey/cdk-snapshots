@@ -1,6 +1,6 @@
-# $Id: manlinks.sed,v 1.8 2024/03/31 19:09:32 tom Exp $
+# $Id: manlinks.sed,v 1.9 2025/10/14 08:18:09 tom Exp $
 ##############################################################################
-# Copyright 2000-2005,2024 Thomas E. Dickey                                  #
+# Copyright 2000-2024,2025 Thomas E. Dickey                                  #
 #                                                                            #
 # Permission is hereby granted, free of charge, to any person obtaining a    #
 # copy of this software and associated documentation files (the "Software"), #
@@ -41,7 +41,6 @@ s/^[ 	][ 	]*//
 s/[ 	][ 	]*$//
 s/[ 	][ 	]*/ /g
 s/\.SH[ 	][ 	]*/.SH_(/
-#
 /^\.SH_(NAME/,/^\.SH_(SYNOPSIS/{
 /\\-$/{
 	s/[ 	]*\\-//
@@ -60,6 +59,7 @@ s/\\-.*/ -/
 s/ /\
 /g
 s/^\.XX//
+/^#/d
 }
 /^\.SH_(SYNOPSIS/,/^\.SH_(DESCRIPTION/{
 	/^\.TS/,/^\.TE/{

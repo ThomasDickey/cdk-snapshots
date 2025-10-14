@@ -1,8 +1,8 @@
-# $Id: cdk.spec,v 1.89 2025/10/01 22:59:51 tom Exp $
+# $Id: cdk.spec,v 1.91 2025/10/14 23:19:59 tom Exp $
 Summary:  Curses Development Kit
 %define AppProgram cdk
 %define AppVersion 5.0
-%define AppRelease 20251001
+%define AppRelease 20251014
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -92,8 +92,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
-* Wed Oct 01 2025 Thomas E. Dickey
-- testing cdk 5.0-20251001
+* Tue Oct 14 2025 Thomas E. Dickey
+- testing cdk 5.0-20251014
 
 * Tue Oct 25 2022 Thomas E. Dickey
 - use ncursesw6 test-package as in Debian, ensuring wide-characters.

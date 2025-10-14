@@ -1,10 +1,10 @@
 %?mingw_package_header
 
-# $Id: mingw-cdk.spec,v 1.57 2025/10/01 08:01:59 tom Exp $
+# $Id: mingw-cdk.spec,v 1.59 2025/10/14 23:19:59 tom Exp $
 Summary:	Curses Development Kit
 %define AppProgram mingw32-cdk
 %define AppVersion 5.0
-%define AppRelease 20251001
+%define AppRelease 20251014
 Name:  %{AppProgram}
 Version:  %{AppVersion}
 Release:  %{AppRelease}
@@ -96,8 +96,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
-* Wed Oct 01 2025 Thomas E. Dickey
-- testing cdk 5.0-20251001
+* Tue Oct 14 2025 Thomas E. Dickey
+- testing cdk 5.0-20251014
 
 * Sat Nov 02 2013 Thomas E. Dickey
 - initial version
