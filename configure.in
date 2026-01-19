@@ -1,7 +1,7 @@
-dnl $Id: configure.in,v 1.95 2025/10/14 20:07:09 tom Exp $
+dnl $Id: configure.in,v 1.96 2026/01/18 14:03:05 tom Exp $
 dnl Process this file with autoconf to produce a configure script for CDK.
 dnl ---------------------------------------------------------------------------
-dnl Copyright 1999-2024,2025 Thomas E. Dickey
+dnl Copyright 1999-2025,2026 Thomas E. Dickey
 dnl
 dnl Permission is hereby granted, free of charge, to any person obtaining a
 dnl copy of this software and associated documentation files (the "Software"),
@@ -27,8 +27,9 @@ dnl holders shall not be used in advertising or otherwise to promote the sale,
 dnl use or other dealings in this Software without prior written
 dnl authorization.
 dnl ---------------------------------------------------------------------------
-AC_INIT(include/cdk.h)
-AC_CONFIG_HEADER(include/cdk_config.h:include/config.hin)
+AC_INIT
+AC_CONFIG_SRCDIR([include/cdk.h])
+AC_CONFIG_HEADERS([include/cdk_config.h:include/config.hin])
 
 CF_CHECK_CACHE
 CF_VERSION_INFO(cdk,libcdk)
@@ -223,15 +224,15 @@ CF_LD_SEARCHPATH
 dnl
 dnl Set pre-processor compile time variables.
 dnl
-AC_OUTPUT(
-	cdk-config
+AC_CONFIG_FILES([cdk-config
 	gen-pkgconfig
 	headers
 	include/cdk_version.h:include/cdk_version.hin
 	Makefile
 	cli/Makefile
 	examples/Makefile
-	demos/Makefile,[
+	demos/Makefile])
+AC_CONFIG_COMMANDS([default],[
 CF__ADD_SHLIB_RULES(
 	Makefile,
 	$LIB_MODEL,
@@ -239,4 +240,6 @@ CF__ADD_SHLIB_RULES(
 	[\${LIBS} \${LDFLAGS}])
 ],[
 CF__INIT_SHLIB_RULES
-],sort)
+])
+AC_SETUP_DEFS([sort])
+AC_OUTPUT

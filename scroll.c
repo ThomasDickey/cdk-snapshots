@@ -2,9 +2,9 @@
 #include <scroller.h>
 
 /*
- * $Author: tom $
- * $Date: 2025/01/14 00:58:49 $
- * $Revision: 1.169 $
+ * $Author: Matt.Cole $
+ * $Date: 2026/01/18 20:13:08 $
+ * $Revision: 1.170 $
  */
 
 /*
@@ -889,8 +889,8 @@ void setCDKScrollItems (CDKSCROLL *scrollp, CDK_CSTRING2 list, int listSize, boo
    /* Clean up the display. */
    for (x = 0; x < scrollp->viewSize; x++)
    {
-      writeBlanks (scrollp->win, 1, SCREEN_YPOS (scrollp, x),
-		   HORIZONTAL, 0, scrollp->boxWidth - 2);
+      writeBlanks (scrollp->listWin, 0, SCREEN_YPOS (scrollp, x),
+		   HORIZONTAL, 0, scrollp->boxWidth - 2 * BorderOf(scrollp));
    }
 
    setViewSize (scrollp, listSize);

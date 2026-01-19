@@ -1,13 +1,27 @@
--- $Id: CHANGES,v 1.366 2025/10/14 23:19:59 tom Exp $
+-- $Id: CHANGES,v 1.372 2026/01/19 22:23:53 tom Exp $
 -------------------------------------------------------------------------------
 Cdk Version Change List
-Copyright Thomas E. Dickey 1999-2024, 2025
+Copyright Thomas E. Dickey 1999-2025, 2026
 Copyright Mike Glover 1995, 1996, 1997, 1998, 1999
 -------------------------------------------------------------------------------
 
 This file outlines all of the changes/additions from one release to another.
 Changes through 4.9.8 (December 1998) were recorded by Mike Glover.
 Thereafter, changes have been recorded by Thomas E. Dickey.
+
+2026/01/19
+	+ correct codes of up/down arrow in cdk_display.3 (report by Matt Cole).
+	+ add a null-terminator check in char2Chtype.
+	+ modify fselect widgets so the cursor in the scrolling area is shown
+	  at the beginning of the current item.
+	+ modify completeFilenameCB to only scan for directory contents when
+	  the filename is not a directory, fixing a case where filename
+	  completion used old information (patch by Matt Cole).
+	+ correct target window and limits for clearing display in
+	  setCDKScrollItems (patch by Matt Cole).
+	+ add null-pointer check in CDKchdir, needed if user presses escape
+	  in fselect (report by Matt Cole).
+	+ update configure script
 
 2025/10/14
 	+ rewrote gen-scale.sh as an awk script. 

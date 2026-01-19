@@ -3,8 +3,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/10/14 01:03:23 $
- * $Revision: 1.89 $
+ * $Date: 2026/01/19 22:03:49 $
+ * $Revision: 1.92 $
  */
 
 /*
@@ -76,7 +76,7 @@ CDKFSELECT *newCDKFselect (CDKSCREEN *cdkscreen,
    /* *INDENT-ON* */
 
    if ((fselect = newCDKObject (CDKFSELECT, &my_funcs)) == NULL)
-        return (NULL);
+	return (NULL);
 
    setCDKFselectBox (fselect, Box);
 
@@ -303,6 +303,14 @@ static void _moveCDKFselect (CDKOBJS *object,
 }
 
 /*
+ * Put the cursor on the currently-selected item in the scroller.
+ */
+static void fixCursorPosition (CDKFSELECT *widget)
+{
+   scroller_FixCursorPosition ((CDKSCROLLER *)widget->scrollField);
+}
+
+/*
  * The fselect's focus resides in the entry widget.  But the scroll widget
  * will not draw items highlighted unless it has focus.  Temporarily adjust the
  * focus of the scroll widget when drawing on it to get the right highlighting.
@@ -319,6 +327,7 @@ static void drawMyScroller (CDKFSELECT *widget)
 {
    SaveFocus (widget);
    drawCDKScroll (widget->scrollField, ObjOf (widget->scrollField)->box);
+   fixCursorPosition (widget);
    RestoreFocus (widget);
 }
 
@@ -326,6 +335,7 @@ static void injectMyScroller (CDKFSELECT *widget, chtype key)
 {
    SaveFocus (widget);
    (void)injectCDKScroll (widget->scrollField, key);
+   fixCursorPosition (widget);
    RestoreFocus (widget);
 }
 
@@ -1164,7 +1174,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    char *mydirname      = dirName (filename);
    char *newFilename    = NULL;
    size_t filenameLen   = 0;
-   int isDirectory;
+   int cannot_chdir;
    char **list;
 
    /* Make sure the filename is not null/empty. */
@@ -1186,8 +1196,8 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
       drawCDKEntry (entry, ObjOf (entry)->box);
    }
 
-   /* Make sure we can change into the directory. */
-   isDirectory = CDKchdir (filename);
+   /* Make sure we can change into the directory (nonzero on failure). */
+   cannot_chdir = CDKchdir (filename);
    if (CDKchdir (fselect->pwd) != 0)
    {
       freeChar (filename);
@@ -1196,7 +1206,7 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
    }
 
    setCDKFselect (fselect,
-		  isDirectory ? mydirname : filename,
+		  cannot_chdir ? mydirname : filename,
 		  fselect->fieldAttribute,
 		  fselect->fillerCharacter,
 		  fselect->highlight,
@@ -1207,8 +1217,11 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
 		  ObjOf (fselect)->box);
    freeChar (mydirname);
 
-   /* If we can, change into the directory. */
-   if (isDirectory)
+   /*
+    * If we cannot change into the directory,
+    * change into the directory holding the file.
+    */
+   if (cannot_chdir)
    {
       /*
        * Set the entry field with the filename so the current
@@ -1216,103 +1229,108 @@ static int completeFilenameCB (EObjectType objectType GCC_UNUSED,
        */
       setCDKEntryValue (entry, filename);
       drawCDKEntry (entry, ObjOf (entry)->box);
-   }
 
-   /* Create the file list. */
-   if ((list = typeMallocN (char *, fselect->fileCounter)) != NULL)
-   {
-      int Index, x;
-
-      for (x = 0; x < fselect->fileCounter; x++)
+      /* Create the file list. */
+      if ((list = typeMallocN (char *, fselect->fileCounter)) != NULL)
       {
-	 list[x] = contentToPath (fselect, fselect->dirContents[x]);
-      }
+	 int Index, x;
 
-      /* Look for a unique filename match. */
-      Index = searchList ((CDK_CSTRING2)list, fselect->fileCounter, filename);
-
-      /* If the index is less than zero, return we didn't find a match. */
-      if (Index < 0)
-      {
-	 Beep ();
-      }
-      else
-      {
-	 /* Move to the current item in the scrolling list. */
-	 int difference = Index - scrollp->currentItem;
-	 int absoluteDifference = abs (difference);
-	 if (difference < 0)
+	 for (x = 0; x < fselect->fileCounter; x++)
 	 {
-	    for (x = 0; x < absoluteDifference; x++)
-	    {
-	       injectMyScroller (fselect, KEY_UP);
-	    }
+	    list[x] = contentToPath (fselect, fselect->dirContents[x]);
 	 }
-	 else if (difference > 0)
+
+	 /* Look for a unique filename match. */
+	 Index = searchList ((CDK_CSTRING2)list, fselect->fileCounter, filename);
+
+	 /* If the index is less than zero, return we didn't find a match. */
+	 if (Index < 0)
 	 {
-	    for (x = 0; x < absoluteDifference; x++)
-	    {
-	       injectMyScroller (fselect, KEY_DOWN);
-	    }
-	 }
-	 drawMyScroller (fselect);
-
-	 /* Ok, we found a match, is the next item similar? */
-	 if (Index + 1 < fselect->fileCounter &&
-	     NULL != list[Index + 1] &&
-	     0 == strncmp (list[Index + 1], filename, filenameLen))
-	 {
-	    int currentIndex = Index;
-	    int baseChars = (int)filenameLen;
-	    int matches = 0;
-
-	    /* Determine the number of files which match. */
-	    while (currentIndex < fselect->fileCounter)
-	    {
-	       if (list[currentIndex] != NULL)
-	       {
-		  if (strncmp (list[currentIndex], filename, filenameLen) == 0)
-		  {
-		     matches++;
-		  }
-	       }
-	       currentIndex++;
-	    }
-
-	    /* Start looking for the common base characters. */
-	    for (;;)
-	    {
-	       int secondaryMatches = 0;
-	       for (x = Index; x < Index + matches; x++)
-	       {
-		  if (list[Index][baseChars] == list[x][baseChars])
-		  {
-		     secondaryMatches++;
-		  }
-	       }
-
-	       if (secondaryMatches != matches)
-	       {
-		  Beep ();
-		  break;
-	       }
-
-	       /* Inject the character into the entry field. */
-	       (void)injectCDKEntry (fselect->entryField,
-				     (chtype)list[Index][baseChars]);
-	       baseChars++;
-	    }
+	    Beep ();
 	 }
 	 else
 	 {
-	    /* Set the entry field with the found item. */
-	    setCDKEntryValue (entry, list[Index]);
-	    drawCDKEntry (entry, ObjOf (entry)->box);
+	    /* Move to the current item in the scrolling list. */
+	    int difference = Index - scrollp->currentItem;
+	    int absoluteDifference = abs (difference);
+	    if (difference < 0)
+	    {
+	       for (x = 0; x < absoluteDifference; x++)
+	       {
+		  injectMyScroller (fselect, KEY_UP);
+	       }
+	    }
+	    else if (difference > 0)
+	    {
+	       for (x = 0; x < absoluteDifference; x++)
+	       {
+		  injectMyScroller (fselect, KEY_DOWN);
+	       }
+	    }
+	    drawMyScroller (fselect);
+
+	    /* Ok, we found a match, is the next item similar? */
+	    if (Index + 1 < fselect->fileCounter &&
+		NULL != list[Index + 1] &&
+		0 == strncmp (list[Index + 1], filename, filenameLen))
+	    {
+	       int currentIndex = Index;
+	       int baseChars = (int)filenameLen;
+	       int matches = 0;
+
+	       /* Determine the number of files which match. */
+	       while (currentIndex < fselect->fileCounter)
+	       {
+		  if (list[currentIndex] != NULL)
+		  {
+		     if (strncmp (list[currentIndex], filename, filenameLen) == 0)
+		     {
+			matches++;
+		     }
+		  }
+		  currentIndex++;
+	       }
+
+	       /* Start looking for the common base characters. */
+	       for (;;)
+	       {
+		  int secondaryMatches = 0;
+		  for (x = Index; x < Index + matches; x++)
+		  {
+		     if (list[Index][baseChars] == list[x][baseChars])
+		     {
+			secondaryMatches++;
+		     }
+		  }
+
+		  if (secondaryMatches != matches)
+		  {
+		     Beep ();
+		     break;
+		  }
+
+		  /* Inject the character into the entry field. */
+		  (void)injectCDKEntry (fselect->entryField,
+					(chtype)list[Index][baseChars]);
+		  baseChars++;
+	       }
+	    }
+	    else
+	    {
+	       /* Set the entry field with the found item. */
+	       setCDKEntryValue (entry, list[Index]);
+	       drawCDKEntry (entry, ObjOf (entry)->box);
+	    }
 	 }
+	 freeCharList (list, (unsigned)fselect->fileCounter);
+	 free (list);
       }
-      freeCharList (list, (unsigned)fselect->fileCounter);
-      free (list);
    }
+   else
+   {
+      drawMyScroller(fselect);
+   }
+
    freeChar (filename);
    return (TRUE);
 }

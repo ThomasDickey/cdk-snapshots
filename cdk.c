@@ -2,8 +2,8 @@
 
 /*
  * $Author: tom $
- * $Date: 2025/01/14 21:32:41 $
- * $Revision: 1.232 $
+ * $Date: 2026/01/19 21:37:21 $
+ * $Revision: 1.234 $
  */
 
 #define L_MARKER '<'
@@ -283,19 +283,26 @@ int CDKchdir (const char *directory)
 {
    int result;
 
-#ifdef HAVE_WORDEXP
-   wordexp_t expanded;
-   if (wordexp (directory, &expanded, WRDE_NOCMD) == 0)
+   if (directory != NULL)
    {
-      if (expanded.we_wordc == 1 && strcmp (expanded.we_wordv[0], directory))
-	 result = chdir (expanded.we_wordv[0]);
+#ifdef HAVE_WORDEXP
+      wordexp_t expanded;
+      if (wordexp (directory, &expanded, WRDE_NOCMD) == 0)
+      {
+	 if (expanded.we_wordc == 1 && strcmp (expanded.we_wordv[0], directory))
+	    result = chdir (expanded.we_wordv[0]);
+	 else
+	    result = chdir (directory);
+	 wordfree (&expanded);
+      }
       else
+#endif
 	 result = chdir (directory);
-      wordfree (&expanded);
    }
    else
-#endif
-      result = chdir (directory);
+   {
+      result = -1;
+   }
    return result;
 }
 
@@ -656,6 +663,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 		  insideMarker = 0;
 		  break;
 	       case '#':
+		  if (string[from + 1])
 		  {
 		     chtype lastChar = 0;
 		     switch (string[from + 2])
@@ -790,6 +798,7 @@ chtype *char2Chtype (const char *string, int *to, int *align)
 		     }
 		     break;
 		  }
+		  break;
 	       case '/':
 		  from = encodeAttribute (string, from, &mask);
 		  attrib = attrib | mask;

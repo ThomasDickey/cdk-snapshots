@@ -4,7 +4,7 @@ Upstream-Contact: Thomas Dickey <dickey@invisible-island.net>
 Source: https://invisible-island.net/cdk/cdk.html
 
 Files: * */* */*/*
-Copyright: 1999-2024,2025 Thomas E. Dickey
+Copyright: 1999-2025,2026 Thomas E. Dickey
 Copyright: 2013 Corentin Delorme
 Copyright: 1999 Grant Edwards
 License: X11 License Distribution Modification Variant
